@@ -1,0 +1,221 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{69DAEAB3-21CE-4B17-92C8-1D62F6F589EC}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TypeSystemExplorer</RootNamespace>
+    <AssemblyName>TypeSystemExplorer</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="ICSharpCode.TextEditor, Version=3.2.1.6466, Culture=neutral, PublicKeyToken=4d61825e8dd49f1a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\ICSharpCode.TextEditor.3.2.1.6466\lib\Net20\ICSharpCode.TextEditor.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Speech" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Actions\AssociatePopup.cs" />
+    <Compile Include="Actions\BindControlProperty.cs" />
+    <Compile Include="Actions\DeclarativeAction.cs" />
+    <Compile Include="Actions\IMruMenu.cs" />
+    <Compile Include="Actions\InitializeMruMenu.cs" />
+    <Compile Include="Actions\ITextController.cs" />
+    <Compile Include="Actions\SetDocumentText.cs" />
+    <Compile Include="Controllers\ApplicationFormController.cs" />
+    <Compile Include="Controllers\OutputController.cs" />
+    <Compile Include="Controllers\PropertyGridController.cs" />
+    <Compile Include="Controllers\SemanticTypeTreeController.cs" />
+    <Compile Include="Controllers\SymbolTableController.cs" />
+    <Compile Include="Controllers\VisualizerController.cs" />
+    <Compile Include="Controllers\XmlEditorController.cs" />
+    <Compile Include="Controls\DataGridViewControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\LabeledTextBox.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\LabeledTextBox.Designer.cs" />
+    <Compile Include="Controls\OutputControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\TreeViewControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\VisualizerControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\XmlTextEditorControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GenericDockContent\GenericDocument.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GenericDockContent\GenericPane.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GenericDockContent\IGenericDock.cs" />
+    <Compile Include="GenericDockContent\ToolWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GenericDockContent\ToolWindow.designer.cs" />
+    <Compile Include="MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Models\ApplicationModel.cs" />
+    <Compile Include="Models\SchemaHelper.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Views\ApplicationFormView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Controllers\ViewController.cs" />
+    <Compile Include="Views\IPaneView.cs" />
+    <Compile Include="Views\OutputView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\PaneView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\PropertyGridView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\SemanticTypeTreeView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\SymbolTableView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\VisualizerView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\XmlEditorView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <EmbeddedResource Include="Controls\LabeledTextBox.resx" />
+    <EmbeddedResource Include="GenericDockContent\ToolWindow.resx" />
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="bin\Debug\12565.xml" />
+    <Content Include="bin\Debug\about.xml" />
+    <Content Include="bin\Debug\appState.xml" />
+    <Content Include="bin\Debug\layout.xml" />
+    <Content Include="bin\Debug\mainform.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="bin\Debug\output.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="bin\Debug\propertyGrid.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="bin\Debug\protocols.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="bin\Debug\Receptors.xml" />
+    <Content Include="bin\Debug\semanticTypeTree.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="bin\Debug\symbolTable.xml" />
+    <Content Include="bin\Debug\test types with line.xml" />
+    <Content Include="bin\Debug\visualizer.xml" />
+    <Content Include="bin\Debug\xmlEditor.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="ToDo.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Clifton.DockableWindows\WinFormsUI\WinFormsUI.csproj">
+      <Project>{c75532c4-765b-418e-b09b-46d36b2abdb1}</Project>
+      <Name>WinFormsUI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Clifton.Receptor.Interfaces\Clifton.Receptor.Interfaces.csproj">
+      <Project>{6873fe54-25ca-4c2f-bf91-fc10993f8f50}</Project>
+      <Name>Clifton.Receptor.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Clifton.Receptor\Clifton.Receptor.csproj">
+      <Project>{4fb0e76a-8d46-402e-818c-0e1b70376bdf}</Project>
+      <Name>Clifton.Receptor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Clifton.SemanticTypeSystem.Interfaces\Clifton.SemanticTypeSystem.Interfaces.csproj">
+      <Project>{1fb6a5d3-6cda-4262-a40c-d4724ba5e2e1}</Project>
+      <Name>Clifton.SemanticTypeSystem.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Clifton.SemanticTypeSystem\Clifton.SemanticTypeSystem.csproj">
+      <Project>{90a2efb2-3ea4-4feb-a21e-4ae15b3ec82b}</Project>
+      <Name>Clifton.SemanticTypeSystem</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\lib\lib.csproj">
+      <Project>{d1627a50-1c2b-4e28-ac6c-ab437b0138b4}</Project>
+      <Name>lib</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="DevExpressControls\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

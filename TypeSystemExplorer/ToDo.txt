@@ -1,0 +1,11 @@
+﻿DONE: Put the parser in it's own DLL (put it into the STS project for now)
+DONE: Put the SematicType classes into separate files and their own DLL.
+Add docking forms
+Tree view for ST's
+Load and save XML type definitions
+XML editor for creating new types?
+XSD for validating XML?
+Genericize my winform docking system (article?)
+Write about "The magic of declarative programming" in that we can say "a noun is a name, and the name of a noun is noun" declaratively (the "what") and not worry about the "how".
+Article on creating dataset schema from class reflection (doesn't this already exist???)
+
