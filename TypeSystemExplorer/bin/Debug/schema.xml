@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<MycroXaml Name="Schema"
+  xmlns:d="System.Data, System.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"
+  xmlns:def="def"
+  xmlns:ref="ref">
+  <d:DataSet Name="Dataset">
+    <d:Tables>
+      <d:DataTable Name="Notecards" TableName="Notecards">
+        <d:Columns>
+          <d:DataColumn Name="NotecardID" ColumnName="ID" AllowDBNull="false" AutoIncrement="true" DataType="System.Int32" />
+          <d:DataColumn ColumnName="TableOfContents" AllowDBNull="true" DataType="System.String"/>
+          <d:DataColumn ColumnName="URL" AllowDBNull="true" DataType="System.String"/>
+          <d:DataColumn ColumnName="HTML" AllowDBNull="true" DataType="System.String"/>
+          <d:DataColumn ColumnName="Title" AllowDBNull="true" DataType="System.String" DefaultValue="Notecard"/>
+          <d:DataColumn ColumnName="IsOpen" AllowDBNull="true" DataType="System.Boolean"/>
+          <d:DataColumn ColumnName="IsChecked" AllowDBNull="true" DataType="System.Boolean"/>
+          <d:DataColumn ColumnName="DateCreated" AllowDBNull="true" DataType="System.DateTime"/>
+          <d:DataColumn ColumnName="DateModified" AllowDBNull="true" DataType="System.DateTime"/>
+          <d:DataColumn ColumnName="DateLastViewed" AllowDBNull="true" DataType="System.DateTime"/>
+        </d:Columns>
+      </d:DataTable>
+      <d:DataTable Name="NotecardReferences" TableName="NotecardReferences">
+        <d:Columns>
+          <d:DataColumn Name="NotecardReferenceID" ColumnName="ID" AllowDBNull="false" AutoIncrement="true" DataType="System.Int32"/>
+          <d:DataColumn Name="NotecardParentID" ColumnName="NotecardParentID" AllowDBNull="false" DataType="System.Int32"/>
+          <d:DataColumn Name="NotecardChildID" ColumnName="NotecardChildID" AllowDBNull="false" DataType="System.Int32"/>
+        </d:Columns>
+      </d:DataTable>
+      <d:DataTable Name="Metadata" TableName="Metadata">
+        <d:Columns>
+          <d:DataColumn Name="MetadataID" ColumnName="ID" AllowDBNull="false" AutoIncrement="true" DataType="System.Int32"/>
+          <d:DataColumn Name="Metadata_NotecardID" ColumnName="NotecardID" AllowDBNull="false" DataType="System.Int32"/>
+          <d:DataColumn ColumnName="Tag" AllowDBNull="false" DataType="System.String"/>
+        </d:Columns>
+      </d:DataTable>
+      <d:DataTable Name="ApplicationData" TableName="ApplicationData">
+        <d:Columns>
+          <d:DataColumn Name="ApplicationDataID" ColumnName="ID" AllowDBNull="false" AutoIncrement="true" DataType="System.Int32"/>
+          <d:DataColumn Name="LastViewedNotecardID" ColumnName="LastViewedNotecardID" AllowDBNull="true" DataType="System.Int32"/>
+        </d:Columns>
+      </d:DataTable>
+    </d:Tables>
+    <d:Relations>
+      <d:DataRelation Name="FK_Metadata_Notecard" ChildColumn="{Metadata_NotecardID}" ParentColumn="{NotecardID}"/>
+      <d:DataRelation Name="FK_NotecardRef_Notecard1" ChildColumn="{NotecardParentID}" ParentColumn="{NotecardID}"/>
+      <d:DataRelation Name="FK_NotecardRef_Notecard2" ChildColumn="{NotecardChildID}" ParentColumn="{NotecardID}"/>
+    </d:Relations>
+    <d:DataTable ref:Name="Notecards" PrimaryKey="{NotecardID}"/>
+    <d:DataTable ref:Name="NotecardReferences" PrimaryKey="{NotecardReferenceID}"/>
+    <d:DataTable ref:Name="Metadata" PrimaryKey="{MetadataID}"/>
+  </d:DataSet>
+</MycroXaml>

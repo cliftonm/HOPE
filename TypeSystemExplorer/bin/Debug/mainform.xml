@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<MycroXaml Name="Form"
+  xmlns:wf="System.Windows.Forms, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"
+  xmlns:ixa="TypeSystemExplorer.Actions, TypeSystemExplorer"
+  xmlns:ixc="TypeSystemExplorer.Controllers, TypeSystemExplorer"
+  xmlns:ixv="TypeSystemExplorer.Views, TypeSystemExplorer"
+  xmlns:ixm="TypeSystemExplorer.Models, TypeSystemExplorer"
+  xmlns:wfui="WeifenLuo.WinFormsUI.Docking, WeifenLuo.WinFormsUI.Docking"
+  xmlns:def="def"
+  xmlns:ref="ref">
+  <ixv:ApplicationFormView def:Name="applicationFormView" Text="Type System Explorer" Size="800, 600" IsMdiContainer="true">
+    <ixm:ApplicationModel def:Name="applicationModel"/>
+    <ixc:ApplicationFormController def:Name="controller" View="{applicationFormView}" ApplicationModel="{applicationModel}"/>
+    <ixv:Controls>
+      <wfui:DockPanel
+        def:Name="dockPanel"
+        Dock="Fill"
+        ActiveDocumentChanged="{controller.ActiveDocumentChanged}"
+        ContentRemoved="{controller.ContentRemoved}"/>
+      <wf:MenuStrip>
+        <wf:Items>
+          <wf:ToolStripMenuItem def:Name="mnuFile" Text="&amp;File">
+            <wf:DropDownItems>
+              <wf:ToolStripMenuItem Text="&amp;Reset STS" Click="{controller.Reset}"/>
+              <wf:ToolStripSeparator/>
+              <wf:ToolStripMenuItem Text="&amp;New Xml" Click="{controller.NewXml}"/>
+              <wf:ToolStripMenuItem Text="&amp;Open Xml..." Click="{controller.OpenXml}" ShortcutKeys="Alt+O"/>
+              <wf:ToolStripMenuItem Text="&amp;Save Xml" Click="{controller.SaveXml}" ShortcutKeys="Alt+S"/>
+              <wf:ToolStripMenuItem Text="Save Xml &amp;As..." Click="{controller.SaveXmlAs}"/>
+              <wf:ToolStripSeparator/>
+            <!--  <wf:ToolStripMenuItem Text="&amp;Import Population" Click="{controller.Import}"/>  -->
+              <wf:ToolStripMenuItem Text="&amp;Load Receptors" Click="{controller.LoadReceptors}"/>
+              <wf:ToolStripSeparator/>
+              <wf:ToolStripMenuItem def:Name="mnuRecentFiles" Text="(Recent Files)"/>
+              <wf:ToolStripSeparator/>
+              <wf:ToolStripMenuItem Text="E&amp;xit" Click="{controller.Exit}" ShortcutKeys="Alt+X"/>
+            </wf:DropDownItems>
+          </wf:ToolStripMenuItem>
+          <wf:ToolStripMenuItem Text="&amp;View">
+            <wf:DropDownItems>
+              <!--  <wf:ToolStripMenuItem Text="&amp;Refresh TOC and Indices" Click="{controller.Refresh}"/>  -->
+              <wf:ToolStripMenuItem Text="Restore &amp;Layout" Click="{controller.RestoreLayout}"/>
+              <wf:ToolStripSeparator/>
+              <wf:ToolStripMenuItem def:Name="mnuSemanticTypeTree" Text="&amp;Semantic Types" Click="{controller.ShowSemanticTypeTree}"/>
+              <wf:ToolStripMenuItem def:Name="mnuXmlEditor" Text="&amp;Xml Editor" Click="{controller.ShowXmlEditor}"/>
+              <wf:ToolStripMenuItem def:Name="mnuPropertyGrid" Text="&amp;Property Grid" Click="{controller.ShowPropertyGrid}"/>
+              <wf:ToolStripMenuItem def:Name="mnuOutput" Text="&amp;Output" Click="{controller.ShowOutput}"/>
+              <wf:ToolStripMenuItem def:Name="mnuSymbolTable" Text="S&amp;ymbol Table" Click="{controller.ShowSymbolTable}"/>
+              <wf:ToolStripMenuItem def:Name="mnuVisualizer" Text="&amp;Visualizer" Click="{controller.ShowVisualizer}"/>
+            </wf:DropDownItems>
+          </wf:ToolStripMenuItem>
+          <wf:ToolStripMenuItem Text="&amp;Types">
+            <wf:DropDownItems>
+              <wf:ToolStripMenuItem Text="&amp;Create" Click="{controller.CreateTypes}"/>
+              <wf:ToolStripMenuItem Text="&amp;Generate Code" Click="{controller.GenerateCode}"/>
+              <wf:ToolStripMenuItem Text="Com&amp;pile" Click="{controller.Compile}"/>
+            </wf:DropDownItems>
+          </wf:ToolStripMenuItem>
+          <wf:ToolStripMenuItem Text="A&amp;bout" Click="{controller.About}"/>
+        </wf:Items>
+      </wf:MenuStrip>
+      <wf:StatusBar ShowPanels="true">
+        <Panels>
+          <wf:StatusBarPanel def:Name="sbBrowserStatus" BorderStyle="Sunken" AutoSize="Spring"/>
+        </Panels>
+      </wf:StatusBar>
+    </ixv:Controls>
+    <!-- Forward references -->
+    <!-- Form events requiring the controller must be wired after the controller and form have been instantiated. -->
+    <ixv:ApplicationFormView ref:Name="applicationFormView"
+                             ApplicationController="{controller}"
+                             Model="{applicationModel}"
+                             DockPanel="{dockPanel}"
+                             Load="{controller.LoadLayout}"
+                             Closing="{controller.Closing}"
+                             Activated="{controller.Activated}"
+                             Shown="{controller.Shown}"
+                             FormClosing="{controller.FormClosingEvent}"/>
+    <!-- actions -->
+    <ixa:InitializeMruMenu def:Name="MRU" MenuFile="{mnuFile}" MenuRecentFiles="{mnuRecentFiles}" ApplicationController="{controller}"/>
+    <ixc:ApplicationFormController ref:Name="controller" MruMenu="{MRU}"/>
+    <!-- This is a model state event change event that can be handled directly by the view. -->
+    <ixm:ApplicationModel ref:Name="applicationModel" ModelIsDirty="{applicationFormView.WhenModelIsDirty}"/>
+  </ixv:ApplicationFormView>
+</MycroXaml>

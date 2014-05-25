@@ -1,0 +1,22 @@
+﻿<Carriers>
+  <Carrier Protocol="TextToSpeech" Text="Loading receptors." />
+  <Carrier Protocol="TextToSpeech" Text="Receptor System online." />
+  <Carrier Protocol="TextToSpeech" Text="Loading receptors." />
+  <Carrier Protocol="TextToSpeech" Text="Receptors online." />
+  <Carrier Protocol="TextToSpeech" Text="Processing carriers." />
+  <Carrier Protocol="Zipcode" Value="12565" />
+  <Carrier Protocol="Location" Zipcode="12565" City="Philmont" StateAbbr="NY" State="NEW YORK" />
+  <Carrier Protocol="WeatherInfo" Zipcode="12565" Summary="Isolated Thunderstorms" High="75" Low="51">
+    <Conditions>
+      <WeatherCondition Coverage="isolated" Intensity="none" WeatherType="thunderstorms" Qualifier="gusty winds,small hail" />
+      <WeatherCondition Additive="and" Coverage="isolated" Intensity="light" WeatherType="rain showers" Qualifier="none" />
+    </Conditions>
+    <Hazards />
+  </Carrier>
+  <Carrier Protocol="TextToSpeech" Text="Here is the weather for Philmont NEW YORK. " />
+  <Carrier Protocol="TextToSpeech" Text="The low is 51." />
+  <Carrier Protocol="TextToSpeech" Text="The high is 75." />
+  <Carrier Protocol="TextToSpeech" Text="The weather is: Isolated Thunderstorms." />
+  <Carrier Protocol="TextToSpeech" Text="Today there will be isolated thunderstorms gusty winds, small hail and isolated light rain showers." />
+  <Carrier Protocol="TextToSpeech" Text="There are no hazards in effect." />
+</Carriers>

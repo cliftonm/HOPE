@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<MycroXaml Name="Form"
+  xmlns:wf="System.Windows.Forms, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"
+  xmlns:ix="TypeSystemExplorer, TypeSystemExplorer"
+  xmlns:ixc="TypeSystemExplorer.Controllers, TypeSystemExplorer"
+  xmlns:ixctrl="TypeSystemExplorer.Controls, TypeSystemExplorer"
+  xmlns:ixv="TypeSystemExplorer.Views, TypeSystemExplorer"
+  xmlns:ixa="TypeSystemExplorer.Actions, TypeSystemExplorer"
+  xmlns:def="def"
+  xmlns:ref="ref">
+  <ix:GenericDocument ref:Name="Container" Text="Symbol Table">
+    <ixc:SymbolTableController def:Name="controller" ApplicationController="{ApplicationFormController}" ApplicationModel="{ApplicationModel}"/>
+    <!-- <ix:GenericDocument ref:Name="Container"/> FormClosing="{controller.Closing}" Activated="{controller.Activated}"/> -->
+    <ix:Controls>
+      <ixv:SymbolTableView def:Name="symbolTableView" Dock="Fill"
+        ApplicationController="{ApplicationFormController}"
+        Controller="{controller}">
+        <ixv:Controls>
+          <ixctrl:DataGridViewControl def:Name="dgvSymbolTable" Dock="Fill"/>
+        </ixv:Controls>
+      </ixv:SymbolTableView>
+    </ix:Controls>
+    <ixc:SymbolTableController ref:Name="controller" View="{symbolTableView}"/>
+    <ixv:SymbolTableView ref:Name="symbolTableView" SymbolTableDataGrid="{dgvSymbolTable}"/>
+    <!-- actions -->
+    <!-- <ixa:RegisterDocumentController App="{ApplicationFormController}" Container="{Container}" Controller="{controller}"/> -->
+    <!-- <ixa:SetDocumentText Controller="{controller}" Text="TOOD: xml stub here"/> -->
+  </ix:GenericDocument>
+</MycroXaml>
+

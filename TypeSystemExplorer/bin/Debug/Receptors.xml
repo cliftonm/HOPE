@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Receptors>
+  <!--
+  <Receptor Name="Heartbeat" AssemblyName="HelloWorldReceptor.dll"></Receptor>
+  <Receptor Name="Logger" AssemblyName="LoggingReceptor.dll"></Receptor>
+  <Receptor Name="Image Writer" AssemblyName="ImageWriterReceptor.dll"></Receptor>
+  <Receptor Name="Thumbnail Creator" AssemblyName="ThumbnailCreatorReceptor.dll"></Receptor>
+  <Receptor Name="Thumbnail Viewer" AssemblyName="ThumbnailViewerReceptor.dll"></Receptor>
+  -->
+  <Receptor Name="Weather Service" AssemblyName="WeatherServiceReceptor.dll"></Receptor>
+  <Receptor Name="Zip Code Service" AssemblyName="ZipCodeReceptor.dll"></Receptor>
+  <Receptor Name="Weather Info" AssemblyName="WeatherInfoReceptor.dll"></Receptor>
+  <Receptor Name="Text to Speech" AssemblyName="TextToSpeechReceptor.dll"></Receptor>
+  <Receptor Name="Carrier Exporter" AssemblyName="CarrierExporterReceptor.dll"></Receptor>
+</Receptors>

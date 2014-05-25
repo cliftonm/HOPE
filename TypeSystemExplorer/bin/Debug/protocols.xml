@@ -1,0 +1,226 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<SemanticTypes>
+  <Collection>
+    <SemanticTypeDecl OfType="Noun">
+      <!-- The ST has a Name attribute because it's Struct defines it. -->
+      <AttributeValues>
+        <Attribute Name="Name" Value="Noun"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="Noun">
+      <Attributes>
+        <!-- here the attribute Name's value is the implementing field name -->
+        <!-- For example, in C#, resulting form is "string Name;" -->
+        <NativeType Name="Name" ImplementingType="string"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <!-- A Debug Message -->
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="DebugMessage"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="DebugMessage">
+      <Attributes>
+        <NativeType Name="Message" ImplementingType="string"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <!-- A System Message -->
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="SystemMessage"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="SystemMessage">
+      <Attributes>
+        <NativeType Name="Action" ImplementingType="string"/>
+        <NativeType Name="Data" ImplementingType="string"/>
+        <NativeType Name="Source" ImplementingType="IReceptorInstance"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <!-- An Animation Message -->
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="CarrierAnimation"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="CarrierAnimation">
+      <Attributes>
+        <NativeType Name="Process" ImplementingType="Action"/>
+        <NativeType Name="From" ImplementingType="IReceptorInstance"/>
+        <NativeType Name="To" ImplementingType="IReceptorInstance"/>
+        <NativeType Name="Carrier" ImplementingType="ICarrier"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <!-- Text to Speech -->
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="TextToSpeech"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="TextToSpeech">
+      <Attributes>
+        <NativeType Name="Text" ImplementingType="string"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <!-- Image Filename -->
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="ImageFilename"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="ImageFilename">
+      <Attributes>
+        <NativeType Name="Filename" ImplementingType="string"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <!-- Thumbnail Image-->
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="ThumbnailImage"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="ThumbnailImage">
+      <Attributes>
+        <NativeType Name="Filename" ImplementingType="string"/>
+        <NativeType Name="Image" ImplementingType="Image"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <!-- System Show Image-->
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="SystemShowImage"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="SystemShowImage">
+      <Attributes>
+        <NativeType Name="From" ImplementingType="IReceptorInstance"/>
+        <NativeType Name="Image" ImplementingType="Image"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <!-- Zipcode -->
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="Zipcode"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="Zipcode">
+      <Attributes>
+        <NativeType Name="Value" ImplementingType="string"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <!-- Location -->
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="Location"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="Location">
+      <Attributes>
+        <NativeType Name="Zipcode" ImplementingType="string"/>
+        <NativeType Name="City" ImplementingType="string"/>
+        <NativeType Name="StateAbbr" ImplementingType="string"/>
+        <NativeType Name="State" ImplementingType="string"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <!-- LatLong -->
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="LatLong"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="LatLong">
+      <Attributes>
+        <NativeType Name="Zipcode" ImplementingType="string"/>
+        <NativeType Name="Latitude" ImplementingType="decimal"/>
+        <NativeType Name="Longitude" ImplementingType="decimal"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <!-- Weather -->
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="WeatherCondition"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="WeatherCondition">
+      <Attributes>
+        <NativeType Name="Additive" ImplementingType="string"/>
+        <NativeType Name="Coverage" ImplementingType="string"/>
+        <NativeType Name="Intensity" ImplementingType="string"/>
+        <NativeType Name="WeatherType" ImplementingType="string"/>
+        <NativeType Name="Qualifier" ImplementingType="string"/>
+      </Attributes>
+    </SemanticTypeStruct>
+    
+    <!--  -->
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="WeatherHazard"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="WeatherHazard">
+      <Attributes>
+        <NativeType Name="Phenomena" ImplementingType="string"/>
+        <NativeType Name="Significance" ImplementingType="string"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <!--  -->
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="WeatherInfo"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="WeatherInfo">
+      <Attributes>
+        <NativeType Name="Zipcode" ImplementingType="string"/>
+        <NativeType Name="Summary" ImplementingType="string"/>
+        <NativeType Name="High" ImplementingType="string"/>
+        <NativeType Name="Low" ImplementingType="string"/>
+        <NativeType Name="Conditions" ImplementingType="List&lt;dynamic&gt;"/>
+        <NativeType Name="Hazards" ImplementingType="List&lt;dynamic&gt;"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <!-- ==== -->
+    
+  </Collection>
+</SemanticTypes>
