@@ -43,6 +43,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextToSpeechReceptor", "Rec
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeatherInfoReceptor", "Receptors\WeatherInfoReceptor\WeatherInfoReceptor.csproj", "{20329151-4088-4B94-BCFE-373A3221A0ED}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "gmail test", "gmail test\gmail test.csproj", "{DC891CFE-896C-42CC-A8E3-9867AA764341}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -173,6 +175,12 @@ Global
 		{20329151-4088-4B94-BCFE-373A3221A0ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{20329151-4088-4B94-BCFE-373A3221A0ED}.Release|Any CPU.Build.0 = Release|Any CPU
 		{20329151-4088-4B94-BCFE-373A3221A0ED}.Release|x86.ActiveCfg = Release|Any CPU
+		{DC891CFE-896C-42CC-A8E3-9867AA764341}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC891CFE-896C-42CC-A8E3-9867AA764341}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC891CFE-896C-42CC-A8E3-9867AA764341}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DC891CFE-896C-42CC-A8E3-9867AA764341}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC891CFE-896C-42CC-A8E3-9867AA764341}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC891CFE-896C-42CC-A8E3-9867AA764341}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

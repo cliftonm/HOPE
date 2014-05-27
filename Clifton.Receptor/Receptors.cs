@@ -47,6 +47,7 @@ namespace Clifton.Receptor
 		public List<Carrier> Carriers { get; protected set; }
 		public ISemanticTypeSystem SemanticTypeSystem { get; set; }
 		public Dictionary<string, List<Receptor>> CarrierReceptorMap { get; protected set; }
+		public Dictionary<Receptor, bool> processedReceptorMap;
 
 		protected List<Receptor> globalReceptors;
 		protected List<CarrierAction> queuedCarriers;
@@ -91,25 +92,27 @@ namespace Clifton.Receptor
 			int processedCount = 0;
 			string receptorName;
 
-			if (Receptors.Any(r=>r.Processed==false))
+			if (Receptors.Any(r=>r.Instantiated==false))
 			{
+				// TODO: Refactor out of this code.
 				Say("Loading receptors.");
 
 				foreach (Receptor r in Receptors)
 				{
 					// TODO: This is lame, to prevent existing receptors from being re-processed.
-					if (!r.Processed)
+					if (!r.Instantiated)
 					{
-						// If the instance hasn't been created yet...
-						if (r.Instance == null)
-						{
-							r.LoadAssembly();
-							r.Instantiate(this);
-						}
+						r.LoadAssembly().Instantiate(this);
+					}
 
+					// Get the carriers this receptor is interested in.
+					if (!processedReceptorMap.ContainsKey(r))
+					{
 						GatherCarrierReceivers(r);
+
+						// Let interested parties know that we have a new receptor and handle how we want to announce the fact.
+						// TODO: Refactor the announcement out of this code.
 						NewReceptor.Fire(this, new NewReceptorEventArgs(r));
-						r.Processed = true;
 						++processedCount;
 						receptorName = r.Name;
 					}
@@ -131,10 +134,7 @@ namespace Clifton.Receptor
 
 		public void InstantiateReceptor(string filename)
 		{
-			Receptor r = new Receptor();
-			r.FromFile(filename);
-			r.Instantiate(this);
-			r.Processed = true;
+			Receptor r = Receptor.FromFile(filename).Instantiate(this);
 			Receptors.Add(r);
 			GatherCarrierReceivers(r);
 			NewReceptor.Fire(this, new NewReceptorEventArgs(r));
@@ -158,6 +158,7 @@ namespace Clifton.Receptor
 			CarrierReceptorMap = new Dictionary<string, List<Receptor>>();
 			queuedCarriers = new List<CarrierAction>();
 			globalReceptors = new List<Receptor>();
+			processedReceptorMap = new Dictionary<Receptor, bool>();
 		}
 
 		protected void GatherCarrierReceivers(Receptor r)
@@ -211,14 +212,16 @@ namespace Clifton.Receptor
 		{
 			List<CarrierAction> removeActions = new List<CarrierAction>();
 
-			foreach (CarrierAction action in queuedCarriers)
+			// An action can result in carriers being created and queued if there's no receptor, so we walk through the existing 
+			// collection with an indexer rather than a foreach.
+			queuedCarriers.IndexerForEach(action =>
 			{
 				if (CarrierReceptorMap.ContainsKey(action.Carrier.Protocol.DeclTypeName))
 				{
 					action.Action();
 					removeActions.Add(action);
 				}
-			}
+			});
 
 			removeActions.ForEach(a => queuedCarriers.Remove(a));
 		}

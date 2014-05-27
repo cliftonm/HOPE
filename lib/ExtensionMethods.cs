@@ -139,6 +139,19 @@ namespace Clifton.ExtensionMethods
 		// ---------- ForEach iterators --------------
 
 		/// <summary>
+		/// For collections that can change as the entries are being processed, use this method,
+		/// as it uses an indexer to iterate through the collection, avoiding the "Collection has been modified"
+		/// exception.
+		/// </summary>
+		public static void IndexerForEach<T>(this IList<T> collection, Action<T> action)
+		{
+			for (int i = 0; i < collection.Count(); i++)
+			{
+				action(collection[i]);
+			}
+		}
+
+		/// <summary>
 		/// Implements a ForEach for generic enumerators.
 		/// </summary>
 		public static void ForEach<T>(this IEnumerable<T> collection, Action<T> action)

@@ -12,19 +12,43 @@ using Clifton.Tools.Strings.Extensions;
 
 namespace Clifton.Receptor
 {
+	/// <summary>
+	/// A Receptor is the container for a receptor instance (a separate assembly) and the assembly instance.
+	/// </summary>
 	public class Receptor : IReceptor
 	{
+		/// <summary>
+		/// The receptor name, determined either from the assembly filename or the name specified during construction.
+		/// </summary>
 		public string Name { get; protected set; }
+
+		/// <summary>
+		/// The instance of the receptor.  The assembly must declare one class implementing IReceptorInstance, and
+		/// this is the class that is instantiated through reflection.
+		/// </summary>
 		public IReceptorInstance Instance { get; protected set; }
-		public bool Processed { get; set; }
+
+		/// <summary>
+		/// False if the receptor instance has not yet been instantiated.  True if it has.
+		/// </summary>
+		public bool Instantiated { get; protected set; }
 
 		protected string assemblyName;
 		protected Assembly assembly;
 
-		public Receptor()
+		/// <summary>
+		/// Internal constructor for factory method FromFile.
+		/// </summary>
+		protected Receptor(string name, Assembly assembly)
 		{
+			Name = name;
+			this.assembly = assembly;
 		}
 
+		/// <summary>
+		/// Initializes a receptor given its name and assembly filename.
+		/// Used, for example, to load a list of receptors into the application.
+		/// </summary>
 		public Receptor(string name, string assemblyName)
 		{
 			Name = name;
@@ -32,27 +56,43 @@ namespace Clifton.Receptor
 		}
 
 		/// <summary>
-		/// For internal receptors.
+		/// For instances that the application defines and that implement IReceptorInstance,
+		/// use this constructor to specify the existing instance.
 		/// </summary>
 		public Receptor(string name, IReceptorInstance inst)
 		{
 			Name = name;
 			Instance = inst;
+			Instantiated = true;
 		}
 
-		public void FromFile(string filename)
+		/// <summary>
+		/// Factory method for creating a receptor from a given assembly filename.
+		/// </summary>
+		public static Receptor FromFile(string filename)
 		{
-			Name = Path.GetFileNameWithoutExtension(filename).SplitCamelCase();
-			assembly = Assembly.LoadFile(filename);
+			string name = Path.GetFileNameWithoutExtension(filename).SplitCamelCase();
+			Assembly assembly = Assembly.LoadFile(filename);
+
+			return new Receptor(name, assembly);
 		}
 
-		public void LoadAssembly()
+		/// <summary>
+		/// Load the assembly.
+		/// </summary>
+		public Receptor LoadAssembly()
 		{
 			string fullPath = ResolveFullPath(null, assemblyName);
 			assembly = Assembly.LoadFile(fullPath);
+
+			return this;
 		}
 
-		public void Instantiate(IReceptorSystem rsys)
+		/// <summary>
+		/// Instantiate the receptor from the pre-loaded assembly.
+		/// The receptor system instance is passed to the constructor if the IReceptorInstance implementor.
+		/// </summary>
+		public Receptor Instantiate(IReceptorSystem rsys)
 		{
 			Type impType;
 
@@ -76,6 +116,10 @@ namespace Clifton.Receptor
 			{
 				throw new ApplicationException("Unable to instantiate the receptor " + Name);
 			}
+
+			Instantiated = true;
+
+			return this;
 		}
 
 		/// <summary>
