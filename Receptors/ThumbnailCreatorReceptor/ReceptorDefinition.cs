@@ -33,9 +33,9 @@ namespace ThumbnailCreatorReceptor
 		{
 		}
 
-		public async void ProcessCarrier(ISemanticTypeStruct protocol, dynamic signal)
+		public async void ProcessCarrier(ICarrier carrier)
 		{
-			string fn = signal.Filename;
+			string fn = carrier.Signal.Filename;
 			Image ret = await Task.Run<Image>(() =>
 				{
 					Bitmap bitmap = new Bitmap(fn);

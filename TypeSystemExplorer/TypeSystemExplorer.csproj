@@ -156,6 +156,8 @@
     <Content Include="bin\Debug\12565.xml" />
     <Content Include="bin\Debug\about.xml" />
     <Content Include="bin\Debug\appState.xml" />
+    <Content Include="bin\Debug\carrier-config_timer.xml" />
+    <Content Include="bin\Debug\carrier-daily_event.xml" />
     <Content Include="bin\Debug\layout.xml" />
     <Content Include="bin\Debug\mainform.xml">
       <SubType>Designer</SubType>

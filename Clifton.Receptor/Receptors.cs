@@ -355,7 +355,7 @@ namespace Clifton.Receptor
 					{
 						// The action is "ProcessCarrier".
 						// TODO: *** Pass in the carrier, not the carrier's fields!!! ***
-						Action process = new Action(() => receptor.Instance.ProcessCarrier(carrier.Protocol, carrier.Signal));
+						Action process = new Action(() => receptor.Instance.ProcessCarrier(carrier));
 
 						// TODO: This flag is tied in with the visualizer, we should extricate this flag and logic.
 						if (receptor.Instance.IsHidden)

@@ -32,10 +32,10 @@ namespace HelloWorldReceptor
 		{
 		}
 
-		public void ProcessCarrier(ISemanticTypeStruct protocol, dynamic signal)
+		public void ProcessCarrier(ICarrier carrier)
 		{
-			string fn = signal.Filename;
-			Image img = signal.Image;
+			string fn = carrier.Signal.Filename;
+			Image img = carrier.Signal.Image;
 			
 			// Can't do this because it results in the visualizer throwing an "object is in use elsewhere" exception.
 			//Task.Run(() =>

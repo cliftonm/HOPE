@@ -220,6 +220,36 @@
       </Attributes>
     </SemanticTypeStruct>
 
+    <!--  -->
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="IntervalTimerConfiguration"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="IntervalTimerConfiguration">
+      <Attributes>
+        <NativeType Name="Start" ImplementingType="string"/>
+        <NativeType Name="Interval" ImplementingType="string"/>
+        <NativeType Name="EventName" ImplementingType="string"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <!--  -->
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="TimerEvent"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="TimerEvent">
+      <Attributes>
+        <NativeType Name="EventName" ImplementingType="string"/>
+      </Attributes>
+    </SemanticTypeStruct>
+    
     <!-- ==== -->
     
   </Collection>

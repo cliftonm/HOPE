@@ -48,24 +48,25 @@ namespace WeatherInfoReceptor
 		{
 		}
 
-		public void ProcessCarrier(ISemanticTypeStruct protocol, dynamic signal)
+		public void ProcessCarrier(ICarrier carrier)
 		{
 			FullInfo fullInfo;
 
-			if (!zipcodeInfoMap.TryGetValue(signal.Zipcode, out fullInfo))
+			// Duck-typing!
+			if (!zipcodeInfoMap.TryGetValue(carrier.Signal.Zipcode, out fullInfo))
 			{
 				fullInfo = new FullInfo();
-				zipcodeInfoMap[signal.Zipcode] = fullInfo;
+				zipcodeInfoMap[carrier.Signal.Zipcode] = fullInfo;
 			}
 
-			if (protocol.DeclTypeName == "WeatherInfo")
+			if (carrier.Protocol.DeclTypeName == "WeatherInfo")
 			{
-				fullInfo.WeatherInfo = signal;				
+				fullInfo.WeatherInfo = carrier.Signal;				
 			}
 
-			if (protocol.DeclTypeName == "Location")
+			if (carrier.Protocol.DeclTypeName == "Location")
 			{
-				fullInfo.LocationInfo = signal;
+				fullInfo.LocationInfo = carrier.Signal;
 			}
 
 			if (fullInfo.Completed)

@@ -97,7 +97,7 @@ namespace ZipCodeReceptor
 		{
 		}
 
-		public async void ProcessCarrier(ISemanticTypeStruct protocol, dynamic signal)
+		public async void ProcessCarrier(ICarrier carrier)
 		{
 			Tuple<string, string> location = await Task.Run(() =>
 				{
@@ -106,7 +106,7 @@ namespace ZipCodeReceptor
 
 					try
 					{
-						string zipcode = signal.Value;
+						string zipcode = carrier.Signal.Value;
 						USZip zip = new USZip();
 						XmlNode node = zip.GetInfoByZIP(zipcode);
 						XDocument zxdoc = XDocument.Parse(node.InnerXml);
@@ -122,7 +122,7 @@ namespace ZipCodeReceptor
 					return new Tuple<string, string>(city, stateAbbr);
 				});
 
-			Emit(signal.Value, location.Item1, location.Item2);
+			Emit(carrier.Signal.Value, location.Item1, location.Item2);
 		}
 
 		protected void Emit(string zipCode, string city, string stateAbbr)

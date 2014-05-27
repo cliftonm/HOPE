@@ -49,11 +49,11 @@ namespace WeatherServiceReceptor
 		{
 		}
 
-		public async void ProcessCarrier(ISemanticTypeStruct protocol, dynamic signal)
+		public async void ProcessCarrier(ICarrier carrier)
 		{
 			XDocument xdoc = await Task.Run(() =>
 			{
-				string zipcode = signal.Value;
+				string zipcode = carrier.Signal.Value;
 				ndfdXML weather = new ndfdXML();
 				string latLonXml = weather.LatLonListZipCode(zipcode);
 				XDocument xdoc2 = XDocument.Parse(latLonXml);
@@ -80,7 +80,7 @@ namespace WeatherServiceReceptor
 			ISemanticTypeStruct outProtocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct("WeatherInfo");
 			dynamic outSignal = rsys.SemanticTypeSystem.Create("WeatherInfo");
 
-			outSignal.Zipcode = signal.Value;
+			outSignal.Zipcode = carrier.Signal.Value;
 			outSignal.Low = xdoc.Element("dwml").Element("data").Element("parameters").Elements("temperature").Where(el => el.Attribute("type").Value == "minimum").Single().Element("value").Value.Trim();
 			outSignal.High = xdoc.Element("dwml").Element("data").Element("parameters").Elements("temperature").Where(el => el.Attribute("type").Value == "maximum").Single().Element("value").Value.Trim();
 			outSignal.Summary = xdoc.Element("dwml").Element("data").Element("parameters").Element("weather").Element("weather-conditions").Attribute("weather-summary").Value;

@@ -565,15 +565,15 @@ namespace TypeSystemExplorer.Controllers
 		{
 		}
 
-		public void ProcessCarrier(ISemanticTypeStruct protocol, dynamic signal)
+		public void ProcessCarrier(ICarrier carrier)
 		{
-			switch (protocol.DeclTypeName)
+			switch (carrier.Protocol.DeclTypeName)
 			{
 				case "SystemMessage":
 					{
-						string action = signal.Action;
-						string data = signal.Data;
-						IReceptorInstance receptorInstance = signal.Source;
+						string action = carrier.Signal.Action;
+						string data = carrier.Signal.Data;
+						IReceptorInstance receptorInstance = carrier.Signal.Source;
 
 						if (action == "Flyout")
 						{
@@ -585,18 +585,18 @@ namespace TypeSystemExplorer.Controllers
 
 				case "CarrierAnimation":
 					{
-						Action action = signal.Process;
-						IReceptorInstance from = signal.From;
-						IReceptorInstance to = signal.To;
-						ICarrier carrier = signal.Carrier;
-						VisualizerController.View.AnimateCarrier(action, from, to, carrier);
+						Action action = carrier.Signal.Process;
+						IReceptorInstance from = carrier.Signal.From;
+						IReceptorInstance to = carrier.Signal.To;
+						ICarrier outCarrier = carrier.Signal.Carrier;
+						VisualizerController.View.AnimateCarrier(action, from, to, outCarrier);
 						break;
 					}
 
 				case "SystemShowImage":
 					{
-						IReceptorInstance target = signal.From;
-						Image image = signal.Image;
+						IReceptorInstance target = carrier.Signal.From;
+						Image image = carrier.Signal.Image;
 						VisualizerController.View.AddImage(target, image);
 						break;
 					}

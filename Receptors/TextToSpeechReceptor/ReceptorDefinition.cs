@@ -39,9 +39,9 @@ namespace TextToSpeech
 		{
 		}
 
-		public void ProcessCarrier(ISemanticTypeStruct protocol, dynamic signal)
+		public void ProcessCarrier(ICarrier carrier)
 		{
-			string msg = signal.Text;
+			string msg = carrier.Signal.Text;
 			Speak(msg);
 		}
 

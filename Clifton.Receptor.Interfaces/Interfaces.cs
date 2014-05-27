@@ -17,7 +17,7 @@ namespace Clifton.Receptor.Interfaces
 		bool IsEdgeReceptor { get; }
 		bool IsHidden { get; }
 		string[] GetReceiveProtocols();
-		void ProcessCarrier(ISemanticTypeStruct protocol, dynamic signal);
+		void ProcessCarrier(ICarrier carrier);
 		void Terminate();
 	}
 

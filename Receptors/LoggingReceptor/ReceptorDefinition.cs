@@ -34,11 +34,11 @@ namespace LoggerReceptor
 		{
 		}
 
-		public void ProcessCarrier(ISemanticTypeStruct protocol, dynamic signal)
+		public void ProcessCarrier(ICarrier carrier)
 		{
-			if (protocol.DeclTypeName == "DebugMessage")
+			if (carrier.Protocol.DeclTypeName == "DebugMessage")
 			{
-				string msg = signal.Message;
+				string msg = carrier.Signal.Message;
 				System.Diagnostics.Debug.WriteLine(msg);
 
 				Flyout(msg);

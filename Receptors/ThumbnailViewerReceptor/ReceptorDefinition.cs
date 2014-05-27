@@ -32,9 +32,9 @@ namespace ThumbnailViewerReceptor
 		{
 		}
 
-		public void ProcessCarrier(ISemanticTypeStruct protocol, dynamic signal)
+		public void ProcessCarrier(ICarrier carrier)
 		{
-			Image image = signal.Image;
+			Image image = carrier.Signal.Image;
 			ShowImage(image);
 		}
 

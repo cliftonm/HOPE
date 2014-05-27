@@ -36,7 +36,7 @@ namespace HelloWorldReceptor
 			return new string[] {};
 		}
 
-		public void ProcessCarrier(ISemanticTypeStruct protocol, dynamic signal)
+		public void ProcessCarrier(ICarrier carrier)
 		{
 		}
 

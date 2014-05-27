@@ -49,16 +49,16 @@ namespace CarrierExporterReceptor
 			xw.Close();
 		}
 
-		public void ProcessCarrier(ISemanticTypeStruct protocol, dynamic signal)
+		public void ProcessCarrier(ICarrier carrier)
 		{
-			XmlNode carrier = xdoc.CreateElement("Carrier");
-			carrier.Attributes.Append(CreateAttribute(xdoc, "Protocol", protocol.DeclTypeName));
-			carriersNode.AppendChild(carrier);
+			XmlNode node = xdoc.CreateElement("Carrier");
+			node.Attributes.Append(CreateAttribute(xdoc, "Protocol", carrier.Protocol.DeclTypeName));
+			carriersNode.AppendChild(node);
 
-			Type t = signal.GetType();
+			Type t = carrier.Signal.GetType();
 			t.GetProperties(BindingFlags.Instance | BindingFlags.Public).ForEach(p =>
 				{
-					object val = p.GetValue(signal);
+					object val = p.GetValue(carrier.Signal);
 
 					if (val != null)
 					{
@@ -66,11 +66,11 @@ namespace CarrierExporterReceptor
 						if (val is List<dynamic>)
 						{
 							// Must be a collection of semantic types!
-							CreateSubNodes(xdoc, carrier, p.Name, val);
+							CreateSubNodes(xdoc, node, p.Name, val);
 						}
 						else
 						{
-							carrier.Attributes.Append(CreateAttribute(xdoc, p.Name, val.ToString()));
+							node.Attributes.Append(CreateAttribute(xdoc, p.Name, val.ToString()));
 						}
 					}
 				});
