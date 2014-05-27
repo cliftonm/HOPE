@@ -48,6 +48,7 @@ namespace TypeSystemExplorer.Controllers
 		protected void DragDropEvent(object sender, DragEventArgs args)
 		{
 			bool once = true;
+			bool receptorsRegistered = false;
 			View.DropPoint = new Point(args.X, args.Y);
 			View.StartDrop = true;
 
@@ -66,7 +67,8 @@ namespace TypeSystemExplorer.Controllers
 							once = false;
 						}
 
-						Program.Receptors.InstantiateReceptor(fn);
+						Program.Receptors.RegisterReceptor(fn);
+						receptorsRegistered = true;
 					}
 					else if (fn.ToLower().EndsWith(".jpg"))
 					{
@@ -114,6 +116,11 @@ namespace TypeSystemExplorer.Controllers
 			}
 
 			View.StartDrop = false;
+
+			if (receptorsRegistered)
+			{
+				Program.Receptors.LoadReceptors();
+			} 
 		}
 
 		// TODO: Duplicate code.

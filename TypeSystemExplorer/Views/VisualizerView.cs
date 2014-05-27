@@ -300,7 +300,7 @@ namespace TypeSystemExplorer.Views
 		{
 			// Make sure this isn't a system message, which is a hidden receptor.
 			// TODO: We need to check if any receptors exist and whether any are hidden or not.  If it's hidden, then we don't create a carrier animation instance.
-			if (!ApplicationController.GetReceiveCarriers().Contains(e.Carrier.Protocol.DeclTypeName))
+			if (!ApplicationController.GetReceiveProtocols().Contains(e.Carrier.Protocol.DeclTypeName))
 			{
 				if (e.From == null)
 				{

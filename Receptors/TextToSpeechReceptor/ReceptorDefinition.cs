@@ -30,7 +30,7 @@ namespace TextToSpeech
 			speechQueue = new Queue<string>();
 		}
 
-		public string[] GetReceiveCarriers()
+		public string[] GetReceiveProtocols()
 		{
 			return new string[] { "TextToSpeech" };
 		}

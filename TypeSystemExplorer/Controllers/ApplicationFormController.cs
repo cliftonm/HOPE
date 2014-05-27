@@ -52,7 +52,7 @@ namespace TypeSystemExplorer.Controllers
 
 			// documentControllerMap = new DiagnosticDictionary<IDockContent, NotecardController>("DocumentControllerMap");
 			RegisterUserStateOperations();
-			Program.Receptors.AddReceptor("System", this);
+			Program.Receptors.RegisterReceptor("System", this);
 		}
 
 		protected void FormClosingEvent(object sender, FormClosingEventArgs args)
@@ -130,7 +130,7 @@ namespace TypeSystemExplorer.Controllers
 			OutputController.IfNotNull(c => c.View.Clear());
 			SymbolTableController.IfNotNull(c => c.View.Clear());
 			InternalReset();
-			Program.Receptors.AddReceptor("System", this);
+			Program.Receptors.RegisterReceptor("System", this);
 		}
 
 		protected void InternalReset()
@@ -477,7 +477,7 @@ namespace TypeSystemExplorer.Controllers
 								AssemblyName = receptor.Attribute("AssemblyName").Value
 							};
 
-			names.ForEach(n => Program.Receptors.AddReceptorDefinition(n.Name, n.AssemblyName));
+			names.ForEach(n => Program.Receptors.RegisterReceptor(n.Name, n.AssemblyName));
 			Program.Receptors.LoadReceptors();
 		}
 
@@ -556,7 +556,7 @@ namespace TypeSystemExplorer.Controllers
 		public bool IsEdgeReceptor { get { return false; } }
 		public bool IsHidden { get { return true; } }
 
-		public string[] GetReceiveCarriers()
+		public string[] GetReceiveProtocols()
 		{
 			return new string[] { "SystemMessage", "CarrierAnimation", "SystemShowImage" };
 		}

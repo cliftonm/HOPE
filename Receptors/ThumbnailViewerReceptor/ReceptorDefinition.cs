@@ -23,7 +23,7 @@ namespace ThumbnailViewerReceptor
 			this.rsys = rsys;
 		}
 
-		public string[] GetReceiveCarriers()
+		public string[] GetReceiveProtocols()
 		{
 			return new string[] { "ThumbnailImage" };
 		}

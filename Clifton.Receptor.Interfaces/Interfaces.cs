@@ -16,7 +16,7 @@ namespace Clifton.Receptor.Interfaces
 		string Name { get; }
 		bool IsEdgeReceptor { get; }
 		bool IsHidden { get; }
-		string[] GetReceiveCarriers();
+		string[] GetReceiveProtocols();
 		void ProcessCarrier(ISemanticTypeStruct protocol, dynamic signal);
 		void Terminate();
 	}
@@ -24,7 +24,7 @@ namespace Clifton.Receptor.Interfaces
 	public interface IReceptorSystem
 	{
 		ISemanticTypeSystem SemanticTypeSystem { get; set; }
-		void CreateCarrier(IReceptorInstance from, ISemanticTypeStruct protocol, dynamic signal, bool stopRecursion = false);
+		void CreateCarrier(IReceptorInstance from, ISemanticTypeStruct protocol, dynamic signal);
 	}
 
 	public interface ICarrier

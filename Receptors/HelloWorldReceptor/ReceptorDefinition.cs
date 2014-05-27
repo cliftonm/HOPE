@@ -31,7 +31,7 @@ namespace HelloWorldReceptor
 			timer.Dispose();
 		}
 
-		public string[] GetReceiveCarriers()
+		public string[] GetReceiveProtocols()
 		{
 			return new string[] {};
 		}

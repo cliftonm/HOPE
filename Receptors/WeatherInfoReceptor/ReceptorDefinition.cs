@@ -34,7 +34,7 @@ namespace WeatherInfoReceptor
 			zipcodeInfoMap = new Dictionary<string, FullInfo>();
 		}
 
-		public string[] GetReceiveCarriers()
+		public string[] GetReceiveProtocols()
 		{
 			return new string[] { "WeatherInfo", "Location" };
 		}
