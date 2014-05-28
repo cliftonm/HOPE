@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
+using System.Dynamic;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
@@ -19,6 +22,138 @@ using Clifton.Tools.Data;
 
 namespace TypeSystemExplorer.Views
 {
+	class DictionaryPropertyGridAdapter : ICustomTypeDescriptor
+	{
+		IDictionary _dictionary;
+
+		public DictionaryPropertyGridAdapter(IDictionary d)
+		{
+			_dictionary = d;
+		}
+		public string GetComponentName()
+		{
+			return TypeDescriptor.GetComponentName(this, true);
+		}
+
+		public EventDescriptor GetDefaultEvent()
+		{
+			return TypeDescriptor.GetDefaultEvent(this, true);
+		}
+
+		public string GetClassName()
+		{
+			return TypeDescriptor.GetClassName(this, true);
+		}
+
+		public EventDescriptorCollection GetEvents(Attribute[] attributes)
+		{
+			return TypeDescriptor.GetEvents(this, attributes, true);
+		}
+
+		EventDescriptorCollection System.ComponentModel.ICustomTypeDescriptor.GetEvents()
+		{
+			return TypeDescriptor.GetEvents(this, true);
+		}
+
+		public TypeConverter GetConverter()
+		{
+			return TypeDescriptor.GetConverter(this, true);
+		}
+
+		public object GetPropertyOwner(PropertyDescriptor pd)
+		{
+			return _dictionary;
+		}
+
+		public AttributeCollection GetAttributes()
+		{
+			return TypeDescriptor.GetAttributes(this, true);
+		}
+
+		public object GetEditor(Type editorBaseType)
+		{
+			return TypeDescriptor.GetEditor(this, editorBaseType, true);
+		}
+
+		public PropertyDescriptor GetDefaultProperty()
+		{
+			return null;
+		}
+
+		PropertyDescriptorCollection
+			System.ComponentModel.ICustomTypeDescriptor.GetProperties()
+		{
+			return ((ICustomTypeDescriptor)this).GetProperties(new Attribute[0]);
+		}
+
+		public PropertyDescriptorCollection GetProperties(Attribute[] attributes)
+		{
+			ArrayList properties = new ArrayList();
+			foreach (DictionaryEntry e in _dictionary)
+			{
+				properties.Add(new DictionaryPropertyDescriptor(_dictionary, e.Key));
+			}
+
+			PropertyDescriptor[] props =
+				(PropertyDescriptor[])properties.ToArray(typeof(PropertyDescriptor));
+
+			return new PropertyDescriptorCollection(props);
+		}
+	}
+
+	class DictionaryPropertyDescriptor : PropertyDescriptor
+	{
+		IDictionary _dictionary;
+		object _key;
+
+		internal DictionaryPropertyDescriptor(IDictionary d, object key)
+			: base(key.ToString(), null)
+		{
+			_dictionary = d;
+			_key = key;
+		}
+
+		public override Type PropertyType
+		{
+			get { return _dictionary[_key].GetType(); }
+		}
+
+		public override void SetValue(object component, object value)
+		{
+			_dictionary[_key] = value;
+		}
+
+		public override object GetValue(object component)
+		{
+			return _dictionary[_key];
+		}
+
+		public override bool IsReadOnly
+		{
+			get { return false; }
+		}
+
+		public override Type ComponentType
+		{
+			get { return null; }
+		}
+
+		public override bool CanResetValue(object component)
+		{
+			return false;
+		}
+
+		public override void ResetValue(object component)
+		{
+		}
+
+		public override bool ShouldSerializeValue(object component)
+		{
+			return false;
+		}
+	}
+
+
 	public class FlyoutItem
 	{
 		public string Text { get; set; }
@@ -30,6 +165,7 @@ namespace TypeSystemExplorer.Views
 	{
 		public Action OnArrivalDo { get; set; }
 		public Point StartPosition { get; set; }
+		public Rectangle CurrentRegion { get; set; }
 		public IReceptorInstance Target { get; set; }
 		public ICarrier Carrier { get; set; }
 		public int CurveIndex { get; set; }
@@ -82,6 +218,8 @@ namespace TypeSystemExplorer.Views
 		protected bool moving;
 		protected IReceptor selectedReceptor;
 		protected Point mouseStart;
+		protected Point mousePosition;
+		protected DateTime mouseHoverStartTime;
 
 		protected int orbitCount = 0;
 
@@ -212,6 +350,8 @@ namespace TypeSystemExplorer.Views
 			{
 				Visualizer.Refresh();
 			}
+
+			CheckMouseHover();
 		}
 
 		protected bool Step()
@@ -358,6 +498,8 @@ namespace TypeSystemExplorer.Views
 
 		protected void MouseMoveEvent(object sender, MouseEventArgs args)
 		{
+			mousePosition = args.Location;
+
 			if (moving)
 			{
 				base.OnMouseMove(args);
@@ -366,6 +508,45 @@ namespace TypeSystemExplorer.Views
 				receptorLocation[selectedReceptor] = Point.Add(curPos, new Size(offset));
 				mouseStart = args.Location;
 				Invalidate(true);
+			}
+
+			mouseHoverStartTime = DateTime.Now;
+		}
+
+		/// <summary>
+		/// The .NET MouseHoverEvent is f*cked.  It will not re-trigger until the mouse moves outside of the control.
+		/// Even that seems problematic.  So we have a manual implementation.
+		/// </summary>
+		protected void CheckMouseHover()
+		{
+			if ((DateTime.Now - mouseHoverStartTime).TotalMilliseconds > 500)
+			{
+				CarrierAnimationItem item = carrierAnimations.FirstOrDefault(a => a.CurrentRegion.Contains(mousePosition));
+
+				// Mouse is hovering over a carrier.
+				if (item != null)
+				{
+					// Use the properties window to reveal the carrier contents.
+					// The property grid is sort of stupid, so we'll put together an anonymous object for displaying the carrier protocol and signal.
+
+					// new { Protocol = item.Carrier.Protocol.DeclTypeName, from t in Program.SemanticTypeSystem.GetSemanticTypeStruct(item.Carrier.Protocol.DeclTypeName).NativeTypes select new {Name = t.Name, Value = t.GetValue(item.Carrier.Signal)}};
+					// var obj = (from t in Program.SemanticTypeSystem.GetSemanticTypeStruct(item.Carrier.Protocol.DeclTypeName).NativeTypes select new { Name = t.Name, Value = t.GetValue(item.Carrier.Signal) }).First();
+					// var obj = new { Protocol = item.Carrier.Protocol.DeclTypeName, Signal = item.Carrier.Signal };
+					// var obj = new CarrierProperty(item.Carrier.Protocol.DeclTypeName, item.Carrier.Signal);
+
+					// There probably is a better way to do this:
+					IDictionary dict = new Hashtable();
+					dict.Add("Protocol", item.Carrier.Protocol.DeclTypeName);
+					var kvpList = (from t in Program.SemanticTypeSystem.GetSemanticTypeStruct(item.Carrier.Protocol.DeclTypeName).NativeTypes select new { Name = t.Name, Value = t.GetValue(item.Carrier.Signal) }); // .ForEach((item) =
+					kvpList.ForEach((kvp) =>
+						{
+							dict.Add(kvp.Name, kvp.Value);
+						});
+					ApplicationController.PropertyGridController.ShowObject(new DictionaryPropertyGridAdapter(dict));
+				}
+
+				// Reset so that this test is not made again until the mouse is moved.
+				mouseHoverStartTime = DateTime.MaxValue;
 			}
 		}
 
@@ -424,6 +605,8 @@ namespace TypeSystemExplorer.Views
 						int idx = (int)(dx * q / 2.0);
 						int idy = (int)(dy * q / 2.0);
 
+						a.CurrentRegion = new Rectangle(a.StartPosition.X + idx - 5, a.StartPosition.Y + idy - 5, 10, 10);
+
 						Point[] triangle = new Point[] 
 					{ 
 						new Point(a.StartPosition.X + idx, a.StartPosition.Y + idy), 
@@ -445,6 +628,8 @@ namespace TypeSystemExplorer.Views
 						double q = Math.Sin((Math.PI / 2) * ((double)a.CurveIndex - CarrierTime / 2) / (CarrierTime / 2)) + 1;		// - PI/2 .. PI/2
 						int idx = (int)(dx * q / 2.0);
 						int idy = (int)(dy * q / 2.0);
+
+						a.CurrentRegion = new Rectangle(a.StartPosition.X + idx - 5, a.StartPosition.Y + idy - 5, 10, 10);
 
 						Point[] triangle = new Point[] 
 					{ 

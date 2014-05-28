@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Linq;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
 using Clifton.ExtensionMethods;
 using Clifton.Receptor.Interfaces;
 using Clifton.SemanticTypeSystem.Interfaces;
+using Clifton.Tools.Data;
 
 namespace PersistenceReceptor
 {
@@ -93,7 +95,9 @@ namespace PersistenceReceptor
 				// There is no need to put this into the semantic type definition unless it's required for queries.
 				sb.Append("ID INTEGER PRIMARY KEY AUTOINCREMENT");
 				List<INativeType> types = rsys.SemanticTypeSystem.GetSemanticTypeStruct(signal.SemanticTypeName).NativeTypes;
-				types.ForEach(t =>
+				
+				// Ignore ID field in the schema, as we specifically create it above.
+				types.Where(t=>t.Name.ToLower() != "id").ForEach(t =>
 					{
 						sb.Append(", ");
 						sb.Append(t.Name);
@@ -157,10 +161,10 @@ namespace PersistenceReceptor
 
 		protected void Select(dynamic signal)
 		{
-			Dictionary<string, object> cvMap = GetColumnValueMap(signal.Row);
 			StringBuilder sb = new StringBuilder("select ");
-			sb.Append(String.Join(",", (from c in cvMap where c.Value != null select c.Key + "= @" + c.Key).ToArray()));
-			sb.Append("from " + signal.TableName);
+			List<INativeType> types = rsys.SemanticTypeSystem.GetSemanticTypeStruct(signal.ResponseProtocol).NativeTypes;
+			sb.Append(String.Join(",", (from c in types select c.Name).ToArray()));
+			sb.Append(" from " + signal.TableName);
 			if (signal.Where != null) sb.Append(" where " + signal.Where);
 			// support for group by is sort of pointless since we're not supporting any mechanism for aggregate functions.
 			if (signal.GroupBy != null) sb.Append(" group by " + signal.GroupBy);
@@ -172,10 +176,25 @@ namespace PersistenceReceptor
 
 			while (reader.Read())
 			{
+				ISemanticTypeStruct protocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct(signal.ResponseProtocol);
+				dynamic outSignal = rsys.SemanticTypeSystem.Create(signal.ResponseProtocol);
+				Type type = outSignal.GetType();
+
+				// Populate the output signal with the fields retrieved from the query, as specified by the requested response protocol
+				types.ForEach(t =>
+					{
+						object val = reader[t.Name];
+
+						// TODO: Duplicate code in VisualizerController.cs
+						PropertyInfo pi = type.GetProperty(t.Name);
+						val = Converter.Convert(val, pi.PropertyType);
+						pi.SetValue(outSignal, val);
+					});
+
+				rsys.CreateCarrier(this, protocol, outSignal);
 			}
 
 			cmd.Dispose();
-
 		}
 
 		protected Dictionary<string, object> GetColumnValueMap(ICarrier carrier)

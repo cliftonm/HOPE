@@ -27,6 +27,7 @@ namespace Clifton.SemanticTypeSystem
 			sb.AppendLine("using System;");
 			sb.AppendLine("using System.Drawing;");
 			sb.AppendLine("using System.Collections.Generic;");
+			sb.AppendLine("using System.ComponentModel;");
 			sb.AppendLine("using Clifton.SemanticTypeSystem.Interfaces;");
 			sb.AppendLine("using Clifton.Receptor.Interfaces;");
 			sb.AppendLine();
@@ -38,6 +39,7 @@ namespace Clifton.SemanticTypeSystem
 				// Classes
 				SemanticTypeStruct ststruct = st.Decl.OfType;
 				sb.AppendLine("\t//Implements ISemanticType as the object type and requires Initialize().");
+				sb.AppendLine("[TypeConverter(typeof(ExpandableObjectConverter))]");
 				sb.AppendLine("\tpublic class " + ststruct.DeclTypeName + " : ISemanticType");
 				sb.AppendLine("\t{");
 				List<string> initializers = new List<string>();

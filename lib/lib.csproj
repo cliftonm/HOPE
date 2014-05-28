@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assert.cs" />
+    <Compile Include="Converter.cs" />
     <Compile Include="DiagnosticDictionary.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="IMycroParserInstantiatedObject.cs" />
