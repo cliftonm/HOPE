@@ -21,7 +21,7 @@ namespace Clifton.SemanticTypeSystem
 		/// <summary>
 		/// Any defined native types.
 		/// </summary>
-		public List<NativeType> NativeTypes { get; set; }
+		public List<INativeType> NativeTypes { get; set; }
 		/// <summary>
 		/// Any defined semantic elements.  This list is an intermediate list built during deserialization.
 		/// Suggestion: Since the semantic element resolves to a semantic type, we could build the SemanticType list here as well.
@@ -34,7 +34,7 @@ namespace Clifton.SemanticTypeSystem
 
 		public SemanticTypeStruct()
 		{
-			NativeTypes = new List<NativeType>();
+			NativeTypes = new List<INativeType>();
 			SemanticElements = new List<SemanticElement>();
 		}
 	}

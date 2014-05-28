@@ -230,8 +230,8 @@
 
     <SemanticTypeStruct DeclType="IntervalTimerConfiguration">
       <Attributes>
-        <NativeType Name="Start" ImplementingType="string"/>
-        <NativeType Name="Interval" ImplementingType="string"/>
+        <NativeType Name="StartDateTime" ImplementingType="DateTime"/>
+        <NativeType Name="Interval" ImplementingType="decimal"/>
         <NativeType Name="EventName" ImplementingType="string"/>
       </Attributes>
     </SemanticTypeStruct>
@@ -249,7 +249,57 @@
         <NativeType Name="EventName" ImplementingType="string"/>
       </Attributes>
     </SemanticTypeStruct>
-    
+
+    <!--  -->
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="DatabaseRecord"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="DatabaseRecord">
+      <Attributes>
+        <NativeType Name="ResponseProtocol" ImplementingType="string"/>
+        <NativeType Name="TableName" ImplementingType="string"/>
+        <NativeType Name="Action" ImplementingType="string"/>                <!-- insert, update, delete, select -->
+        <NativeType Name="Row" ImplementingType="ICarrier"/>                 <!-- the carrier with the actual row data -->
+        <NativeType Name="Where" ImplementingType="string"/>
+        <NativeType Name="OrderBy" ImplementingType="string"/>
+        <NativeType Name="GroupBy" ImplementingType="string"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <!--  -->
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="RequireTable"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="RequireTable">
+      <Attributes>
+        <NativeType Name="TableName" ImplementingType="string"/>
+        <NativeType Name="SemanticTypeName" ImplementingType="string"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <!-- Table schemas -->
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="LastEventDateTime"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="LastEventDateTime">
+      <Attributes>
+        <NativeType Name="EventName" ImplementingType="string"/>
+        <NativeType Name="EventDateTime" ImplementingType="DateTime"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
     <!-- ==== -->
     
   </Collection>

@@ -106,7 +106,25 @@ namespace TypeSystemExplorer.Controllers
 							{
 								Type t = signal.GetType();
 								PropertyInfo pi = t.GetProperty(attr.Name.ToString());
-								pi.SetValue(signal, attr.Value);
+								object val = attr.Value;
+
+								TypeConverter tcFrom = TypeDescriptor.GetConverter(pi.PropertyType);
+								//TypeConverter tcTo = TypeDescriptor.GetConverter(typeof(string));
+
+								//if (tcTo.CanConvertTo(t))
+								//{
+								//	tcTo.ConvertTo(val, pi.PropertyType);
+								//}
+								
+								if (tcFrom.CanConvertFrom(typeof(string)))
+								{
+									val = tcFrom.ConvertFromInvariantString(attr.Value);
+									pi.SetValue(signal, val);
+								}
+								else
+								{
+									throw new ApplicationException("Cannot convert string to type " + t.Name);
+								}
 							});
 
 							Program.Receptors.CreateCarrier(null, protocol, signal);
@@ -115,12 +133,12 @@ namespace TypeSystemExplorer.Controllers
 				}
 			}
 
-			View.StartDrop = false;
-
 			if (receptorsRegistered)
 			{
 				Program.Receptors.LoadReceptors();
-			} 
+			}
+
+			View.StartDrop = false;
 		}
 
 		// TODO: Duplicate code.

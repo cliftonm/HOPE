@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using Clifton.Assertions;
 using Clifton.ExtensionMethods;
 
+using Clifton.SemanticTypeSystem.Interfaces;
+
 namespace Clifton.SemanticTypeSystem
 {
 	public static class CodeGenerator
@@ -142,7 +144,7 @@ namespace Clifton.SemanticTypeSystem
 		/// Initializes the native types of a semantic type to the attribute values specified in the markup.
 		/// TODO: This needs to be recursive and also to parse dotted notation when drilling into multiple levels of types.
 		/// </summary>
-		public static void InitializeNativeTypes(SemanticType st, List<NativeType> nativeTypes, StringBuilder sb, string prefix="")
+		public static void InitializeNativeTypes(SemanticType st, List<INativeType> nativeTypes, StringBuilder sb, string prefix="")
 		{
 			foreach (NativeType ntype in nativeTypes)
 			{

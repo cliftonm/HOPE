@@ -2,13 +2,15 @@
 using System.Collections.Generic;
 using System.Reflection;
 
+using Clifton.SemanticTypeSystem.Interfaces;
+
 namespace Clifton.SemanticTypeSystem
 {
 	/// <summary>
 	/// A native type is used to hold a value in the underlying language's intrinsic type system.
 	/// For example: "string foobar;"
 	/// </summary>
-	public class NativeType
+	public class NativeType : INativeType
 	{
 		/// <summary>
 		/// Resolves to the name of the field/property.

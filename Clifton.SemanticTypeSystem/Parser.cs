@@ -7,6 +7,8 @@ using System.Xml.Linq;
 using Clifton.Assertions;
 using Clifton.ExtensionMethods;
 
+using Clifton.SemanticTypeSystem.Interfaces;
+
 namespace Clifton.SemanticTypeSystem
 {
 	public static class Parser
@@ -25,7 +27,7 @@ namespace Clifton.SemanticTypeSystem
 																							{
 																								Name = nativeType.Attribute("Name").Value,
 																								ImplementingType = nativeType.Attribute("ImplementingType").Value,
-																							}).ToList(),
+																							}).ToList<INativeType>(),
 							   SemanticElements = st.Elements("Attributes").IfNotNullReturn(t => from semanticType in t.Elements("SemanticElement")
 																								 select new SemanticElement()
 																								 {
@@ -106,7 +108,7 @@ namespace Clifton.SemanticTypeSystem
 		/// </summary>
 		public static void Match(SemanticTypeStruct ststruct, List<AttributeValue> attrValues)
 		{
-			List<NativeType> nativeTypes = ststruct.NativeTypes;
+			List<INativeType> nativeTypes = ststruct.NativeTypes;
 			nativeTypes.ForEach(nt => Assert.That(attrValues.Any(attr => attr.Name == nt.Name), "Attribute mismatch between decl and struct for struct DeclType" + ststruct.DeclTypeName));
 		}
 	}

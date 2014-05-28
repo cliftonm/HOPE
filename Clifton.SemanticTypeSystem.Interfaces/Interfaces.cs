@@ -17,6 +17,14 @@ namespace Clifton.SemanticTypeSystem.Interfaces
 	public interface ISemanticTypeStruct
 	{
 		string DeclTypeName { get; }
+		List<INativeType> NativeTypes { get; }
+	}
+
+	public interface INativeType
+	{
+		string Name { get; }
+		string ImplementingType { get; }
+		object GetValue(object instance);
 	}
 
 	/// <summary>
