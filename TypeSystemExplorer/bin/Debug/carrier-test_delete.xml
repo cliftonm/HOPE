@@ -1,0 +1,5 @@
+﻿<Carriers>
+  <Carrier Protocol="DatabaseRecord" TableName="LastEventDateTime" Action="Delete" Where="ID=1"/>
+</Carriers>
+
+

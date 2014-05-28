@@ -1,0 +1,3 @@
+﻿<Carriers>
+  <Carrier Protocol="TimerEvent" EventName="Daily Event"/>
+</Carriers>

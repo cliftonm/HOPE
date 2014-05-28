@@ -1,0 +1,5 @@
+﻿<Carriers>
+  <Carrier Protocol="LastEventDateTime" EventName="I've been updated!"/>
+  <Carrier Protocol="DatabaseRecord" TableName="LastEventDateTime" Action="Update" Row="{LastEventDateTime}" Where="ID=0"/>
+</Carriers>
+

@@ -1,0 +1,7 @@
+﻿<Carriers>
+  <Carrier Protocol="LastEventDateTime" EventName="Marc Birthday" EventDateTime="8/19/1962 12:15 PM"/>
+  <Carrier Protocol="DatabaseRecord" TableName="LastEventDateTime" Action="Insert" Row="{LastEventDateTime}"/>
+  <Carrier Protocol="LastEventDateTime" EventName="Ian Birthday" EventDateTime="3/21/1991 7:47 PM"/>
+  <Carrier Protocol="DatabaseRecord" TableName="LastEventDateTime" Action="Insert" Row="{LastEventDateTime}"/>
+</Carriers>
+

@@ -1,0 +1,5 @@
+﻿<Carriers>
+  <Carrier Protocol="DatabaseRecord" TableName="LastEventDateTime" ResponseProtocol="LastEventDateTime" Action="select"/>
+</Carriers>
+
+
