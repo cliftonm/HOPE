@@ -18,6 +18,12 @@ namespace Clifton.Receptor.Interfaces
 		bool IsHidden { get; }
 		string[] GetReceiveProtocols();
 		void ProcessCarrier(ICarrier carrier);
+
+		/// <summary>
+		/// Called when the receptor initialization has completed.
+		/// </summary>
+		void Initialize();
+
 		void Terminate();
 	}
 
@@ -25,6 +31,7 @@ namespace Clifton.Receptor.Interfaces
 	{
 		ISemanticTypeSystem SemanticTypeSystem { get; set; }
 		ICarrier CreateCarrier(IReceptorInstance from, ISemanticTypeStruct protocol, dynamic signal);
+		ICarrier CreateInternalCarrier(ISemanticTypeStruct protocol, dynamic signal);
 	}
 
 	public interface ICarrier

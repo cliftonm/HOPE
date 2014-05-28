@@ -29,6 +29,10 @@ namespace ThumbnailCreatorReceptor
 			return new string[] { "ImageFilename" };
 		}
 
+		public void Initialize()
+		{
+		}
+
 		public void Terminate()
 		{
 		}

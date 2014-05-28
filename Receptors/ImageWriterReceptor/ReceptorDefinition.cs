@@ -28,6 +28,10 @@ namespace HelloWorldReceptor
 			return new string[] { "ThumbnailImage" };
 		}
 
+		public void Initialize()
+		{
+		}
+
 		public void Terminate()
 		{
 		}

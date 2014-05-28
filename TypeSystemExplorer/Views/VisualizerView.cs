@@ -22,6 +22,7 @@ using Clifton.Tools.Data;
 
 namespace TypeSystemExplorer.Views
 {
+	// From http://www.differentpla.net/content/2005/02/using-propertygrid-with-dictionary
 	class DictionaryPropertyGridAdapter : ICustomTypeDescriptor
 	{
 		IDictionary _dictionary;
@@ -130,7 +131,7 @@ namespace TypeSystemExplorer.Views
 
 		public override bool IsReadOnly
 		{
-			get { return false; }
+			get { return true; }
 		}
 
 		public override Type ComponentType

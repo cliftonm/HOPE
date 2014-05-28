@@ -30,6 +30,10 @@ namespace LoggerReceptor
 			return new string[] { "DebugMessage" };
 		}
 
+		public void Initialize()
+		{
+		}
+
 		public void Terminate()
 		{
 		}

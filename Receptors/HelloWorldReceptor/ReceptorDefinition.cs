@@ -25,6 +25,10 @@ namespace HelloWorldReceptor
 			InitializeRepeatedHelloEvent();
 		}
 
+		public void Initialize()
+		{
+		}
+
 		public void Terminate()
 		{
 			timer.Stop();
@@ -43,7 +47,7 @@ namespace HelloWorldReceptor
 		protected void InitializeRepeatedHelloEvent()
 		{
 			timer = new Timer();
-			timer.Interval = 1000 * 2;		// every 10 seconds.
+			timer.Interval = 1000 * 2;		// every 2 seconds.
 			timer.Tick += SayHello;
 			timer.Start();
 		}

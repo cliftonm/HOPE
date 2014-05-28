@@ -28,6 +28,10 @@ namespace ThumbnailViewerReceptor
 			return new string[] { "ThumbnailImage" };
 		}
 
+		public void Initialize()
+		{
+		}
+
 		public void Terminate()
 		{
 		}

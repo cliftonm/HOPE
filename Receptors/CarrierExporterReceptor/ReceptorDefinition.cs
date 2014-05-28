@@ -39,6 +39,10 @@ namespace CarrierExporterReceptor
 			return new string[] { "*" };
 		}
 
+		public void Initialize()
+		{
+		}
+
 		public void Terminate()
 		{
 			XmlWriterSettings xws = new XmlWriterSettings();

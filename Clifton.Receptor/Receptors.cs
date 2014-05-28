@@ -170,6 +170,9 @@ namespace Clifton.Receptor
 					// Let interested parties know that we have a new receptor and handle how we want to announce the fact.
 					// TODO: Refactor the announcement out of this code.
 					NewReceptor.Fire(this, new NewReceptorEventArgs(r));
+
+					// Let the receptor instance perform additional initialization, such as creating carriers.
+					r.Instance.Initialize();
 					++processedCount;
 					receptorName = r.Name;
 				}
@@ -202,6 +205,14 @@ namespace Clifton.Receptor
 			// flag, so this method is a public front, as receptors should never set the "stop recursion" flag
 			// to true when creating carriers.
 			return CreateCarrier(from, protocol, signal, false);
+		}
+
+		/// <summary>
+		/// Create a carrier for internal purposes only, perhaps to pass as a sub-protocol in a parent carrier.
+		/// </summary>
+		public ICarrier CreateInternalCarrier(ISemanticTypeStruct protocol, dynamic signal)
+		{
+			return new Carrier(protocol, signal);
 		}
 
 		/// <summary>

@@ -561,6 +561,10 @@ namespace TypeSystemExplorer.Controllers
 			return new string[] { "SystemMessage", "CarrierAnimation", "SystemShowImage" };
 		}
 
+		public void Initialize()
+		{
+		}
+
 		public void Terminate()
 		{
 		}

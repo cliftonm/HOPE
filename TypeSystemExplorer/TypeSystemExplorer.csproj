@@ -170,10 +170,14 @@
     <Content Include="bin\Debug\appState.xml" />
     <Content Include="bin\Debug\carrier-config_timer.xml" />
     <Content Include="bin\Debug\carrier-daily_event.xml" />
-    <Content Include="bin\Debug\carrier-test_delete.xml" />
+    <Content Include="bin\Debug\carrier-test_delete.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="bin\Debug\carrier-test_insert.xml" />
     <Content Include="bin\Debug\carrier-test_select.xml" />
     <Content Include="bin\Debug\carrier-test_table_create.xml" />
     <Content Include="bin\Debug\carrier-test_update.xml" />
+    <Content Include="bin\Debug\event_seed.xml" />
     <Content Include="bin\Debug\layout.xml" />
     <Content Include="bin\Debug\mainform.xml">
       <SubType>Designer</SubType>

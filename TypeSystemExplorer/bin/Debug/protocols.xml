@@ -231,8 +231,9 @@
     <SemanticTypeStruct DeclType="IntervalTimerConfiguration">
       <Attributes>
         <NativeType Name="StartDateTime" ImplementingType="DateTime"/>
-        <NativeType Name="Interval" ImplementingType="decimal"/>
+        <NativeType Name="Interval" ImplementingType="int"/>
         <NativeType Name="EventName" ImplementingType="string"/>
+        <NativeType Name="IgnoreMissedIntervals" ImplementingType="bool"/>
       </Attributes>
     </SemanticTypeStruct>
 
@@ -247,6 +248,7 @@
     <SemanticTypeStruct DeclType="TimerEvent">
       <Attributes>
         <NativeType Name="EventName" ImplementingType="string"/>
+        <NativeType Name="EventDateTime" ImplementingType="DateTime"/>
       </Attributes>
     </SemanticTypeStruct>
 
@@ -281,7 +283,21 @@
     <SemanticTypeStruct DeclType="RequireTable">
       <Attributes>
         <NativeType Name="TableName" ImplementingType="string"/>
-        <NativeType Name="SemanticTypeName" ImplementingType="string"/>
+        <NativeType Name="Schema" ImplementingType="string"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <!-- Schema Collection Helpers -->
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="LastEventDateTimeRecordset"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="LastEventDateTimeRecordset">
+      <Attributes>
+        <NativeType Name="Recordset" ImplementingType="List&lt;dynamic&gt;"/>
       </Attributes>
     </SemanticTypeStruct>
 

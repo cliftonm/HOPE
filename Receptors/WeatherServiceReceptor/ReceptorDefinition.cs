@@ -45,6 +45,10 @@ namespace WeatherServiceReceptor
 			return new string[] { "Zipcode" };
 		}
 
+		public void Initialize()
+		{
+		}
+
 		public void Terminate()
 		{
 		}

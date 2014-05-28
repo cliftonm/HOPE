@@ -20,6 +20,11 @@ namespace Clifton.Tools.Strings.Extensions
 			return src.Replace("\"", "'");
 		}
 
+		public static string SingleQuote(this String src)
+		{
+			return "'" + src + "'";
+		}
+
 		public static string Quote(this String src)
 		{
 			return "\"" + src + "\"";

@@ -44,6 +44,10 @@ namespace WeatherInfoReceptor
 				return w.Zipcode == l.Zipcode;
 			});
 
+		public void Initialize()
+		{
+		}
+
 		public void Terminate()
 		{
 		}

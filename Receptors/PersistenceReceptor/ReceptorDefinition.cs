@@ -11,6 +11,7 @@ using Clifton.ExtensionMethods;
 using Clifton.Receptor.Interfaces;
 using Clifton.SemanticTypeSystem.Interfaces;
 using Clifton.Tools.Data;
+using Clifton.Tools.Strings.Extensions;
 
 namespace PersistenceReceptor
 {
@@ -47,6 +48,10 @@ namespace PersistenceReceptor
 		public string[] GetReceiveProtocols()
 		{
 			return protocolActionMap.Keys.ToArray();
+		}
+
+		public void Initialize()
+		{
 		}
 
 		public void Terminate()
@@ -94,7 +99,7 @@ namespace PersistenceReceptor
 				// Always create a primary key as the field ID. 
 				// There is no need to put this into the semantic type definition unless it's required for queries.
 				sb.Append("ID INTEGER PRIMARY KEY AUTOINCREMENT");
-				List<INativeType> types = rsys.SemanticTypeSystem.GetSemanticTypeStruct(signal.SemanticTypeName).NativeTypes;
+				List<INativeType> types = rsys.SemanticTypeSystem.GetSemanticTypeStruct(signal.Schema).NativeTypes;
 				
 				// Ignore ID field in the schema, as we specifically create it above.
 				types.Where(t=>t.Name.ToLower() != "id").ForEach(t =>
@@ -174,6 +179,11 @@ namespace PersistenceReceptor
 			cmd.CommandText = sb.ToString();
             SQLiteDataReader reader = cmd.ExecuteReader();
 
+			// Create an instance of the recordset type.
+			ISemanticTypeStruct collectionProtocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct(signal.ResponseProtocol + "Recordset");
+			dynamic collection = rsys.SemanticTypeSystem.Create(signal.ResponseProtocol + "Recordset");
+			collection.Recordset = new List<dynamic>();
+
 			while (reader.Read())
 			{
 				ISemanticTypeStruct protocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct(signal.ResponseProtocol);
@@ -191,10 +201,16 @@ namespace PersistenceReceptor
 						pi.SetValue(outSignal, val);
 					});
 
-				rsys.CreateCarrier(this, protocol, outSignal);
+				// Add the record to the recordset.
+				collection.Recordset.Add(outSignal);
+
+				// rsys.CreateCarrier(this, protocol, outSignal);
 			}
 
 			cmd.Dispose();
+
+			// Create the carrier for the recordset.
+			rsys.CreateCarrier(this, collectionProtocol, collection);
 		}
 
 		protected Dictionary<string, object> GetColumnValueMap(ICarrier carrier)
@@ -208,7 +224,7 @@ namespace PersistenceReceptor
 
 		protected bool TableExists(string tableName)
 		{
-			string sql = "SELECT name FROM sqlite_master WHERE type='table' AND name='table_name';";
+			string sql = "SELECT name FROM sqlite_master WHERE type='table' AND name=" + tableName.SingleQuote() + ";";
 			string name = QueryScalar<string>(sql);
 
 			return tableName == name;

@@ -93,6 +93,10 @@ namespace ZipCodeReceptor
 			return new string[] { "Zipcode" };
 		}
 
+		public void Initialize()
+		{
+		}
+
 		public void Terminate()
 		{
 		}

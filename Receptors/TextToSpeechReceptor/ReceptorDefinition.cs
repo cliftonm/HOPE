@@ -35,6 +35,10 @@ namespace TextToSpeech
 			return new string[] { "TextToSpeech" };
 		}
 
+		public void Initialize()
+		{
+		}
+
 		public void Terminate()
 		{
 		}
