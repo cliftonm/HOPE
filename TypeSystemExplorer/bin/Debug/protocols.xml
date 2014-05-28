@@ -296,7 +296,7 @@
     <SemanticTypeStruct DeclType="LastEventDateTime">
       <Attributes>
         <NativeType Name="EventName" ImplementingType="string"/>
-        <NativeType Name="EventDateTime" ImplementingType="DateTime"/>
+        <NativeType Name="EventDateTime" ImplementingType="DateTime?"/>
       </Attributes>
     </SemanticTypeStruct>
 

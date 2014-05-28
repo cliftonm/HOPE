@@ -6,6 +6,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
+using Clifton.ExtensionMethods;
 using Clifton.Receptor.Interfaces;
 using Clifton.SemanticTypeSystem.Interfaces;
 
@@ -20,14 +21,23 @@ namespace PersistenceReceptor
 		protected IReceptorSystem rsys;
 		protected SQLiteConnection conn;
 		protected Dictionary<string, Action<dynamic>> protocolActionMap;
+		protected Dictionary<string, Action<dynamic>> crudMap;
 		const string DatabaseFileName = "hope.db";
 
 		public ReceptorDefinition(IReceptorSystem rsys)
 		{
 			this.rsys = rsys;
+			
 			protocolActionMap = new Dictionary<string, Action<dynamic>>();
 			protocolActionMap["RequireTable"] = new Action<dynamic>((s) => RequireTable(s));
 			protocolActionMap["DatabaseRecord"] = new Action<dynamic>((s) => DatabaseRecord(s));
+
+			crudMap = new Dictionary<string, Action<dynamic>>();
+			crudMap["insert"] = new Action<dynamic>((s) => Insert(s));
+			crudMap["update"] = new Action<dynamic>((s) => Update(s));
+			crudMap["delete"] = new Action<dynamic>((s) => Delete(s));
+			crudMap["select"] = new Action<dynamic>((s) => Select(s));
+
 			CreateDBIfMissing();
 			OpenDB();
 		}
@@ -101,6 +111,80 @@ namespace PersistenceReceptor
 
 		protected void DatabaseRecord(dynamic signal)
 		{
+			crudMap[signal.Action.ToLower()](signal);
+		}
+
+		protected void Insert(dynamic signal)
+		{
+			Dictionary<string, object> cvMap = GetColumnValueMap(signal.Row);
+			StringBuilder sb = new StringBuilder("insert into " + signal.TableName + "(");
+			sb.Append(String.Join(", ", (from c in cvMap where c.Value != null select c.Key).ToArray()));
+			sb.Append(") values (");
+			sb.Append(String.Join(",", (from c in cvMap where c.Value != null select "@" + c.Key).ToArray()));
+			sb.Append(");");
+
+			SQLiteCommand cmd = conn.CreateCommand();
+			(from c in cvMap where c.Value != null select c).ForEach(kvp => cmd.Parameters.Add(new SQLiteParameter("@" + kvp.Key, kvp.Value)));
+			cmd.CommandText = sb.ToString();
+			cmd.ExecuteNonQuery();
+			cmd.Dispose();
+		}
+
+		protected void Update(dynamic signal)
+		{
+			Dictionary<string, object> cvMap = GetColumnValueMap(signal.Row);
+			StringBuilder sb = new StringBuilder("update " + signal.TableName + " set ");
+			sb.Append(String.Join(",", (from c in cvMap where c.Value != null select c.Key + "= @" + c.Key).ToArray()));
+			sb.Append(" where " + signal.Where);		// where is required.
+
+			SQLiteCommand cmd = conn.CreateCommand();
+			(from c in cvMap where c.Value != null select c).ForEach(kvp => cmd.Parameters.Add(new SQLiteParameter("@" + kvp.Key, kvp.Value)));
+			cmd.CommandText = sb.ToString();
+			cmd.ExecuteNonQuery();
+			cmd.Dispose();
+		}
+
+		protected void Delete(dynamic signal)
+		{
+			// Where clause is optional.
+			string sql = "delete from " + signal.TableName;
+			if (signal.Where != null) sql = sql + " where " + signal.Where;
+			SQLiteCommand cmd = conn.CreateCommand();
+			cmd.CommandText = sql;
+			cmd.ExecuteNonQuery();
+			cmd.Dispose();
+		}
+
+		protected void Select(dynamic signal)
+		{
+			Dictionary<string, object> cvMap = GetColumnValueMap(signal.Row);
+			StringBuilder sb = new StringBuilder("select ");
+			sb.Append(String.Join(",", (from c in cvMap where c.Value != null select c.Key + "= @" + c.Key).ToArray()));
+			sb.Append("from " + signal.TableName);
+			if (signal.Where != null) sb.Append(" where " + signal.Where);
+			// support for group by is sort of pointless since we're not supporting any mechanism for aggregate functions.
+			if (signal.GroupBy != null) sb.Append(" group by " + signal.GroupBy);
+			if (signal.OrderBy != null) sb.Append(" order by " + signal.OrderBy);
+
+            SQLiteCommand cmd = conn.CreateCommand();
+			cmd.CommandText = sb.ToString();
+            SQLiteDataReader reader = cmd.ExecuteReader();
+
+			while (reader.Read())
+			{
+			}
+
+			cmd.Dispose();
+
+		}
+
+		protected Dictionary<string, object> GetColumnValueMap(ICarrier carrier)
+		{
+			List<INativeType> types = rsys.SemanticTypeSystem.GetSemanticTypeStruct(carrier.Protocol.DeclTypeName).NativeTypes;
+			Dictionary<string, object> cvMap = new Dictionary<string, object>();
+			types.ForEach(t => cvMap[t.Name] = t.GetValue(carrier.Signal));
+
+			return cvMap;
 		}
 
 		protected bool TableExists(string tableName)

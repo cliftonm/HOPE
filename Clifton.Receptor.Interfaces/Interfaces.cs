@@ -24,7 +24,7 @@ namespace Clifton.Receptor.Interfaces
 	public interface IReceptorSystem
 	{
 		ISemanticTypeSystem SemanticTypeSystem { get; set; }
-		void CreateCarrier(IReceptorInstance from, ISemanticTypeStruct protocol, dynamic signal);
+		ICarrier CreateCarrier(IReceptorInstance from, ISemanticTypeStruct protocol, dynamic signal);
 	}
 
 	public interface ICarrier

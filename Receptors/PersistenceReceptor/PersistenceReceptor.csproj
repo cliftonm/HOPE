@@ -55,6 +55,10 @@
       <Project>{1fb6a5d3-6cda-4262-a40c-d4724ba5e2e1}</Project>
       <Name>Clifton.SemanticTypeSystem.Interfaces</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\lib\lib.csproj">
+      <Project>{d1627a50-1c2b-4e28-ac6c-ab437b0138b4}</Project>
+      <Name>lib</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

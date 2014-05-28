@@ -14,6 +14,7 @@ using TypeSystemExplorer.Views;
 
 using Clifton.ApplicationStateManagement;
 using Clifton.ExtensionMethods;
+using Clifton.Receptor.Interfaces;
 using Clifton.Tools.Data;
 using Clifton.Tools.Strings.Extensions;
 
@@ -94,6 +95,7 @@ namespace TypeSystemExplorer.Controllers
 							once = false;
 						}
 						XDocument xdoc = XDocument.Load(fn);
+						Dictionary<string, ICarrier> carriers = new Dictionary<string, ICarrier>();
 
 						xdoc.Element("Carriers").Descendants().ForEach(xelem =>
 						{
@@ -106,28 +108,38 @@ namespace TypeSystemExplorer.Controllers
 							{
 								Type t = signal.GetType();
 								PropertyInfo pi = t.GetProperty(attr.Name.ToString());
-								object val = attr.Value;
 
-								TypeConverter tcFrom = TypeDescriptor.GetConverter(pi.PropertyType);
-								//TypeConverter tcTo = TypeDescriptor.GetConverter(typeof(string));
-
-								//if (tcTo.CanConvertTo(t))
-								//{
-								//	tcTo.ConvertTo(val, pi.PropertyType);
-								//}
-								
-								if (tcFrom.CanConvertFrom(typeof(string)))
+								if (attr.Value.BeginsWith("{"))			// a reference (only references to carriers are supported at the moment)
 								{
-									val = tcFrom.ConvertFromInvariantString(attr.Value);
-									pi.SetValue(signal, val);
+									ICarrier refCarrier = carriers[attr.Value.Between('{', '}')];
+									pi.SetValue(signal, refCarrier);
 								}
 								else
 								{
-									throw new ApplicationException("Cannot convert string to type " + t.Name);
+									object val = attr.Value;
+
+									TypeConverter tcFrom = TypeDescriptor.GetConverter(pi.PropertyType);
+									//TypeConverter tcTo = TypeDescriptor.GetConverter(typeof(string));
+
+									//if (tcTo.CanConvertTo(t))
+									//{
+									//	tcTo.ConvertTo(val, pi.PropertyType);
+									//}
+
+									if (tcFrom.CanConvertFrom(typeof(string)))
+									{
+										val = tcFrom.ConvertFromInvariantString(attr.Value);
+										pi.SetValue(signal, val);
+									}
+									else
+									{
+										throw new ApplicationException("Cannot convert string to type " + t.Name);
+									}
 								}
 							});
 
-							Program.Receptors.CreateCarrier(null, protocol, signal);
+							ICarrier carrier = Program.Receptors.CreateCarrier(null, protocol, signal);
+							carriers[protocol.DeclTypeName] = carrier;
 						});
 					}
 				}

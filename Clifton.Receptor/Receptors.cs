@@ -196,12 +196,12 @@ namespace Clifton.Receptor
 		/// <param name="from">The source receptor.  Cay be null.</param>
 		/// <param name="protocol">The protocol.</param>
 		/// <param name="signal">The signal in the protocol's format.</param>
-		public void CreateCarrier(IReceptorInstance from, ISemanticTypeStruct protocol, dynamic signal)
+		public ICarrier CreateCarrier(IReceptorInstance from, ISemanticTypeStruct protocol, dynamic signal)
 		{
 			// This calls the internal method with recursion set to false.  We don't want to expose this 
 			// flag, so this method is a public front, as receptors should never set the "stop recursion" flag
 			// to true when creating carriers.
-			CreateCarrier(from, protocol, signal, false);
+			return CreateCarrier(from, protocol, signal, false);
 		}
 
 		/// <summary>
@@ -281,7 +281,7 @@ namespace Clifton.Receptor
 		/// <summary>
 		/// Internal carrier creation.  This includes the "stopRecursion" flag to prevent wildcard receptors from receiving ad-infinitum their own emissions.
 		/// </summary>
-		protected void CreateCarrier(IReceptorInstance from, ISemanticTypeStruct protocol, dynamic signal, bool stopRecursion)
+		protected ICarrier CreateCarrier(IReceptorInstance from, ISemanticTypeStruct protocol, dynamic signal, bool stopRecursion)
 		{
 			Carrier carrier = new Carrier(protocol, signal);
 			NewCarrier.Fire(this, new NewCarrierEventArgs(from, carrier));
@@ -289,6 +289,8 @@ namespace Clifton.Receptor
 			// We pass along the stopRecursion flag to prevent wild-card carrier receptor from receiving their own emissions, which would result in a new carrier,
 			// ad-infinitum.
 			ProcessReceptors(from, carrier, stopRecursion);
+
+			return carrier;
 		}
 
 		/// <summary>
