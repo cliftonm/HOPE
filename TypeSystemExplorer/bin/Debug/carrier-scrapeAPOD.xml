@@ -1,0 +1,4 @@
+﻿<Carriers>
+  <Carrier Protocol="IntervalTimerConfiguration" StartDateTime="8:00 AM" Interval="86400" EventName="ScrapeAPOD" IgnoreMissedIntervals ="false"/>
+</Carriers>
+

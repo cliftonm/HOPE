@@ -92,7 +92,7 @@ namespace TimerReceptor
 							}
 
 							// But we've missed only one event, so fire it now.
-							FireEvent(now);
+							FireEvent(reference);
 						}
 					}
 					else
@@ -120,7 +120,8 @@ namespace TimerReceptor
 		protected void FireEvent(DateTime now)
 		{
 			LastEventTime = now;
-			UpdateRecord();
+			// Temporarily removed.
+			// UpdateRecord();
 			CreateEventCarrier();
 		}
 

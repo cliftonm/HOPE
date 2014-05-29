@@ -168,8 +168,10 @@
     <Content Include="bin\Debug\94306.xml" />
     <Content Include="bin\Debug\about.xml" />
     <Content Include="bin\Debug\appState.xml" />
+    <Content Include="bin\Debug\carrier-APODPAGE.xml" />
     <Content Include="bin\Debug\carrier-config_timer.xml" />
     <Content Include="bin\Debug\carrier-daily_event.xml" />
+    <Content Include="bin\Debug\carrier-scrapeAPOD.xml" />
     <Content Include="bin\Debug\carrier-test_delete.xml">
       <SubType>Designer</SubType>
     </Content>

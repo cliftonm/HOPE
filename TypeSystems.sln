@@ -49,6 +49,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimerReceptor", "Receptors\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PersistenceReceptor", "Receptors\PersistenceReceptor\PersistenceReceptor.csproj", "{7B667EDC-50A3-4B70-8638-9223D73FA19D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "APODScraperReceptor", "Receptors\APODScraperReceptor\APODScraperReceptor.csproj", "{DA661AD0-9E17-44A4-AD12-0AF92B413B8F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebPageScraperReceptor", "Receptors\WebPageScraperReceptor\WebPageScraperReceptor.csproj", "{CFDB7A31-7A71-41ED-8169-E223914E1FEB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -197,6 +201,18 @@ Global
 		{7B667EDC-50A3-4B70-8638-9223D73FA19D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7B667EDC-50A3-4B70-8638-9223D73FA19D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7B667EDC-50A3-4B70-8638-9223D73FA19D}.Release|x86.ActiveCfg = Release|Any CPU
+		{DA661AD0-9E17-44A4-AD12-0AF92B413B8F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA661AD0-9E17-44A4-AD12-0AF92B413B8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA661AD0-9E17-44A4-AD12-0AF92B413B8F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DA661AD0-9E17-44A4-AD12-0AF92B413B8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA661AD0-9E17-44A4-AD12-0AF92B413B8F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA661AD0-9E17-44A4-AD12-0AF92B413B8F}.Release|x86.ActiveCfg = Release|Any CPU
+		{CFDB7A31-7A71-41ED-8169-E223914E1FEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CFDB7A31-7A71-41ED-8169-E223914E1FEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CFDB7A31-7A71-41ED-8169-E223914E1FEB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{CFDB7A31-7A71-41ED-8169-E223914E1FEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CFDB7A31-7A71-41ED-8169-E223914E1FEB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CFDB7A31-7A71-41ED-8169-E223914E1FEB}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -214,5 +230,7 @@ Global
 		{20329151-4088-4B94-BCFE-373A3221A0ED} = {353CC75F-6C73-4C52-8B45-142D3569C056}
 		{307AFC44-3F64-407C-B7BB-1375894D4185} = {353CC75F-6C73-4C52-8B45-142D3569C056}
 		{7B667EDC-50A3-4B70-8638-9223D73FA19D} = {353CC75F-6C73-4C52-8B45-142D3569C056}
+		{DA661AD0-9E17-44A4-AD12-0AF92B413B8F} = {353CC75F-6C73-4C52-8B45-142D3569C056}
+		{CFDB7A31-7A71-41ED-8169-E223914E1FEB} = {353CC75F-6C73-4C52-8B45-142D3569C056}
 	EndGlobalSection
 EndGlobal

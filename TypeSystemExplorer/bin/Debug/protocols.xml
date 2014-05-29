@@ -287,6 +287,36 @@
       </Attributes>
     </SemanticTypeStruct>
 
+    <!-- ScrapeWebpage -->
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="ScrapeWebpage"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="ScrapeWebpage">
+      <Attributes>
+        <NativeType Name="URL" ImplementingType="string"/>
+        <NativeType Name="ResponseProtocol" ImplementingType="string"/>
+      </Attributes>
+    </SemanticTypeStruct>
+    
+    <!-- -->
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="APODWebpage"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="APODWebpage">
+      <Attributes>
+        <NativeType Name="HTML" ImplementingType="string"/>
+        <NativeType Name="Errors" ImplementingType="string"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
     <!-- Schema Collection Helpers -->
 
     <SemanticTypeDecl OfType="Noun">
@@ -302,6 +332,7 @@
     </SemanticTypeStruct>
 
     <!-- Table schemas -->
+    <!-- **** LastEventDateTIme **** -->
 
     <SemanticTypeDecl OfType="Noun">
       <AttributeValues>
