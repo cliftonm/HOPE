@@ -1,4 +1,4 @@
 ﻿<Carriers>
-  <Carrier Protocol="IntervalTimerConfiguration" StartDateTime="8:00 AM" Interval="86400" EventName="Daily Event" IgnoreMissedIntervals ="false"/>
-  <Carrier Protocol="IntervalTimerConfiguration" StartDateTime="1/1/2014 12:01 AM" Interval="5" EventName="5sec" IgnoreMissedIntervals="true"/>
+  <Carrier Protocol="IntervalTimerConfiguration" StartDateTime="8:00 AM" Interval="86400" EventName="ScrapeAPOD" IgnoreMissedIntervals ="false"/>
+<!--  <Carrier Protocol="IntervalTimerConfiguration" StartDateTime="1/1/2014 12:01 AM" Interval="5" EventName="5sec" IgnoreMissedIntervals="true"/>  -->
 </Carriers>

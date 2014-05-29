@@ -16,13 +16,10 @@ using Clifton.Tools.Strings.Extensions;
 
 namespace APODScraperReceptor
 {
-	/// <summary>
-	/// This receptor is an edge receptor, receiving DebugMessage carriers and outputting them to a logging window.
-	/// </summary>
 	public class ReceptorDefinition : IReceptorInstance
 	{
 		public string Name { get { return "APOD"; } }
-		public bool IsEdgeReceptor { get { return true; } }
+		public bool IsEdgeReceptor { get { return false; } }
 		public bool IsHidden { get { return false; } }
 
 		protected IReceptorSystem rsys;

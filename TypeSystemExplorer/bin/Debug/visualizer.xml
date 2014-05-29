@@ -12,7 +12,7 @@
     <ixc:VisualizerController def:Name="controller" ApplicationController="{ApplicationFormController}" ApplicationModel="{ApplicationModel}"/>
     <!-- <ix:GenericDocument ref:Name="Container"/> FormClosing="{controller.Closing}" Activated="{controller.Activated}"/> -->
     <ix:Controls>
-      <ixv:VisualizerView def:Name="visualizerView" Dock="Fill"
+      <ixv:VisualizerView def:Name="visualizerView" Dock="Fill" 
         ApplicationController="{ApplicationFormController}"
         Controller="{controller}">
         <ixv:Controls>
@@ -30,7 +30,7 @@
       </ixv:VisualizerView>
     </ix:Controls>
     <ixc:VisualizerController ref:Name="controller" View="{visualizerView}"/>
-    <ixv:VisualizerView ref:Name="visualizerView" Visualizer="{visualizer}"/>
+    <ixv:VisualizerView ref:Name="visualizerView" Visualizer="{visualizer}" MouseWheel="{visualizerView.MouseWheelEvent}"/>
     <!-- actions -->
     <!-- <ixa:RegisterDocumentController App="{ApplicationFormController}" Container="{Container}" Controller="{controller}"/> -->
     <!-- <ixa:SetDocumentText Controller="{controller}" Text="TOOD: xml stub here"/> -->

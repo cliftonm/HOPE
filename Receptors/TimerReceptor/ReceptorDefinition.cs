@@ -120,8 +120,7 @@ namespace TimerReceptor
 		protected void FireEvent(DateTime now)
 		{
 			LastEventTime = now;
-			// Temporarily removed.
-			// UpdateRecord();
+			UpdateRecord();
 			CreateEventCarrier();
 		}
 

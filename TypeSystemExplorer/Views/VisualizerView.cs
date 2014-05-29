@@ -176,6 +176,17 @@ namespace TypeSystemExplorer.Views
 		}
 	}
 
+	public class CarouselState
+	{
+		public int Offset { get; set; }
+		public List<Image> Images { get; set; }
+
+		public CarouselState()
+		{
+			Images = new List<Image>();
+		}
+	}
+
 	public class VisualizerView : UserControl
 	{
 		const int RenderTime = 120;
@@ -201,7 +212,7 @@ namespace TypeSystemExplorer.Views
 		protected Dictionary<IReceptor, Point> receptorLocation;
 		protected List<FlyoutItem> flyouts;
 		protected List<CarrierAnimationItem> carrierAnimations;
-		protected Dictionary<IReceptor, List<Image>> carousels;
+		protected Dictionary<IReceptor, CarouselState> carousels;
 
 		protected Brush blackBrush;
 		protected Brush whiteBrush;
@@ -273,7 +284,7 @@ namespace TypeSystemExplorer.Views
 			receptorLocation = new Dictionary<IReceptor, Point>();
 			flyouts = new List<FlyoutItem>();
 			carrierAnimations = new List<CarrierAnimationItem>();
-			carousels = new Dictionary<IReceptor, List<Image>>();
+			carousels = new Dictionary<IReceptor, CarouselState>();
 		}
 
 		public void Flyout(string msg, IReceptorInstance receptorInstance)
@@ -331,15 +342,15 @@ namespace TypeSystemExplorer.Views
 		public void AddImage(IReceptorInstance receptorInstance, Image image)
 		{
 			IReceptor r = receptorLocation.Single(kvp => kvp.Key.Instance == receptorInstance).Key;
-			List<Image> imageList;
+			CarouselState cstate;
 
-			if (!carousels.TryGetValue(r, out imageList))
+			if (!carousels.TryGetValue(r, out cstate))
 			{
-				imageList = new List<Image>();
-				carousels[r] = imageList;
+				cstate = new CarouselState();
+				carousels[r] = cstate;
 			}
 
-			imageList.Add(image);
+			cstate.Images.Add(image);
 			Invalidate(true);
 		}
 
@@ -514,9 +525,33 @@ namespace TypeSystemExplorer.Views
 			mouseHoverStartTime = DateTime.Now;
 		}
 
+		protected void MouseWheelEvent(object sender, MouseEventArgs args)
+		{
+			var hoverReceptors = receptorLocation.Where(kvp => (new Rectangle(Point.Subtract(kvp.Value, ReceptorHalfSize), ReceptorSize)).Contains(args.Location));
+			IReceptor hoverReceptor = null;
+
+			if (hoverReceptors.Count() > 0)
+			{
+				hoverReceptor = hoverReceptors.First().Key;
+			}
+
+			if (hoverReceptor != null)
+			{
+				int spin = args.Delta / 120;			// Where does this constant come from?
+				CarouselState cstate;
+
+				if (carousels.TryGetValue(hoverReceptor, out cstate))
+				{
+					cstate.Offset += spin;
+					Invalidate(true);
+				}
+			}
+		}
+
 		/// <summary>
 		/// The .NET MouseHoverEvent is f*cked.  It will not re-trigger until the mouse moves outside of the control.
-		/// Even that seems problematic.  So we have a manual implementation.
+		/// Even that seems problematic.  So we have a manual implementation.  Possibly wiring the event to the ViewControl 
+		/// would work better for the pre-canned behavior, but the re-trigger is still an issue, it seems.
 		/// </summary>
 		protected void CheckMouseHover()
 		{
@@ -647,16 +682,41 @@ namespace TypeSystemExplorer.Views
 					{
 						Point p = receptorLocation[kvp.Key];
 						// p.Offset(-ReceptorSize.Width / 2, -ReceptorSize.Height / 2);
-						double images = kvp.Value.Count;
+						int images = kvp.Value.Images.Count;
+						int offset = kvp.Value.Offset;
+						int idx0 = 0;
 
-						kvp.Value.ForEachWithIndex((img, idx) =>
+						kvp.Value.Images.ForEachWithIndex((img, idx) =>
 						{
+							int idxReal = (idx + offset) % images;
 							Point ip = p;
-							double dx = 150 * Math.Cos(2 * Math.PI * idx / images);
-							double dy = 150 * Math.Sin(2 * Math.PI * idx / images);
+							double dx = 100 * Math.Cos((2 * Math.PI * 1 / 4) + 2 * Math.PI * idxReal / images);
+							double dy = 100 * Math.Sin((2 * Math.PI * 1 / 4) + 2 * Math.PI * idxReal / images);
 							ip.Offset((int)dx, (int)dy);
-							e.Graphics.DrawImage(img, new Rectangle(new Point(ip.X - 50, ip.Y - 50 * img.Height / img.Width), new Size(100, 100 * img.Height / img.Width)));
+							int sizer = (idxReal == 0) ? 150 : 100;
+
+							if (idxReal == 0)
+							{
+								idx0 = idx;
+							}
+							else
+							{
+								e.Graphics.DrawImage(img, new Rectangle(new Point(ip.X - 50, ip.Y - 50 * img.Height / img.Width), new Size(sizer, sizer * img.Height / img.Width)));
+							}
 						});
+
+						{
+							// Draw idx0 last so it appears on top.
+							int idxReal = (idx0 + offset) % images;
+							Point ip = p;
+							double dx = 150 * Math.Cos((2 * Math.PI * 1 / 4) + 2 * Math.PI * idxReal / images);
+							double dy = 150 * Math.Sin((2 * Math.PI * 1 / 4) + 2 * Math.PI * idxReal / images);
+							ip.Offset((int)dx, (int)dy);
+							int sizer = (idxReal == 0) ? 150 : 100;
+							Image img = kvp.Value.Images[idx0];
+							e.Graphics.DrawImage(img, new Rectangle(new Point(ip.X - 50, ip.Y - 50 * img.Height / img.Width), new Size(sizer, sizer * img.Height / img.Width)));
+						}
+
 					});
 			}
 			catch (Exception ex)

@@ -1,4 +1,9 @@
 ﻿<Carriers>
+  <Carrier Protocol="TimerEvent" EventName="ScrapeAPOD" EventDateTime="5/19/2014"/>
+  <Carrier Protocol="TimerEvent" EventName="ScrapeAPOD" EventDateTime="5/20/2014"/>
+  <Carrier Protocol="TimerEvent" EventName="ScrapeAPOD" EventDateTime="5/21/2014"/>
+  <Carrier Protocol="TimerEvent" EventName="ScrapeAPOD" EventDateTime="5/22/2014"/>
+  <Carrier Protocol="TimerEvent" EventName="ScrapeAPOD" EventDateTime="5/23/2014"/>
   <Carrier Protocol="TimerEvent" EventName="ScrapeAPOD" EventDateTime="5/24/2014"/>
   <Carrier Protocol="TimerEvent" EventName="ScrapeAPOD" EventDateTime="5/25/2014"/>
   <Carrier Protocol="TimerEvent" EventName="ScrapeAPOD" EventDateTime="5/26/2014"/>
