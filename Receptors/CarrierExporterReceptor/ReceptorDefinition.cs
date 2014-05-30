@@ -86,11 +86,11 @@ namespace CarrierExporterReceptor
 							}
 							else if (val2 is ICarrier)
 							{
-								CreateSubNodes(xdoc, subnode, p.Name, (ICarrier)val);
+								CreateSubNodes(xdoc, subnode, p.Name, (ICarrier)val2);
 							}
-							else if (val2 is ISemanticType)
+							else if (val2 is IRuntimeSemanticType)
 							{
-								CreateSubNodes(xdoc, node, p.Name, (ISemanticType)val);
+								CreateSubNodes(xdoc, subnode, p.Name, (IRuntimeSemanticType)val2);
 							}
 							else
 							{
@@ -101,7 +101,7 @@ namespace CarrierExporterReceptor
 				});
 		}
 
-		protected void CreateSubNodes(XmlDocument xdoc, XmlNode node, string name, ISemanticType val)
+		protected void CreateSubNodes(XmlDocument xdoc, XmlNode node, string name, IRuntimeSemanticType val)
 		{
 			XmlNode subnode = xdoc.CreateElement(name);
 			node.AppendChild(subnode);
@@ -123,9 +123,9 @@ namespace CarrierExporterReceptor
 						{
 							CreateSubNodes(xdoc, subnode, p.Name, (ICarrier)val2);
 						}
-						else if (val2 is ISemanticType)
+						else if (val2 is IRuntimeSemanticType)
 						{
-							CreateSubNodes(xdoc, node, p.Name, (ISemanticType)val);
+							CreateSubNodes(xdoc, subnode, p.Name, (IRuntimeSemanticType)val2);
 						}
 						else
 						{
@@ -171,9 +171,9 @@ namespace CarrierExporterReceptor
 					{
 						CreateSubNodes(xdoc, node, p.Name, (ICarrier)val);
 					}
-					else if (val is ISemanticType)
+					else if (val is IRuntimeSemanticType)
 					{
-						CreateSubNodes(xdoc, node, p.Name, (ISemanticType)val);
+						CreateSubNodes(xdoc, node, p.Name, (IRuntimeSemanticType)val);
 					}
 					else
 					{

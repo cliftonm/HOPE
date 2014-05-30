@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Dynamic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
 
@@ -176,14 +178,25 @@ namespace TypeSystemExplorer.Views
 		}
 	}
 
+	public class MetadataPacket
+	{
+		// metadata with a protocol is actionable.
+		public string ProtocolName { get; set; }
+		public string Name { get; set; }
+		public string Value { get; set; }
+	}
+
 	public class CarouselState
 	{
 		public int Offset { get; set; }
 		public List<Image> Images { get; set; }
+		public List<MetadataPacket> MetadataPackets { get; protected set; }
+		public string ActiveImageFilename { get; set; }
 
 		public CarouselState()
 		{
 			Images = new List<Image>();
+			MetadataPackets = new List<MetadataPacket>();
 		}
 	}
 
@@ -382,6 +395,67 @@ namespace TypeSystemExplorer.Views
 		public Point GetRandomLocation()
 		{
 			return new Point(rnd.Next(ClientRectangle.Width - 80) + 40, rnd.Next(ClientRectangle.Height - 80) + 40);
+		}
+
+		public void ProcessImageMetadata(dynamic signal)
+		{
+			ICarrier metadata = signal.Metadata;
+			string protocol = metadata.Protocol.DeclTypeName;
+			string path = signal.ImageFilename.Filename;
+			string fn = Path.GetFileName(path);
+			var carousel = carousels.FirstOrDefault(kvp => kvp.Value.ActiveImageFilename == fn);
+
+			// The user could have removed the viewer by the time we get a response.
+			if (carousel.Value != null)
+			{
+				InitializeMetadata(protocol, carousel.Value.MetadataPackets, metadata.Signal);
+			}
+		}
+
+		// This is complex piece of code.
+		/// <summary>
+		/// Gets the metadata tags reflectively, so that we have a general purpose function for display image metadata.
+		/// </summary>
+		protected void InitializeMetadata(string protocol, List<MetadataPacket> packets, dynamic signal)
+		{
+			packets.Clear();
+			// Get all the native and semantic types so we can get the values of these types from the signal.
+			List<IGetSetSemanticType> types = Program.SemanticTypeSystem.GetSemanticTypeStruct(protocol).AllTypes;
+			// Get the type of the signal for reflection.
+			Type t = signal.GetType();
+			// For each property in the signal where the value of the property isn't null (this check may not be necessary)...
+			t.GetProperties().Where(p => p.GetValue(signal) != null).ForEach(p =>
+				{
+					// We get the value, which is either a NativeType or SemanticElement
+					object obj = p.GetValue(signal);
+					string itemProtocol = null;
+
+					// If it's a SemanticElement, then we have a protocol that we can use for actionable metadata.
+					// We would package up this protocol into a carrier with the metadata signal in order to let
+					// other receptors process the protocol.
+					if (obj is IRuntimeSemanticType)
+					{
+						itemProtocol = p.Name;
+					}
+
+					// Here we the IGetSetSemanticType instance (giving us access to Name, GetValue and SetValue operations) for the type.  
+					IGetSetSemanticType protocolType = types.Single(ptype => ptype.Name == itemProtocol);
+					// Create a metadata packet.
+					MetadataPacket metadataPacket = new MetadataPacket() { ProtocolName = itemProtocol, Name = p.Name };
+					// Get the object value.  This does some fancy some in the semantic type system,
+					// depending on whether we're dealing with a native type (simple) or a semantic element (complicated).
+					object val = protocolType.GetValue(Program.SemanticTypeSystem, signal);
+					// If the type value isn't null, then we have some metadata we can display for the image.
+					val.IfNotNull(v =>
+						{
+							metadataPacket.Value = v.ToString();
+
+							if (!String.IsNullOrEmpty(metadataPacket.Value))
+							{
+								packets.Add(metadataPacket);
+							}
+						});
+				});
 		}
 
 		protected void OnTimerTick(object sender, EventArgs e)
@@ -606,6 +680,8 @@ namespace TypeSystemExplorer.Views
 
 				if (carousels.TryGetValue(hoverReceptor, out cstate))
 				{
+					// Remove the metadata.
+					cstate.MetadataPackets.Clear();
 					GetImageMetadata(hoverReceptor);
 					cstate.Offset += spin;
 					Invalidate(true);
@@ -616,19 +692,26 @@ namespace TypeSystemExplorer.Views
 		protected void GetImageMetadata(IReceptor r)
 		{
 			CarouselState cstate = carousels[r];
-			int idx = cstate.Offset % cstate.Images.Count;
 
-			if (idx < 0)
+			// Ensures that we only load the metadata once, though if there isn't any, we 
+			// will continue to requery the receptors that can generate metadata for us.
+			// This does allow us to add receptors later that generates the metadata.
+			if (cstate.MetadataPackets.Count == 0)
 			{
-				idx += cstate.Images.Count;
-			}
+				int idx = cstate.Offset % cstate.Images.Count;
 
-			Image img = cstate.Images[idx];
-			ISemanticTypeStruct protocol = Program.Receptors.SemanticTypeSystem.GetSemanticTypeStruct("GetImageMetadata");
-			dynamic signal = Program.Receptors.SemanticTypeSystem.Create("GetImageMetadata");
-			signal.ImageFile = img.Tag.ToString();
-			signal.ResponseProtocol = "HaveImageMetadata";
-			Program.Receptors.CreateCarrier(null, protocol, signal);
+				if (idx < 0)
+				{
+					idx += cstate.Images.Count;
+				}
+
+				Image img = cstate.Images[idx];
+				ISemanticTypeStruct protocol = Program.Receptors.SemanticTypeSystem.GetSemanticTypeStruct("GetImageMetadata");
+				dynamic signal = Program.Receptors.SemanticTypeSystem.Create("GetImageMetadata");
+				signal.ImageFilename.Filename = img.Tag.ToString();
+				signal.ResponseProtocol = "HaveImageMetadata";
+				Program.Receptors.CreateCarrier(null, protocol, signal);
+			}
 		}
 
 		/// <summary>
@@ -656,11 +739,8 @@ namespace TypeSystemExplorer.Views
 					// There probably is a better way to do this:
 					IDictionary dict = new Hashtable();
 					dict.Add("Protocol", item.Carrier.Protocol.DeclTypeName);
-					var kvpList = (from t in Program.SemanticTypeSystem.GetSemanticTypeStruct(item.Carrier.Protocol.DeclTypeName).NativeTypes select new { Name = t.Name, Value = t.GetValue(item.Carrier.Signal) }); // .ForEach((item) =
-					kvpList.ForEach((kvp) =>
-						{
-							dict.Add(kvp.Name, kvp.Value);
-						});
+					var kvpList = (from t in Program.SemanticTypeSystem.GetSemanticTypeStruct(item.Carrier.Protocol.DeclTypeName).NativeTypes select new { Name = t.Name, Value = t.GetValue(Program.SemanticTypeSystem, item.Carrier.Signal) }); // .ForEach((item) =
+					kvpList.ForEach((kvp) => dict.Add(kvp.Name, kvp.Value));
 					ApplicationController.PropertyGridController.ShowObject(new DictionaryPropertyGridAdapter(dict));
 				}
 
@@ -800,7 +880,19 @@ namespace TypeSystemExplorer.Views
 							ip.Offset((int)dx, (int)dy);
 							int sizer = (idxReal == 0) ? 150 : 100;
 							Image img = kvp.Value.Images[idx0];
-							e.Graphics.DrawImage(img, new Rectangle(new Point(ip.X - 75, ip.Y - 50 * img.Height / img.Width), new Size(sizer, sizer * img.Height / img.Width)));
+							Rectangle location = new Rectangle(new Point(ip.X - 75, ip.Y - 50 * img.Height / img.Width), new Size(sizer, sizer * img.Height / img.Width));
+							e.Graphics.DrawImage(img, location);
+							kvp.Value.ActiveImageFilename = Path.GetFileName(img.Tag.ToString());
+
+							int y = location.Bottom + 10;
+
+							kvp.Value.MetadataPackets.ForEach(meta =>
+								{
+									Rectangle region = new Rectangle(location.X, y, location.Width, 15);
+									string data = meta.Name + ": " + meta.Value;
+									e.Graphics.DrawString(data, font, whiteBrush, region);
+									y += 15;
+								});
 						}
 
 					});

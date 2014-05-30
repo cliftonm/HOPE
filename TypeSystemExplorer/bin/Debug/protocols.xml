@@ -479,7 +479,7 @@
 
     <SemanticTypeStruct DeclType="GetImageMetadata">
       <Attributes>
-        <NativeType Name="ImageFile" ImplementingType="string"/>
+        <SemanticElement Name="ImageFilename"/>
         <NativeType Name="ResponseProtocol" ImplementingType="string"/>
       </Attributes>
     </SemanticTypeStruct>
@@ -494,7 +494,7 @@
 
     <SemanticTypeStruct DeclType="HaveImageMetadata">
       <Attributes>
-        <NativeType Name="ImageFile" ImplementingType="string"/>
+        <SemanticElement Name="ImageFilename"/>
         <NativeType Name="Metadata" ImplementingType="ICarrier"/>
       </Attributes>
     </SemanticTypeStruct>

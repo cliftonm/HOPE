@@ -32,10 +32,11 @@ namespace Clifton.SemanticTypeSystem.Interfaces
 		string DeclTypeName { get; }
 		List<INativeType> NativeTypes { get; }
 		List<ISemanticElement> SemanticElements { get; }
+		List<IGetSetSemanticType> AllTypes { get; }
 
 		bool HasNativeTypes { get; }
 		bool HasSemanticTypes { get; }
-		bool HasChildTypes { get;}
+		bool HasChildTypes { get; }
 	}
 
 	public interface IAttributeValue
@@ -48,13 +49,28 @@ namespace Clifton.SemanticTypeSystem.Interfaces
 	{
 		string Name { get; }
 		string ImplementingType { get; }
-		object GetValue(object instance);
+
+		// sts parameter is not used for the native type setter/getter, but provides compatability with ISemanticElement.SetValue so we can have a common interface.
+		object GetValue(ISemanticTypeSystem sts, object instance);
+		void SetValue(ISemanticTypeSystem sts, object instance, object value);
+	}
+
+	public interface IGetSetSemanticType
+	{
+		string Name { get; }
+
+		// sts parameter is not used for the native type setter/getter, but provides compatability with ISemanticElement.SetValue so we can have a common interface.
+		object GetValue(ISemanticTypeSystem sts, object instance);
+		void SetValue(ISemanticTypeSystem sts, object instance, object value);
 	}
 
 	public interface ISemanticElement
 	{
 		string Name { get; }
 		ISemanticType Element { get; set; }
+
+		object GetValue(ISemanticTypeSystem sts, object instance);
+		void SetValue(ISemanticTypeSystem sts, object instance, object value);
 	}
 
 	/// <summary>

@@ -10,6 +10,7 @@ using TypeSystemExplorer.Controllers;
 using TypeSystemExplorer.Models;
 
 using Clifton.SemanticTypeSystem;
+using Clifton.SemanticTypeSystem.Interfaces;
 using Clifton.Tools.Data;
 using Clifton.Tools.Strings.Extensions;
 
@@ -78,7 +79,7 @@ namespace TypeSystemExplorer.Views
 					sb.Append("(");
 					sb.Append(nt.Name);
 					sb.Append(", ");
-					sb.Append(nt.GetValue(sti.Instance).SafeToString());
+					sb.Append(nt.GetValue(Program.SemanticTypeSystem, sti.Instance).SafeToString());
 					sb.Append(") ");
 				}
 

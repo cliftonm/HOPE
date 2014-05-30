@@ -13,6 +13,15 @@ using Clifton.SemanticTypeSystem.Interfaces;
 using Clifton.Tools.Data;
 using Clifton.Tools.Strings.Extensions;
 
+/*
+ * Renaming columns in SQLite:
+ * begin;
+ * PRAGMA writable_schema=1;
+ * UPDATE sqlite_master Set SQL=REPLACE(SQL, 'ImageFile', 'ImageFilename') where name = 'APOD';
+ * PRAGMA writable_schema=0;
+ * commit;
+ */
+
 namespace PersistenceReceptor
 {
 	public class ReceptorDefinition : IReceptorInstance
@@ -95,23 +104,34 @@ namespace PersistenceReceptor
 			if (!TableExists(signal.TableName))
 			{
 				StringBuilder sb = new StringBuilder("create table " + signal.TableName + "(");
+				string schema = signal.Schema;
 
 				// Always create a primary key as the field ID. 
 				// There is no need to put this into the semantic type definition unless it's required for queries.
 				sb.Append("ID INTEGER PRIMARY KEY AUTOINCREMENT");
-				List<INativeType> types = rsys.SemanticTypeSystem.GetSemanticTypeStruct(signal.Schema).NativeTypes;
+				List<INativeType> ntypes = rsys.SemanticTypeSystem.GetSemanticTypeStruct(schema).NativeTypes;
+				List<ISemanticElement> stypes = rsys.SemanticTypeSystem.GetSemanticTypeStruct(schema).SemanticElements;
 				
 				// Ignore ID field in the schema, as we specifically create it above.
-				types.Where(t=>t.Name.ToLower() != "id").ForEach(t =>
-					{
-						sb.Append(", ");
-						sb.Append(t.Name);
-						// we ignore types, as per the SQLite 3 documentation:
-						// "Any column in an SQLite version 3 database, except an INTEGER PRIMARY KEY column, may be used to store a value of any storage class."
-						// http://www.sqlite.org/datatype3.html
-					});
-				
+				// we ignore types, as per the SQLite 3 documentation:
+				// "Any column in an SQLite version 3 database, except an INTEGER PRIMARY KEY column, may be used to store a value of any storage class."
+				// http://www.sqlite.org/datatype3.html
 
+				var nNames = ntypes.Where(t=>t.Name.ToLower() != "id").Select(t => t.Name);
+
+				// The root semantic type name is the name of the field.
+				var sNames = stypes.Where(t => t.Element.Struct.DeclTypeName.ToLower() != "id").Select(t => t.Element.Struct.DeclTypeName);
+
+				var names = nNames.Concat(sNames);
+
+				// We theoretically could have a schema that defines only the ID field.
+				if (names.Count() > 0)
+				{
+					sb.Append(", ");
+				}
+
+				string fields = String.Join(", ", names);
+				sb.Append(fields);
 				sb.Append(");");
 
 				Execute(sb.ToString());
@@ -166,9 +186,14 @@ namespace PersistenceReceptor
 
 		protected void Select(dynamic signal)
 		{
+			string schema = signal.ResponseProtocol;
 			StringBuilder sb = new StringBuilder("select ");
-			List<INativeType> types = rsys.SemanticTypeSystem.GetSemanticTypeStruct(signal.ResponseProtocol).NativeTypes;
-			sb.Append(String.Join(", ", (from c in types select c.Name).ToArray()));
+
+			// TODO: Join these through the common interface IGetSetSemanticType
+
+			List<INativeType> ntypes = rsys.SemanticTypeSystem.GetSemanticTypeStruct(schema).NativeTypes;
+			List<ISemanticElement> stypes = rsys.SemanticTypeSystem.GetSemanticTypeStruct(schema).SemanticElements;
+			sb.Append(String.Join(", ", (from c in ntypes select c.Name).Concat(from c in stypes select c.Element.Struct.DeclTypeName).ToArray()));
 			sb.Append(" from " + signal.TableName);
 			if (signal.Where != null) sb.Append(" where " + signal.Where);
 			// support for group by is sort of pointless since we're not supporting any mechanism for aggregate functions.
@@ -190,18 +215,16 @@ namespace PersistenceReceptor
 			{
 				ISemanticTypeStruct protocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct(signal.ResponseProtocol);
 				dynamic outSignal = rsys.SemanticTypeSystem.Create(signal.ResponseProtocol);
-				Type type = outSignal.GetType();
 
 				// Populate the output signal with the fields retrieved from the query, as specified by the requested response protocol
-				types.ForEach(t =>
-					{
-						object val = reader[t.Name];
+				ntypes.Cast<IGetSetSemanticType>().ForEach(t => t.SetValue(rsys.SemanticTypeSystem, outSignal, reader[t.Name]));
 
-						// TODO: Duplicate code in VisualizerController.cs
-						PropertyInfo pi = type.GetProperty(t.Name);
-						val = Converter.Convert(val, pi.PropertyType);
-						pi.SetValue(outSignal, val);
-					});
+				// A semantic type is a different beast, potentially with child ST's. 
+				// We need to get to the native type parameter to properly initialize this type.
+				// Delegate this whole issue to the semantic type itself.
+				// An important thing -- schema semantic types can only have one property per type, otherwise we won't know which
+				// property to set.
+				stypes.ForEach(t => t.SetValue(rsys.SemanticTypeSystem, outSignal, reader[t.Element.Struct.DeclTypeName]));
 
 				// Add the record to the recordset.
 				collection.Recordset.Add(outSignal);
@@ -219,7 +242,7 @@ namespace PersistenceReceptor
 		{
 			List<INativeType> types = rsys.SemanticTypeSystem.GetSemanticTypeStruct(carrier.Protocol.DeclTypeName).NativeTypes;
 			Dictionary<string, object> cvMap = new Dictionary<string, object>();
-			types.ForEach(t => cvMap[t.Name] = t.GetValue(carrier.Signal));
+			types.Cast<IGetSetSemanticType>().ForEach(t => cvMap[t.Name] = t.GetValue(rsys.SemanticTypeSystem, carrier.Signal));
 
 			return cvMap;
 		}

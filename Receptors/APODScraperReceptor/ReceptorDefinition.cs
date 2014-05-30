@@ -271,7 +271,7 @@ namespace APODScraperReceptor
 
 		protected void GetImageMetadata(dynamic signal)
 		{
-			string imageFile = Path.GetFileName(signal.ImageFile);
+			string imageFile = Path.GetFileName(signal.ImageFilename.Filename);
 
 			// Sort of kludgy, we're stripping off the "-thumbnail" portion of the filename if the user
 			// happens to have dropped a thumbnail file.  Rather dependent upon the fact that the thumbnail
@@ -284,7 +284,7 @@ namespace APODScraperReceptor
 			dbsignal.Action = "select";
 			dbsignal.ResponseProtocol = "APOD";
 			// Wildcard prefix to ignore path information.
-			dbsignal.Where = "ImageFile LIKE '%" + imageFile + "'";
+			dbsignal.Where = "ImageFilename LIKE '%" + imageFile + "'";
 			rsys.CreateCarrier(this, dbprotocol, dbsignal);
 		}
 
@@ -299,7 +299,7 @@ namespace APODScraperReceptor
 			if (records.Count > 0)
 			{
 				dynamic firstMatch = records[0];
-				respSignal.ImageFile = firstMatch.ImageFile;
+				respSignal.ImageFilename.Filename = firstMatch.ImageFilename.Filename;
 				ICarrier responseCarrier = CreateAPODRecordCarrier();
 				responseCarrier.Signal.URL = firstMatch.URL;
 				responseCarrier.Signal.Keywords = firstMatch.Keywords;

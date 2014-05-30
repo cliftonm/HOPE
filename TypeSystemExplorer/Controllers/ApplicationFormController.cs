@@ -620,7 +620,7 @@ namespace TypeSystemExplorer.Controllers
 
 		public string[] GetReceiveProtocols()
 		{
-			return new string[] { "SystemMessage", "CarrierAnimation", "SystemShowImage" };
+			return new string[] { "SystemMessage", "CarrierAnimation", "SystemShowImage", "HaveImageMetadata" };
 		}
 
 		public void Initialize()
@@ -664,6 +664,12 @@ namespace TypeSystemExplorer.Controllers
 						IReceptorInstance target = carrier.Signal.From;
 						Image image = carrier.Signal.Image;
 						VisualizerController.View.AddImage(target, image);
+						break;
+					}
+
+				case "HaveImageMetadata":
+					{
+						VisualizerController.View.ProcessImageMetadata(carrier.Signal);
 						break;
 					}
 			}
