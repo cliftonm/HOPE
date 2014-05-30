@@ -224,6 +224,9 @@ namespace TypeSystemExplorer.Controllers
 		/// </summary>
 		protected void Shown(object sender, EventArgs args)
 		{
+			// Because I get tired of doing this manually.
+			LoadXml("protocols.xml");
+			LoadReceptors(this, EventArgs.Empty);
 		}
 
 		/// <summary>
@@ -469,16 +472,63 @@ namespace TypeSystemExplorer.Controllers
 
 		public void LoadReceptors(object sender, EventArgs args)
 		{
-			XDocument xdoc = XDocument.Load("Receptors.xml");
+			VisualizerController.View.StartDrop = true;
+			Point noLocation = new Point(-1, -1);
+
+			XDocument xdoc = XDocument.Load("Receptors2.xml");
 			var names = from receptor in xdoc.Descendants("Receptors").Descendants("Receptor")
 						select new
 							{
 								Name = receptor.Attribute("Name").Value,
-								AssemblyName = receptor.Attribute("AssemblyName").Value
+								AssemblyName = receptor.Attribute("AssemblyName").Value,
+								Location = (receptor.Attribute("Location") != null) ? new Point(receptor.Attribute("Location").Value.Between('=', ',').to_i(), receptor.Attribute("Location").Value.RightOfRightmostOf('=').LeftOf('}').to_i()) : noLocation
 							};
 
-			names.ForEach(n => Program.Receptors.RegisterReceptor(n.Name, n.AssemblyName));
-			Program.Receptors.LoadReceptors();
+			Dictionary<IReceptor, Point> receptorLocationMap = new Dictionary<IReceptor,Point>();
+
+			names.ForEach(n => 
+				{
+					IReceptor r = Program.Receptors.RegisterReceptor(n.Name, n.AssemblyName);
+					receptorLocationMap[r] = n.Location;
+				});
+
+			// After registration, but before the NewReceptor fire event, set the drop point.
+			Program.Receptors.LoadReceptors((rec) => VisualizerController.View.ClientDropPoint = receptorLocationMap[rec]);
+
+			VisualizerController.View.StartDrop = false;
+		}
+
+		public void SaveReceptors(object sender, EventArgs args)
+		{
+			XmlDocument xdoc = new XmlDocument();
+			XmlNode parent = xdoc.CreateElement("Receptors");
+			xdoc.AppendChild(parent);
+
+			Program.Receptors.Receptors.ForEach(r =>
+				{
+					// Ignore internal receptors that register themselves.
+					if (!String.IsNullOrEmpty(r.AssemblyName))
+					{
+						XmlNode rNode = xdoc.CreateElement("Receptor");
+						parent.AppendChild(rNode);
+						AddAttribute(rNode, "Name", r.Name);
+						AddAttribute(rNode, "AssemblyName", r.AssemblyName);
+
+						if (!r.Instance.IsHidden)
+						{
+							AddAttribute(rNode, "Location", VisualizerController.View.GetLocation(r).ToString());
+						}
+					}
+				});
+
+			xdoc.Save("Receptors2.xml");
+		}
+
+		protected void AddAttribute(XmlNode node, string attrName, string attrValue)
+		{
+			XmlAttribute attr = node.OwnerDocument.CreateAttribute(attrName);
+			attr.Value = attrValue;
+			node.Attributes.Append(attr);
 		}
 
 		/*

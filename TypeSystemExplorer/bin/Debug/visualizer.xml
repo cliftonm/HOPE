@@ -24,6 +24,7 @@
                                     MouseDown="{visualizerView.MouseDownEvent}" 
                                     MouseUp="{visualizerView.MouseUpEvent}" 
                                     MouseMove="{visualizerView.MouseMoveEvent}"
+                                    MouseEnter="{visualizerView.MouseEnterEvent}"
                                     DragEnter="{controller.DragEnterEvent}"
                                     DragDrop="{controller.DragDropEvent}"/>
         </ixv:Controls>

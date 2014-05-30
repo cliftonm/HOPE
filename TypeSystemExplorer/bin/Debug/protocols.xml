@@ -269,6 +269,7 @@
         <NativeType Name="Where" ImplementingType="string"/>
         <NativeType Name="OrderBy" ImplementingType="string"/>
         <NativeType Name="GroupBy" ImplementingType="string"/>
+        <NativeType Name="Tag" ImplementingType="string"/>
       </Attributes>
     </SemanticTypeStruct>
 
@@ -312,6 +313,7 @@
 
     <SemanticTypeStruct DeclType="APODWebpage">
       <Attributes>
+        <NativeType Name="URL" ImplementingType="string"/>
         <NativeType Name="HTML" ImplementingType="string"/>
         <NativeType Name="Errors" ImplementingType="string"/>
       </Attributes>
@@ -328,6 +330,7 @@
     <SemanticTypeStruct DeclType="LastEventDateTimeRecordset">
       <Attributes>
         <NativeType Name="Recordset" ImplementingType="List&lt;dynamic&gt;"/>
+        <NativeType Name="Tag" ImplementingType="string"/>
       </Attributes>
     </SemanticTypeStruct>
 
@@ -347,8 +350,70 @@
         <NativeType Name="EventDateTime" ImplementingType="DateTime?"/>
       </Attributes>
     </SemanticTypeStruct>
+    
+    <!-- -->
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="APODRecordset"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="APODRecordset">
+      <Attributes>
+        <NativeType Name="Recordset" ImplementingType="List&lt;dynamic&gt;"/>
+        <NativeType Name="Tag" ImplementingType="string"/>
+      </Attributes>
+    </SemanticTypeStruct>
+    
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="APOD"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="APOD">
+      <Attributes>
+        <NativeType Name="ID" ImplementingType="long?"/>
+        <NativeType Name="URL" ImplementingType="string"/>
+        <NativeType Name="ImageFile" ImplementingType="string"/>
+        <NativeType Name="Keywords" ImplementingType="string"/>
+        <NativeType Name="Title" ImplementingType="string"/>
+        <NativeType Name="Explanation" ImplementingType="string"/>
+        <NativeType Name="Errors" ImplementingType="string"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <!-- END SCHEMA -->
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="GetImageMetadata"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="GetImageMetadata">
+      <Attributes>
+        <NativeType Name="ImageFile" ImplementingType="string"/>
+        <NativeType Name="ResponseProtocol" ImplementingType="string"/>
+      </Attributes>
+    </SemanticTypeStruct>
 
     <!-- ==== -->
-    
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="HaveImageMetadata"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="HaveImageMetadata">
+      <Attributes>
+        <NativeType Name="ImageFile" ImplementingType="string"/>
+        <NativeType Name="Metadata" ImplementingType="ICarrier"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <!-- ==== -->
   </Collection>
 </SemanticTypes>

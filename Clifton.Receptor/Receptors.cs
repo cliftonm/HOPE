@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,11 +14,11 @@ namespace Clifton.Receptor
 	/// <summary>
 	/// Event args for a new receptor notification.
 	/// </summary>
-	public class NewReceptorEventArgs : EventArgs
+	public class ReceptorEventArgs : EventArgs
 	{
 		public IReceptor Receptor { get; protected set; }
 
-		public NewReceptorEventArgs(IReceptor receptor)
+		public ReceptorEventArgs(IReceptor receptor)
 		{
 			Receptor = receptor;
 		}
@@ -57,12 +58,17 @@ namespace Clifton.Receptor
 		/// <summary>
 		/// Fires when a new receptor is instantiated and registered into the system.
 		/// </summary>
-		public event EventHandler<NewReceptorEventArgs> NewReceptor;
+		public event EventHandler<ReceptorEventArgs> NewReceptor;
 
 		/// <summary>
 		/// Fires when a new carrier is created.
 		/// </summary>
 		public event EventHandler<NewCarrierEventArgs> NewCarrier;
+
+		/// <summary>
+		/// Fires when a receptor is removed.
+		/// </summary>
+		public event EventHandler<ReceptorEventArgs> ReceptorRemoved;
 
 		/// <summary>
 		/// The collection of receptors currently in the system.
@@ -109,10 +115,12 @@ namespace Clifton.Receptor
 		/// Adds a receptor definition to the collection.  Call this method when mass-loading
 		/// receptors with their names and implementing assembly names, say from an XML file.
 		/// </summary>
-		public void RegisterReceptor(string receptorName, string assemblyName)
+		public Receptor RegisterReceptor(string receptorName, string assemblyName)
 		{
 			Receptor r = new Receptor(receptorName, assemblyName);
 			Receptors.Add(r);
+
+			return r;
 		}
 
 		/// <summary>
@@ -142,7 +150,7 @@ namespace Clifton.Receptor
 		/// instantiate (if necessary) and register the receptors.  This also generates the 
 		/// protocol-receptor map for the currently registered receptors.
 		/// </summary>
-		public void LoadReceptors()
+		public void LoadReceptors(Action<Receptor> afterRegister = null)
 		{
 			int processedCount = 0;
 			string receptorName;
@@ -167,9 +175,14 @@ namespace Clifton.Receptor
 					// receptor to the specified protocols.
 					GatherProtocolReceivers(r);
 
+					if (afterRegister != null)
+					{
+						afterRegister(r);
+					}
+
 					// Let interested parties know that we have a new receptor and handle how we want to announce the fact.
 					// TODO: Refactor the announcement out of this code.
-					NewReceptor.Fire(this, new NewReceptorEventArgs(r));
+					NewReceptor.Fire(this, new ReceptorEventArgs(r));
 
 					// Let the receptor instance perform additional initialization, such as creating carriers.
 					r.Instance.Initialize();
@@ -226,10 +239,20 @@ namespace Clifton.Receptor
 			// TODO: If our collections were IReceptor, then we wouldn't need the "as".
 			Receptors.Remove(receptor as Receptor);
 			protocolReceptorMap.ForEach(kvp => kvp.Value.Remove(receptor as Receptor));
+			ReceptorRemoved.Fire(this, new ReceptorEventArgs(receptor));
 
 			// TODO: Refactor out of this code.
 			// TODO: Add a "RemovedReceptor" event.
 			Say("Receptor " + receptor.Name + " removed.");
+		}
+
+		/// <summary>
+		/// Remove the receptor container of the specified instance.
+		/// </summary>
+		/// <param name="receptorInstance"></param>
+		public void Remove(IReceptorInstance receptorInstance)
+		{
+			Receptors.Where(r => r.Instance == receptorInstance).ForEach(r => Remove(r));
 		}
 
 		/// <summary>

@@ -12,16 +12,17 @@
   <Receptor Name="Zip Code Service" AssemblyName="ZipCodeReceptor.dll"></Receptor>
   <Receptor Name="Weather Info" AssemblyName="WeatherInfoReceptor.dll"></Receptor>
   -->
-  
+
+  <!--
   <Receptor Name="Text to Speech" AssemblyName="TextToSpeechReceptor.dll"></Receptor>
   <Receptor Name="Carrier Exporter" AssemblyName="CarrierExporterReceptor.dll"></Receptor>
 
   <Receptor Name="Persistor" AssemblyName="PersistenceReceptor.dll"/>
   <Receptor Name="Timer" AssemblyName="TimerReceptor.dll"/>
+  <Receptor Name="Image Writer" AssemblyName="ImageWriterReceptor.dll"/>
+  <Receptor Name="Webpage Scraper" AssemblyName="WebpageScraperReceptor.dll"/>
+  -->
   <Receptor Name="APOD" AssemblyName="APODScraperReceptor.dll"/>
   <Receptor Name="Thumbnail Viewer" AssemblyName="ThumbnailViewerReceptor.dll"/>
-  <Receptor Name="Webpage Scraper" AssemblyName="WebpageScraperReceptor.dll"/>
-
   <Receptor Name="Thumbnail Creator" AssemblyName="ThumbnailCreatorReceptor.dll"/>
-  <Receptor Name="Image Writer" AssemblyName="ImageWriterReceptor.dll"/>
 </Receptors>

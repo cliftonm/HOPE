@@ -17,7 +17,7 @@ namespace PersistenceReceptor
 {
 	public class ReceptorDefinition : IReceptorInstance
 	{
-		public string Name { get { return "Persistor"; } }
+		public string Name { get { return "SQLite Persistor"; } }
 		public bool IsEdgeReceptor { get { return true; } }
 		public bool IsHidden { get { return false; } }
 
@@ -168,7 +168,7 @@ namespace PersistenceReceptor
 		{
 			StringBuilder sb = new StringBuilder("select ");
 			List<INativeType> types = rsys.SemanticTypeSystem.GetSemanticTypeStruct(signal.ResponseProtocol).NativeTypes;
-			sb.Append(String.Join(",", (from c in types select c.Name).ToArray()));
+			sb.Append(String.Join(", ", (from c in types select c.Name).ToArray()));
 			sb.Append(" from " + signal.TableName);
 			if (signal.Where != null) sb.Append(" where " + signal.Where);
 			// support for group by is sort of pointless since we're not supporting any mechanism for aggregate functions.
@@ -183,6 +183,8 @@ namespace PersistenceReceptor
 			ISemanticTypeStruct collectionProtocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct(signal.ResponseProtocol + "Recordset");
 			dynamic collection = rsys.SemanticTypeSystem.Create(signal.ResponseProtocol + "Recordset");
 			collection.Recordset = new List<dynamic>();
+			// Return whatever we were sent, so caller can have a reference that it needs.
+			collection.Tag = signal.Tag;			
 
 			while (reader.Read())
 			{

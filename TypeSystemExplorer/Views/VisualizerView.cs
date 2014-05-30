@@ -190,7 +190,7 @@ namespace TypeSystemExplorer.Views
 	public class VisualizerView : UserControl
 	{
 		const int RenderTime = 120;
-		const int CarrierTime = 50;
+		const int CarrierTime = 10; // 50 for 2 second delay.
 		const int OrbitCountMax = 50;
 		protected Size ReceptorSize = new Size(40, 40);
 		protected Size ReceptorHalfSize = new Size(20, 20);
@@ -203,10 +203,20 @@ namespace TypeSystemExplorer.Views
 
 		public bool StartDrop { get; set; }
 
+		/// <summary>
+		/// Sets the drop point, converting from screen coordinates to client coordinates.
+		/// </summary>
 		public Point DropPoint
 		{
-			get { return DropPoint; }
 			set { dropPoint = PointToClient(value); }
+		}
+
+		/// <summary>
+		/// Sets the dropp point given a client coordinate.
+		/// </summary>
+		public Point ClientDropPoint
+		{
+			set { dropPoint = value; }
 		}
 
 		protected Dictionary<IReceptor, Point> receptorLocation;
@@ -233,7 +243,11 @@ namespace TypeSystemExplorer.Views
 		protected Point mousePosition;
 		protected DateTime mouseHoverStartTime;
 
+		protected Image pauseButton;
+		protected Image playButton;
+
 		protected int orbitCount = 0;
+		protected bool paused;
 
 		public VisualizerView()
 		{
@@ -254,17 +268,26 @@ namespace TypeSystemExplorer.Views
 			penColors.Add(new Pen(Color.Purple));
 			penColors.Add(new Pen(Color.Salmon));
 
+			playButton = Image.FromFile("play.bmp");
+			pauseButton = Image.FromFile("pause.bmp");
+
 			InitializeCollections();
 
 			rnd = new Random();
 
 			Program.Receptors.NewReceptor += OnNewReceptor;
 			Program.Receptors.NewCarrier += OnNewCarrier;
+			Program.Receptors.ReceptorRemoved += OnReceptorRemoved;
 
 			timer = new Timer();
 			timer.Interval = 1000 / 30;		// 30 hz refresh rate in milliseconds;
 			timer.Tick += OnTimerTick;
 			timer.Start();
+		}
+
+		public Point GetLocation(IReceptor r)
+		{
+			return receptorLocation[r];
 		}
 
 		public void Reset()
@@ -351,16 +374,21 @@ namespace TypeSystemExplorer.Views
 			}
 
 			cstate.Images.Add(image);
+
+			GetImageMetadata(r);
 			Invalidate(true);
 		}
 
 		protected void OnTimerTick(object sender, EventArgs e)
 		{
-			bool more = Step();
-
-			if (more)
+			if (!paused)
 			{
-				Visualizer.Refresh();
+				bool more = Step();
+
+				if (more)
+				{
+					Visualizer.Refresh();
+				}
 			}
 
 			CheckMouseHover();
@@ -430,7 +458,7 @@ namespace TypeSystemExplorer.Views
 			return more;
 		}
 
-		protected void OnNewReceptor(object sender, NewReceptorEventArgs e)
+		protected void OnNewReceptor(object sender, ReceptorEventArgs e)
 		{
 			// int hw = ctrl.ClientRectangle.Width / 2;
 			// int hh = ctrl.ClientRectangle.Height / 2;
@@ -478,10 +506,20 @@ namespace TypeSystemExplorer.Views
 			}
 		}
 
+		protected void OnReceptorRemoved(object sender, ReceptorEventArgs e)
+		{
+			// Also remove the receptor for our local collections.
+			receptorLocation.Remove(e.Receptor);
+			carousels.Remove(e.Receptor);
+			carrierAnimations.RemoveAll(a => a.Target == e.Receptor.Instance);
+		}
+
 		protected void MouseDownEvent(object sender, MouseEventArgs args)
 		{
 			if (args.Button == MouseButtons.Left)
 			{
+				CheckPlayPauseButtons(args.Location);
+
 				var selectedReceptors = receptorLocation.Where(kvp => (new Rectangle(Point.Subtract(kvp.Value, ReceptorHalfSize), ReceptorSize)).Contains(args.Location));
 
 				if (selectedReceptors.Count() > 0)
@@ -493,6 +531,21 @@ namespace TypeSystemExplorer.Views
 			}
 		}
 
+		protected static Rectangle playButtonRect = new Rectangle(0, 0, 32, 32);
+		protected static Rectangle pauseButtonRect = new Rectangle(35, 0, 32, 32);
+
+		protected void CheckPlayPauseButtons(Point p)
+		{
+			if (playButtonRect.Contains(p))
+			{
+				paused = false;
+			}
+			else if (pauseButtonRect.Contains(p))
+			{
+				paused = true;
+			}
+		}
+
 		protected void MouseUpEvent(object sender, MouseEventArgs args)
 		{
 			moving = false;
@@ -501,8 +554,8 @@ namespace TypeSystemExplorer.Views
 			{
 				// Remove the receptor.
 				Program.Receptors.Remove(selectedReceptor);
-				receptorLocation.Remove(selectedReceptor);
-				carrierAnimations.RemoveAll(a => a.Target == selectedReceptor.Instance);
+
+				// Cleaning up our collections will happen when the ReceptorRemoved event fires.
 			}
 
 			selectedReceptor = null;
@@ -525,6 +578,12 @@ namespace TypeSystemExplorer.Views
 			mouseHoverStartTime = DateTime.Now;
 		}
 
+		protected void MouseEnterEvent(object sender, EventArgs args)
+		{
+			// We need to set focus to the control otherwise we don't get mouse wheel events.
+			Focus();
+		}
+
 		protected void MouseWheelEvent(object sender, MouseEventArgs args)
 		{
 			var hoverReceptors = receptorLocation.Where(kvp => (new Rectangle(Point.Subtract(kvp.Value, ReceptorHalfSize), ReceptorSize)).Contains(args.Location));
@@ -542,10 +601,29 @@ namespace TypeSystemExplorer.Views
 
 				if (carousels.TryGetValue(hoverReceptor, out cstate))
 				{
+					GetImageMetadata(hoverReceptor);
 					cstate.Offset += spin;
 					Invalidate(true);
 				}
 			}
+		}
+
+		protected void GetImageMetadata(IReceptor r)
+		{
+			CarouselState cstate = carousels[r];
+			int idx = cstate.Offset % cstate.Images.Count;
+
+			if (idx < 0)
+			{
+				idx += cstate.Images.Count;
+			}
+
+			Image img = cstate.Images[idx];
+			ISemanticTypeStruct protocol = Program.Receptors.SemanticTypeSystem.GetSemanticTypeStruct("GetImageMetadata");
+			dynamic signal = Program.Receptors.SemanticTypeSystem.Create("GetImageMetadata");
+			signal.ImageFile = img.Tag.ToString();
+			signal.ResponseProtocol = "HaveImageMetadata";
+			Program.Receptors.CreateCarrier(null, protocol, signal);
 		}
 
 		/// <summary>
@@ -594,6 +672,9 @@ namespace TypeSystemExplorer.Views
 
 				e.Graphics.FillRectangle(blackBrush, new Rectangle(Location, Size));
 				e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+
+				e.Graphics.DrawImage(playButton, playButtonRect);
+				e.Graphics.DrawImage(pauseButton, pauseButtonRect);
 
 				receptorLocation.ForEach(kvp =>
 					{
@@ -714,15 +795,16 @@ namespace TypeSystemExplorer.Views
 							ip.Offset((int)dx, (int)dy);
 							int sizer = (idxReal == 0) ? 150 : 100;
 							Image img = kvp.Value.Images[idx0];
-							e.Graphics.DrawImage(img, new Rectangle(new Point(ip.X - 50, ip.Y - 50 * img.Height / img.Width), new Size(sizer, sizer * img.Height / img.Width)));
+							e.Graphics.DrawImage(img, new Rectangle(new Point(ip.X - 75, ip.Y - 50 * img.Height / img.Width), new Size(sizer, sizer * img.Height / img.Width)));
 						}
 
 					});
 			}
 			catch (Exception ex)
 			{
-				// System.Diagnostics.Debugger.Break();
+				System.Diagnostics.Debugger.Break();
 			}
 		}
 	}
 }
+

@@ -23,6 +23,15 @@ namespace Clifton.Receptor
 		public string Name { get; protected set; }
 
 		/// <summary>
+		/// Returns the name of the assembly implementing the receptor.
+		/// </summary>
+		public string AssemblyName 
+		{ 
+			get { return assemblyName; }
+			protected set { assemblyName = value; }
+		}
+
+		/// <summary>
 		/// The instance of the receptor.  The assembly must declare one class implementing IReceptorInstance, and
 		/// this is the class that is instantiated through reflection.
 		/// </summary>
@@ -74,7 +83,10 @@ namespace Clifton.Receptor
 			string name = Path.GetFileNameWithoutExtension(filename).SplitCamelCase();
 			Assembly assembly = Assembly.LoadFile(filename);
 
-			return new Receptor(name, assembly);
+			Receptor r = new Receptor(name, assembly);
+			r.AssemblyName = Path.GetFileName(filename);
+
+			return r;
 		}
 
 		/// <summary>

@@ -70,7 +70,11 @@ namespace CarrierExporterReceptor
 						if (val is List<dynamic>)
 						{
 							// Must be a collection of semantic types!
-							CreateSubNodes(xdoc, node, p.Name, val);
+							CreateSubNodes(xdoc, node, p.Name, (List<dynamic>)val);
+						}
+						else if (val is ICarrier)
+						{
+							CreateSubNodes(xdoc, node, p.Name, (ICarrier)val);
 						}
 						else
 						{
@@ -80,12 +84,12 @@ namespace CarrierExporterReceptor
 				});
 		}
 
-		protected void CreateSubNodes(XmlDocument xdoc, XmlNode node, string name, object val)
+		protected void CreateSubNodes(XmlDocument xdoc, XmlNode node, string name, List<dynamic> val)
 		{
 			XmlNode subnode = xdoc.CreateElement(name);
 			node.AppendChild(subnode);
 
-			((List<dynamic>)val).ForEach(item =>
+			val.ForEach(item =>
 				{
 					Type t = item.GetType();
 					XmlNode carrier = xdoc.CreateElement(t.Name);
@@ -101,7 +105,11 @@ namespace CarrierExporterReceptor
 							if (val2 is List<dynamic>)
 							{
 								// Must be a collection of semantic types!
-								CreateSubNodes(xdoc, carrier, p.Name, val2);
+								CreateSubNodes(xdoc, subnode, p.Name, (List<dynamic>)val2);
+							}
+							else if (val is ICarrier)
+							{
+								CreateSubNodes(xdoc, subnode, p.Name, (ICarrier)val);
 							}
 							else
 							{
@@ -110,6 +118,38 @@ namespace CarrierExporterReceptor
 						}
 					});
 				});
+		}
+
+		protected void CreateSubNodes(XmlDocument xdoc, XmlNode node, string name, ICarrier carrier)
+		{
+			XmlNode subnode = xdoc.CreateElement(name);
+			node.AppendChild(subnode);
+			node.Attributes.Append(CreateAttribute(xdoc, "Protocol", carrier.Protocol.DeclTypeName));
+			carriersNode.AppendChild(node);
+
+			Type t = carrier.Signal.GetType();
+			t.GetProperties(BindingFlags.Instance | BindingFlags.Public).ForEach(p =>
+			{
+				object val = p.GetValue(carrier.Signal);
+
+				if (val != null)
+				{
+					// If this is a collection...
+					if (val is List<dynamic>)
+					{
+						// Must be a collection of semantic types!
+						CreateSubNodes(xdoc, subnode, p.Name, (List<dynamic>)val);
+					}
+					else if (val is ICarrier)
+					{
+						CreateSubNodes(xdoc, subnode, p.Name, (ICarrier)val);
+					}
+					else
+					{
+						subnode.Attributes.Append(CreateAttribute(xdoc, p.Name, val.ToString()));
+					}
+				}
+			});
 		}
 
 		protected XmlAttribute CreateAttribute(XmlDocument xdoc, string attrName, string value)

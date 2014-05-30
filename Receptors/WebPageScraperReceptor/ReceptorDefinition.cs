@@ -48,6 +48,8 @@ namespace WebPageScraperReceptor
 
 		public async void ProcessCarrier(ICarrier carrier)
 		{
+			string url = carrier.Signal.URL;
+
 			try
 			{
 				string html = await Task.Run(() =>
@@ -59,30 +61,32 @@ namespace WebPageScraperReceptor
 							//   www.somesite.it/?p=1500
 							// use:
 							//   client.QueryString.Add("p", "1500"); //add parameters
-							return client.DownloadString(carrier.Signal.URL);
+							return client.DownloadString(url);
 						}
 					});
 
-				Emit(html, carrier.Signal.ResponseProtocol);
+				Emit(url, html, carrier.Signal.ResponseProtocol);
 			}
 			catch (Exception ex)
 			{
-				EmitError(ex.Message, carrier.Signal.ResponseProtocol);
+				EmitError(url, ex.Message, carrier.Signal.ResponseProtocol);
 			}
 		}
 
-		protected void Emit(string html, string protocolName)
+		protected void Emit(string url, string html, string protocolName)
 		{
 			ISemanticTypeStruct protocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct(protocolName);
 			dynamic signal = rsys.SemanticTypeSystem.Create(protocolName);
+			signal.URL = url;
 			signal.HTML = html;
 			rsys.CreateCarrier(this, protocol, signal);
 		}
 
-		protected void EmitError(string error, string protocolName)
+		protected void EmitError(string url, string error, string protocolName)
 		{
 			ISemanticTypeStruct protocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct(protocolName);
 			dynamic signal = rsys.SemanticTypeSystem.Create(protocolName);
+			signal.URL = url;
 			signal.Errors = error;
 			rsys.CreateCarrier(this, protocol, signal);
 		}

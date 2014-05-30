@@ -45,6 +45,15 @@ namespace Clifton.Tools.Strings.Extensions
 			return src.RightOf(s1).LeftOf(s2);
 		}
 
+		/// <summary>
+		/// Return a new string that is "around" (left of and right of) the specified string.
+		/// Only the first occurance is processed.
+		/// </summary>
+		public static string Surrounding(this String src, string s)
+		{
+			return src.LeftOf(s) + src.RightOf(s);
+		}
+
 		public static string RightOf(this String src, char c)
 		{
 			return Clifton.Tools.Strings.StringHelpers.RightOf(src, c);
@@ -80,7 +89,7 @@ namespace Clifton.Tools.Strings.Extensions
 
 		public static string LeftOf(this String src, string s)
 		{
-			string ret = s;
+			string ret = src;
 			int idx = src.IndexOf(s);
 
 			if (idx != -1)
