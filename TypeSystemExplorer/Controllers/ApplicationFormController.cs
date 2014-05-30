@@ -493,7 +493,19 @@ namespace TypeSystemExplorer.Controllers
 				});
 
 			// After registration, but before the NewReceptor fire event, set the drop point.
-			Program.Receptors.LoadReceptors((rec) => VisualizerController.View.ClientDropPoint = receptorLocationMap[rec]);
+			Program.Receptors.LoadReceptors((rec) => 
+				{
+					Point p = receptorLocationMap[rec];
+
+					if (p == noLocation)
+					{
+						VisualizerController.View.ClientDropPoint = VisualizerController.View.GetRandomLocation();
+					}
+					else
+					{
+						VisualizerController.View.ClientDropPoint = p;
+					}
+				});
 
 			VisualizerController.View.StartDrop = false;
 		}

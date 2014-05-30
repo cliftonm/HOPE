@@ -15,6 +15,105 @@
         <NativeType Name="Name" ImplementingType="string"/>
       </Attributes>
     </SemanticTypeStruct>
+    
+    <!-- HIGHER LEVEL SEMANTIC TYPES -->
+    
+    <!-- declarations -->
+
+    <SemanticTypeDecl OfType="PrimaryKey">
+      <AttributeValues>
+        <Attribute Name="Name" Value="PrimaryKey"/>
+        <Attribute Name="Value"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="URL"/>
+        <Attribute Name="Value"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="ImageFilename"/>
+        <Attribute Name="Value"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="Text"/>
+        <Attribute Name="Value"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="Keywords"/>
+        <Attribute Name="Value"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="Title"/>
+        <Attribute Name="Value"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="Explanation"/>
+        <Attribute Name="Value"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <!-- structs -->
+
+    <SemanticTypeStruct DeclType="PrimaryKey">
+      <Attributes>
+        <NativeType Name="Value" ImplementingType="long?"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <SemanticTypeStruct DeclType="URL">
+      <Attributes>
+        <NativeType Name="Value" ImplementingType="string"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <SemanticTypeStruct DeclType="ImageFilename">
+      <Attributes>
+        <NativeType Name="Filename" ImplementingType="string"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <SemanticTypeStruct DeclType="Text">
+      <Attributes>
+        <NativeType Name="Value" ImplementingType="string"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <SemanticTypeStruct DeclType="Keywords">
+      <Attributes>
+        <SemanticElement Name="Text"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <SemanticTypeStruct DeclType="Title">
+      <Attributes>
+        <SemanticElement Name="Text"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <SemanticTypeStruct DeclType="Explanation">
+      <Attributes>
+        <SemanticElement Name="Text"/>
+      </Attributes>
+    </SemanticTypeStruct>
+    <!-- END HIGH LEVEL SEMANTIC TYPES -->
+
 
     <!-- A Debug Message -->
 
@@ -77,20 +176,6 @@
       </Attributes>
     </SemanticTypeStruct>
 
-    <!-- Image Filename -->
-
-    <SemanticTypeDecl OfType="Noun">
-      <AttributeValues>
-        <Attribute Name="Name" Value="ImageFilename"/>
-      </AttributeValues>
-    </SemanticTypeDecl>
-
-    <SemanticTypeStruct DeclType="ImageFilename">
-      <Attributes>
-        <NativeType Name="Filename" ImplementingType="string"/>
-      </Attributes>
-    </SemanticTypeStruct>
-
     <!-- Thumbnail Image-->
 
     <SemanticTypeDecl OfType="Noun">
@@ -101,7 +186,7 @@
 
     <SemanticTypeStruct DeclType="ThumbnailImage">
       <Attributes>
-        <NativeType Name="Filename" ImplementingType="string"/>
+        <SemanticElement Name="ImageFilename"/>
         <NativeType Name="Image" ImplementingType="Image"/>
       </Attributes>
     </SemanticTypeStruct>
@@ -374,12 +459,12 @@
 
     <SemanticTypeStruct DeclType="APOD">
       <Attributes>
-        <NativeType Name="ID" ImplementingType="long?"/>
-        <NativeType Name="URL" ImplementingType="string"/>
-        <NativeType Name="ImageFile" ImplementingType="string"/>
-        <NativeType Name="Keywords" ImplementingType="string"/>
-        <NativeType Name="Title" ImplementingType="string"/>
-        <NativeType Name="Explanation" ImplementingType="string"/>
+        <SementicElement Name="PrimaryKey"/>
+        <SemanticElement Name="URL"/>
+        <SemanticElement Name="ImageFilename"/>
+        <SemanticElement Name="Keywords"/>
+        <SemanticElement Name="Title"/>
+        <SemanticElement Name="Explanation"/>
         <NativeType Name="Errors" ImplementingType="string"/>
       </Attributes>
     </SemanticTypeStruct>

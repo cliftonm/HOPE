@@ -235,11 +235,11 @@ namespace APODScraperReceptor
 		protected void LogImage(string url, string fn, string keywords, string title, string explanation, List<string> errors)
 		{
 			ICarrier recordCarrier = CreateAPODRecordCarrier();
-			recordCarrier.Signal.URL = url;
-			recordCarrier.Signal.ImageFile = fn;
-			recordCarrier.Signal.Keywords = keywords;
-			recordCarrier.Signal.Explanation = explanation;
-			recordCarrier.Signal.Title = title;
+			recordCarrier.Signal.URL.Value = url;
+			recordCarrier.Signal.ImageFilename.Filename = fn;
+			recordCarrier.Signal.Keywords.Text.Value = keywords;
+			recordCarrier.Signal.Explanation.Text.Value = explanation;
+			recordCarrier.Signal.Title.Text.Value = title;
 			recordCarrier.Signal.Errors = String.Join(", ", errors.ToArray());
 
 			ISemanticTypeStruct protocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct("DatabaseRecord");
@@ -295,6 +295,7 @@ namespace APODScraperReceptor
 			dynamic respSignal = rsys.SemanticTypeSystem.Create("HaveImageMetadata");
 			List<dynamic> records = signal.Recordset;
 
+			// TODO: What if more than one image filename matches?
 			if (records.Count > 0)
 			{
 				dynamic firstMatch = records[0];
@@ -309,6 +310,7 @@ namespace APODScraperReceptor
 				// Off it goes!
 				rsys.CreateCarrier(this, respProtocol, respSignal);
 			}
+			// else, APOD knows nothing about this image file, so there's no response.
 		}
 	}
 }

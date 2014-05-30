@@ -12,9 +12,9 @@ namespace Clifton.SemanticTypeSystem
 {
 	public class NewSemanticTypeEventArgs : EventArgs
 	{
-		public ISemanticType Type { get; protected set; }
+		public IRuntimeSemanticType Type { get; protected set; }
 
-		public NewSemanticTypeEventArgs(ISemanticType newType)
+		public NewSemanticTypeEventArgs(IRuntimeSemanticType newType)
 		{
 			Type = newType;
 		}
@@ -25,14 +25,14 @@ namespace Clifton.SemanticTypeSystem
 		public event EventHandler<NewSemanticTypeEventArgs> NewSemanticType;
 		public event EventHandler<EventArgs> CreationDone;
 
-		public Dictionary<string, SemanticType> SemanticTypes { get; protected set; }
+		public Dictionary<string, ISemanticType> SemanticTypes { get; protected set; }
 		public Assembly CompiledAssembly { get; set; }
 		public Dictionary<Guid, SemanticTypeInstance> Instances { get; protected set; }
 		public List<SemanticTypeInstance> SymbolTable { get { return Instances.Values.ToList(); } }
 
 		public STS()
 		{
-			SemanticTypes = new Dictionary<string, SemanticType>();
+			SemanticTypes = new Dictionary<string, ISemanticType>();
 			Instances = new Dictionary<Guid, SemanticTypeInstance>();
 		}
 
@@ -66,10 +66,10 @@ namespace Clifton.SemanticTypeSystem
 		/// <summary>
 		/// Create an instance of the specified type, adding it to the Instances collection.
 		/// </summary>
-		public ISemanticType Create(string typeName, ISemanticType parent = null)
+		public IRuntimeSemanticType Create(string typeName, IRuntimeSemanticType parent = null)
 		{
 			Assert.That(SemanticTypes.ContainsKey(typeName), "The semantic type "+typeName+" has not been declared.");
-			ISemanticType t = (ISemanticType)CompiledAssembly.CreateInstance("SemanticTypes." + typeName);
+			IRuntimeSemanticType t = (IRuntimeSemanticType)CompiledAssembly.CreateInstance("SemanticTypes." + typeName);
 			t.Initialize(this);
 			Guid guid = Guid.NewGuid();			// We create a unique key for this instance.
 			Instances[guid] = (new SemanticTypeInstance() { Name = typeName, Instance = t, Parent = parent, Key = guid, Definition = SemanticTypes[typeName] });
@@ -88,7 +88,7 @@ namespace Clifton.SemanticTypeSystem
 		/// Given a ST instance, remove it from the instances collection, including all children.
 		/// </summary>
 		/// <param name="instance"></param>
-		public void Destroy(ISemanticType instance)
+		public void Destroy(IRuntimeSemanticType instance)
 		{
 			GetChildInstances(instance).ForEach(child => Destroy(child));
 			Guid key = Instances.Single(kvp => kvp.Value.Instance == instance).Key;
@@ -98,9 +98,9 @@ namespace Clifton.SemanticTypeSystem
 		/// <summary>
 		/// Return all the child ST instances of the specified ST instance.
 		/// </summary>
-		protected List<ISemanticType> GetChildInstances(ISemanticType instance)
+		protected List<IRuntimeSemanticType> GetChildInstances(IRuntimeSemanticType instance)
 		{
-			List<ISemanticType> children = Instances.Where(kvp => kvp.Value.Parent == instance).Select(i => i.Value.Instance).ToList();
+			List<IRuntimeSemanticType> children = Instances.Where(kvp => kvp.Value.Parent == instance).Select(i => i.Value.Instance).ToList();
 
 			return children;
 		}
@@ -113,7 +113,7 @@ namespace Clifton.SemanticTypeSystem
 		{
 			List<SemanticTypeDecl> decls = Parser.ParseDeclarations(xml);
 			List<SemanticTypeStruct> structs = Parser.ParseStructs(xml);
-			Dictionary<string, SemanticType> stDict = Parser.BuildSemanticTypes(decls, structs);
+			Dictionary<string, ISemanticType> stDict = Parser.BuildSemanticTypes(decls, structs);
 			SemanticTypes = SemanticTypes.Merge(stDict);
 		}
 

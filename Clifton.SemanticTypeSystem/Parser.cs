@@ -32,7 +32,7 @@ namespace Clifton.SemanticTypeSystem
 																								 select new SemanticElement()
 																								 {
 																									 Name = semanticType.Attribute("Name").Value,
-																								 }).ToList(),
+																								 }).ToList<ISemanticElement>(),
 						   }).ToList();
 
 			return structs;
@@ -51,16 +51,16 @@ namespace Clifton.SemanticTypeSystem
 																									 select new AttributeValue()
 																									 {
 																										 Name = nativeType.Attribute("Name").Value,
-																										 Value = nativeType.Attribute("Value").Value,
-																									 }).ToList(),
+																										 Value = (nativeType.Attribute("Value") != null) ? nativeType.Attribute("Value").Value : null,
+																									 }).ToList<IAttributeValue>(),
 						   }).ToList();
 
 			return structs;
 		}
 
-		public static Dictionary<string, SemanticType> BuildSemanticTypes(List<SemanticTypeDecl> decls, List<SemanticTypeStruct> structs)
+		public static Dictionary<string, ISemanticType> BuildSemanticTypes(List<SemanticTypeDecl> decls, List<SemanticTypeStruct> structs)
 		{
-			Dictionary<string, SemanticType> semanticTypes = new Dictionary<string, SemanticType>();
+			Dictionary<string, ISemanticType> semanticTypes = new Dictionary<string, ISemanticType>();
 
 			decls.ForEach(decl =>
 			{
@@ -90,7 +90,7 @@ namespace Clifton.SemanticTypeSystem
 				// This is a validation process.
 				Match(ofType, decl.AttributeValues);
 
-				SemanticType st = new SemanticType() { Decl = decl, Struct = ststruct };
+				ISemanticType st = new SemanticType() { Decl = decl, Struct = ststruct };
 				semanticTypes[structName] = st;
 			});
 
@@ -106,7 +106,7 @@ namespace Clifton.SemanticTypeSystem
 		/// <summary>
 		/// Each native type in the struct 
 		/// </summary>
-		public static void Match(SemanticTypeStruct ststruct, List<AttributeValue> attrValues)
+		public static void Match(SemanticTypeStruct ststruct, List<IAttributeValue> attrValues)
 		{
 			List<INativeType> nativeTypes = ststruct.NativeTypes;
 			nativeTypes.ForEach(nt => Assert.That(attrValues.Any(attr => attr.Name == nt.Name), "Attribute mismatch between decl and struct for struct DeclType" + ststruct.DeclTypeName));

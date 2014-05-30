@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using Clifton.SemanticTypeSystem.Interfaces;
+
 namespace Clifton.SemanticTypeSystem
 {
 	/// <summary>
 	/// A semantic type is a tuple of the declaration and the structure.
 	/// </summary>
-	public class SemanticType
+	public class SemanticType : ISemanticType
 	{
-		public SemanticTypeDecl Decl { get; set; }
-		public SemanticTypeStruct Struct { get; set; }
+		public ISemanticTypeDecl Decl { get; set; }
+		public ISemanticTypeStruct Struct { get; set; }
 
 		public SemanticType()
 		{

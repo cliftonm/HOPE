@@ -379,6 +379,11 @@ namespace TypeSystemExplorer.Views
 			Invalidate(true);
 		}
 
+		public Point GetRandomLocation()
+		{
+			return new Point(rnd.Next(ClientRectangle.Width - 80) + 40, rnd.Next(ClientRectangle.Height - 80) + 40);
+		}
+
 		protected void OnTimerTick(object sender, EventArgs e)
 		{
 			if (!paused)
@@ -466,7 +471,7 @@ namespace TypeSystemExplorer.Views
 
 			if (!StartDrop)
 			{
-				p = new Point(rnd.Next(ClientRectangle.Width - 40), rnd.Next(ClientRectangle.Height - 40));
+				p = GetRandomLocation();
 			}
 
 			if (!e.Receptor.Instance.IsHidden)
@@ -489,7 +494,7 @@ namespace TypeSystemExplorer.Views
 					if (!StartDrop)
 					{
 						// From the system edge receptor, so drop the carriers randomly onto the surface.
-						p = new Point(rnd.Next(Width), rnd.Next(Height));
+						p = GetRandomLocation();
 					}
 
 					carrierAnimations.Add(new CarrierAnimationItem() { StartPosition = p, Carrier = e.Carrier });

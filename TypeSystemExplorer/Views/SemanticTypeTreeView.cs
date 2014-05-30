@@ -5,6 +5,7 @@ using System.Text;
 using System.Windows.Forms;
 
 using Clifton.SemanticTypeSystem;
+using Clifton.SemanticTypeSystem.Interfaces;
 
 using TypeSystemExplorer.Controls;
 using TypeSystemExplorer.Models;
@@ -57,7 +58,7 @@ namespace TypeSystemExplorer.Views
 				});
 		}
 
-		protected void PopulateSTChildren(SemanticType st, object parent)
+		protected void PopulateSTChildren(ISemanticType st, object parent)
 		{
 			TreeView.AddNode(parent, "decl", st.Decl);
 			TreeView.AddNode(parent, "struct", st.Struct);

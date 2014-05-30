@@ -58,30 +58,7 @@ namespace CarrierExporterReceptor
 			XmlNode node = xdoc.CreateElement("Carrier");
 			node.Attributes.Append(CreateAttribute(xdoc, "Protocol", carrier.Protocol.DeclTypeName));
 			carriersNode.AppendChild(node);
-
-			Type t = carrier.Signal.GetType();
-			t.GetProperties(BindingFlags.Instance | BindingFlags.Public).ForEach(p =>
-				{
-					object val = p.GetValue(carrier.Signal);
-
-					if (val != null)
-					{
-						// If this is a collection...
-						if (val is List<dynamic>)
-						{
-							// Must be a collection of semantic types!
-							CreateSubNodes(xdoc, node, p.Name, (List<dynamic>)val);
-						}
-						else if (val is ICarrier)
-						{
-							CreateSubNodes(xdoc, node, p.Name, (ICarrier)val);
-						}
-						else
-						{
-							node.Attributes.Append(CreateAttribute(xdoc, p.Name, val.ToString()));
-						}
-					}
-				});
+			ProcessCarrier(carrier, node);
 		}
 
 		protected void CreateSubNodes(XmlDocument xdoc, XmlNode node, string name, List<dynamic> val)
@@ -107,9 +84,13 @@ namespace CarrierExporterReceptor
 								// Must be a collection of semantic types!
 								CreateSubNodes(xdoc, subnode, p.Name, (List<dynamic>)val2);
 							}
-							else if (val is ICarrier)
+							else if (val2 is ICarrier)
 							{
 								CreateSubNodes(xdoc, subnode, p.Name, (ICarrier)val);
+							}
+							else if (val2 is ISemanticType)
+							{
+								CreateSubNodes(xdoc, node, p.Name, (ISemanticType)val);
 							}
 							else
 							{
@@ -120,13 +101,59 @@ namespace CarrierExporterReceptor
 				});
 		}
 
+		protected void CreateSubNodes(XmlDocument xdoc, XmlNode node, string name, ISemanticType val)
+		{
+			XmlNode subnode = xdoc.CreateElement(name);
+			node.AppendChild(subnode);
+
+			Type t = val.GetType();
+			t.GetProperties(BindingFlags.Instance | BindingFlags.Public).ForEach(p =>
+				{
+					object val2 = p.GetValue(val);
+
+					if (val2 != null)
+					{
+						// If this is a collection...
+						if (val2 is List<dynamic>)
+						{
+							// Must be a collection of semantic types!
+							CreateSubNodes(xdoc, subnode, p.Name, (List<dynamic>)val2);
+						}
+						else if (val2 is ICarrier)
+						{
+							CreateSubNodes(xdoc, subnode, p.Name, (ICarrier)val2);
+						}
+						else if (val2 is ISemanticType)
+						{
+							CreateSubNodes(xdoc, node, p.Name, (ISemanticType)val);
+						}
+						else
+						{
+							subnode.Attributes.Append(CreateAttribute(xdoc, p.Name, val2.ToString()));
+						}
+					}
+				});
+		}
+
 		protected void CreateSubNodes(XmlDocument xdoc, XmlNode node, string name, ICarrier carrier)
 		{
 			XmlNode subnode = xdoc.CreateElement(name);
 			node.AppendChild(subnode);
 			node.Attributes.Append(CreateAttribute(xdoc, "Protocol", carrier.Protocol.DeclTypeName));
 			carriersNode.AppendChild(node);
+			ProcessCarrier(carrier, subnode);
+		}
 
+		protected XmlAttribute CreateAttribute(XmlDocument xdoc, string attrName, string value)
+		{
+			XmlAttribute xa = xdoc.CreateAttribute(attrName);
+			xa.Value = value;
+
+			return xa;
+		}
+
+		protected void ProcessCarrier(ICarrier carrier, XmlNode node)
+		{
 			Type t = carrier.Signal.GetType();
 			t.GetProperties(BindingFlags.Instance | BindingFlags.Public).ForEach(p =>
 			{
@@ -138,26 +165,22 @@ namespace CarrierExporterReceptor
 					if (val is List<dynamic>)
 					{
 						// Must be a collection of semantic types!
-						CreateSubNodes(xdoc, subnode, p.Name, (List<dynamic>)val);
+						CreateSubNodes(xdoc, node, p.Name, (List<dynamic>)val);
 					}
 					else if (val is ICarrier)
 					{
-						CreateSubNodes(xdoc, subnode, p.Name, (ICarrier)val);
+						CreateSubNodes(xdoc, node, p.Name, (ICarrier)val);
+					}
+					else if (val is ISemanticType)
+					{
+						CreateSubNodes(xdoc, node, p.Name, (ISemanticType)val);
 					}
 					else
 					{
-						subnode.Attributes.Append(CreateAttribute(xdoc, p.Name, val.ToString()));
+						node.Attributes.Append(CreateAttribute(xdoc, p.Name, val.ToString()));
 					}
 				}
 			});
-		}
-
-		protected XmlAttribute CreateAttribute(XmlDocument xdoc, string attrName, string value)
-		{
-			XmlAttribute xa = xdoc.CreateAttribute(attrName);
-			xa.Value = value;
-
-			return xa;
 		}
 	}
 }

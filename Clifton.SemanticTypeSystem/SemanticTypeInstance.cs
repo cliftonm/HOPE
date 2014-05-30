@@ -18,9 +18,9 @@ namespace Clifton.SemanticTypeSystem
 	public class SemanticTypeInstance
 	{
 		public string Name { get; set; }
-		public ISemanticType Instance { get; set; }
-		public ISemanticType Parent { get; set; }
+		public IRuntimeSemanticType Instance { get; set; }
+		public IRuntimeSemanticType Parent { get; set; }
 		public Guid Key { get; set; }
-		public SemanticType Definition { get; set; }
+		public ISemanticType Definition { get; set; }
 	}
 }

@@ -177,7 +177,9 @@
     <Content Include="bin\Debug\carrier-daily_event.xml">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="bin\Debug\carrier-scrapeAPOD.xml" />
+    <Content Include="bin\Debug\carrier-scrapeAPOD.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="bin\Debug\carrier-test_delete.xml">
       <SubType>Designer</SubType>
     </Content>

@@ -38,7 +38,7 @@ namespace HelloWorldReceptor
 
 		public void ProcessCarrier(ICarrier carrier)
 		{
-			string fn = carrier.Signal.Filename;
+			string fn = carrier.Signal.ImageFilename.Filename;
 			Image img = carrier.Signal.Image;
 			
 			// Can't do this because it results in the visualizer throwing an "object is in use elsewhere" exception.
