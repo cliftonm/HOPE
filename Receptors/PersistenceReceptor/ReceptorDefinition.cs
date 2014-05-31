@@ -191,9 +191,13 @@ namespace PersistenceReceptor
 
 			// TODO: Join these through the common interface IGetSetSemanticType
 
-			List<INativeType> ntypes = rsys.SemanticTypeSystem.GetSemanticTypeStruct(schema).NativeTypes;
-			List<ISemanticElement> stypes = rsys.SemanticTypeSystem.GetSemanticTypeStruct(schema).SemanticElements;
-			sb.Append(String.Join(", ", (from c in ntypes select c.Name).Concat(from c in stypes select c.Element.Struct.DeclTypeName).ToArray()));
+			// List<INativeType> ntypes = rsys.SemanticTypeSystem.GetSemanticTypeStruct(schema).NativeTypes;
+			// List<ISemanticElement> stypes = rsys.SemanticTypeSystem.GetSemanticTypeStruct(schema).SemanticElements;
+			// sb.Append(String.Join(", ", (from c in ntypes select c.Name).Concat(from c in stypes select c.Element.Struct.DeclTypeName).ToArray()));
+
+			List<IGetSetSemanticType> types = rsys.SemanticTypeSystem.GetSemanticTypeStruct(schema).AllTypes;
+			sb.Append(String.Join(", ", (from c in types select c.Name).ToArray()));
+
 			sb.Append(" from " + signal.TableName);
 			if (signal.Where != null) sb.Append(" where " + signal.Where);
 			// support for group by is sort of pointless since we're not supporting any mechanism for aggregate functions.
@@ -215,16 +219,17 @@ namespace PersistenceReceptor
 			{
 				ISemanticTypeStruct protocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct(signal.ResponseProtocol);
 				dynamic outSignal = rsys.SemanticTypeSystem.Create(signal.ResponseProtocol);
+				types.ForEach(t=>t.SetValue(rsys.SemanticTypeSystem, outSignal, reader[t.Name]));
 
 				// Populate the output signal with the fields retrieved from the query, as specified by the requested response protocol
-				ntypes.Cast<IGetSetSemanticType>().ForEach(t => t.SetValue(rsys.SemanticTypeSystem, outSignal, reader[t.Name]));
+				// ntypes.Cast<IGetSetSemanticType>().ForEach(t => t.SetValue(rsys.SemanticTypeSystem, outSignal, reader[t.Name]));
 
 				// A semantic type is a different beast, potentially with child ST's. 
 				// We need to get to the native type parameter to properly initialize this type.
 				// Delegate this whole issue to the semantic type itself.
 				// An important thing -- schema semantic types can only have one property per type, otherwise we won't know which
 				// property to set.
-				stypes.ForEach(t => t.SetValue(rsys.SemanticTypeSystem, outSignal, reader[t.Element.Struct.DeclTypeName]));
+				// stypes.ForEach(t => t.SetValue(rsys.SemanticTypeSystem, outSignal, reader[t.Element.Struct.DeclTypeName]));
 
 				// Add the record to the recordset.
 				collection.Recordset.Add(outSignal);
@@ -240,9 +245,11 @@ namespace PersistenceReceptor
 
 		protected Dictionary<string, object> GetColumnValueMap(ICarrier carrier)
 		{
-			List<INativeType> types = rsys.SemanticTypeSystem.GetSemanticTypeStruct(carrier.Protocol.DeclTypeName).NativeTypes;
+			// List<INativeType> types = rsys.SemanticTypeSystem.GetSemanticTypeStruct(carrier.Protocol.DeclTypeName).NativeTypes;
+
+			List<IGetSetSemanticType> types = rsys.SemanticTypeSystem.GetSemanticTypeStruct(carrier.Protocol.DeclTypeName).AllTypes;
 			Dictionary<string, object> cvMap = new Dictionary<string, object>();
-			types.Cast<IGetSetSemanticType>().ForEach(t => cvMap[t.Name] = t.GetValue(rsys.SemanticTypeSystem, carrier.Signal));
+			types.ForEach(t => cvMap[t.Name] = t.GetValue(rsys.SemanticTypeSystem, carrier.Signal));
 
 			return cvMap;
 		}
