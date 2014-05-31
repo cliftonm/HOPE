@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 using Clifton.Receptor.Interfaces;
 using Clifton.SemanticTypeSystem.Interfaces;
+using Clifton.Tools.Strings.Extensions;
 
 namespace TextToSpeech
 {
@@ -32,7 +33,7 @@ namespace TextToSpeech
 
 		public string[] GetReceiveProtocols()
 		{
-			return new string[] { "TextToSpeech" };
+			return new string[] { "TextToSpeech", "Text"};
 		}
 
 		public void Initialize()
@@ -43,9 +44,23 @@ namespace TextToSpeech
 		{
 		}
 
+		/// <summary>
+		/// Handles both "TextToSpeech" and "Text" protocols.
+		/// </summary>
 		public void ProcessCarrier(ICarrier carrier)
 		{
-			string msg = carrier.Signal.Text;
+			string msg = String.Empty; ;
+
+			if (carrier.Protocol.DeclTypeName == "TextToSpeech")
+			{
+				msg = carrier.Signal.Text;
+			}
+			else if (carrier.Protocol.DeclTypeName == "Text")
+			{
+				msg = carrier.Signal.Value;
+				msg = msg.StripHtml();
+			}
+
 			Speak(msg);
 		}
 

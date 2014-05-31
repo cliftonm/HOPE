@@ -197,6 +197,7 @@ namespace TypeSystemExplorer.Views
 		public string ProtocolName { get; set; }
 		public string Name { get; set; }
 		public string Value { get; set; }
+		public string PropertyName { get; set; }
 	}
 
 	public class CarouselState
@@ -205,6 +206,7 @@ namespace TypeSystemExplorer.Views
 		public List<ImageMetadata> Images { get; set; }
 		public string ActiveImageFilename { get; set; }
 		public Rectangle ActiveImageLocation { get; set; }
+		public int ActiveImageIndex { get; set; }
 
 		public CarouselState()
 		{
@@ -217,6 +219,7 @@ namespace TypeSystemExplorer.Views
 		const int RenderTime = 120;
 		const int CarrierTime = 10; // 50 for 2 second delay.
 		const int OrbitCountMax = 50;
+		const int MetadataHeight = 15;	// the row height for metadata text.
 		protected Size ReceptorSize = new Size(40, 40);
 		protected Size ReceptorHalfSize = new Size(20, 20);
 		protected Point dropPoint;
@@ -458,7 +461,13 @@ namespace TypeSystemExplorer.Views
 					// Here we the IGetSetSemanticType instance (giving us access to Name, GetValue and SetValue operations) for the type.  
 					IGetSetSemanticType protocolType = types.Single(ptype => ptype.Name == itemProtocol);
 					// Create a metadata packet.
-					MetadataPacket metadataPacket = new MetadataPacket() { ProtocolName = itemProtocol, Name = p.Name };
+					MetadataPacket metadataPacket = new MetadataPacket() { ProtocolName = itemProtocol, Name = p.Name};
+
+					if (protocolType is ISemanticElement)
+					{
+						metadataPacket.PropertyName = ((ISemanticElement)protocolType).GetImplementingName(Program.SemanticTypeSystem);
+					}
+
 					// Get the object value.  This does some fancy some in the semantic type system,
 					// depending on whether we're dealing with a native type (simple) or a semantic element (complicated).
 					object val = protocolType.GetValue(Program.SemanticTypeSystem, signal);
@@ -478,8 +487,8 @@ namespace TypeSystemExplorer.Views
 		protected void GetImageMetadata(ImageMetadata imeta)
 		{
 			Image img = imeta.Image;
-			ISemanticTypeStruct protocol = Program.Receptors.SemanticTypeSystem.GetSemanticTypeStruct("GetImageMetadata");
-			dynamic signal = Program.Receptors.SemanticTypeSystem.Create("GetImageMetadata");
+			ISemanticTypeStruct protocol = Program.SemanticTypeSystem.GetSemanticTypeStruct("GetImageMetadata");
+			dynamic signal = Program.SemanticTypeSystem.Create("GetImageMetadata");
 			// Remove any "-thumbnail" so we get the master image.
 			signal.ImageFilename.Filename = Path.GetFileName(img.Tag.ToString().Surrounding("-thumbnail"));
 			// signal.ResponseProtocol = "HaveImageMetadata";
@@ -736,8 +745,8 @@ namespace TypeSystemExplorer.Views
 			if (cstate != null)
 			{
 				string imageFile = cstate.ActiveImageFilename;
-				ISemanticTypeStruct protocol = Program.Receptors.SemanticTypeSystem.GetSemanticTypeStruct("ViewImage");
-				dynamic signal = Program.Receptors.SemanticTypeSystem.Create("ViewImage");
+				ISemanticTypeStruct protocol = Program.SemanticTypeSystem.GetSemanticTypeStruct("ViewImage");
+				dynamic signal = Program.SemanticTypeSystem.Create("ViewImage");
 				signal.ImageFilename.Filename = imageFile.Surrounding("-thumbnail");
 				Program.Receptors.CreateCarrier(null, protocol, signal);
 				match = true;
@@ -748,9 +757,44 @@ namespace TypeSystemExplorer.Views
 
 		protected bool TestImageMetadataDoubleClick(Point p)
 		{
-			bool match = false;
+			ISemanticTypeSystem sts = Program.SemanticTypeSystem;
 
-			return match;
+			foreach(var kvp in carousels)
+				{
+					Rectangle imgArea = kvp.Value.ActiveImageLocation;
+					int imgidx = kvp.Value.ActiveImageIndex;
+					int idx = -1;
+
+					foreach(var meta in kvp.Value.Images[imgidx].MetadataPackets)
+					{
+						++idx;
+						Rectangle metaRect = new Rectangle(imgArea.Left, imgArea.Bottom + 10 + (MetadataHeight * idx), imgArea.Width, MetadataHeight);
+									
+						if (metaRect.Contains(p))
+						{
+							// This is the metadata the user clicked on.
+							// Now check if it's semantic data.  In all cases, this should be true, right?
+							if (!String.IsNullOrEmpty(meta.ProtocolName))
+							{
+								// The implementing type must also be a semantic element so that we can create a protocol of that type.
+								if (sts.GetSemanticTypeStruct(meta.Name).SemanticElements.Exists(st => st.Name == meta.PropertyName))
+								{
+									string implementingPropertyName = sts.GetSemanticTypeStruct(meta.ProtocolName).SemanticElements.Single(e => e.Name == meta.PropertyName).GetImplementingName(sts);
+									// Yes it is.  Emit a carrier with with protocol and signal.
+									ISemanticTypeStruct protocol = Program.SemanticTypeSystem.GetSemanticTypeStruct(meta.PropertyName);
+									dynamic signal = Program.SemanticTypeSystem.Create(meta.PropertyName);
+									protocol.AllTypes.Single(e => e.Name == implementingPropertyName).SetValue(Program.SemanticTypeSystem, signal, meta.Value);
+									Program.Receptors.CreateCarrier(null, protocol, signal);
+										
+									// Ugh, I hate doing this, but it's a lot easier to just exit all these nests.
+									return true;
+								}
+							}
+						}
+					}
+				}
+
+			return false;
 		}
 
 		/// <summary>
@@ -924,15 +968,17 @@ namespace TypeSystemExplorer.Views
 							e.Graphics.DrawImage(img, location);
 							kvp.Value.ActiveImageFilename = img.Tag.ToString();
 							kvp.Value.ActiveImageLocation = location;
+							kvp.Value.ActiveImageIndex = idx0;
 
 							int y = location.Bottom + 10;
 
-							kvp.Value.Images[idx0].MetadataPackets.ForEach(meta =>
+							// We use ForEachWithIndex to ensure the same ordering as when the user double-clicks on the metadata.
+							kvp.Value.Images[idx0].MetadataPackets.ForEachWithIndex((meta, idx) =>
 								{
-									Rectangle region = new Rectangle(location.X, y, location.Width, 15);
+									Rectangle region = new Rectangle(location.X, y, location.Width, MetadataHeight);
 									string data = meta.Name + ": " + meta.Value;
 									e.Graphics.DrawString(data, font, whiteBrush, region);
-									y += 15;
+									y += MetadataHeight;
 								});
 						}
 					});

@@ -268,5 +268,25 @@ namespace Clifton.Tools.Strings.Extensions
 		{
 			return Regex.Replace(input, "([A-Z])", " $1", System.Text.RegularExpressions.RegexOptions.Compiled).Trim();
 		}
+
+		/// <summary>
+		/// Searches for all occurances of < > and removes everything between them.
+		/// </summary>
+		public static string StripHtml(this string s)
+		{
+			string ret = s;
+
+			int idx1 = s.IndexOf('<');
+			int idx2 = s.IndexOf('>');
+
+			while (idx1 < idx2) 
+			{
+				s = s.LeftOf('<') + s.RightOf('>');
+				idx1 = s.IndexOf('<');
+				idx2 = s.IndexOf('>');
+			} 
+
+			return s;
+		}
 	}
 }
