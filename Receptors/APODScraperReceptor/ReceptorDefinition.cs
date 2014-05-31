@@ -219,7 +219,7 @@ namespace APODScraperReceptor
 		{
 			ISemanticTypeStruct protocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct("ScrapeWebpage");
 			dynamic signal = rsys.SemanticTypeSystem.Create("ScrapeWebpage");
-			signal.URL = url;
+			signal.URL.Value = url;
 			signal.ResponseProtocol = "APODWebpage";
 			rsys.CreateCarrier(this, protocol, signal);
 		}

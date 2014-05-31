@@ -48,7 +48,7 @@ namespace WebPageScraperReceptor
 
 		public async void ProcessCarrier(ICarrier carrier)
 		{
-			string url = carrier.Signal.URL;
+			string url = carrier.Signal.URL.Value;
 
 			try
 			{
