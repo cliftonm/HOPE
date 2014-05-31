@@ -60,6 +60,7 @@ namespace ThumbnailCreatorReceptor
 			dynamic signal = rsys.SemanticTypeSystem.Create("ThumbnailImage");
 			// Insert "-thumbnail" into the filename.
 			signal.ImageFilename.Filename = filename.LeftOfRightmostOf('.') + "-thumbnail." + filename.RightOfRightmostOf('.');
+			image.Tag = signal.ImageFilename.Filename;
 			signal.Image = image;
 			rsys.CreateCarrier(this, protocol, signal);
 		}

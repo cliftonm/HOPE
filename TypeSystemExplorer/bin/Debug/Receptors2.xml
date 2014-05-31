@@ -10,4 +10,5 @@
   <Receptor Name="Weather Service" AssemblyName="WeatherServiceReceptor.dll" Location="{X=751,Y=734}" />
   <Receptor Name="Zip Code Service" AssemblyName="ZipCodeReceptor.dll" Location="{X=570,Y=737}" />
   <Receptor Name="Weather Info" AssemblyName="WeatherInfoReceptor.dll" Location="{X=654,Y=638}" />
+  <Receptor Name="Image Viewer" AssemblyName="ImageViewerReceptor.dll" Location="{X=318,Y=617}" />
 </Receptors>

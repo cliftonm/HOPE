@@ -53,6 +53,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebPageScraperReceptor", "R
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "APODEventGeneratorReceptor", "Receptors\APODEventGeneratorReceptor\APODEventGeneratorReceptor.csproj", "{2824028E-FD24-4BA5-98F4-EC73B943289A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageViewerReceptor", "Receptors\ImageViewerReceptor\ImageViewerReceptor.csproj", "{5FF6D8CA-734A-42D6-AF51-0D03789DABCE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -213,6 +215,12 @@ Global
 		{2824028E-FD24-4BA5-98F4-EC73B943289A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2824028E-FD24-4BA5-98F4-EC73B943289A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2824028E-FD24-4BA5-98F4-EC73B943289A}.Release|x86.ActiveCfg = Release|Any CPU
+		{5FF6D8CA-734A-42D6-AF51-0D03789DABCE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5FF6D8CA-734A-42D6-AF51-0D03789DABCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5FF6D8CA-734A-42D6-AF51-0D03789DABCE}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5FF6D8CA-734A-42D6-AF51-0D03789DABCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5FF6D8CA-734A-42D6-AF51-0D03789DABCE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5FF6D8CA-734A-42D6-AF51-0D03789DABCE}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -233,5 +241,6 @@ Global
 		{DA661AD0-9E17-44A4-AD12-0AF92B413B8F} = {353CC75F-6C73-4C52-8B45-142D3569C056}
 		{CFDB7A31-7A71-41ED-8169-E223914E1FEB} = {353CC75F-6C73-4C52-8B45-142D3569C056}
 		{2824028E-FD24-4BA5-98F4-EC73B943289A} = {353CC75F-6C73-4C52-8B45-142D3569C056}
+		{5FF6D8CA-734A-42D6-AF51-0D03789DABCE} = {353CC75F-6C73-4C52-8B45-142D3569C056}
 	EndGlobalSection
 EndGlobal
