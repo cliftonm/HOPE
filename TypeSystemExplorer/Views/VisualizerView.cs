@@ -15,6 +15,8 @@ using Clifton.Receptor;
 using Clifton.Receptor.Interfaces;
 using Clifton.SemanticTypeSystem;
 using Clifton.SemanticTypeSystem.Interfaces;
+using Clifton.Tools.Strings.Extensions;
+
 
 using TypeSystemExplorer.Controls;
 using TypeSystemExplorer.Controllers;
@@ -192,6 +194,7 @@ namespace TypeSystemExplorer.Views
 		public List<Image> Images { get; set; }
 		public List<MetadataPacket> MetadataPackets { get; protected set; }
 		public string ActiveImageFilename { get; set; }
+		public Rectangle ActiveImageLocation { get; set; }
 
 		public CarouselState()
 		{
@@ -403,7 +406,7 @@ namespace TypeSystemExplorer.Views
 			string protocol = metadata.Protocol.DeclTypeName;
 			string path = signal.ImageFilename.Filename;
 			string fn = Path.GetFileName(path);
-			var carousel = carousels.FirstOrDefault(kvp => kvp.Value.ActiveImageFilename == fn);
+			var carousel = carousels.FirstOrDefault(kvp => Path.GetFileName(kvp.Value.ActiveImageFilename).Surrounding("-thumbnail") == fn);
 
 			// The user could have removed the viewer by the time we get a response.
 			if (carousel.Value != null)
@@ -689,6 +692,28 @@ namespace TypeSystemExplorer.Views
 			}
 		}
 
+		protected void MouseDoubleClickEvent(object sender, MouseEventArgs args)
+		{
+			Point p = args.Location;			// Mouse position
+			TestCarouselActiveImageDoubleClick(p);
+		}
+
+		protected void TestCarouselActiveImageDoubleClick(Point p)
+		{
+			// Get the carousel state for the carousel with the active image that the user clicked on.
+			CarouselState cstate = carousels.FirstOrDefault(kvp => kvp.Value.ActiveImageLocation.Contains(p)).Value;
+
+			// If this is actually a carousel image:
+			if (cstate != null)
+			{
+				string imageFile = cstate.ActiveImageFilename;
+				ISemanticTypeStruct protocol = Program.Receptors.SemanticTypeSystem.GetSemanticTypeStruct("ViewImage");
+				dynamic signal = Program.Receptors.SemanticTypeSystem.Create("ViewImage");
+				signal.ImageFilename.Filename = imageFile.Surrounding("-thumbnail");
+				Program.Receptors.CreateCarrier(null, protocol, signal);
+			}
+		}
+
 		protected void GetImageMetadata(IReceptor r)
 		{
 			CarouselState cstate = carousels[r];
@@ -708,7 +733,8 @@ namespace TypeSystemExplorer.Views
 				Image img = cstate.Images[idx];
 				ISemanticTypeStruct protocol = Program.Receptors.SemanticTypeSystem.GetSemanticTypeStruct("GetImageMetadata");
 				dynamic signal = Program.Receptors.SemanticTypeSystem.Create("GetImageMetadata");
-				signal.ImageFilename.Filename = img.Tag.ToString();
+				// Remove any "-thumbnail" so we get the master image.
+				signal.ImageFilename.Filename = Path.GetFileName(img.Tag.ToString().Surrounding("-thumbnail"));
 				signal.ResponseProtocol = "HaveImageMetadata";
 				Program.Receptors.CreateCarrier(null, protocol, signal);
 			}
@@ -882,7 +908,8 @@ namespace TypeSystemExplorer.Views
 							Image img = kvp.Value.Images[idx0];
 							Rectangle location = new Rectangle(new Point(ip.X - 75, ip.Y - 50 * img.Height / img.Width), new Size(sizer, sizer * img.Height / img.Width));
 							e.Graphics.DrawImage(img, location);
-							kvp.Value.ActiveImageFilename = Path.GetFileName(img.Tag.ToString());
+							kvp.Value.ActiveImageFilename = img.Tag.ToString();
+							kvp.Value.ActiveImageLocation = location;
 
 							int y = location.Bottom + 10;
 

@@ -500,5 +500,19 @@
     </SemanticTypeStruct>
 
     <!-- ==== -->
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="ViewImage"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="ViewImage">
+      <Attributes>
+        <SemanticElement Name="ImageFilename"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <!-- ==== -->
   </Collection>
 </SemanticTypes>
