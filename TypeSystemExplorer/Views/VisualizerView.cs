@@ -777,6 +777,9 @@ namespace TypeSystemExplorer.Views
 							if (!String.IsNullOrEmpty(meta.ProtocolName))
 							{
 								// The implementing type is a semantic type requiring a drill into?
+								// TODO: This actually needs to be recursive, drilling down to the ST that is a Native Type. 
+								// See the implemntation in SemanticElement GetValue or SetValue.  We should add a method to the SE
+								// to get us the SE that implements the NT!
 								if (sts.GetSemanticTypeStruct(meta.Name).SemanticElements.Exists(st => st.Name == meta.PropertyName))
 								{
 									// Yes it is.  Emit a carrier with with protocol and signal.
