@@ -7,9 +7,18 @@
 *.sln.docstates
 
 *.exe
-*.dll
 *.pdb
 *.svn
+*.obj
+*.Cache
+*.config
+TemporaryGeneratedFile*
+*.ps1
+*.psm1
+*.psd1
+*.transform
+*.resources
+Debug/*.txt
 
 # Build results
 [Dd]ebugPublic/
@@ -176,3 +185,4 @@ UpgradeLog*.htm
 
 # Microsoft Fakes
 FakesAssemblies/
+
