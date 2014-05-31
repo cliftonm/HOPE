@@ -13,4 +13,5 @@
   <Receptor Name="Image Viewer" AssemblyName="ImageViewerReceptor.dll" Location="{X=318,Y=617}" />
   <Receptor Name="Webpage Scraper" AssemblyName="WebPageScraperReceptor.dll" Location="{X=383,Y=77}" />
   <Receptor Name="Interval Timer" AssemblyName="TimerReceptor.dll" Location="{X=526,Y=81}" />
+  <Receptor Name="Text Display" AssemblyName="TextDisplayReceptor.dll" Location="{X=891,Y=422}" />
 </Receptors>
