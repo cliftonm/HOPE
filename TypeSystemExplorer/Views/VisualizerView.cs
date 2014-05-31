@@ -776,11 +776,11 @@ namespace TypeSystemExplorer.Views
 							// Now check if it's semantic data.  In all cases, this should be true, right?
 							if (!String.IsNullOrEmpty(meta.ProtocolName))
 							{
-								// The implementing type must also be a semantic element so that we can create a protocol of that type.
+								// The implementing type is a semantic type requiring a drill into?
 								if (sts.GetSemanticTypeStruct(meta.Name).SemanticElements.Exists(st => st.Name == meta.PropertyName))
 								{
-									string implementingPropertyName = sts.GetSemanticTypeStruct(meta.ProtocolName).SemanticElements.Single(e => e.Name == meta.PropertyName).GetImplementingName(sts);
 									// Yes it is.  Emit a carrier with with protocol and signal.
+									string implementingPropertyName = sts.GetSemanticTypeStruct(meta.ProtocolName).SemanticElements.Single(e => e.Name == meta.PropertyName).GetImplementingName(sts);
 									ISemanticTypeStruct protocol = Program.SemanticTypeSystem.GetSemanticTypeStruct(meta.PropertyName);
 									dynamic signal = Program.SemanticTypeSystem.Create(meta.PropertyName);
 									protocol.AllTypes.Single(e => e.Name == implementingPropertyName).SetValue(Program.SemanticTypeSystem, signal, meta.Value);
@@ -789,6 +789,18 @@ namespace TypeSystemExplorer.Views
 									// Ugh, I hate doing this, but it's a lot easier to just exit all these nests.
 									return true;
 								}
+								else if (sts.GetSemanticTypeStruct(meta.Name).NativeTypes.Exists(st => st.Name == meta.PropertyName))
+								{
+									// No, it's just a native type.
+									ISemanticTypeStruct protocol = Program.SemanticTypeSystem.GetSemanticTypeStruct(meta.ProtocolName);
+									dynamic signal = Program.SemanticTypeSystem.Create(meta.ProtocolName);
+									sts.GetSemanticTypeStruct(meta.ProtocolName).NativeTypes.Single(st => st.Name == meta.PropertyName).SetValue(Program.SemanticTypeSystem, signal, meta.Value);
+									Program.Receptors.CreateCarrier(null, protocol, signal);
+
+									// Ugh, I hate doing this, but it's a lot easier to just exit all these nests.
+									return true;
+								}
+								// else: we don't have anythin we can do with this.
 							}
 						}
 					}

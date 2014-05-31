@@ -57,6 +57,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageViewerReceptor", "Rece
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextDisplayReceptor", "Receptors\TextDisplayReceptor\TextDisplayReceptor.csproj", "{6B06A54A-E64A-4698-9BAD-94B4A82C1CFC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UrlReceptor", "Receptors\UrlReceptor\UrlReceptor.csproj", "{5F9D0834-72E3-417D-856A-D0AC33D4737A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -229,6 +231,12 @@ Global
 		{6B06A54A-E64A-4698-9BAD-94B4A82C1CFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6B06A54A-E64A-4698-9BAD-94B4A82C1CFC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6B06A54A-E64A-4698-9BAD-94B4A82C1CFC}.Release|x86.ActiveCfg = Release|Any CPU
+		{5F9D0834-72E3-417D-856A-D0AC33D4737A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F9D0834-72E3-417D-856A-D0AC33D4737A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F9D0834-72E3-417D-856A-D0AC33D4737A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5F9D0834-72E3-417D-856A-D0AC33D4737A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F9D0834-72E3-417D-856A-D0AC33D4737A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F9D0834-72E3-417D-856A-D0AC33D4737A}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -251,5 +259,6 @@ Global
 		{2824028E-FD24-4BA5-98F4-EC73B943289A} = {353CC75F-6C73-4C52-8B45-142D3569C056}
 		{5FF6D8CA-734A-42D6-AF51-0D03789DABCE} = {353CC75F-6C73-4C52-8B45-142D3569C056}
 		{6B06A54A-E64A-4698-9BAD-94B4A82C1CFC} = {353CC75F-6C73-4C52-8B45-142D3569C056}
+		{5F9D0834-72E3-417D-856A-D0AC33D4737A} = {353CC75F-6C73-4C52-8B45-142D3569C056}
 	EndGlobalSection
 EndGlobal
