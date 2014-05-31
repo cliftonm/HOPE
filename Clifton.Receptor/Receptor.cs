@@ -42,6 +42,11 @@ namespace Clifton.Receptor
 		/// </summary>
 		public bool Instantiated { get; protected set; }
 
+		/// <summary>
+		/// When a receptor is disabled, it will not receive carriers.
+		/// </summary>
+		public bool Enabled { get; set; }
+
 		protected string assemblyName;
 		protected Assembly assembly;
 
@@ -52,6 +57,7 @@ namespace Clifton.Receptor
 		{
 			Name = name;
 			this.assembly = assembly;
+			Enabled = true;
 		}
 
 		/// <summary>
@@ -62,6 +68,7 @@ namespace Clifton.Receptor
 		{
 			Name = name;
 			this.assemblyName = assemblyName;
+			Enabled = true;
 		}
 
 		/// <summary>
@@ -73,6 +80,7 @@ namespace Clifton.Receptor
 			Name = name;
 			Instance = inst;
 			Instantiated = true;
+			Enabled = true;
 		}
 
 		/// <summary>

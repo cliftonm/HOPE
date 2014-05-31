@@ -387,7 +387,7 @@ namespace Clifton.Receptor
 					var receptors = protocolReceptorMap[carrier.Protocol.DeclTypeName];
 
 					// For each receptor...
-					receptors.ForEach(receptor =>
+					receptors.Where(r => r.Enabled).ForEach(receptor =>
 					{
 						// The action is "ProcessCarrier".
 						// TODO: *** Pass in the carrier, not the carrier's fields!!! ***
