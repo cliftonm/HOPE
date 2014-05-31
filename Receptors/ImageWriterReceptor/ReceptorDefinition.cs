@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -39,18 +40,24 @@ namespace HelloWorldReceptor
 		public void ProcessCarrier(ICarrier carrier)
 		{
 			string fn = carrier.Signal.ImageFilename.Filename;
-			Image img = carrier.Signal.Image;
-			
-			// Can't do this because it results in the visualizer throwing an "object is in use elsewhere" exception.
-			//Task.Run(() =>
-			//	{
-			//		lock (img)
-			//		{
-			//			img.Save(fn);
-			//		}
-			//	});
 
-			img.Save(fn);
+			// Only save the file if it doesn't already exists.  
+			// In actual usage, with this receptor online, we can write a lot of duplicate thumbnails!
+			if (!File.Exists(fn))
+			{
+				Image img = carrier.Signal.Image;
+
+				// Can't do this because it results in the visualizer throwing an "object is in use elsewhere" exception.
+				//Task.Run(() =>
+				//	{
+				//		lock (img)
+				//		{
+				//			img.Save(fn);
+				//		}
+				//	});
+
+				img.Save(fn);
+			}
 		}
 	}
 }
