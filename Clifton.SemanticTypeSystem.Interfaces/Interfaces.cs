@@ -68,6 +68,7 @@ namespace Clifton.SemanticTypeSystem.Interfaces
 	{
 		string Name { get; }
 		ISemanticType Element { get; set; }
+		string GetImplementingName(ISemanticTypeSystem sts);
 
 		object GetValue(ISemanticTypeSystem sts, object instance);
 		void SetValue(ISemanticTypeSystem sts, object instance, object value);

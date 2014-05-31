@@ -16,6 +16,30 @@ namespace Clifton.SemanticTypeSystem
 		public ISemanticType Element { get; set; }
 
 		/// <summary>
+		/// Returns the name of the native type or semantic element singleton implemented by the semantic element.
+		/// </summary>
+		/// <param name="sts"></param>
+		/// <returns></returns>
+		public string GetImplementingName(ISemanticTypeSystem sts)
+		{
+			string ret = null;
+			List<INativeType> ntypes = sts.GetSemanticTypeStruct(Name).NativeTypes;
+			List<ISemanticElement> stypes = sts.GetSemanticTypeStruct(Name).SemanticElements;
+			Assert.That(ntypes.Count + stypes.Count == 1, "Setting a value on a semantic type requires that the semantic type defines one and only one native type or child semantic type in order to resolve the native type property whose value is to be set.");
+
+			if (ntypes.Count == 1)
+			{
+				ret = ntypes[0].Name;
+			}
+			else
+			{
+				ret = stypes[0].Name;
+			}
+
+			return ret;
+		}
+
+		/// <summary>
 		/// Resolve the ST down to it's singleton native type and return the value.
 		/// </summary>
 		public object GetValue(ISemanticTypeSystem sts, object instance)
