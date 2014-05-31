@@ -383,7 +383,7 @@
 
     <SemanticTypeStruct DeclType="ScrapeWebpage">
       <Attributes>
-        <NativeType Name="URL" ImplementingType="string"/>
+        <SemanticElement Name="URL"/>
         <NativeType Name="ResponseProtocol" ImplementingType="string"/>
       </Attributes>
     </SemanticTypeStruct>
