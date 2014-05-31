@@ -282,7 +282,7 @@ namespace APODScraperReceptor
 			dynamic dbsignal = rsys.SemanticTypeSystem.Create("DatabaseRecord");
 			dbsignal.TableName = "APOD";
 			dbsignal.Action = "select";
-			dbsignal.ResponseProtocol = "APOD";
+			dbsignal.ResponseProtocol = "APOD";			// will respond actuall with "APODRecordset"
 			// Wildcard prefix to ignore path information.
 			dbsignal.Where = "ImageFilename LIKE '%" + imageFile + "'";
 			rsys.CreateCarrier(this, dbprotocol, dbsignal);
@@ -301,7 +301,7 @@ namespace APODScraperReceptor
 				dynamic firstMatch = records[0];
 				respSignal.ImageFilename.Filename = firstMatch.ImageFilename.Filename;
 				ICarrier responseCarrier = CreateAPODRecordCarrier();
-				responseCarrier.Signal.URL = firstMatch.URL;
+				responseCarrier.Signal.URL.Value = firstMatch.URL.Value;
 				responseCarrier.Signal.Keywords = firstMatch.Keywords;
 				responseCarrier.Signal.Title = firstMatch.Title;
 				responseCarrier.Signal.Explanation = firstMatch.Explanation;

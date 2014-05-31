@@ -180,6 +180,17 @@ namespace TypeSystemExplorer.Views
 		}
 	}
 
+	public class ImageMetadata
+	{
+		public Image Image { get; set; }
+		public List<MetadataPacket> MetadataPackets { get; protected set; }
+
+		public ImageMetadata()
+		{
+			MetadataPackets = new List<MetadataPacket>();
+		}
+	}
+
 	public class MetadataPacket
 	{
 		// metadata with a protocol is actionable.
@@ -191,15 +202,13 @@ namespace TypeSystemExplorer.Views
 	public class CarouselState
 	{
 		public int Offset { get; set; }
-		public List<Image> Images { get; set; }
-		public List<MetadataPacket> MetadataPackets { get; protected set; }
+		public List<ImageMetadata> Images { get; set; }
 		public string ActiveImageFilename { get; set; }
 		public Rectangle ActiveImageLocation { get; set; }
 
 		public CarouselState()
 		{
-			Images = new List<Image>();
-			MetadataPackets = new List<MetadataPacket>();
+			Images = new List<ImageMetadata>();
 		}
 	}
 
@@ -389,9 +398,10 @@ namespace TypeSystemExplorer.Views
 				carousels[r] = cstate;
 			}
 
-			cstate.Images.Add(image);
+			ImageMetadata imeta = new ImageMetadata() { Image = image };
+			cstate.Images.Add(imeta);
 
-			GetImageMetadata(r);
+			GetImageMetadata(imeta);
 			Invalidate(true);
 		}
 
@@ -406,12 +416,16 @@ namespace TypeSystemExplorer.Views
 			string protocol = metadata.Protocol.DeclTypeName;
 			string path = signal.ImageFilename.Filename;
 			string fn = Path.GetFileName(path);
-			var carousel = carousels.FirstOrDefault(kvp => Path.GetFileName(kvp.Value.ActiveImageFilename).Surrounding("-thumbnail") == fn);
+			// Get the the first carousel key-value pair (Receptor, CarouselState) which contains the image for which we received the metadata.
+			var carousel = carousels.FirstOrDefault(kvp => kvp.Value.Images.Count(imeta => Path.GetFileName(imeta.Image.Tag.ToString().Surrounding("-thumbnail")) == fn) > 0);
 
 			// The user could have removed the viewer by the time we get a response.
 			if (carousel.Value != null)
 			{
-				InitializeMetadata(protocol, carousel.Value.MetadataPackets, metadata.Signal);
+				// Get the metadata packet for this image.
+				List<MetadataPacket> packets = carousel.Value.Images.First(m => Path.GetFileName(m.Image.Tag.ToString().Surrounding("-thumbnail")) == fn).MetadataPackets;
+				InitializeMetadata(protocol, packets, metadata.Signal);
+				Invalidate(true);
 			}
 		}
 
@@ -459,6 +473,17 @@ namespace TypeSystemExplorer.Views
 							}
 						});
 				});
+		}
+
+		protected void GetImageMetadata(ImageMetadata imeta)
+		{
+			Image img = imeta.Image;
+			ISemanticTypeStruct protocol = Program.Receptors.SemanticTypeSystem.GetSemanticTypeStruct("GetImageMetadata");
+			dynamic signal = Program.Receptors.SemanticTypeSystem.Create("GetImageMetadata");
+			// Remove any "-thumbnail" so we get the master image.
+			signal.ImageFilename.Filename = Path.GetFileName(img.Tag.ToString().Surrounding("-thumbnail"));
+			// signal.ResponseProtocol = "HaveImageMetadata";
+			Program.Receptors.CreateCarrier(null, protocol, signal);
 		}
 
 		protected void OnTimerTick(object sender, EventArgs e)
@@ -683,9 +708,6 @@ namespace TypeSystemExplorer.Views
 
 				if (carousels.TryGetValue(hoverReceptor, out cstate))
 				{
-					// Remove the metadata.
-					cstate.MetadataPackets.Clear();
-					GetImageMetadata(hoverReceptor);
 					cstate.Offset += spin;
 					Invalidate(true);
 				}
@@ -695,11 +717,18 @@ namespace TypeSystemExplorer.Views
 		protected void MouseDoubleClickEvent(object sender, MouseEventArgs args)
 		{
 			Point p = args.Location;			// Mouse position
-			TestCarouselActiveImageDoubleClick(p);
+			bool match = TestCarouselActiveImageDoubleClick(p);
+
+			if (!match)
+			{
+				match = TestImageMetadataDoubleClick(p);
+			}
 		}
 
-		protected void TestCarouselActiveImageDoubleClick(Point p)
+		protected bool TestCarouselActiveImageDoubleClick(Point p)
 		{
+			bool match = false;
+
 			// Get the carousel state for the carousel with the active image that the user clicked on.
 			CarouselState cstate = carousels.FirstOrDefault(kvp => kvp.Value.ActiveImageLocation.Contains(p)).Value;
 
@@ -711,33 +740,17 @@ namespace TypeSystemExplorer.Views
 				dynamic signal = Program.Receptors.SemanticTypeSystem.Create("ViewImage");
 				signal.ImageFilename.Filename = imageFile.Surrounding("-thumbnail");
 				Program.Receptors.CreateCarrier(null, protocol, signal);
+				match = true;
 			}
+
+			return match;
 		}
 
-		protected void GetImageMetadata(IReceptor r)
+		protected bool TestImageMetadataDoubleClick(Point p)
 		{
-			CarouselState cstate = carousels[r];
+			bool match = false;
 
-			// Ensures that we only load the metadata once, though if there isn't any, we 
-			// will continue to requery the receptors that can generate metadata for us.
-			// This does allow us to add receptors later that generates the metadata.
-			if (cstate.MetadataPackets.Count == 0)
-			{
-				int idx = cstate.Offset % cstate.Images.Count;
-
-				if (idx < 0)
-				{
-					idx += cstate.Images.Count;
-				}
-
-				Image img = cstate.Images[idx];
-				ISemanticTypeStruct protocol = Program.Receptors.SemanticTypeSystem.GetSemanticTypeStruct("GetImageMetadata");
-				dynamic signal = Program.Receptors.SemanticTypeSystem.Create("GetImageMetadata");
-				// Remove any "-thumbnail" so we get the master image.
-				signal.ImageFilename.Filename = Path.GetFileName(img.Tag.ToString().Surrounding("-thumbnail"));
-				signal.ResponseProtocol = "HaveImageMetadata";
-				Program.Receptors.CreateCarrier(null, protocol, signal);
-			}
+			return match;
 		}
 
 		/// <summary>
@@ -878,8 +891,9 @@ namespace TypeSystemExplorer.Views
 						int offset = kvp.Value.Offset;
 						int idx0 = 0;
 
-						kvp.Value.Images.ForEachWithIndex((img, idx) =>
+						kvp.Value.Images.ForEachWithIndex((imeta, idx) =>
 						{
+							Image img = imeta.Image;
 							int idxReal = (idx + offset) % images;
 							Point ip = p;
 							double dx = 100 * Math.Cos((2 * Math.PI * 1 / 4) + 2 * Math.PI * idxReal / images);
@@ -905,7 +919,7 @@ namespace TypeSystemExplorer.Views
 							double dy = 150 * Math.Sin((2 * Math.PI * 1 / 4) + 2 * Math.PI * idxReal / images);
 							ip.Offset((int)dx, (int)dy);
 							int sizer = (idxReal == 0) ? 150 : 100;
-							Image img = kvp.Value.Images[idx0];
+							Image img = kvp.Value.Images[idx0].Image;
 							Rectangle location = new Rectangle(new Point(ip.X - 75, ip.Y - 50 * img.Height / img.Width), new Size(sizer, sizer * img.Height / img.Width));
 							e.Graphics.DrawImage(img, location);
 							kvp.Value.ActiveImageFilename = img.Tag.ToString();
@@ -913,7 +927,7 @@ namespace TypeSystemExplorer.Views
 
 							int y = location.Bottom + 10;
 
-							kvp.Value.MetadataPackets.ForEach(meta =>
+							kvp.Value.Images[idx0].MetadataPackets.ForEach(meta =>
 								{
 									Rectangle region = new Rectangle(location.X, y, location.Width, 15);
 									string data = meta.Name + ": " + meta.Value;
@@ -921,7 +935,6 @@ namespace TypeSystemExplorer.Views
 									y += 15;
 								});
 						}
-
 					});
 			}
 			catch (Exception ex)

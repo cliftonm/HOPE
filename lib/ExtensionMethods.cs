@@ -176,6 +176,24 @@ namespace Clifton.ExtensionMethods
 		}
 
 		/// <summary>
+		/// Executes the "elseAction" if the collection is empty.
+		/// </summary>
+		public static void ForEachElse<T>(this IEnumerable<T> collection, Action<T> action, Action elseAction)
+		{
+			if (collection.Count() > 0)
+			{
+				foreach (var item in collection)
+				{
+					action(item);
+				}
+			}
+			else
+			{
+				elseAction();
+			}
+		}
+
+		/// <summary>
 		/// Implements ForEach for non-generic enumerators.
 		/// </summary>
 		// Usage: Controls.ForEach<Control>(t=>t.DoSomething());
