@@ -67,6 +67,7 @@ namespace TextDisplayReceptor
 		{
 			// Will need to create a new form when new text arrives.
 			tb = null;
+			e.Cancel = false;
 		}
 	}
 }

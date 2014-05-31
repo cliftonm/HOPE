@@ -732,6 +732,11 @@ namespace TypeSystemExplorer.Views
 			{
 				match = TestImageMetadataDoubleClick(p);
 			}
+
+			if (!match)
+			{
+				match = TestReceptorDoubleClick(p);
+			}
 		}
 
 		protected bool TestCarouselActiveImageDoubleClick(Point p)
@@ -812,6 +817,28 @@ namespace TypeSystemExplorer.Views
 			return false;
 		}
 
+		protected bool TestReceptorDoubleClick(Point p)
+		{
+			bool match = false;
+
+			foreach (var kvp in receptorLocation)
+			{
+				Point rp = kvp.Value;
+				rp.Offset(-ReceptorSize.Width / 2, -ReceptorSize.Height / 2);
+				Rectangle r = new Rectangle(rp, ReceptorSize);
+
+				if (r.Contains(p))
+				{
+					kvp.Key.Enabled ^= true;
+					match = true;
+					Invalidate(true);
+					break;
+				}
+			}
+
+			return match;
+		}
+
 		/// <summary>
 		/// The .NET MouseHoverEvent is f*cked.  It will not re-trigger until the mouse moves outside of the control.
 		/// Even that seems problematic.  So we have a manual implementation.  Possibly wiring the event to the ViewControl 
@@ -861,7 +888,8 @@ namespace TypeSystemExplorer.Views
 
 				receptorLocation.ForEach(kvp =>
 					{
-						Pen pen = penColors[0];
+						// red for disabled receptors, green for enabled.
+						Pen pen = kvp.Key.Enabled ? penColors[1] : penColors[0];
 						Point p = kvp.Value;
 						p.Offset(-ReceptorSize.Width / 2, -ReceptorSize.Height / 2);
 						Point bottom = p;

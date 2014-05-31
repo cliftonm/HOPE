@@ -469,6 +469,32 @@
       </Attributes>
     </SemanticTypeStruct>
 
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="APODSearchResultsRecordset"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+    
+    <SemanticTypeStruct DeclType="APODSearchResultsRecordset">
+      <Attributes>
+        <NativeType Name="Recordset" ImplementingType="List&lt;dynamic&gt;"/>
+        <NativeType Name="Tag" ImplementingType="string"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="APODSearchResults"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="APODSearchResults">
+      <Attributes>
+        <SemanticElement Name="ImageFilename"/>
+        <NativeType Name="Errors" ImplementingType="string"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
     <!-- END SCHEMA -->
 
     <SemanticTypeDecl OfType="Noun">
@@ -510,6 +536,20 @@
     <SemanticTypeStruct DeclType="ViewImage">
       <Attributes>
         <SemanticElement Name="ImageFilename"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <!-- ==== -->
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="SearchFor"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="SearchFor">
+      <Attributes>
+        <NativeType Name="SearchString" ImplementingType="string"/>
       </Attributes>
     </SemanticTypeStruct>
 

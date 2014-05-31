@@ -59,6 +59,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextDisplayReceptor", "Rece
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UrlReceptor", "Receptors\UrlReceptor\UrlReceptor.csproj", "{5F9D0834-72E3-417D-856A-D0AC33D4737A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SearchForReceptor", "Receptors\SearchForReceptor\SearchForReceptor.csproj", "{D6B3BBCD-F921-4D3B-8719-7734AAFBF5F5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -237,6 +239,12 @@ Global
 		{5F9D0834-72E3-417D-856A-D0AC33D4737A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5F9D0834-72E3-417D-856A-D0AC33D4737A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5F9D0834-72E3-417D-856A-D0AC33D4737A}.Release|x86.ActiveCfg = Release|Any CPU
+		{D6B3BBCD-F921-4D3B-8719-7734AAFBF5F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6B3BBCD-F921-4D3B-8719-7734AAFBF5F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6B3BBCD-F921-4D3B-8719-7734AAFBF5F5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D6B3BBCD-F921-4D3B-8719-7734AAFBF5F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6B3BBCD-F921-4D3B-8719-7734AAFBF5F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6B3BBCD-F921-4D3B-8719-7734AAFBF5F5}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -260,5 +268,6 @@ Global
 		{5FF6D8CA-734A-42D6-AF51-0D03789DABCE} = {353CC75F-6C73-4C52-8B45-142D3569C056}
 		{6B06A54A-E64A-4698-9BAD-94B4A82C1CFC} = {353CC75F-6C73-4C52-8B45-142D3569C056}
 		{5F9D0834-72E3-417D-856A-D0AC33D4737A} = {353CC75F-6C73-4C52-8B45-142D3569C056}
+		{D6B3BBCD-F921-4D3B-8719-7734AAFBF5F5} = {353CC75F-6C73-4C52-8B45-142D3569C056}
 	EndGlobalSection
 EndGlobal

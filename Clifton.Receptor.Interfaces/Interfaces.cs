@@ -45,5 +45,6 @@ namespace Clifton.Receptor.Interfaces
 	{
 		string Name { get; }
 		IReceptorInstance Instance { get; }
+		bool Enabled { get; set; }
 	}
 }

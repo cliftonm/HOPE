@@ -35,6 +35,8 @@ namespace APODScraperReceptor
 			protocolActionMap["APODWebpage"] = new Action<dynamic>((s) => ProcessPage(s));
 			protocolActionMap["GetImageMetadata"] = new Action<dynamic>((s) => GetImageMetadata(s));
 			protocolActionMap["APODRecordset"] = new Action<dynamic>((s) => ProcessAPODRecordset(s));
+			protocolActionMap["SearchFor"] = new Action<dynamic>((s) => SearchFor(s));
+			protocolActionMap["APODSearchResultsRecordset"] = new Action<dynamic>((s) => ProcessSearchResults(s));
 		}
 
 		public string[] GetReceiveProtocols()
@@ -284,6 +286,7 @@ namespace APODScraperReceptor
 			dbsignal.Action = "select";
 			dbsignal.ResponseProtocol = "APOD";			// will respond actuall with "APODRecordset"
 			// Wildcard prefix to ignore path information.
+			// TODO: Use parameters
 			dbsignal.Where = "ImageFilename LIKE '%" + imageFile + "'";
 			rsys.CreateCarrier(this, dbprotocol, dbsignal);
 		}
@@ -311,6 +314,40 @@ namespace APODScraperReceptor
 				rsys.CreateCarrier(this, respProtocol, respSignal);
 			}
 			// else, APOD knows nothing about this image file, so there's no response.
+		}
+
+		/// <summary>
+		/// Search the APOD database for matches.
+		/// </summary>
+		/// <param name="signal"></param>
+		protected void SearchFor(dynamic signal)
+		{
+			string searchFor = signal.SearchString;
+
+			ISemanticTypeStruct dbprotocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct("DatabaseRecord");
+			dynamic dbsignal = rsys.SemanticTypeSystem.Create("DatabaseRecord");
+			dbsignal.TableName = "APOD";
+			dbsignal.Action = "select";
+			dbsignal.ResponseProtocol = "APODSearchResults";			// will respond actuall with "APODRecordset"
+			// TODO: Use parameters
+			dbsignal.Where = "Keywords LIKE '%" + searchFor + "' or Title LIKE '%" + searchFor + "' or Explanation LIKE '%" + searchFor + "'";
+			rsys.CreateCarrier(this, dbprotocol, dbsignal);
+		}
+
+		/// <summary>
+		/// Create carriers for the images that meet the returned search criteria.
+		/// </summary>
+		protected void ProcessSearchResults(dynamic signal)
+		{
+			List<dynamic> records = signal.Recordset;
+
+			foreach (dynamic d in records)
+			{
+				ISemanticTypeStruct outprotocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct("ImageFilename");
+				dynamic outsignal = rsys.SemanticTypeSystem.Create("ImageFilename");
+				outsignal.Filename = d.ImageFilename.Filename;
+				rsys.CreateCarrier(this, outprotocol, outsignal);
+			}
 		}
 	}
 }
