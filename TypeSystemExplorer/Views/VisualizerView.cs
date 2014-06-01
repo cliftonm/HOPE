@@ -217,7 +217,7 @@ namespace TypeSystemExplorer.Views
 	public class VisualizerView : UserControl
 	{
 		const int RenderTime = 120;
-		const int CarrierTime = 10; // 50 for 2 second delay.
+		const int CarrierTime = 25; // 25 for 1 second delay.  50 for 2 second delay.
 		const int OrbitCountMax = 50;
 		const int MetadataHeight = 15;	// the row height for metadata text.
 		protected Size ReceptorSize = new Size(40, 40);
@@ -401,11 +401,22 @@ namespace TypeSystemExplorer.Views
 				carousels[r] = cstate;
 			}
 
-			ImageMetadata imeta = new ImageMetadata() { Image = image };
-			cstate.Images.Add(imeta);
+			if (cstate.Images.Count < 100)
+			{
+				ImageMetadata imeta = new ImageMetadata() { Image = image };
+				cstate.Images.Add(imeta);
 
-			GetImageMetadata(imeta);
-			Invalidate(true);
+				GetImageMetadata(imeta);
+				Invalidate(true);
+			}
+			else
+			{
+				// Disable the receptor -- too many images.
+				// TODO: Better way of indicating this to the user.
+				// TODO: We want to limit the total number of images across all viewers.
+				r.Enabled = false;
+				Invalidate(true);
+			}
 		}
 
 		public Point GetRandomLocation()

@@ -319,7 +319,6 @@ namespace APODScraperReceptor
 		/// <summary>
 		/// Search the APOD database for matches.
 		/// </summary>
-		/// <param name="signal"></param>
 		protected void SearchFor(dynamic signal)
 		{
 			string searchFor = signal.SearchString;

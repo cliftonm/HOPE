@@ -476,7 +476,7 @@ namespace TypeSystemExplorer.Controllers
 			Point noLocation = new Point(-1, -1);
 
 			XDocument xdoc = XDocument.Load("Receptors2.xml");
-			var names = from receptor in xdoc.Descendants("Receptors").Descendants("Receptor")
+			var names = from receptor in xdoc.Descendants("Applet").Descendants("Receptors").Descendants("Receptor")
 						select new
 							{
 								Name = receptor.Attribute("Name").Value,
@@ -508,6 +508,9 @@ namespace TypeSystemExplorer.Controllers
 				});
 
 			VisualizerController.View.StartDrop = false;
+
+			// Load carriers:
+			VisualizerController.CreateCarriers(xdoc.Element("Applet").Element("Carriers"));
 		}
 
 		public void SaveReceptors(object sender, EventArgs args)

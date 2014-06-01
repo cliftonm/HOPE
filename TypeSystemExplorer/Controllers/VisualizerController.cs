@@ -95,52 +95,7 @@ namespace TypeSystemExplorer.Controllers
 							once = false;
 						}
 						XDocument xdoc = XDocument.Load(fn);
-						Dictionary<string, ICarrier> carriers = new Dictionary<string, ICarrier>();
-
-						xdoc.Element("Carriers").Descendants().ForEach(xelem =>
-						{
-							string protocolName = xelem.Attribute("Protocol").Value;
-							ISemanticTypeStruct protocol = Program.Receptors.SemanticTypeSystem.GetSemanticTypeStruct(protocolName);
-							dynamic signal = Program.Receptors.SemanticTypeSystem.Create(protocolName);
-
-							// Use reflection to assign all property values since they're defined in the XML.
-							xelem.Attributes().Where(a=>a.Name != "Protocol").ForEach(attr =>
-							{
-								Type t = signal.GetType();
-								PropertyInfo pi = t.GetProperty(attr.Name.ToString());
-
-								if (attr.Value.BeginsWith("{"))			// a reference (only references to carriers are supported at the moment)
-								{
-									ICarrier refCarrier = carriers[attr.Value.Between('{', '}')];
-									pi.SetValue(signal, refCarrier);
-								}
-								else
-								{
-									object val = attr.Value;
-
-									TypeConverter tcFrom = TypeDescriptor.GetConverter(pi.PropertyType);
-									//TypeConverter tcTo = TypeDescriptor.GetConverter(typeof(string));
-
-									//if (tcTo.CanConvertTo(t))
-									//{
-									//	tcTo.ConvertTo(val, pi.PropertyType);
-									//}
-
-									if (tcFrom.CanConvertFrom(typeof(string)))
-									{
-										val = tcFrom.ConvertFromInvariantString(attr.Value);
-										pi.SetValue(signal, val);
-									}
-									else
-									{
-										throw new ApplicationException("Cannot convert string to type " + t.Name);
-									}
-								}
-							});
-
-							ICarrier carrier = Program.Receptors.CreateCarrier(null, protocol, signal);
-							carriers[protocol.DeclTypeName] = carrier;
-						});
+						CreateCarriers(xdoc.Element("Carriers"));
 					}
 				}
 			}
@@ -160,6 +115,56 @@ namespace TypeSystemExplorer.Controllers
 			dynamic signal = Program.SemanticTypeSystem.Create("TextToSpeech");
 			signal.Text = msg;
 			Program.Receptors.CreateCarrier(null, protocol, signal);
+		}
+
+		public static void CreateCarriers(XElement el)
+		{
+			Dictionary<string, ICarrier> carriers = new Dictionary<string, ICarrier>();
+
+			el.Descendants().ForEach(xelem =>
+			{
+				string protocolName = xelem.Attribute("Protocol").Value;
+				ISemanticTypeStruct protocol = Program.Receptors.SemanticTypeSystem.GetSemanticTypeStruct(protocolName);
+				dynamic signal = Program.Receptors.SemanticTypeSystem.Create(protocolName);
+
+				// Use reflection to assign all property values since they're defined in the XML.
+				xelem.Attributes().Where(a => a.Name != "Protocol").ForEach(attr =>
+				{
+					Type t = signal.GetType();
+					PropertyInfo pi = t.GetProperty(attr.Name.ToString());
+
+					if (attr.Value.BeginsWith("{"))			// a reference (only references to carriers are supported at the moment)
+					{
+						ICarrier refCarrier = carriers[attr.Value.Between('{', '}')];
+						pi.SetValue(signal, refCarrier);
+					}
+					else
+					{
+						object val = attr.Value;
+
+						TypeConverter tcFrom = TypeDescriptor.GetConverter(pi.PropertyType);
+						//TypeConverter tcTo = TypeDescriptor.GetConverter(typeof(string));
+
+						//if (tcTo.CanConvertTo(t))
+						//{
+						//	tcTo.ConvertTo(val, pi.PropertyType);
+						//}
+
+						if (tcFrom.CanConvertFrom(typeof(string)))
+						{
+							val = tcFrom.ConvertFromInvariantString(attr.Value);
+							pi.SetValue(signal, val);
+						}
+						else
+						{
+							throw new ApplicationException("Cannot convert string to type " + t.Name);
+						}
+					}
+				});
+
+				ICarrier carrier = Program.Receptors.CreateCarrier(null, protocol, signal);
+				carriers[protocol.DeclTypeName] = carrier;
+			});
 		}
 	}
 }

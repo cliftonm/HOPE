@@ -1,18 +1,23 @@
-<Receptors>
-  <Receptor Name="Text To Speech" AssemblyName="TextToSpeechReceptor.dll" Location="{X=101,Y=110}" />
-  <Receptor Name="SQLite Persistor" AssemblyName="PersistenceReceptor.dll" Location="{X=192,Y=25}" />
-  <Receptor Name="APOD" AssemblyName="APODScraperReceptor.dll" Location="{X=96,Y=361}" />
-  <Receptor Name="Thumbnail Viewer" AssemblyName="ThumbnailViewerReceptor.dll" Location="{X=732,Y=448}" />
-  <Receptor Name="Thumbnail Converter" AssemblyName="ThumbnailCreatorReceptor.dll" Location="{X=96,Y=231}" />
-  <Receptor Name="Thumbnail Image Writer" AssemblyName="ImageWriterReceptor.dll" Location="{X=261,Y=231}" />
-  <Receptor Name="Carrier Exporter" AssemblyName="CarrierExporterReceptor.dll" Location="{X=194,Y=466}" />
-  <Receptor Name="Logger" AssemblyName="LoggingReceptor.dll" Location="{X=96,Y=466}" />
-  <Receptor Name="Weather Service" AssemblyName="WeatherServiceReceptor.dll" Location="{X=297,Y=597}" />
-  <Receptor Name="Zip Code Service" AssemblyName="ZipCodeReceptor.dll" Location="{X=194,Y=597}" />
-  <Receptor Name="Weather Info" AssemblyName="WeatherInfoReceptor.dll" Location="{X=93,Y=595}" />
-  <Receptor Name="Image Viewer" AssemblyName="ImageViewerReceptor.dll" Location="{X=460,Y=24}" />
-  <Receptor Name="Webpage Scraper" AssemblyName="WebPageScraperReceptor.dll" Location="{X=352,Y=24}" />
-  <Receptor Name="Interval Timer" AssemblyName="TimerReceptor.dll" Location="{X=188,Y=109}" />
-  <Receptor Name="Text Display" AssemblyName="TextDisplayReceptor.dll" Location="{X=103,Y=25}" />
-  <Receptor Name="URL" AssemblyName="UrlReceptor.dll" Location="{X=269,Y=24}" />
-</Receptors>
+<Applet>
+  <Receptors>
+    <Receptor Name="Text To Speech" AssemblyName="TextToSpeechReceptor.dll" Location="{X=101,Y=110}" />
+    <Receptor Name="SQLite Persistor" AssemblyName="PersistenceReceptor.dll" Location="{X=192,Y=25}" />
+    <Receptor Name="APOD" AssemblyName="APODScraperReceptor.dll" Location="{X=96,Y=361}" />
+    <Receptor Name="Thumbnail Viewer" AssemblyName="ThumbnailViewerReceptor.dll" Location="{X=732,Y=448}" />
+    <Receptor Name="Thumbnail Converter" AssemblyName="ThumbnailCreatorReceptor.dll" Location="{X=96,Y=231}" />
+    <Receptor Name="Thumbnail Image Writer" AssemblyName="ImageWriterReceptor.dll" Location="{X=261,Y=231}" />
+    <Receptor Name="Carrier Exporter" AssemblyName="CarrierExporterReceptor.dll" Location="{X=194,Y=466}" />
+    <Receptor Name="Logger" AssemblyName="LoggingReceptor.dll" Location="{X=96,Y=466}" />
+    <Receptor Name="Weather Service" AssemblyName="WeatherServiceReceptor.dll" Location="{X=297,Y=597}" />
+    <Receptor Name="Zip Code Service" AssemblyName="ZipCodeReceptor.dll" Location="{X=194,Y=597}" />
+    <Receptor Name="Weather Info" AssemblyName="WeatherInfoReceptor.dll" Location="{X=93,Y=595}" />
+    <Receptor Name="Image Viewer" AssemblyName="ImageViewerReceptor.dll" Location="{X=460,Y=24}" />
+    <Receptor Name="Webpage Scraper" AssemblyName="WebPageScraperReceptor.dll" Location="{X=352,Y=24}" />
+    <Receptor Name="Interval Timer" AssemblyName="TimerReceptor.dll" Location="{X=188,Y=109}" />
+    <Receptor Name="Text Display" AssemblyName="TextDisplayReceptor.dll" Location="{X=103,Y=25}" />
+    <Receptor Name="URL" AssemblyName="UrlReceptor.dll" Location="{X=269,Y=24}" />
+  </Receptors>
+  <Carriers>
+    <Carrier Protocol="IntervalTimerConfiguration" StartDateTime="8:00 AM" Interval="86400" EventName="ScrapeAPOD" IgnoreMissedIntervals="false"/>
+  </Carriers>
+</Applet>
