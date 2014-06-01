@@ -37,6 +37,7 @@ namespace TimerReceptor
 			this.receptor = receptor;
 		}
 
+		// TODO: The logic in this is all messed up.  Clearly describe what we're trying to do, write some unit tests to test the code.
 		public void FireIfExpired()
 		{
 			// May be in the database, but no configuration information has been received to tell us we actually want this timer.
@@ -48,9 +49,10 @@ namespace TimerReceptor
 				if (!running)
 				{
 					// If we've never logged the event, use the StartDateTime as a reference for when to fire the next event, otherwise, determine the next time this event should have fired.
-					DateTime reference = (LastEventTime == null) ? startDateTime : ((DateTime)LastEventTime).AddSeconds(Interval);
+					DateTime reference = (LastEventTime == null) ? startDateTime : (DateTime)LastEventTime;
+					DateTime nextEventTime = (LastEventTime == null) ? startDateTime : ((DateTime)LastEventTime).AddSeconds(Interval);
 
-					if (now > reference)
+					if (now > reference.AddSeconds(Interval))
 					{
 						// The next event has already occurred.  How much time has elapsed?
 						double elapsedSeconds = (now - reference).TotalSeconds;
