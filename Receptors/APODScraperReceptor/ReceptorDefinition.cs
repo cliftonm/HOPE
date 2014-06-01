@@ -26,6 +26,8 @@ namespace APODScraperReceptor
 		protected Dictionary<string, Action<dynamic>> protocolActionMap;
 		protected int totalErrors = 0;
 
+		const string ImagesFolder = "Images";
+
 		public ReceptorDefinition(IReceptorSystem rsys)
 		{
 			this.rsys = rsys;
@@ -47,6 +49,7 @@ namespace APODScraperReceptor
 		public void Initialize()
 		{
 			RequireAPODTable();
+			InitializeImagesFolder();
 		}
 
 		public void Terminate()
@@ -186,7 +189,7 @@ namespace APODScraperReceptor
 							Image img = Image.FromStream(stream);
 
 							// Save the big image.
-							string imgfn = "Images\\" + imageURL.RightOfRightmostOf('/');
+							string imgfn = ImagesFolder + "\\" + imageURL.RightOfRightmostOf('/');
 							img.Save(imgfn);
 							img.Dispose();
 							stream.Dispose();
@@ -215,6 +218,14 @@ namespace APODScraperReceptor
 			signal.TableName = "APOD";
 			signal.Schema = "APOD";
 			rsys.CreateCarrier(this, protocol, signal);
+		}
+
+		protected void InitializeImagesFolder()
+		{
+			if (!Directory.Exists(ImagesFolder))
+			{
+				Directory.CreateDirectory(ImagesFolder);
+			}
 		}
 
 		protected void EmitUrl(string url)
