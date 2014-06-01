@@ -481,7 +481,8 @@ namespace TypeSystemExplorer.Controllers
 							{
 								Name = receptor.Attribute("Name").Value,
 								AssemblyName = receptor.Attribute("AssemblyName").Value,
-								Location = (receptor.Attribute("Location") != null) ? new Point(receptor.Attribute("Location").Value.Between('=', ',').to_i(), receptor.Attribute("Location").Value.RightOfRightmostOf('=').LeftOf('}').to_i()) : noLocation
+								Location = (receptor.Attribute("Location") != null) ? new Point(receptor.Attribute("Location").Value.Between('=', ',').to_i(), receptor.Attribute("Location").Value.RightOfRightmostOf('=').LeftOf('}').to_i()) : noLocation,
+								Enabled = (receptor.Attribute("Enabled") != null) ? Convert.ToBoolean(receptor.Attribute("Enabled").Value) : true
 							};
 
 			Dictionary<IReceptor, Point> receptorLocationMap = new Dictionary<IReceptor,Point>();
@@ -490,6 +491,7 @@ namespace TypeSystemExplorer.Controllers
 				{
 					IReceptor r = Program.Receptors.RegisterReceptor(n.Name, n.AssemblyName);
 					receptorLocationMap[r] = n.Location;
+					r.Enabled = n.Enabled;
 				});
 
 			// After registration, but before the NewReceptor fire event, set the drop point.

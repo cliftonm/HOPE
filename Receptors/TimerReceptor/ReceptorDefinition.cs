@@ -37,7 +37,9 @@ namespace TimerReceptor
 			this.receptor = receptor;
 		}
 
-		// TODO: The logic in this is all messed up.  Clearly describe what we're trying to do, write some unit tests to test the code.
+		// If there is no last event time, then we fire events either:
+		// 1 - from the start date/time to now
+		// 2 - a single event and set the last event time to the point where the event would have fired.
 		public void FireIfExpired()
 		{
 			// May be in the database, but no configuration information has been received to tell us we actually want this timer.
@@ -48,69 +50,69 @@ namespace TimerReceptor
 
 				if (!running)
 				{
-					// If we've never logged the event, use the StartDateTime as a reference for when to fire the next event, otherwise, determine the next time this event should have fired.
-					DateTime reference = (LastEventTime == null) ? startDateTime : (DateTime)LastEventTime;
-					DateTime nextEventTime = (LastEventTime == null) ? startDateTime : ((DateTime)LastEventTime).AddSeconds(Interval);
-
-					if (now > reference.AddSeconds(Interval))
+					if (LastEventTime == null)
 					{
-						// The next event has already occurred.  How much time has elapsed?
-						double elapsedSeconds = (now - reference).TotalSeconds;
-
-						// If more seconds have elapsed since the Interval, then we may need to trigger multiple events.
-						if (elapsedSeconds > Interval)
+						// There is no previously record last event.
+						if (IgnoreMissedIntervals)
 						{
-							if (IgnoreMissedIntervals)
-							{
-								// Use the modulus operator to find the remaining # of seconds before the next event.
-								// We do this to sync up to the recurring event time.
-								long remainingTime = ((long)elapsedSeconds) % (long)Interval;
-								nextEvent = now.AddSeconds(remainingTime);
-							}
-							else
-							{
-								long remainingTime = ((long)elapsedSeconds) % (long)Interval;
-								nextEvent = now.AddSeconds(remainingTime);
-
-								// We need to log all events between the reference and now.
-								while (elapsedSeconds > Interval)
-								{
-									FireEvent(reference);
-									reference.AddSeconds(Interval);
-									elapsedSeconds -= Interval;
-								}
-							}
+							// Catch up, so that the next event is at a multiple of the interval after "now."
+							TimeSpan ts = now - startDateTime;
+							long mostRecentEvent = (long)ts.TotalSeconds / (long)Interval;
+							// Remainder has been removed.
+							LastEventTime = startDateTime.AddSeconds(mostRecentEvent * (long)Interval);
+							// This is the last event that should have fired.
+							FireEvent((DateTime)LastEventTime);
+							// This is the next event time.
+							nextEvent = ((DateTime)LastEventTime).AddSeconds(Interval);
 						}
 						else
 						{
-							// The next event occurs at the reference point.
-							if (LastEventTime == null)
-							{
-								nextEvent = reference.AddSeconds(Interval);
-							}
-							else
-							{
-								nextEvent = reference;
-							}
+							// Fire for all missed events.
+							nextEvent = (DateTime)StartDateTime;
 
-							// But we've missed only one event, so fire it now.
-							FireEvent(reference);
+							while (nextEvent < now)
+							{
+								FireEvent(nextEvent);
+								nextEvent = nextEvent.AddSeconds(Interval);
+							}
 						}
 					}
 					else
 					{
-						// The specified date/time has not occurred, so set up the timer for when this event will be triggered.
-						nextEvent = reference;
+						if (IgnoreMissedIntervals)
+						{
+							// Catch up, so that the next event is at a multiple of the interval after "now."
+							TimeSpan ts = now - (DateTime)LastEventTime;
+							long mostRecentEvent = (long)ts.TotalSeconds / (long)Interval;
+							// Remainder has been removed.
+							LastEventTime = startDateTime.AddSeconds(mostRecentEvent * (long)Interval);
+							// This is the last event that should have fired.
+							FireEvent((DateTime)LastEventTime);
+							// This is the next event time.
+							nextEvent = ((DateTime)LastEventTime).AddSeconds(Interval);
+						}
+						else
+						{
+							// Fire for all missed events.
+							nextEvent = ((DateTime)LastEventTime).AddSeconds(Interval);
+
+							while (nextEvent < now)
+							{
+								FireEvent(nextEvent);
+								nextEvent = nextEvent.AddSeconds(Interval);
+							}
+						}
 					}
 
 					running = true;
 				}
 				else
 				{
+					// A running event timer will have compensated for missed events.  
 					if (now >= nextEvent)
 					{
-						nextEvent = now.AddSeconds(Interval);
-						FireEvent(now);
+						FireEvent(nextEvent);
+						nextEvent = nextEvent.AddSeconds(Interval);
 					}
 				}
 			}
@@ -119,9 +121,9 @@ namespace TimerReceptor
 		/// <summary>
 		/// Fire an event NOW.
 		/// </summary>
-		protected void FireEvent(DateTime now)
+		protected void FireEvent(DateTime when)
 		{
-			LastEventTime = now;
+			LastEventTime = when;
 			UpdateRecord();
 			CreateEventCarrier();
 		}

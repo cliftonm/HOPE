@@ -29,8 +29,8 @@
               <wf:ToolStripMenuItem Text="Save Xml &amp;As..." Click="{controller.SaveXmlAs}"/>
               <wf:ToolStripSeparator/>
             <!--  <wf:ToolStripMenuItem Text="&amp;Import Population" Click="{controller.Import}"/>  -->
-              <wf:ToolStripMenuItem Text="&amp;Load Receptors" Click="{controller.LoadReceptors}"/>
-              <wf:ToolStripMenuItem Text="&amp;Save Receptors" Click="{controller.SaveReceptors}"/>
+              <wf:ToolStripMenuItem Text="&amp;Load Receptors" Click="{controller.LoadReceptors}" Enabled="false"/>
+              <wf:ToolStripMenuItem Text="&amp;Save Receptors" Click="{controller.SaveReceptors}" Enabled="false"/>
               <wf:ToolStripSeparator/>
               <wf:ToolStripMenuItem def:Name="mnuRecentFiles" Text="(Recent Files)"/>
               <wf:ToolStripSeparator/>
