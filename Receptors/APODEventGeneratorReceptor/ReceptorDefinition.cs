@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Clifton.Receptor.Interfaces;
 using Clifton.SemanticTypeSystem.Interfaces;
 
-namespace APODEventReceptorDefinition
+namespace APODEventGeneratorReceptor
 {
 	public class ReceptorDefinition : IReceptorInstance
 	{
@@ -25,8 +25,8 @@ namespace APODEventReceptorDefinition
 		public void Initialize()
 		{
 			DateTime start = DateTime.Parse("6/16/1995");
-			DateTime stop = start.AddMonths(1);
-			// DateTime stop = DateTime.Now;  
+			// DateTime stop = start.AddMonths(1);
+			DateTime stop = DateTime.Now;  
 
 			for (DateTime date = start; date <= stop; date = date.AddDays(1))
 			{

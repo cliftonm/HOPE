@@ -7,9 +7,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using Clifton.ExtensionMethods;
+using Clifton.Tools.Strings.Extensions;
+
 using Clifton.Receptor.Interfaces;
 using Clifton.SemanticTypeSystem.Interfaces;
-using Clifton.Tools.Strings.Extensions;
 
 namespace SearchForReceptor
 {
@@ -78,8 +80,7 @@ namespace SearchForReceptor
 		protected void WhenFormClosed(object sender, FormClosedEventArgs e)
 		{
 			// Remove ourselves when the form is closed.
-			// TODO: This causes an exception which fails to terminate the form.  Don't know why yet.
-			// rsys.Remove(this);
+			rsys.Remove(this);
 		}
 	}
 }

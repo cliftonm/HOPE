@@ -6,6 +6,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Clifton.ExtensionMethods
 {
@@ -332,6 +333,11 @@ namespace Clifton.ExtensionMethods
 		public static bool IsEmpty(this string s)
 		{
 			return s == String.Empty;
+		}
+
+		public static void BeginInvoke(this Control control, Action action)
+		{
+			control.BeginInvoke((Delegate)action);
 		}
 	}
 }

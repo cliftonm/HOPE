@@ -74,7 +74,7 @@ namespace ThumbnailCreatorReceptor
 			signal.ImageFilename.Filename = filename.LeftOfRightmostOf('.') + "-thumbnail." + filename.RightOfRightmostOf('.');
 			image.Tag = signal.ImageFilename.Filename;
 			signal.Image = image;
-			rsys.CreateCarrier(this, protocol, signal);
+			rsys.CreateCarrierIfReceiver(this, protocol, signal);
 		}
 	}
 }

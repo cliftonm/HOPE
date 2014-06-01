@@ -231,7 +231,7 @@ namespace APODScraperReceptor
 			ISemanticTypeStruct protocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct("ImageFilename");
 			dynamic fsignal = rsys.SemanticTypeSystem.Create("ImageFilename");
 			fsignal.Filename = fn;
-			rsys.CreateCarrier(this, protocol, fsignal);
+			rsys.CreateCarrierIfReceiver(this, protocol, fsignal);
 		}
 
 		protected void LogImage(string url, string fn, string keywords, string title, string explanation, List<string> errors)

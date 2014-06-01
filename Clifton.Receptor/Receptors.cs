@@ -221,6 +221,21 @@ namespace Clifton.Receptor
 		}
 
 		/// <summary>
+		/// Create a carrier of the specified protocol and signal if a receiver currently exists.
+		/// Note that because a carrier might not be created, there is no return value for this method.
+		/// </summary>
+		/// <param name="from">The source receptor.  Cay be null.</param>
+		/// <param name="protocol">The protocol.</param>
+		/// <param name="signal">The signal in the protocol's format.</param>
+		public void CreateCarrierIfReceiver(IReceptorInstance from, ISemanticTypeStruct protocol, dynamic signal)
+		{
+			if (HaveReceptors(protocol))
+			{
+				CreateCarrier(from, protocol, signal);
+			}
+		}
+
+		/// <summary>
 		/// Create a carrier for internal purposes only, perhaps to pass as a sub-protocol in a parent carrier.
 		/// </summary>
 		public ICarrier CreateInternalCarrier(ISemanticTypeStruct protocol, dynamic signal)
@@ -252,7 +267,8 @@ namespace Clifton.Receptor
 		/// <param name="receptorInstance"></param>
 		public void Remove(IReceptorInstance receptorInstance)
 		{
-			Receptors.Where(r => r.Instance == receptorInstance).ForEach(r => Remove(r));
+			// Clone the list because the master list will change.
+			Receptors.Where(r => r.Instance == receptorInstance).ToList().ForEach(r => Remove(r));
 		}
 
 		/// <summary>
@@ -325,6 +341,23 @@ namespace Clifton.Receptor
 			ProcessReceptors(from, carrier, stopRecursion);
 
 			return carrier;
+		}
+
+		/// <summary>
+		/// Return true if receptors exist and are enabled for this protocol.
+		/// </summary>
+		protected bool HaveReceptors(ISemanticTypeStruct protocol)
+		{
+			bool found = false;
+			List<Receptor> receptors; 
+			bool haveCarrierMap = protocolReceptorMap.TryGetValue(protocol.DeclTypeName, out receptors);
+
+			if (haveCarrierMap)
+			{
+				found = receptors.Exists(r => r.Enabled);
+			}
+
+			return found;
 		}
 
 		/// <summary>
