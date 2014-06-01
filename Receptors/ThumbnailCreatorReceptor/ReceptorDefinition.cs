@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+// using System.Threading.Tasks;
 
 using Clifton.Tools.Strings.Extensions;
 using Clifton.Receptor.Interfaces;
@@ -37,9 +37,21 @@ namespace ThumbnailCreatorReceptor
 		{
 		}
 
-		public async void ProcessCarrier(ICarrier carrier)
+		// was public void async...
+		public void ProcessCarrier(ICarrier carrier)
 		{
 			string fn = carrier.Signal.Filename;
+
+			// This is fast enough we don't need to run this as a separate thread unless these files are perhaps coming from a slow network.
+			Bitmap bitmap = new Bitmap(fn);
+			// Reduce the size of the image.  If we don't do this, scrolling and rendering of scaled images is horrifically slow.
+			Image image = new Bitmap(bitmap, 256, 256 * bitmap.Height / bitmap.Width);
+			image.Tag = fn;
+			bitmap.Dispose();
+			OutputImage(fn, image);
+
+
+/*
 			Image ret = await Task.Run<Image>(() =>
 				{
 					Bitmap bitmap = new Bitmap(fn);
@@ -50,8 +62,8 @@ namespace ThumbnailCreatorReceptor
 
 					return image;
 				});
-
 			OutputImage(fn, ret);
+*/
 		}
 
 		protected void OutputImage(string filename, Image image)
