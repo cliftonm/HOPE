@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 // using System.Threading.Tasks;
@@ -40,16 +41,30 @@ namespace ThumbnailCreatorReceptor
 		// was public void async...
 		public void ProcessCarrier(ICarrier carrier)
 		{
-			string fn = carrier.Signal.Filename;
+			if (carrier.Signal.Filename != null)
+			{
+				string fn = carrier.Signal.Filename;
 
-			// This is fast enough we don't need to run this as a separate thread unless these files are perhaps coming from a slow network.
-			Bitmap bitmap = new Bitmap(fn);
-			// Reduce the size of the image.  If we don't do this, scrolling and rendering of scaled images is horrifically slow.
-			Image image = new Bitmap(bitmap, 256, 256 * bitmap.Height / bitmap.Width);
-			image.Tag = fn;
-			bitmap.Dispose();
-			OutputImage(fn, image);
-
+				// Only process if the file exists.
+				if (File.Exists(fn))
+				{
+					// This is fast enough we don't need to run this as a separate thread unless these files are perhaps coming from a slow network.
+					Bitmap bitmap = new Bitmap(fn);
+					// Reduce the size of the image.  If we don't do this, scrolling and rendering of scaled images is horrifically slow.
+					Image image = new Bitmap(bitmap, 256, 256 * bitmap.Height / bitmap.Width);
+					image.Tag = fn;
+					bitmap.Dispose();
+					OutputImage(fn, image);
+				}
+				else
+				{
+					FileMissing(fn);
+				}
+			}
+			else
+			{
+				NoFilenameProvided();
+			}
 
 /*
 			Image ret = await Task.Run<Image>(() =>
@@ -64,6 +79,22 @@ namespace ThumbnailCreatorReceptor
 				});
 			OutputImage(fn, ret);
 */
+		}
+
+		protected void FileMissing(string fn)
+		{
+			ISemanticTypeStruct protocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct("DebugMessage");
+			dynamic signal = rsys.SemanticTypeSystem.Create("DebugMessage");
+			signal.Message = "Thumbnail Converter: The image file "+fn+" is missing!";
+			rsys.CreateCarrier(this, protocol, signal);
+		}
+
+		protected void NoFilenameProvided()
+		{
+			ISemanticTypeStruct protocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct("DebugMessage");
+			dynamic signal = rsys.SemanticTypeSystem.Create("DebugMessage");
+			signal.Message = "Thumbnail Converter: No image filename was provided.";
+			rsys.CreateCarrier(this, protocol, signal);
 		}
 
 		protected void OutputImage(string filename, Image image)

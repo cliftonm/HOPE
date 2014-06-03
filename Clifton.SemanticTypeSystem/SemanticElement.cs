@@ -72,22 +72,26 @@ namespace Clifton.SemanticTypeSystem
 		/// </summary>
 		public void SetValue(ISemanticTypeSystem sts, object instance, object value)
 		{
-			PropertyInfo pi = instance.GetType().GetProperty(Name);
-			Type type = pi.GetType();
-
-			List<INativeType> ntypes = sts.GetSemanticTypeStruct(Name).NativeTypes;
-			List<ISemanticElement> stypes = sts.GetSemanticTypeStruct(Name).SemanticElements;
-			Assert.That(ntypes.Count + stypes.Count == 1, "Setting a value on a semantic type requires that the semantic type defines one and only one native type or child semantic type in order to resolve the native type property whose value is to be set.");
-			object item = pi.GetValue(instance);
-
-			if (ntypes.Count == 1)
+			// Don't set the value if it's null from the DB.
+			if (value != DBNull.Value)
 			{
-				PropertyInfo piTarget = item.GetType().GetProperty(ntypes[0].Name);
-				piTarget.SetValue(item, value);
-			}
-			else
-			{
-				stypes[0].SetValue(sts, item, value);
+				PropertyInfo pi = instance.GetType().GetProperty(Name);
+				Type type = pi.GetType();
+
+				List<INativeType> ntypes = sts.GetSemanticTypeStruct(Name).NativeTypes;
+				List<ISemanticElement> stypes = sts.GetSemanticTypeStruct(Name).SemanticElements;
+				Assert.That(ntypes.Count + stypes.Count == 1, "Setting a value on a semantic type requires that the semantic type defines one and only one native type or child semantic type in order to resolve the native type property whose value is to be set.");
+				object item = pi.GetValue(instance);
+
+				if (ntypes.Count == 1)
+				{
+					PropertyInfo piTarget = item.GetType().GetProperty(ntypes[0].Name);
+					piTarget.SetValue(item, value);
+				}
+				else
+				{
+					stypes[0].SetValue(sts, item, value);
+				}
 			}
 		}
 	}
