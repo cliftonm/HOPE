@@ -5,13 +5,9 @@ What is the Higher Order Programming Environment?
 
 Hope is a "surface" enabling end-users to create user-specific applications from "receptor" components.
 
-Applications have a limited surface area of functionality (behavior.)  The user can only extend behavior by going outside of the 
+Applications have a limited surface area of functionality (behavior.)  The user can only extend behavior by going outside of the application, either to the cloud or another desktop application.
 
-application, either to the cloud or another desktop application.
-
-Conversely, receptors provide specific behaviors with which other receptors interact.  By "dropping" a customized configuration of 
-
-receptors onto the surface, the end-user can create a behavior tailored specifically to his/her needs.
+Conversely, receptors provide specific behaviors with which other receptors interact.  By "dropping" a customized configuration of receptors onto the surface, the end-user can create a behavior tailored specifically to his/her needs.
 
 Demos
 ----
