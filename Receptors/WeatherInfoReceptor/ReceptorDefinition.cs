@@ -39,6 +39,11 @@ namespace WeatherInfoReceptor
 			return new string[] { "WeatherInfo", "Location" };
 		}
 
+		public string[] GetEmittedProtocols()
+		{
+			return new string[] { "TextToSpeech" };
+		}
+
 		public Func<dynamic, dynamic, bool> Qualifier = new Func<dynamic, dynamic, bool>((w, l) =>
 			{
 				return w.Zipcode == l.Zipcode;

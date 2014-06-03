@@ -209,6 +209,18 @@ namespace Clifton.Receptor
 		}
 
 		/// <summary>
+		/// Kludge to get protocols ending with "Recordset".
+		/// </summary>
+		public List<string> GetProtocolsEndingWith(string match)
+		{
+			List<string> ret = new List<string>();
+
+			ret.AddRange(SemanticTypeSystem.SemanticTypes.Keys.Where(k => k.EndsWith(match)));
+
+			return ret;
+		}
+
+		/// <summary>
 		/// Create a carrier of the specified protocol and signal.
 		/// </summary>
 		/// <param name="from">The source receptor.  Cay be null.</param>

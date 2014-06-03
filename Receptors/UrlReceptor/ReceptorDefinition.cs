@@ -37,6 +37,11 @@ namespace UrlReceptor
 			return new string[] { "URL" };
 		}
 
+		public string[] GetEmittedProtocols()
+		{
+			return new string[] { };
+		}
+
 		public void ProcessCarrier(ICarrier carrier)
 		{
 			string url = carrier.Signal.Value;

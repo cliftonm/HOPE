@@ -40,6 +40,11 @@ namespace HelloWorldReceptor
 			return new string[] {};
 		}
 
+		public string[] GetEmittedProtocols()
+		{
+			return new string[] { "DebugMessage" };
+		}
+
 		public void ProcessCarrier(ICarrier carrier)
 		{
 		}

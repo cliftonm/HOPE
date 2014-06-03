@@ -93,6 +93,11 @@ namespace ZipCodeReceptor
 			return new string[] { "Zipcode" };
 		}
 
+		public string[] GetEmittedProtocols()
+		{
+			return new string[] { "Location" };
+		}
+
 		public void Initialize()
 		{
 		}

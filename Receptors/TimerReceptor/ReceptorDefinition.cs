@@ -234,6 +234,11 @@ namespace TimerReceptor
 			return protocolActionMap.Keys.ToArray();
 		}
 
+		public string[] GetEmittedProtocols()
+		{
+			return new string[] { "RequireTable", "DatabaseRecord" };
+		}
+
 		/// <summary>
 		/// Post-creation initialization.
 		/// </summary>

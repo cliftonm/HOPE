@@ -30,6 +30,11 @@ namespace LoggerReceptor
 			return new string[] { "DebugMessage" };
 		}
 
+		public string[] GetEmittedProtocols()
+		{
+			return new string[] { "SystemMessage" };
+		}
+
 		public void Initialize()
 		{
 		}

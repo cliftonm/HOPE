@@ -47,6 +47,11 @@ namespace SearchForReceptor
 			return new string[] { };
 		}
 
+		public string[] GetEmittedProtocols()
+		{
+			return new string[] { "SearchFor" };
+		}
+
 		public void ProcessCarrier(ICarrier carrier)
 		{
 		}

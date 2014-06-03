@@ -37,6 +37,11 @@ namespace ImageViewerReceptor
 			return new string[] { "ViewImage" };
 		}
 
+		public string[] GetEmittedProtocols()
+		{
+			return new string[] { };
+		}
+
 		public void ProcessCarrier(ICarrier carrier)
 		{
 			string fn = carrier.Signal.ImageFilename.Filename;

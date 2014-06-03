@@ -45,6 +45,11 @@ namespace WeatherServiceReceptor
 			return new string[] { "Zipcode" };
 		}
 
+		public string[] GetEmittedProtocols()
+		{
+			return new string[] { "TextToSpeech", "WeatherInfo" };
+		}
+
 		public void Initialize()
 		{
 		}

@@ -38,6 +38,11 @@ namespace WebPageScraperReceptor
 			return new string[] { "ScrapeWebpage" };
 		}
 
+		public string[] GetEmittedProtocols()
+		{
+			return new string[] { "WebpageHtml" };
+		}
+
 		public void Initialize()
 		{
 		}
@@ -65,27 +70,27 @@ namespace WebPageScraperReceptor
 						}
 					});
 
-				Emit(url, html, carrier.Signal.ResponseProtocol);
+				Emit(url, html);
 			}
 			catch (Exception ex)
 			{
-				EmitError(url, ex.Message, carrier.Signal.ResponseProtocol);
+				EmitError(url, ex.Message);
 			}
 		}
 
-		protected void Emit(string url, string html, string protocolName)
+		protected void Emit(string url, string html)
 		{
-			ISemanticTypeStruct protocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct(protocolName);
-			dynamic signal = rsys.SemanticTypeSystem.Create(protocolName);
+			ISemanticTypeStruct protocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct("WebpageHtml");
+			dynamic signal = rsys.SemanticTypeSystem.Create("WebpageHtml");
 			signal.URL = url;
 			signal.HTML = html;
 			rsys.CreateCarrier(this, protocol, signal);
 		}
 
-		protected void EmitError(string url, string error, string protocolName)
+		protected void EmitError(string url, string error)
 		{
-			ISemanticTypeStruct protocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct(protocolName);
-			dynamic signal = rsys.SemanticTypeSystem.Create(protocolName);
+			ISemanticTypeStruct protocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct("WebpageHtml");
+			dynamic signal = rsys.SemanticTypeSystem.Create("WebpageHtml");
 			signal.URL = url;
 			signal.Errors = error;
 			rsys.CreateCarrier(this, protocol, signal);

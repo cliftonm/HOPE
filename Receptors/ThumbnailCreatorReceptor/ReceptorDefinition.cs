@@ -30,6 +30,11 @@ namespace ThumbnailCreatorReceptor
 			return new string[] { "ImageFilename" };
 		}
 
+		public string[] GetEmittedProtocols()
+		{
+			return new string[] { "DebugMessage", "ThumbnailImage" };
+		}
+
 		public void Initialize()
 		{
 		}

@@ -49,6 +49,11 @@ namespace APODEventGeneratorReceptor
 			return new string[] { };
 		}
 
+		public string[] GetEmittedProtocols()
+		{
+			return new string[] { "ScrapeAPOD" };
+		}
+
 		public void ProcessCarrier(ICarrier carrier)
 		{
 		}

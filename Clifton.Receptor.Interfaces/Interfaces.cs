@@ -17,6 +17,7 @@ namespace Clifton.Receptor.Interfaces
 		bool IsEdgeReceptor { get; }
 		bool IsHidden { get; }
 		string[] GetReceiveProtocols();
+		string[] GetEmittedProtocols();
 		void ProcessCarrier(ICarrier carrier);
 
 		/// <summary>
@@ -34,6 +35,7 @@ namespace Clifton.Receptor.Interfaces
 		void CreateCarrierIfReceiver(IReceptorInstance from, ISemanticTypeStruct protocol, dynamic signal);
 		ICarrier CreateInternalCarrier(ISemanticTypeStruct protocol, dynamic signal);
 		void Remove(IReceptorInstance receptorInstance);
+		List<string> GetProtocolsEndingWith(string match);
 	}
 
 	public interface ICarrier

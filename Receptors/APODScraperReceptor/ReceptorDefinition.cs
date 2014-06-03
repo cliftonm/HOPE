@@ -34,7 +34,7 @@ namespace APODScraperReceptor
 
 			protocolActionMap = new Dictionary<string, Action<dynamic>>();
 			protocolActionMap["TimerEvent"] = new Action<dynamic>((s) => TimerEvent(s));
-			protocolActionMap["APODWebpage"] = new Action<dynamic>((s) => ProcessPage(s));
+			protocolActionMap["WebpageHtml"] = new Action<dynamic>((s) => ProcessPage(s));
 			protocolActionMap["GetImageMetadata"] = new Action<dynamic>((s) => GetImageMetadata(s));
 			protocolActionMap["APODRecordset"] = new Action<dynamic>((s) => ProcessAPODRecordset(s));
 			protocolActionMap["SearchFor"] = new Action<dynamic>((s) => SearchFor(s));
@@ -44,6 +44,11 @@ namespace APODScraperReceptor
 		public string[] GetReceiveProtocols()
 		{
 			return protocolActionMap.Keys.ToArray();
+		}
+
+		public string[] GetEmittedProtocols()
+		{
+			return new string[] { "RequireTable", "ScrapeWebpage", "ImageFilename", "DatabaseRecord", "DebugMessage",  "APOD", "HaveImageMetadata" };
 		}
 
 		public void Initialize()
@@ -233,7 +238,6 @@ namespace APODScraperReceptor
 			ISemanticTypeStruct protocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct("ScrapeWebpage");
 			dynamic signal = rsys.SemanticTypeSystem.Create("ScrapeWebpage");
 			signal.URL.Value = url;
-			signal.ResponseProtocol = "APODWebpage";
 			rsys.CreateCarrier(this, protocol, signal);
 		}
 
@@ -295,7 +299,7 @@ namespace APODScraperReceptor
 			dynamic dbsignal = rsys.SemanticTypeSystem.Create("DatabaseRecord");
 			dbsignal.TableName = "APOD";
 			dbsignal.Action = "select";
-			dbsignal.ResponseProtocol = "APOD";			// will respond actuall with "APODRecordset"
+			dbsignal.ResponseProtocol = "APOD";			// will respond actually with "APODRecordset"
 			// Wildcard prefix to ignore path information.
 			// TODO: Use parameters
 			dbsignal.Where = "ImageFilename LIKE '%" + imageFile + "'";

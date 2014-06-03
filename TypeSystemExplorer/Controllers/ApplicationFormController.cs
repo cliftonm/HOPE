@@ -628,6 +628,11 @@ namespace TypeSystemExplorer.Controllers
 			return new string[] { "SystemMessage", "CarrierAnimation", "SystemShowImage", "HaveImageMetadata" };
 		}
 
+		public string[] GetEmittedProtocols()
+		{
+			return new string[] { };
+		}
+
 		public void Initialize()
 		{
 		}

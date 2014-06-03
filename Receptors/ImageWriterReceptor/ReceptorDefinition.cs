@@ -29,6 +29,11 @@ namespace HelloWorldReceptor
 			return new string[] { "ThumbnailImage" };
 		}
 
+		public string[] GetEmittedProtocols()
+		{
+			return new string[] { };
+		}
+
 		public void Initialize()
 		{
 		}

@@ -39,6 +39,11 @@ namespace CarrierExporterReceptor
 			return new string[] { "*" };
 		}
 
+		public string[] GetEmittedProtocols()
+		{
+			return new string[] { };
+		}
+
 		public void Initialize()
 		{
 		}

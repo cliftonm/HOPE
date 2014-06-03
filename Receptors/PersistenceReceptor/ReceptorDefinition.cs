@@ -59,6 +59,11 @@ namespace PersistenceReceptor
 			return protocolActionMap.Keys.ToArray();
 		}
 
+		public string[] GetEmittedProtocols()
+		{
+			return rsys.GetProtocolsEndingWith("Recordset").ToArray();
+		}
+
 		public void Initialize()
 		{
 		}

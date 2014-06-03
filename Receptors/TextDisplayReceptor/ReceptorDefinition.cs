@@ -39,6 +39,11 @@ namespace TextDisplayReceptor
 			return new string[] { "Text", "TextToSpeech" };
 		}
 
+		public string[] GetEmittedProtocols()
+		{
+			return new string[] { };
+		}
+
 		public void ProcessCarrier(ICarrier carrier)
 		{
 			// Create the textbox if it doesn't exist.

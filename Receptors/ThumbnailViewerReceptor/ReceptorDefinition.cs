@@ -28,6 +28,11 @@ namespace ThumbnailViewerReceptor
 			return new string[] { "ThumbnailImage" };
 		}
 
+		public string[] GetEmittedProtocols()
+		{
+			return new string[] { "SystemShowImage" };
+		}
+
 		public void Initialize()
 		{
 		}

@@ -158,6 +158,11 @@ namespace TypeSystemExplorer.Views
 		}
 	}
 
+	public class Line
+	{
+		public Point P1 {get;set;}
+		public Point P2 {get;set;}
+	}
 
 	public class FlyoutItem
 	{
@@ -251,6 +256,7 @@ namespace TypeSystemExplorer.Views
 		protected List<FlyoutItem> flyouts;
 		protected List<CarrierAnimationItem> carrierAnimations;
 		protected Dictionary<IReceptor, CarouselState> carousels;
+		protected List<Line> receptorConnections;
 
 		protected Brush blackBrush;
 		protected Brush whiteBrush;
@@ -276,6 +282,8 @@ namespace TypeSystemExplorer.Views
 
 		protected int orbitCount = 0;
 		protected bool paused;
+
+		protected Pen receptorLineColor = new Pen(Color.FromArgb(40, 40, 60));
 
 		public VisualizerView()
 		{
@@ -336,6 +344,7 @@ namespace TypeSystemExplorer.Views
 			flyouts = new List<FlyoutItem>();
 			carrierAnimations = new List<CarrierAnimationItem>();
 			carousels = new Dictionary<IReceptor, CarouselState>();
+			receptorConnections = new List<Line>();
 		}
 
 		public void Flyout(string msg, IReceptorInstance receptorInstance)
@@ -599,6 +608,7 @@ namespace TypeSystemExplorer.Views
 			if (!e.Receptor.Instance.IsHidden)
 			{
 				receptorLocation[e.Receptor] = p;
+				CreateReceptorConnections();
 				Invalidate(true);
 			}
 		}
@@ -699,6 +709,7 @@ namespace TypeSystemExplorer.Views
 				Point curPos = receptorLocation[selectedReceptor];
 				receptorLocation[selectedReceptor] = Point.Add(curPos, new Size(offset));
 				mouseStart = args.Location;
+				CreateReceptorConnections();
 				Invalidate(true);
 			}
 
@@ -885,6 +896,33 @@ namespace TypeSystemExplorer.Views
 			}
 		}
 
+		/// <summary>
+		/// Create the connections between receptors.
+		/// </summary>
+		protected void CreateReceptorConnections()
+		{
+			receptorConnections = new List<Line>();
+
+			// Iterate through all receptors.
+			receptorLocation.ForEach(kvp1 =>
+				{
+					// Iterate through receptors with a second search.
+					receptorLocation.ForEach(kvp2 =>
+						{
+							// Get all the receive protocols of kvp1
+							kvp1.Key.Instance.GetReceiveProtocols().ForEach(prot1 =>
+								{
+									// If any match the emitted protocols of kvp2...
+									if (kvp2.Key.Instance.GetEmittedProtocols().Contains(prot1))
+									{
+										// Then these two receptors are connected.
+										receptorConnections.Add(new Line() { P1 = kvp1.Value, P2 = kvp2.Value });
+									}
+								});
+						});
+				});
+		}
+
 		protected void OnVisualizerPaint(object sender, PaintEventArgs e)
 		{
 			try
@@ -896,6 +934,12 @@ namespace TypeSystemExplorer.Views
 
 				e.Graphics.DrawImage(playButton, playButtonRect);
 				e.Graphics.DrawImage(pauseButton, pauseButtonRect);
+
+				// Draw connecting lines first, everything else is overlayed on top.
+				receptorConnections.ForEach(line =>
+				{
+					e.Graphics.DrawLine(receptorLineColor, line.P1, line.P2);
+				});
 
 				receptorLocation.ForEach(kvp =>
 					{

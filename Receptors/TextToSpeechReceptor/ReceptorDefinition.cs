@@ -36,6 +36,11 @@ namespace TextToSpeech
 			return new string[] { "TextToSpeech", "Text"};
 		}
 
+		public string[] GetEmittedProtocols()
+		{
+			return new string[] { };
+		}
+
 		public void Initialize()
 		{
 		}

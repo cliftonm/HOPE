@@ -81,5 +81,6 @@ namespace Clifton.SemanticTypeSystem.Interfaces
 	{
 		IRuntimeSemanticType Create(string typeName, IRuntimeSemanticType parent = null);
 		ISemanticTypeStruct GetSemanticTypeStruct(string typeName);
+		Dictionary<string, ISemanticType> SemanticTypes { get;}
 	}
 }
