@@ -198,7 +198,9 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="bin\Debug\Receptors.xml" />
-    <Content Include="bin\Debug\Receptors2.xml" />
+    <Content Include="bin\Debug\Receptors2.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="bin\Debug\semanticTypeTree.xml">
       <SubType>Designer</SubType>
     </Content>

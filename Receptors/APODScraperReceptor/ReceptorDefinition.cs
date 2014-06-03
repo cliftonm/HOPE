@@ -340,7 +340,7 @@ namespace APODScraperReceptor
 			dbsignal.Action = "select";
 			dbsignal.ResponseProtocol = "APODSearchResults";			// will respond actuall with "APODRecordset"
 			// TODO: Use parameters
-			dbsignal.Where = "Keywords LIKE '%" + searchFor + "' or Title LIKE '%" + searchFor + "' or Explanation LIKE '%" + searchFor + "'";
+			dbsignal.Where = "Keywords LIKE '%" + searchFor + "%' or Title LIKE '%" + searchFor + "%' or Explanation LIKE '%" + searchFor + "%'";
 			rsys.CreateCarrier(this, dbprotocol, dbsignal);
 		}
 
@@ -353,10 +353,14 @@ namespace APODScraperReceptor
 
 			foreach (dynamic d in records)
 			{
-				ISemanticTypeStruct outprotocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct("ImageFilename");
-				dynamic outsignal = rsys.SemanticTypeSystem.Create("ImageFilename");
-				outsignal.Filename = d.ImageFilename.Filename;
-				rsys.CreateCarrier(this, outprotocol, outsignal);
+				// Issue only if the image filename exists.
+				if (d.ImageFilename.Filename != null)
+				{
+					ISemanticTypeStruct outprotocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct("ImageFilename");
+					dynamic outsignal = rsys.SemanticTypeSystem.Create("ImageFilename");
+					outsignal.Filename = d.ImageFilename.Filename;
+					rsys.CreateCarrier(this, outprotocol, outsignal);
+				}
 			}
 		}
 	}

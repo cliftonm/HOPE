@@ -118,6 +118,7 @@ namespace Clifton.Receptor
 		public Receptor RegisterReceptor(string receptorName, string assemblyName)
 		{
 			Receptor r = new Receptor(receptorName, assemblyName);
+			r.EnabledStateChanged += WhenEnabledStateChanged;
 			Receptors.Add(r);
 
 			return r;
@@ -131,6 +132,7 @@ namespace Clifton.Receptor
 		public void RegisterReceptor(string name, IReceptorInstance inst)
 		{
 			Receptor r = new Receptor(name, inst);
+			r.EnabledStateChanged += WhenEnabledStateChanged;
 			Receptors.Add(r);
 		}
 
@@ -229,7 +231,7 @@ namespace Clifton.Receptor
 		/// <param name="signal">The signal in the protocol's format.</param>
 		public void CreateCarrierIfReceiver(IReceptorInstance from, ISemanticTypeStruct protocol, dynamic signal)
 		{
-			if (HaveReceptors(protocol))
+			if (protocolReceptorMap.ContainsKey(protocol.DeclTypeName))
 			{
 				CreateCarrier(from, protocol, signal);
 			}
@@ -346,7 +348,7 @@ namespace Clifton.Receptor
 		/// <summary>
 		/// Return true if receptors exist and are enabled for this protocol.
 		/// </summary>
-		protected bool HaveReceptors(ISemanticTypeStruct protocol)
+		protected bool HaveEnabledReceptors(ISemanticTypeStruct protocol)
 		{
 			bool found = false;
 			List<Receptor> receptors; 
@@ -372,15 +374,15 @@ namespace Clifton.Receptor
 
 			bool haveCarrierMap = protocolReceptorMap.TryGetValue(carrier.Protocol.DeclTypeName, out receptors);
 
-			// If we have receptors for this carrier (a mapping of carrier to receptor list exists and receptors actually exist in that map)...
-			if (haveCarrierMap && receptors.Count > 0)
+			// If we have any enabled receptor for this carrier (a mapping of carrier to receptor list exists and receptors actually exist in that map)...
+			if (haveCarrierMap && receptors.Where(r => r.Enabled).Count() > 0)
 			{
-				// Perform the action.
+				// ...perform the action.
 				action();
 			}
 			else
 			{
-				// Othwerise, queue up the carrier for when there is a receptor for it.
+				// ...othwerise, queue up the carrier for when there is a receptor for it.
 				queuedCarriers.Add(new QueuedCarrierAction() { Carrier = carrier, Action = action });
 			}
 		}
@@ -396,7 +398,12 @@ namespace Clifton.Receptor
 			// collection with an indexer rather than a foreach.
 			queuedCarriers.IndexerForEach(action =>
 			{
-				if (protocolReceptorMap.ContainsKey(action.Carrier.Protocol.DeclTypeName))
+				List<Receptor> receptors;
+
+				bool haveCarrierMap = protocolReceptorMap.TryGetValue(action.Carrier.Protocol.DeclTypeName, out receptors);
+
+				// If we have any enabled receptor for this carrier (a mapping of carrier to receptor list exists and receptors actually exist in that map)...
+				if (haveCarrierMap && receptors.Where(r => r.Enabled).Count() > 0)
 				{
 					action.Action();
 					// Collect actions that need to be removed.
@@ -419,8 +426,8 @@ namespace Clifton.Receptor
 					// Get the receptors receiving the protocol.
 					var receptors = protocolReceptorMap[carrier.Protocol.DeclTypeName];
 
-					// For each receptor...
-					receptors.Where(r => r.Enabled).ForEach(receptor =>
+					// For each receptor that is enabled...
+					receptors.Where(r=>r.Enabled).ForEach(receptor =>
 					{
 						// The action is "ProcessCarrier".
 						// TODO: *** Pass in the carrier, not the carrier's fields!!! ***
@@ -467,6 +474,12 @@ namespace Clifton.Receptor
 			dynamic signal = SemanticTypeSystem.Create("TextToSpeech");
 			signal.Text = msg;
 			CreateCarrier(null, protocol, signal);
+		}
+
+		protected void WhenEnabledStateChanged(object sender, ReceptorEnabledEventArgs e)
+		{
+			// Any queued carriers are now checked to determine whether receptors are now enabled to process their protocols.
+			ProcessQueuedCarriers();
 		}
 	}
 }

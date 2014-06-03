@@ -6,17 +6,39 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
+using Clifton.ExtensionMethods;
+using Clifton.Tools.Strings.Extensions;
+
 using Clifton.Receptor.Interfaces;
 using Clifton.SemanticTypeSystem.Interfaces;
-using Clifton.Tools.Strings.Extensions;
 
 namespace Clifton.Receptor
 {
+	/// <summary>
+	/// Event args for enabled state change.
+	/// </summary>
+	public class ReceptorEnabledEventArgs : EventArgs
+	{
+		public bool State { get; protected set; }
+
+		public ReceptorEnabledEventArgs(bool state)
+		{
+			State = state;
+		}
+	}
+
 	/// <summary>
 	/// A Receptor is the container for a receptor instance (a separate assembly) and the assembly instance.
 	/// </summary>
 	public class Receptor : IReceptor
 	{
+		/// <summary>
+		/// Fires when a receptor's enabled state changes.
+		/// </summary>
+		public event EventHandler<ReceptorEnabledEventArgs> EnabledStateChanged;
+
+		protected bool enabled;
+
 		/// <summary>
 		/// The receptor name, determined either from the assembly filename or the name specified during construction.
 		/// </summary>
@@ -45,7 +67,15 @@ namespace Clifton.Receptor
 		/// <summary>
 		/// When a receptor is disabled, it will not receive carriers.
 		/// </summary>
-		public bool Enabled { get; set; }
+		public bool Enabled 
+		{
+			get { return enabled; }
+			set
+			{
+				enabled = value;
+				EnabledStateChanged.Fire(this, new ReceptorEnabledEventArgs(enabled));
+			}
+		}
 
 		protected string assemblyName;
 		protected Assembly assembly;
