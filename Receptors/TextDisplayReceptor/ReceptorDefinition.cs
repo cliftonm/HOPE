@@ -36,7 +36,7 @@ namespace TextDisplayReceptor
 
 		public string[] GetReceiveProtocols()
 		{
-			return new string[] { "Text" };
+			return new string[] { "Text", "TextToSpeech" };
 		}
 
 		public void ProcessCarrier(ICarrier carrier)
@@ -58,9 +58,22 @@ namespace TextDisplayReceptor
 				form.FormClosing += WhenFormClosing;
 			}
 
-			string text = carrier.Signal.Value;
-			tb.Text = tb.Text + text.StripHtml();
-			tb.Text = tb.Text + "\r\n";
+			string text = String.Empty;
+
+			if (carrier.Protocol.DeclTypeName == "Text")
+			{
+				text = carrier.Signal.Value;
+			}
+			else
+			{
+				text = carrier.Signal.Text;
+			}
+
+			if (!String.IsNullOrEmpty(text))
+			{
+				tb.Text = tb.Text + text.StripHtml();
+				tb.Text = tb.Text + "\r\n";
+			}
 		}
 
 		protected void WhenFormClosing(object sender, FormClosingEventArgs e)
