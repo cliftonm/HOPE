@@ -340,7 +340,7 @@ namespace APODScraperReceptor
 			dbsignal.Action = "select";
 			dbsignal.ResponseProtocol = "APODSearchResults";			// will respond actuall with "APODRecordset"
 			// TODO: Use parameters
-			dbsignal.Where = "Keywords LIKE '%" + searchFor + "' or Title LIKE '%" + searchFor + "' or Explanation LIKE '%" + searchFor + "'";
+			dbsignal.Where = "Keywords LIKE '%" + searchFor + "%' or Title LIKE '%" + searchFor + "%' or Explanation LIKE '%" + searchFor + "%'";
 			rsys.CreateCarrier(this, dbprotocol, dbsignal);
 		}
 
