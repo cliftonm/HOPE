@@ -1,4 +1,6 @@
-﻿using System;
+﻿#define VIVEK
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -10,6 +12,7 @@ using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
 
+using Clifton.Drawing;
 using Clifton.ExtensionMethods;
 using Clifton.Receptor;
 using Clifton.Receptor.Interfaces;
@@ -272,6 +275,7 @@ namespace TypeSystemExplorer.Views
 		
 		// Mouse capture / recepture moving fields:
 		protected bool moving;
+		protected bool rubberBand;
 		protected IReceptor selectedReceptor;
 		protected Point mouseStart;
 		protected Point mousePosition;
@@ -649,6 +653,7 @@ namespace TypeSystemExplorer.Views
 			receptorLocation.Remove(e.Receptor);
 			carousels.Remove(e.Receptor);
 			carrierAnimations.RemoveAll(a => a.Target == e.Receptor.Instance);
+			Invalidate(true);
 		}
 
 		protected void MouseDownEvent(object sender, MouseEventArgs args)
@@ -664,6 +669,13 @@ namespace TypeSystemExplorer.Views
 					selectedReceptor = selectedReceptors.First().Key;
 					moving = true;
 					mouseStart = args.Location;
+				}
+				else
+				{
+					selectedReceptor = null;
+					rubberBand = true;
+					mouseStart = args.Location;
+					mousePosition = args.Location;
 				}
 			}
 		}
@@ -685,17 +697,27 @@ namespace TypeSystemExplorer.Views
 
 		protected void MouseUpEvent(object sender, MouseEventArgs args)
 		{
-			moving = false;
-
-			if ((selectedReceptor != null) && (!ClientRectangle.Contains(args.Location)) )
+			if (moving)
 			{
-				// Remove the receptor.
-				Program.Receptors.Remove(selectedReceptor);
+				moving = false;
 
-				// Cleaning up our collections will happen when the ReceptorRemoved event fires.
+				if ((selectedReceptor != null) && (!ClientRectangle.Contains(args.Location)))
+				{
+					// Remove the receptor.
+					Program.Receptors.Remove(selectedReceptor);
+
+					// Cleaning up our collections will happen when the ReceptorRemoved event fires.
+				}
+
+				selectedReceptor = null;
 			}
-
-			selectedReceptor = null;
+			else if (rubberBand)
+			{
+				// Gather and contained receptors into a membrane.
+				// mouseStart and mousePosition define the rectangle.
+				rubberBand = false;
+				Invalidate(true);
+			}
 		}
 
 		protected void MouseMoveEvent(object sender, MouseEventArgs args)
@@ -710,6 +732,11 @@ namespace TypeSystemExplorer.Views
 				receptorLocation[selectedReceptor] = Point.Add(curPos, new Size(offset));
 				mouseStart = args.Location;
 				CreateReceptorConnections();
+				Invalidate(true);
+			}
+			else if (rubberBand)
+			{
+				// Redraw the rubberband rectangle.
 				Invalidate(true);
 			}
 
@@ -1024,7 +1051,177 @@ namespace TypeSystemExplorer.Views
 
 						e.Graphics.DrawLines(penColors[3], triangle);
 					});
+/*
+				carousels.ForEach(kvp =>
+				{
+					Point p = receptorLocation[kvp.Key];
+					int imagesCount = kvp.Value.Images.Count;
+					int offset = kvp.Value.Offset;
+					int idx0 = 0;
+					//int sizeZ = 40;
+					//int idxReal = 0;
+					Image img = null;
+					//Point ip;
+					//double theta = 0;
+					//double dx = 0;
+					//double dy = 0;
 
+					// The images in the carousel should range from (relative to the receptor center):
+					// -80 ... +80  (see sizeZ, which is set to 160.)
+					// of course, on the left of the center image, this needs to be the right-edge position.
+					// and on the right of the cemter image, this needs to be the left-edge position.
+					// It would be easier to work with the center of the images on the carousel, which
+					// should be some % of the center width (160), decreasing as we move up the carousel, 
+					// to provide a 3D effect.
+					// If we assume an image width of 160 for the two edge images, then our offsets from center
+					// will be +/- 160.
+					// We can therefore compute the starting and ending angles assuming a maximum height of 100
+					// angle = acos(160/100)
+					// Of course, these angles need to be adjusted because the are in the 3rd and 4th quadrants:
+					// (in degrees):
+					//     starting angle = 270 - startangle
+					//     ending angle = 270 + startangle
+					// and we iterate from starting angle backwards to the ending angle.
+					// steps = (starting angle + (360 - ending angle)) / num images
+
+					double deg270 = 2 * Math.PI * 3 / 4;
+					double angle = Math.Atan(100 / 160);
+					double startingAngle = deg270 - angle;
+					double endingAngle = deg270 + angle;
+					double range = startingAngle + 2 * Math.PI - endingAngle;
+					double step = range / imagesCount;
+					double imageSizeStep = Math.PI / imagesCount;			// 0 to 180 degrees
+
+					kvp.Value.Images.ForEachWithIndex((imeta, idx) =>
+					{
+						Point ip = p;
+						int idxReal = Math.Abs((idx + offset) % imagesCount);
+						img = kvp.Value.Images[idxReal].Image;
+						double theta = startingAngle - step * idx;
+						double dx = 160 * Math.Cos(theta);
+						double dy = -100 * Math.Sin(theta);
+						ip.Offset((int)dx, (int)dy);
+
+						if (idxReal == 0)
+						{
+							// This is the "selected" image.
+							// We also don't want to display this image in the carousel, otherwise it appears twice.
+							idx0 = idx;
+						}
+						else
+						{
+							// from nearly full width as we go around the arc to where we have the smallest width at the top of the arc, then back again.
+							int sizeZ = (int)((160 - 10) * (1.0 - (0.25 + Math.Sin(imageSizeStep * idx) * 3 / 4)));
+							Rectangle rect = new Rectangle(new Point(ip.X - sizeZ/2 , ip.Y), new Size(sizeZ, sizeZ * img.Height / img.Width));
+							e.Graphics.DrawImage(img, rect);
+							e.Graphics.DrawString(idx.ToString(), font, whiteBrush, rect);
+						}
+					});
+
+					// Draw idx0 last so it appears on top.
+					// The image is centered below the receptor.
+					//idxReal = (idx0 + offset) % imagesCount;
+					//ip = p;
+					//theta = (Math.PI * 0.56) + 2 * Math.PI * idxReal / imagesCount;
+					//dx = 200 * Math.Cos(theta);
+					//dy = 100 * Math.Sin(theta);
+					//ip.Offset((int)dx, (int)dy);
+					img = kvp.Value.Images[idx0].Image;
+					//sizeZ = 160; //  (idxReal == 0) ? 160 : 10;
+					//var posY = ip.Y + 20;
+					//var posX = ip.X - 40; 
+
+					int sizeZ2 = 160;
+					Point rp = receptorLocation[kvp.Key];
+					rp.Offset(-sizeZ2 / 2, 172);
+
+					Rectangle location = new Rectangle(rp, new Size(sizeZ2, sizeZ2 * img.Height / img.Width));
+					e.Graphics.DrawImage(img, location);
+					kvp.Value.ActiveImageFilename = img.Tag.ToString();
+					kvp.Value.ActiveImageLocation = location;
+					kvp.Value.ActiveImageIndex = idx0;
+
+					int y = location.Bottom + 10;
+
+					kvp.Value.Images[idx0].MetadataPackets.ForEach(meta =>
+					{
+						Rectangle region = new Rectangle(location.X, y, location.Width, MetadataHeight);
+						string data = meta.Name + ": " + meta.Value;
+						e.Graphics.DrawString(data, font, whiteBrush, region);
+						y += MetadataHeight;
+					});
+				});
+*/
+
+#if VIVEK
+				carousels.ForEach(kvp =>
+				{
+					Point p = receptorLocation[kvp.Key];
+					int imagesCount = kvp.Value.Images.Count;
+					int offset = kvp.Value.Offset;
+					int idx0 = 0;
+					int sizeZ = 40;
+					int idxReal = 0;
+					Image img = null;
+					Point ip;
+					double theta = 0;
+					double dx = 0;
+					double dy = 0;
+
+					kvp.Value.Images.ForEachWithIndex((imeta, idx) =>
+					{
+						img = imeta.Image;
+						ip = p;
+						idxReal = (idx + offset) % imagesCount;
+						theta = (Math.PI * 0.43) + 2 * Math.PI * idxReal / imagesCount;
+						dx = 200 * Math.Cos(theta);
+						dy = 100 * Math.Sin(theta);
+						ip.Offset((int)dx, (int)dy);
+
+						if (idxReal == 0)
+						{
+							idx0 = idx;
+						}
+						else
+						{
+							sizeZ += (90 / imagesCount);
+
+							//e.Graphics.FillRectangle(new SolidBrush(Color.Yellow), ip.X-20, ip.Y-30, 5, 5); //markers
+							if (imagesCount < 10)
+								sizeZ = 75;
+
+							e.Graphics.DrawImage(img, new Rectangle(new Point(ip.X - 20, ip.Y - 30 * img.Width / img.Height), new Size(sizeZ, sizeZ * img.Height / img.Width)));
+						}
+
+					});
+
+					img = kvp.Value.Images[idx0].Image;
+					int sizeZ2 = 160;
+					Point rp = receptorLocation[kvp.Key];
+					rp.Offset(-sizeZ2 / 2, 100);		// 100 is some arbitrary vertical offset for testing.
+					Rectangle location = new Rectangle(rp, new Size(sizeZ2, sizeZ2 * img.Height / img.Width));
+					e.Graphics.DrawImage(img, location);
+
+					kvp.Value.ActiveImageFilename = img.Tag.ToString();
+					kvp.Value.ActiveImageLocation = location;
+					kvp.Value.ActiveImageIndex = idx0;
+
+					int y = location.Bottom + 10;
+
+					// We use ForEachWithIndex to ensure the same ordering as when the user double-clicks on the metadata.
+					kvp.Value.Images[idx0].MetadataPackets.ForEachWithIndex((meta, idx) =>
+					{
+						Rectangle region = new Rectangle(location.X, y, location.Width, MetadataHeight);
+						string data = meta.Name + ": " + meta.Value;
+						e.Graphics.DrawString(data, font, whiteBrush, region);
+						y += MetadataHeight;
+					});
+
+				});
+
+#endif
+// Decent.
+#if MINE
 				carousels.ForEach(kvp =>
 					{
 						Point p = receptorLocation[kvp.Key];
@@ -1038,10 +1235,10 @@ namespace TypeSystemExplorer.Views
 							Image img = imeta.Image;
 							int idxReal = (idx + offset) % images;
 							Point ip = p;
-							double dx = 100 * Math.Cos((2 * Math.PI * 1 / 4) + 2 * Math.PI * idxReal / images);
+							double dx = 200 * Math.Cos((2 * Math.PI * 1 / 4) + 2 * Math.PI * idxReal / images);
 							double dy = 100 * Math.Sin((2 * Math.PI * 1 / 4) + 2 * Math.PI * idxReal / images);
 							ip.Offset((int)dx, (int)dy);
-							int sizer = (idxReal == 0) ? 150 : 100;
+							int sizer = (int)(100 * (0.25 + ((1.0 + Math.Sin((2 * Math.PI * 1 / 4) + 2 * Math.PI * idxReal / images) / 2) * 3 / 4)));
 
 							if (idxReal == 0)
 							{
@@ -1080,6 +1277,13 @@ namespace TypeSystemExplorer.Views
 								});
 						}
 					});
+#endif  
+
+				if (rubberBand)
+				{
+					Rectangle r = Rectangle.FromLTRB(Math.Min(mouseStart.X, mousePosition.X), Math.Min(mouseStart.Y, mousePosition.Y), Math.Max(mouseStart.X, mousePosition.X), Math.Max(mouseStart.Y, mousePosition.Y));
+					e.Graphics.DrawRectangle(whitePen, r);
+				}
 			}
 			catch (Exception ex)
 			{
