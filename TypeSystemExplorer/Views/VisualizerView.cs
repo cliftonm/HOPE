@@ -317,7 +317,8 @@ namespace TypeSystemExplorer.Views
 		// to determine whether the membrane is being "shaken" left-right.
 		protected DateTime shakeStart;
 		protected int shakeCurrentDirection;
-		protected int shakeLeftRightCount;
+		protected int shakeCount;
+		protected bool shakeOK;			// Used to stop further "pops".
 
 		protected Pen receptorLineColor = new Pen(Color.FromArgb(40, 40, 60));
 
@@ -728,6 +729,12 @@ namespace TypeSystemExplorer.Views
 					selectedReceptor = selectedReceptors.First().Key;
 					movingReceptor = true;
 					mouseStart = args.Location;
+
+					// Setup for vertical shake test.
+					shakeStart = DateTime.Now;
+					shakeCurrentDirection = 0;
+					shakeCount = 0;
+					shakeOK = true;
 				}
 				else
 				{
@@ -735,9 +742,12 @@ namespace TypeSystemExplorer.Views
 
 					if (selectedMembranes.Count() > 0)
 					{
+						// Setup for horizontal shake test.
 						shakeStart = DateTime.Now;
 						shakeCurrentDirection = 0;
-						shakeLeftRightCount = 0;
+						shakeCount = 0;
+						shakeOK = true;
+
 						selectedMembrane = selectedMembranes.First().Key;
 						movingMembrane = true;
 						mouseStart = args.Location;
@@ -834,20 +844,49 @@ namespace TypeSystemExplorer.Views
 			{
 				base.OnMouseMove(args);
 				Point offset = Point.Subtract(args.Location, new Size(mouseStart));
-				Point curPos = receptorLocation[selectedReceptor];
-				receptorLocation[selectedReceptor] = Point.Add(curPos, new Size(offset));
-				mouseStart = args.Location;
-				CreateReceptorConnections();
-				RecalcMembranes();
-				Invalidate(true);
+
+				// If vertically shook, the receptor will move to the parent membrane.
+				if (shakeOK && VerticalShakeTest(offset))
+				{
+					shakeOK = false;			// User must release and start again.
+					Membrane m = (Membrane)membraneLocation.Keys.Where(mTest => mTest.Receptors.Contains(selectedReceptor)).FirstOrDefault();
+
+					// If the receptor is in a membrane...
+					if (m != null)
+					{
+						// And the membrane has a parent (not skin)...
+						if (m.ParentMembrane != null)
+						{
+							// Move the receptor to the parent membrane.
+							m.MoveReceptorToMembrane(selectedReceptor, m.ParentMembrane);
+							Point curPos = receptorLocation[selectedReceptor];
+							receptorLocation[selectedReceptor] = Point.Add(curPos, new Size(offset));
+							mouseStart = args.Location;
+							CreateReceptorConnections();
+							RecalcMembranes();
+							Invalidate(true);
+						}
+					}
+				}
+				else
+				{
+					Point curPos = receptorLocation[selectedReceptor];
+					receptorLocation[selectedReceptor] = Point.Add(curPos, new Size(offset));
+					mouseStart = args.Location;
+					CreateReceptorConnections();
+					RecalcMembranes();
+					Invalidate(true);
+				}
 			}
 			else if (movingMembrane)
 			{
 				base.OnMouseMove(args);
 				Point offset = Point.Subtract(args.Location, new Size(mouseStart));
 
-				if (ShakeTest(offset))
+				// If horizontally shook, the mebrane will disolve.
+				if (shakeOK && HorizontalShakeTest(offset))
 				{
+					shakeOK = false;			// User must release and start again.
 					selectedMembrane.Dissolve();
 					CreateReceptorConnections();
 					RecalcMembranes();
@@ -877,46 +916,100 @@ namespace TypeSystemExplorer.Views
 			mouseHoverStartTime = DateTime.Now;
 		}
 
-		protected bool ShakeTest(Point offset)
+		protected bool HorizontalShakeTest(Point offset)
 		{
 			bool ret = false;
 			TimeSpan ts = DateTime.Now - shakeStart;
 
-			// If no movement for 1/2 second, then reset.
-			if ((offset.X == 0) && ts.TotalMilliseconds > 500)
+			// Test only if dx is > dy
+			if (Math.Abs(offset.X) > Math.Abs(offset.Y))
 			{
-				shakeStart = DateTime.Now;
-				shakeLeftRightCount = 0;
-				shakeCurrentDirection = 0;
-			}
-			else
-			{
-				// Or moving in the same direction, reset again.
-				if (Math.Sign(offset.X) == Math.Sign(shakeCurrentDirection) && ts.TotalMilliseconds > 500)
+				// If no movement for 1/2 second, then reset.
+				if ((offset.X == 0) && ts.TotalMilliseconds > 500)
 				{
 					shakeStart = DateTime.Now;
-					shakeLeftRightCount = 0;
-					shakeCurrentDirection = offset.X;
+					shakeCount = 0;
+					shakeCurrentDirection = 0;
 				}
-				else if (Math.Sign(offset.X) != Math.Sign(shakeCurrentDirection) && ts.TotalMilliseconds < 500)
+				else
 				{
-					// Changing direction in under 500ms.  Increment the shake counter and reset the timer.
-					shakeStart = DateTime.Now;
-					++shakeLeftRightCount;
-					shakeCurrentDirection = offset.X;
-
-					if (shakeLeftRightCount >= 10)
+					// Or moving in the same direction, reset again.
+					if (Math.Sign(offset.X) == Math.Sign(shakeCurrentDirection) && ts.TotalMilliseconds > 500)
 					{
-						// Success.  We have detected left-right shaking.
-						ret = true;
+						shakeStart = DateTime.Now;
+						shakeCount = 0;
+						shakeCurrentDirection = offset.X;
+					}
+					else if (Math.Sign(offset.X) != Math.Sign(shakeCurrentDirection) && ts.TotalMilliseconds < 500)
+					{
+						// Changing direction in under 500ms.  Increment the shake counter and reset the timer.
+						shakeStart = DateTime.Now;
+						++shakeCount;
+						shakeCurrentDirection = offset.X;
+
+						if (shakeCount >= 10)
+						{
+							// Success.  We have detected left-right shaking.
+							ret = true;
+						}
+					}
+					else if (ts.TotalMilliseconds > 500)
+					{
+						// Same direction for more than 500ms, so reset again.
+						shakeStart = DateTime.Now;
+						shakeCount = 0;
+						shakeCurrentDirection = offset.X;
 					}
 				}
-				else if (ts.TotalMilliseconds > 500)
+			}
+
+			return ret;
+		}
+
+		protected bool VerticalShakeTest(Point offset)
+		{
+			bool ret = false;
+			TimeSpan ts = DateTime.Now - shakeStart;
+
+			// Test only if dy > dx
+			if (Math.Abs(offset.Y) > Math.Abs(offset.X))
+			{
+				// If no movement for 1/2 second, then reset.
+				if ((offset.Y == 0) && ts.TotalMilliseconds > 500)
 				{
-					// Same direction for more than 500ms, so reset again.
 					shakeStart = DateTime.Now;
-					shakeLeftRightCount = 0;
-					shakeCurrentDirection = offset.X;
+					shakeCount = 0;
+					shakeCurrentDirection = 0;
+				}
+				else
+				{
+					// Or moving in the same direction, reset again.
+					if (Math.Sign(offset.Y) == Math.Sign(shakeCurrentDirection) && ts.TotalMilliseconds > 500)
+					{
+						shakeStart = DateTime.Now;
+						shakeCount = 0;
+						shakeCurrentDirection = offset.Y;
+					}
+					else if (Math.Sign(offset.Y) != Math.Sign(shakeCurrentDirection) && ts.TotalMilliseconds < 500)
+					{
+						// Changing direction in under 500ms.  Increment the shake counter and reset the timer.
+						shakeStart = DateTime.Now;
+						++shakeCount;
+						shakeCurrentDirection = offset.Y;
+
+						if (shakeCount >= 10)
+						{
+							// Success.  We have detected left-right shaking.
+							ret = true;
+						}
+					}
+					else if (ts.TotalMilliseconds > 500)
+					{
+						// Same direction for more than 500ms, so reset again.
+						shakeStart = DateTime.Now;
+						shakeCount = 0;
+						shakeCurrentDirection = offset.Y;
+					}
 				}
 			}
 
