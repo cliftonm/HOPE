@@ -78,7 +78,7 @@ namespace Clifton.Receptor
 		/// <summary>
 		/// The Semantic Type System instance that defines the carrier protocols.
 		/// </summary>
-		public ISemanticTypeSystem SemanticTypeSystem { get; set; }
+		public ISemanticTypeSystem SemanticTypeSystem { get; protected set; }
 
 		/// <summary>
 		/// The list of receptors to which each protocol maps.
@@ -106,8 +106,9 @@ namespace Clifton.Receptor
 		/// <summary>
 		/// Constructor, initializes internal collections.
 		/// </summary>
-		public ReceptorsContainer()
+		public ReceptorsContainer(ISemanticTypeSystem sts)
 		{
+			SemanticTypeSystem = sts;
 			Initialize();
 		}
 

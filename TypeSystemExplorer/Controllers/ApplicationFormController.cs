@@ -18,6 +18,7 @@ using Clifton.ApplicationStateManagement;
 using Clifton.Assertions;
 using Clifton.ExtensionMethods;
 using Clifton.MycroParser;
+using Clifton.Receptor;
 using Clifton.Receptor.Interfaces;
 using Clifton.SemanticTypeSystem;
 using Clifton.SemanticTypeSystem.Interfaces;
@@ -57,7 +58,7 @@ namespace TypeSystemExplorer.Controllers
 
 			// documentControllerMap = new DiagnosticDictionary<IDockContent, NotecardController>("DocumentControllerMap");
 			RegisterUserStateOperations();
-			Program.Receptors.RegisterReceptor("System", this);
+			Program.Skin.RegisterReceptor("System", this);
 		}
 
 		protected void FormClosingEvent(object sender, FormClosingEventArgs args)
@@ -112,7 +113,7 @@ namespace TypeSystemExplorer.Controllers
 			// Now we can load our receptors, once the protocol dictionary is loaded.
 			// TODO: How do we KNOW the protocol dictionary has been loaded?
 			// Speak("Protocols loaded.");
-			Program.Receptors.LoadReceptors();				// Process immediately.
+			Program.Skin.LoadReceptors();				// Process immediately.
 		}
 
 		protected void ActiveDocumentChanged(object sender, EventArgs args)
@@ -135,13 +136,13 @@ namespace TypeSystemExplorer.Controllers
 			OutputController.IfNotNull(c => c.View.Clear());
 			SymbolTableController.IfNotNull(c => c.View.Clear());
 			InternalReset();
-			Program.Receptors.RegisterReceptor("System", this);
+			Program.Skin.RegisterReceptor("System", this);
 		}
 
 		protected void InternalReset()
 		{
 			Program.SemanticTypeSystem.Reset();
-			Program.Receptors.Reset();
+			Program.Skin.Reset();
 			VisualizerController.View.Reset();
 		}
 
@@ -522,14 +523,31 @@ namespace TypeSystemExplorer.Controllers
 			AddAttribute(mycroXaml, "xmlns:ref", "ref");
 			xdoc.AppendChild(mycroXaml);
 			AddAttribute(mycroXaml, "Name", "Form");
+			
 			XmlNode appletNode = xdoc.CreateElement("ixm", "Applet", "TypeSystemExplorer.Models, TypeSystemExplorer");
 			mycroXaml.AppendChild(appletNode);
-			XmlNode receptorsDef = xdoc.CreateElement("ixm", "ReceptorsDef", "TypeSystemExplorer.Models, TypeSystemExplorer");
-			appletNode.AppendChild(receptorsDef);
-			XmlNode receptors = xdoc.CreateElement("ixm", "Receptors", "TypeSystemExplorer.Models, TypeSystemExplorer");
-			receptorsDef.AppendChild(receptors);
+			
+			XmlNode membranesDefNode = xdoc.CreateElement("ixm", "MembranesDef", "TypeSystemExplorer.Models, TypeSystemExplorer");
+			appletNode.AppendChild(membranesDefNode);
 
-			Program.Receptors.Receptors.ForEach(r =>
+			XmlNode membranesNode = xdoc.CreateElement("ixm", "Membranes", "TypeSystemExplorer.Models, TypeSystemExplorer");
+			membranesDefNode.AppendChild(membranesNode);
+
+			Membrane skin = Program.Skin;
+			XmlNode membraneDefNode = xdoc.CreateElement("ixm", "MembraneDef", "TypeSystemExplorer.Models, TypeSystemExplorer");
+			AddAttribute(membraneDefNode, "Name", skin.Name);
+			membranesNode.AppendChild(membraneDefNode);
+
+			// This is the receptor system in the skin membrane:
+
+//			XmlNode receptorsDef = xdoc.CreateElement("ixm", "ReceptorsDef", "TypeSystemExplorer.Models, TypeSystemExplorer");
+			//membraneDefNode.AppendChild(receptorsDef);
+
+			XmlNode receptors = xdoc.CreateElement("ixm", "Receptors", "TypeSystemExplorer.Models, TypeSystemExplorer");
+			membraneDefNode.AppendChild(receptors);
+
+			// TODO: The serialization needs to start at the membrane level and support recursion into inner membranes.
+			Program.Skin.Receptors.ForEach(r =>
 			{
 				// Ignore internal receptors that register themselves.
 				if (!String.IsNullOrEmpty(r.AssemblyName))
@@ -588,25 +606,34 @@ namespace TypeSystemExplorer.Controllers
 			Point noLocation = new Point(-1, -1);
 			Dictionary<IReceptor, Point> receptorLocationMap = new Dictionary<IReceptor, Point>();
 
-			applet.ReceptorsDef.Receptors.ForEach(n =>
+			// TODO: Deserialization needs to support recursing into inner membranes.
+			applet.MembranesDef.Membranes.ForEach(m =>
+			{
+				m.Receptors.ForEach(n =>
 				{
-					IReceptor r = Program.Receptors.RegisterReceptor(n.Name, n.AssemblyName);
+					IReceptor r = Program.Skin.RegisterReceptor(n.Name, n.AssemblyName);
 					receptorLocationMap[r] = n.Location;
 					r.Enabled = n.Enabled;
 				});
+			});
 
 			// After registration, but before the NewReceptor fire event, set the drop point.
-			Program.Receptors.LoadReceptors((rec) => 
+			// TODO: Deserialization needs to support recursing into inner membranes to load their receptors.
+			Program.Skin.LoadReceptors((rec) => 
 				{
-					Point p = receptorLocationMap[rec];
+					Point p;
 
-					if (p == noLocation)
+					// Internal receptors, like ourselves, will not be in this deserialized collection.
+					if (receptorLocationMap.TryGetValue(rec, out p))
 					{
-						VisualizerController.View.ClientDropPoint = VisualizerController.View.GetRandomLocation();
-					}
-					else
-					{
-						VisualizerController.View.ClientDropPoint = p;
+						if (p == noLocation)
+						{
+							VisualizerController.View.ClientDropPoint = VisualizerController.View.GetRandomLocation();
+						}
+						else
+						{
+							VisualizerController.View.ClientDropPoint = p;
+						}
 					}
 				});
 
@@ -614,10 +641,11 @@ namespace TypeSystemExplorer.Controllers
 
 			// Create the carriers.
 
+			// TODO: Carriers need to specify into which membrane they are placed.
 			applet.CarriersDef.Carriers.ForEach(c =>
 				{
-					ISemanticTypeStruct protocol = Program.Receptors.SemanticTypeSystem.GetSemanticTypeStruct(c.Protocol);
-					dynamic signal = Program.Receptors.SemanticTypeSystem.Create(c.Protocol);
+					ISemanticTypeStruct protocol = Program.Skin.SemanticTypeSystem.GetSemanticTypeStruct(c.Protocol);
+					dynamic signal = Program.Skin.SemanticTypeSystem.Create(c.Protocol);
 					Type t = signal.GetType();
 
 					c.Attributes.ForEach(attr =>
@@ -636,7 +664,7 @@ namespace TypeSystemExplorer.Controllers
 							}
 						});
 
-					Program.Receptors.CreateCarrier(null, protocol, signal);
+					Program.Skin.CreateCarrier(null, protocol, signal);
 				});
 		}
 

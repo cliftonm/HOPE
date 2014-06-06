@@ -68,7 +68,8 @@ namespace TypeSystemExplorer.Controllers
 							once = false;
 						}
 
-						Program.Receptors.RegisterReceptor(fn);
+						// TODO: This needs to know which inner membrane (or if on the skin) on which this receptor is being dropped.
+						Program.Skin.RegisterReceptor(fn);
 						receptorsRegistered = true;
 					}
 					else if (fn.ToLower().EndsWith(".jpg"))
@@ -84,7 +85,8 @@ namespace TypeSystemExplorer.Controllers
 						dynamic signal = Program.SemanticTypeSystem.Create("ImageFilename");
 						signal.Filename = fn;
 						// TODO: The null here is really the "System" receptor.
-						Program.Receptors.CreateCarrier(null, protocol, signal);
+						// TODO: This needs to know which inner membrane (or if on the skin) on which this receptor is being dropped.
+						Program.Skin.CreateCarrier(null, protocol, signal);
 					}
 					else if (fn.ToLower().EndsWith(".xml"))
 					{
@@ -102,7 +104,8 @@ namespace TypeSystemExplorer.Controllers
 
 			if (receptorsRegistered)
 			{
-				Program.Receptors.LoadReceptors();
+				// TODO: This would actually be the membrane on which the receptors were dropped.
+				Program.Skin.LoadReceptors();
 			}
 
 			View.StartDrop = false;
@@ -114,7 +117,8 @@ namespace TypeSystemExplorer.Controllers
 			ISemanticTypeStruct protocol = Program.SemanticTypeSystem.GetSemanticTypeStruct("TextToSpeech");
 			dynamic signal = Program.SemanticTypeSystem.Create("TextToSpeech");
 			signal.Text = msg;
-			Program.Receptors.CreateCarrier(null, protocol, signal);
+			// TODO: Is this always the skin membrane?
+			Program.Skin.CreateCarrier(null, protocol, signal);
 		}
 
 		public static void CreateCarriers(XElement el)
@@ -124,8 +128,8 @@ namespace TypeSystemExplorer.Controllers
 			el.Descendants().ForEach(xelem =>
 			{
 				string protocolName = xelem.Attribute("Protocol").Value;
-				ISemanticTypeStruct protocol = Program.Receptors.SemanticTypeSystem.GetSemanticTypeStruct(protocolName);
-				dynamic signal = Program.Receptors.SemanticTypeSystem.Create(protocolName);
+				ISemanticTypeStruct protocol = Program.Skin.SemanticTypeSystem.GetSemanticTypeStruct(protocolName);
+				dynamic signal = Program.Skin.SemanticTypeSystem.Create(protocolName);
 
 				// Use reflection to assign all property values since they're defined in the XML.
 				xelem.Attributes().Where(a => a.Name != "Protocol").ForEach(attr =>
@@ -162,7 +166,7 @@ namespace TypeSystemExplorer.Controllers
 					}
 				});
 
-				ICarrier carrier = Program.Receptors.CreateCarrier(null, protocol, signal);
+				ICarrier carrier = Program.Skin.CreateCarrier(null, protocol, signal);
 				carriers[protocol.DeclTypeName] = carrier;
 			});
 		}

@@ -30,7 +30,7 @@ namespace Clifton.Receptor.Interfaces
 
 	public interface IReceptorSystem
 	{
-		ISemanticTypeSystem SemanticTypeSystem { get; set; }
+		ISemanticTypeSystem SemanticTypeSystem { get; }
 		ICarrier CreateCarrier(IReceptorInstance from, ISemanticTypeStruct protocol, dynamic signal);
 		void CreateCarrierIfReceiver(IReceptorInstance from, ISemanticTypeStruct protocol, dynamic signal);
 		ICarrier CreateInternalCarrier(ISemanticTypeStruct protocol, dynamic signal);

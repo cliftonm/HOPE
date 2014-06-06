@@ -315,9 +315,9 @@ namespace TypeSystemExplorer.Views
 
 			rnd = new Random();
 
-			Program.Receptors.NewReceptor += OnNewReceptor;
-			Program.Receptors.NewCarrier += OnNewCarrier;
-			Program.Receptors.ReceptorRemoved += OnReceptorRemoved;
+			Program.Skin.NewReceptor += OnNewReceptor;
+			Program.Skin.NewCarrier += OnNewCarrier;
+			Program.Skin.ReceptorRemoved += OnReceptorRemoved;
 
 			timer = new Timer();
 			timer.Interval = 1000 / 30;		// 30 hz refresh rate in milliseconds;
@@ -516,7 +516,8 @@ namespace TypeSystemExplorer.Views
 			// Remove any "-thumbnail" so we get the master image.
 			signal.ImageFilename.Filename = Path.GetFileName(img.Tag.ToString().Surrounding("-thumbnail"));
 			// signal.ResponseProtocol = "HaveImageMetadata";
-			Program.Receptors.CreateCarrier(null, protocol, signal);
+			// TODO: The carrier should be created inside the membrane on to which the user dropped the carrier.
+			Program.Skin.CreateCarrier(null, protocol, signal);
 		}
 
 		protected void OnTimerTick(object sender, EventArgs e)
@@ -704,7 +705,8 @@ namespace TypeSystemExplorer.Views
 				if ((selectedReceptor != null) && (!ClientRectangle.Contains(args.Location)))
 				{
 					// Remove the receptor.
-					Program.Receptors.Remove(selectedReceptor);
+					// TODO: Remove the receptor from the appropriate membrane.
+					Program.Skin.RemoveReceptor(selectedReceptor);
 
 					// Cleaning up our collections will happen when the ReceptorRemoved event fires.
 				}
@@ -802,7 +804,9 @@ namespace TypeSystemExplorer.Views
 				ISemanticTypeStruct protocol = Program.SemanticTypeSystem.GetSemanticTypeStruct("ViewImage");
 				dynamic signal = Program.SemanticTypeSystem.Create("ViewImage");
 				signal.ImageFilename.Filename = imageFile.Surrounding("-thumbnail");
-				Program.Receptors.CreateCarrier(null, protocol, signal);
+
+				// TODO: Create the carrier in the membrane of the thumbnail viewer receptor.
+				Program.Skin.CreateCarrier(null, protocol, signal);
 				match = true;
 			}
 
@@ -841,7 +845,8 @@ namespace TypeSystemExplorer.Views
 									ISemanticTypeStruct protocol = Program.SemanticTypeSystem.GetSemanticTypeStruct(meta.PropertyName);
 									dynamic signal = Program.SemanticTypeSystem.Create(meta.PropertyName);
 									protocol.AllTypes.Single(e => e.Name == implementingPropertyName).SetValue(Program.SemanticTypeSystem, signal, meta.Value);
-									Program.Receptors.CreateCarrier(null, protocol, signal);
+									// TODO: Create the metadata carrier in the membrane containing the thumbnail viewer.
+									Program.Skin.CreateCarrier(null, protocol, signal);
 										
 									// Ugh, I hate doing this, but it's a lot easier to just exit all these nests.
 									return true;
@@ -852,7 +857,8 @@ namespace TypeSystemExplorer.Views
 									ISemanticTypeStruct protocol = Program.SemanticTypeSystem.GetSemanticTypeStruct(meta.ProtocolName);
 									dynamic signal = Program.SemanticTypeSystem.Create(meta.ProtocolName);
 									sts.GetSemanticTypeStruct(meta.ProtocolName).NativeTypes.Single(st => st.Name == meta.PropertyName).SetValue(Program.SemanticTypeSystem, signal, meta.Value);
-									Program.Receptors.CreateCarrier(null, protocol, signal);
+									// TODO: Create the metadata carrier in the membrane containing the thumbnail viewer.
+									Program.Skin.CreateCarrier(null, protocol, signal);
 
 									// Ugh, I hate doing this, but it's a lot easier to just exit all these nests.
 									return true;

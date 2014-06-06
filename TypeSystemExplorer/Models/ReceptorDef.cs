@@ -10,13 +10,13 @@ namespace TypeSystemExplorer.Models
 {
 	public class Applet
 	{
-		public ReceptorsDef receptorsDef;
+		public MembranesDef membranesDef;
 		public CarriersDef carriersDef;
 
-		public ReceptorsDef ReceptorsDef
+		public MembranesDef MembranesDef
 		{
-			get { return receptorsDef; }
-			set { receptorsDef = value; }
+			get { return membranesDef; }
+			set { membranesDef = value; }
 		}
 
 		public CarriersDef CarriersDef
@@ -30,7 +30,23 @@ namespace TypeSystemExplorer.Models
 		}
 	}
 
-	public class ReceptorsDef
+	public class MembranesDef
+	{
+		protected List<MembraneDef> membranes;
+
+		public List<MembraneDef> Membranes
+		{
+			get { return membranes; }
+			set { membranes = value; }
+		}
+
+		public MembranesDef()
+		{
+			membranes = new List<MembraneDef>();
+		}
+	}
+
+	public class MembraneDef
 	{
 		protected List<ReceptorDef> receptors;
 
@@ -40,7 +56,7 @@ namespace TypeSystemExplorer.Models
 			set { receptors = value; }
 		}
 
-		public ReceptorsDef()
+		public MembraneDef()
 		{
 			Receptors = new List<ReceptorDef>();
 		}
