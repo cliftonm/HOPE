@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -47,7 +48,19 @@ namespace Clifton.Receptor.Interfaces
 	public interface IReceptor
 	{
 		string Name { get; }
+		string AssemblyName { get; }
 		IReceptorInstance Instance { get; }
 		bool Enabled { get; set; }
+	}
+
+	public interface IMembrane
+	{
+		ISemanticTypeSystem SemanticTypeSystem { get; }
+		ICarrier CreateCarrier(IReceptorInstance from, ISemanticTypeStruct protocol, dynamic signal);
+		void CreateCarrierIfReceiver(IReceptorInstance from, ISemanticTypeStruct protocol, dynamic signal);
+		ICarrier CreateInternalCarrier(ISemanticTypeStruct protocol, dynamic signal);
+		void Remove(IReceptorInstance receptorInstance);
+		ReadOnlyCollection<IReceptor> Receptors { get; }
+		IMembrane ParentMembrane { get; }
 	}
 }

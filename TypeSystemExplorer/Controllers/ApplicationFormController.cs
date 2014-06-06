@@ -486,7 +486,6 @@ namespace TypeSystemExplorer.Controllers
 			{
 				LoadApplet(ofd.FileName);
 				MruMenu.AddFile(ofd.FileName);
-				CurrentFilename = ofd.FileName;
 			}
 		}
 
@@ -506,12 +505,14 @@ namespace TypeSystemExplorer.Controllers
 			{
 				SaveReceptorsInternal(sfd.FileName);
 				MruMenu.AddFile(sfd.FileName);
-				CurrentFilename = sfd.FileName;
 			}
 		}
 
 		public void SaveReceptorsInternal(string filename)
 		{
+			CurrentFilename = filename;
+			SetCaption(filename);
+
 			XmlDocument xdoc = new XmlDocument();
 			
 			//Add the namespaces used in books.xml to the XmlNamespaceManager.
@@ -530,41 +531,8 @@ namespace TypeSystemExplorer.Controllers
 			XmlNode membranesDefNode = xdoc.CreateElement("ixm", "MembranesDef", "TypeSystemExplorer.Models, TypeSystemExplorer");
 			appletNode.AppendChild(membranesDefNode);
 
-			XmlNode membranesNode = xdoc.CreateElement("ixm", "Membranes", "TypeSystemExplorer.Models, TypeSystemExplorer");
-			membranesDefNode.AppendChild(membranesNode);
-
-			Membrane skin = Program.Skin;
-			XmlNode membraneDefNode = xdoc.CreateElement("ixm", "MembraneDef", "TypeSystemExplorer.Models, TypeSystemExplorer");
-			AddAttribute(membraneDefNode, "Name", skin.Name);
-			membranesNode.AppendChild(membraneDefNode);
-
-			// This is the receptor system in the skin membrane:
-
-//			XmlNode receptorsDef = xdoc.CreateElement("ixm", "ReceptorsDef", "TypeSystemExplorer.Models, TypeSystemExplorer");
-			//membraneDefNode.AppendChild(receptorsDef);
-
-			XmlNode receptors = xdoc.CreateElement("ixm", "Receptors", "TypeSystemExplorer.Models, TypeSystemExplorer");
-			membraneDefNode.AppendChild(receptors);
-
-			// TODO: The serialization needs to start at the membrane level and support recursion into inner membranes.
-			Program.Skin.Receptors.ForEach(r =>
-			{
-				// Ignore internal receptors that register themselves.
-				if (!String.IsNullOrEmpty(r.AssemblyName))
-				{
-					XmlNode rNode = xdoc.CreateElement("ixm", "ReceptorDef", "TypeSystemExplorer.Models, TypeSystemExplorer");
-					receptors.AppendChild(rNode);
-					AddAttribute(rNode, "Name", r.Name);
-					AddAttribute(rNode, "AssemblyName", r.AssemblyName);
-					AddAttribute(rNode, "Enabled", r.Enabled.ToString());
-
-					if (!r.Instance.IsHidden)
-					{
-						Point p = VisualizerController.View.GetLocation(r);
-						AddAttribute(rNode, "Location", p.X + ", " + p.Y);
-					}
-				}
-			});
+			// Save membrane and its receptors.
+			SerializeMembrane(membranesDefNode, Program.Skin);
 			
 			// Save the carriers defined in the applet that was loaded.
 
@@ -596,48 +564,65 @@ namespace TypeSystemExplorer.Controllers
 			xdoc.Save(filename);
 		}
 
+		protected void SerializeMembrane(XmlNode membranesDefNode, Membrane m)
+		{
+			XmlDocument xdoc = membranesDefNode.OwnerDocument;
+
+			XmlNode membranesNode = xdoc.CreateElement("ixm", "Membranes", "TypeSystemExplorer.Models, TypeSystemExplorer");
+			membranesDefNode.AppendChild(membranesNode);
+
+			XmlNode membraneDefNode = xdoc.CreateElement("ixm", "MembraneDef", "TypeSystemExplorer.Models, TypeSystemExplorer");
+			AddAttribute(membraneDefNode, "Name", m.Name);
+			membranesNode.AppendChild(membraneDefNode);
+
+			XmlNode receptors = xdoc.CreateElement("ixm", "Receptors", "TypeSystemExplorer.Models, TypeSystemExplorer");
+			membraneDefNode.AppendChild(receptors);
+
+			// TODO: The serialization needs to start at the membrane level and support recursion into inner membranes.
+			m.Receptors.ForEach(r =>
+			{
+				// Ignore internal receptors that register themselves.
+				if (!String.IsNullOrEmpty(r.AssemblyName))
+				{
+					XmlNode rNode = xdoc.CreateElement("ixm", "ReceptorDef", "TypeSystemExplorer.Models, TypeSystemExplorer");
+					receptors.AppendChild(rNode);
+					AddAttribute(rNode, "Name", r.Name);
+					AddAttribute(rNode, "AssemblyName", r.AssemblyName);
+					AddAttribute(rNode, "Enabled", r.Enabled.ToString());
+
+					if (!r.Instance.IsHidden)
+					{
+						Point p = VisualizerController.View.GetLocation(r);
+						AddAttribute(rNode, "Location", p.X + ", " + p.Y);
+					}
+				}
+			});
+
+			// Recurse into child membranes (if they have receptors.)
+			m.Membranes.ForEach(innerMembrane =>
+				{
+					if (innerMembrane.Receptors.Count > 0)
+					{
+						SerializeMembrane(membraneDefNode, innerMembrane);
+					}
+				});
+			
+		}
+
 		public void LoadApplet(string filename)
 		{
+			CurrentFilename = filename;
+			SetCaption(filename);
 			applet = MycroParser.InstantiateFromFile<Applet>(filename, null);
 
 			// Create the receptors.
 
 			VisualizerController.View.StartDrop = true;
-			Point noLocation = new Point(-1, -1);
-			Dictionary<IReceptor, Point> receptorLocationMap = new Dictionary<IReceptor, Point>();
-
-			// TODO: Deserialization needs to support recursing into inner membranes.
-			applet.MembranesDef.Membranes.ForEach(m =>
-			{
-				m.Receptors.ForEach(n =>
-				{
-					IReceptor r = Program.Skin.RegisterReceptor(n.Name, n.AssemblyName);
-					receptorLocationMap[r] = n.Location;
-					r.Enabled = n.Enabled;
-				});
-			});
-
-			// After registration, but before the NewReceptor fire event, set the drop point.
-			// TODO: Deserialization needs to support recursing into inner membranes to load their receptors.
-			Program.Skin.LoadReceptors((rec) => 
-				{
-					Point p;
-
-					// Internal receptors, like ourselves, will not be in this deserialized collection.
-					if (receptorLocationMap.TryGetValue(rec, out p))
-					{
-						if (p == noLocation)
-						{
-							VisualizerController.View.ClientDropPoint = VisualizerController.View.GetRandomLocation();
-						}
-						else
-						{
-							VisualizerController.View.ClientDropPoint = p;
-						}
-					}
-				});
-
+			VisualizerController.View.ShowMembranes = false;
+			// Skin is the the root membrane.  It has no siblings.
+			DeserializeMembranes(applet.MembranesDef.Membranes[0], Program.Skin);
 			VisualizerController.View.StartDrop = false;
+			VisualizerController.View.ShowMembranes = true;
 
 			// Create the carriers.
 
@@ -666,6 +651,45 @@ namespace TypeSystemExplorer.Controllers
 
 					Program.Skin.CreateCarrier(null, protocol, signal);
 				});
+		}
+
+		protected void DeserializeMembranes(MembraneDef membraneDef, Membrane membrane)
+		{
+			Dictionary<IReceptor, Point> receptorLocationMap = new Dictionary<IReceptor, Point>();
+			Point noLocation = new Point(-1, -1);
+
+			membraneDef.Receptors.ForEach(n =>
+				{
+					IReceptor r = membrane.RegisterReceptor(n.Name, n.AssemblyName);
+					receptorLocationMap[r] = n.Location;
+					r.Enabled = n.Enabled;
+				});
+
+
+			membraneDef.Membranes.ForEach(innerMembraneDef => 
+				{
+					Membrane innerMembrane = membrane.CreateInnerMembrane();
+					DeserializeMembranes(innerMembraneDef, innerMembrane);	
+				});
+
+			// After registration, but before the NewReceptor fire event, set the drop point.
+			membrane.LoadReceptors((rec) =>
+			{
+				Point p;
+
+				// Internal receptors, like ourselves, will not be in this deserialized collection.
+				if (receptorLocationMap.TryGetValue(rec, out p))
+				{
+					if (p == noLocation)
+					{
+						VisualizerController.View.ClientDropPoint = VisualizerController.View.GetRandomLocation();
+					}
+					else
+					{
+						VisualizerController.View.ClientDropPoint = p;
+					}
+				}
+			});
 		}
 
 		protected void AddAttribute(XmlNode node, string attrName, string attrValue)

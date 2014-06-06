@@ -12,11 +12,26 @@ using Clifton.SemanticTypeSystem.Interfaces;
 
 namespace Clifton.Receptor
 {
+	public class MembraneEventArgs : EventArgs
+	{
+		public IMembrane Membrane { get; protected set; }
+
+		public MembraneEventArgs(IMembrane m)
+		{
+			Membrane = m;
+		}
+	}
+
 	/// <summary>
 	/// Membranes contain receptors and other membranes.
 	/// </summary>
-	public class Membrane
+	public class Membrane : IMembrane
 	{
+		/// <summary>
+		/// Fires when a new membrane is instantiated.
+		/// </summary>
+		public event EventHandler<MembraneEventArgs> NewMembrane;
+
 		/// <summary>
 		/// Fires when a new receptor is instantiated and registered into the system.
 		/// </summary>
@@ -47,7 +62,11 @@ namespace Clifton.Receptor
 		public ISemanticTypeSystem SemanticTypeSystem { get; protected set; }
 		public List<Membrane> Membranes { get; protected set; }
 		public Dictionary<string, Permeability> ProtocolPermeability {get; protected set;}
-		public ReadOnlyCollection<Receptor> Receptors { get { return receptorSystem.Receptors.AsReadOnly(); } }
+
+		// Yuck.  Way to much conversion going on here.
+		public ReadOnlyCollection<IReceptor> Receptors { get { return receptorSystem.Receptors.Cast<IReceptor>().ToList().AsReadOnly(); } }
+
+		public IMembrane ParentMembrane { get; protected set; }
 
 		protected ReceptorsContainer receptorSystem;
 		protected ISemanticTypeSystem semanticTypeSystem;
@@ -81,9 +100,19 @@ namespace Clifton.Receptor
 			receptorSystem.LoadReceptors(afterRegister);
 		}
 
-		public void CreateCarrier(IReceptorInstance from, ISemanticTypeStruct protocol, dynamic signal)
+		public ICarrier CreateCarrier(IReceptorInstance from, ISemanticTypeStruct protocol, dynamic signal)
 		{
-			receptorSystem.CreateCarrier(from, protocol, signal);
+			return receptorSystem.CreateCarrier(from, protocol, signal);
+		}
+
+		public void CreateCarrierIfReceiver(IReceptorInstance from, ISemanticTypeStruct protocol, dynamic signal)
+		{
+			receptorSystem.CreateCarrierIfReceiver(from, protocol, signal);
+		}
+
+		public ICarrier CreateInternalCarrier(ISemanticTypeStruct protocol, dynamic signal)
+		{
+			return receptorSystem.CreateInternalCarrier(protocol, signal);
 		}
 
 		public void RegisterReceptor(string fn)
@@ -103,9 +132,82 @@ namespace Clifton.Receptor
 			receptorSystem.RegisterReceptor(name, inst);
 		}
 
-		public void RemoveReceptor(IReceptor receptor)
+		public void Remove(IReceptor receptor)
 		{
 			receptorSystem.Remove(receptor);
+		}
+
+		public void Remove(IReceptorInstance receptorInstance)
+		{
+			receptorSystem.Remove(receptorInstance);
+		}
+
+		/// <summary>
+		/// Recurse through the entire membrane tree to find the membranes containing the receptors in the list.
+		/// </summary>
+		public List<Membrane> GetMembranesContaining(List<IReceptor> receptorList)
+		{
+			List<Membrane> ret = new List<Membrane>();
+
+			receptorList.ForEach(r => ret.Add(GetMembraneContaining(r)));
+
+			// Return the distinct membranes.
+			return ret.Distinct().ToList();
+		}
+
+		// TODO: Maintain a flat list to avoid this recursion.
+		/// <summary>
+		/// Recurse through membranes to find the membrane containing the desired receptor.
+		/// </summary>
+		public Membrane GetMembraneContaining(IReceptor searchFor)
+		{
+			Membrane ret = null;
+
+			if (Receptors.Contains((Receptor)searchFor))
+			{
+				ret = this;
+			}
+			else
+			{
+				foreach (Membrane childMembrane in Membranes)
+				{
+					ret = childMembrane.GetMembraneContaining(searchFor);
+
+					if (ret != null)
+					{
+						break;
+					}
+				}
+			}
+
+			return ret;
+		}
+
+		/// <summary>
+		/// Moves receptors in this membrane to the target membrane.
+		/// </summary>
+		public void MoveReceptorsToMembrane(List<IReceptor> receptors, Membrane targetMembrane)
+		{
+			receptors.ForEach(r=>MoveReceptorToMembrane(r, targetMembrane));
+		}
+
+		/// <summary>
+		/// Moves the receptor in this membrane to the specified target membrane.
+		/// </summary>
+		public void MoveReceptorToMembrane(IReceptor receptor, Membrane targetMembrane)
+		{
+			receptorSystem.Receptors.Remove((Receptor)receptor);
+			targetMembrane.receptorSystem.Receptors.Add((Receptor)receptor);
+		}
+
+		public Membrane CreateInnerMembrane()
+		{
+			Membrane inner = new Membrane(SemanticTypeSystem);
+			Membranes.Add(inner);
+			inner.ParentMembrane = this;
+			NewMembrane.Fire(this, new MembraneEventArgs(inner));
+
+			return inner;
 		}
 
 		protected void OnNewReceptor(object sender, ReceptorEventArgs args)

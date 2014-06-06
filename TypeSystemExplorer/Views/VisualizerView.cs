@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Dynamic;
 using System.IO;
 using System.Linq;
@@ -222,6 +223,12 @@ namespace TypeSystemExplorer.Views
 		}
 	}
 
+	public class Circle
+	{
+		public Point Center { get; set; }
+		public int Radius { get; set; }
+	}
+
 	public class VisualizerView : UserControl
 	{
 		const int RenderTime = 120;
@@ -231,6 +238,7 @@ namespace TypeSystemExplorer.Views
 		protected Size ReceptorSize = new Size(40, 40);
 		protected Size ReceptorHalfSize = new Size(20, 20);
 		protected Point dropPoint;
+		protected bool showMembranes;
 
 		public ApplicationModel Model { get; protected set; }
 		public ApplicationFormController ApplicationController { get; protected set; }
@@ -238,6 +246,20 @@ namespace TypeSystemExplorer.Views
 		public VisualizerControl Visualizer { get; set; }
 
 		public bool StartDrop { get; set; }
+		public bool ShowMembranes
+		{
+			get { return ShowMembranes; }
+			set
+			{
+				showMembranes = value;
+				
+				if (showMembranes)
+				{
+					RecalcMembranes();
+					Invalidate(true);
+				}
+			}
+		}
 
 		/// <summary>
 		/// Sets the drop point, converting from screen coordinates to client coordinates.
@@ -256,6 +278,8 @@ namespace TypeSystemExplorer.Views
 		}
 
 		protected Dictionary<IReceptor, Point> receptorLocation;
+		protected Dictionary<IMembrane, Circle> membraneLocation;
+
 		protected List<FlyoutItem> flyouts;
 		protected List<CarrierAnimationItem> carrierAnimations;
 		protected Dictionary<IReceptor, CarouselState> carousels;
@@ -274,9 +298,11 @@ namespace TypeSystemExplorer.Views
 		protected Timer timer;
 		
 		// Mouse capture / recepture moving fields:
-		protected bool moving;
+		protected bool movingReceptor;
+		protected bool movingMembrane;
 		protected bool rubberBand;
 		protected IReceptor selectedReceptor;
+		protected IMembrane selectedMembrane;
 		protected Point mouseStart;
 		protected Point mousePosition;
 		protected DateTime mouseHoverStartTime;
@@ -318,6 +344,7 @@ namespace TypeSystemExplorer.Views
 			Program.Skin.NewReceptor += OnNewReceptor;
 			Program.Skin.NewCarrier += OnNewCarrier;
 			Program.Skin.ReceptorRemoved += OnReceptorRemoved;
+			Program.Skin.NewMembrane += OnNewMembrane;
 
 			timer = new Timer();
 			timer.Interval = 1000 / 30;		// 30 hz refresh rate in milliseconds;
@@ -328,6 +355,11 @@ namespace TypeSystemExplorer.Views
 		public Point GetLocation(IReceptor r)
 		{
 			return receptorLocation[r];
+		}
+
+		public Circle GetLocation(IMembrane m)
+		{
+			return membraneLocation[m];
 		}
 
 		public void Reset()
@@ -345,6 +377,7 @@ namespace TypeSystemExplorer.Views
 		protected void InitializeCollections()
 		{
 			receptorLocation = new Dictionary<IReceptor, Point>();
+			membraneLocation = new Dictionary<IMembrane, Circle>();
 			flyouts = new List<FlyoutItem>();
 			carrierAnimations = new List<CarrierAnimationItem>();
 			carousels = new Dictionary<IReceptor, CarouselState>();
@@ -599,6 +632,23 @@ namespace TypeSystemExplorer.Views
 			return more;
 		}
 
+		/// <summary>
+		/// Wire up events that we want to listen to for this new membrane.
+		/// </summary>
+		protected void OnNewMembrane(object sender, MembraneEventArgs e)
+		{
+			Membrane m = (Membrane)e.Membrane;
+			m.NewMembrane += OnNewMembrane;
+			m.NewReceptor += OnNewReceptor;
+			m.NewCarrier += OnNewCarrier;
+			m.ReceptorRemoved += OnReceptorRemoved;
+
+			// Placeholder only.
+			// Because membranes are dynamic in size based on their receptor locations, 
+			// the current membrane location is always recalculated when a receptor moves.
+			membraneLocation[m] = new Circle() { Center = new Point(-1, -1), Radius = 0 };
+		}
+
 		protected void OnNewReceptor(object sender, ReceptorEventArgs e)
 		{
 			// int hw = ctrl.ClientRectangle.Width / 2;
@@ -614,6 +664,7 @@ namespace TypeSystemExplorer.Views
 			{
 				receptorLocation[e.Receptor] = p;
 				CreateReceptorConnections();
+				RecalcMembranes();
 				Invalidate(true);
 			}
 		}
@@ -654,6 +705,7 @@ namespace TypeSystemExplorer.Views
 			receptorLocation.Remove(e.Receptor);
 			carousels.Remove(e.Receptor);
 			carrierAnimations.RemoveAll(a => a.Target == e.Receptor.Instance);
+			RecalcMembranes();
 			Invalidate(true);
 		}
 
@@ -663,20 +715,31 @@ namespace TypeSystemExplorer.Views
 			{
 				CheckPlayPauseButtons(args.Location);
 
-				var selectedReceptors = receptorLocation.Where(kvp => (new Rectangle(Point.Subtract(kvp.Value, ReceptorHalfSize), ReceptorSize)).Contains(args.Location));
+				var selectedReceptors = receptorLocation.Where(kvp => CircleToBoundingRectangle(kvp.Value, ReceptorSize.Width/2).Contains(args.Location));
 
 				if (selectedReceptors.Count() > 0)
 				{
 					selectedReceptor = selectedReceptors.First().Key;
-					moving = true;
+					movingReceptor = true;
 					mouseStart = args.Location;
 				}
 				else
 				{
-					selectedReceptor = null;
-					rubberBand = true;
-					mouseStart = args.Location;
-					mousePosition = args.Location;
+					var selectedMembranes = membraneLocation.Where(kvp => CircleToBoundingRectangle(kvp.Value.Center, 10).Contains(args.Location));
+
+					if (selectedMembranes.Count() > 0)
+					{
+						selectedMembrane = selectedMembranes.First().Key;
+						movingMembrane = true;
+						mouseStart = args.Location;
+					}
+					else
+					{
+						selectedReceptor = null;
+						rubberBand = true;
+						mouseStart = args.Location;
+						mousePosition = args.Location;
+					}
 				}
 			}
 		}
@@ -698,26 +761,58 @@ namespace TypeSystemExplorer.Views
 
 		protected void MouseUpEvent(object sender, MouseEventArgs args)
 		{
-			if (moving)
+			if (movingReceptor)
 			{
-				moving = false;
+				movingReceptor = false;
 
 				if ((selectedReceptor != null) && (!ClientRectangle.Contains(args.Location)))
 				{
 					// Remove the receptor.
 					// TODO: Remove the receptor from the appropriate membrane.
-					Program.Skin.RemoveReceptor(selectedReceptor);
+					Program.Skin.Remove(selectedReceptor);
 
 					// Cleaning up our collections will happen when the ReceptorRemoved event fires.
 				}
 
 				selectedReceptor = null;
 			}
+			else if (movingMembrane)
+			{
+				movingMembrane = false;
+				selectedMembrane = null;
+			}
 			else if (rubberBand)
 			{
 				// Gather and contained receptors into a membrane.
 				// mouseStart and mousePosition define the rectangle.
 				rubberBand = false;
+
+				// The containing rectangle.
+				Rectangle r = Rectangle.FromLTRB(Math.Min(mouseStart.X, mousePosition.X), Math.Min(mouseStart.Y, mousePosition.Y), Math.Max(mouseStart.X, mousePosition.X), Math.Max(mouseStart.Y, mousePosition.Y));
+
+				// Get receptors inside the rectangle:
+				List<IReceptor> receptors = receptorLocation.Where(kvp => r.Contains(kvp.Value)).Select(kvp => kvp.Key).ToList();
+
+				// Do we have any?
+				if (receptors.Count() > 0)
+				{
+					// Verify that they are all currently contained within a single membrane.
+					List<Membrane> membranes = Program.Skin.GetMembranesContaining(receptors);
+
+					if (membranes.Count == 1)
+					{
+						Membrane membrane = membranes[0];
+						Membrane innerMembrane = membrane.CreateInnerMembrane();
+						membrane.MoveReceptorsToMembrane(receptors, innerMembrane);
+						RecalcMembranes();
+					}
+					else
+					{
+						// Not supported?
+					}
+
+				}
+
 				Invalidate(true);
 			}
 		}
@@ -726,7 +821,7 @@ namespace TypeSystemExplorer.Views
 		{
 			mousePosition = args.Location;
 
-			if (moving)
+			if (movingReceptor)
 			{
 				base.OnMouseMove(args);
 				Point offset = Point.Subtract(args.Location, new Size(mouseStart));
@@ -734,6 +829,24 @@ namespace TypeSystemExplorer.Views
 				receptorLocation[selectedReceptor] = Point.Add(curPos, new Size(offset));
 				mouseStart = args.Location;
 				CreateReceptorConnections();
+				RecalcMembranes();
+				Invalidate(true);
+			}
+			else if (movingMembrane)
+			{
+				base.OnMouseMove(args);
+				Point offset = Point.Subtract(args.Location, new Size(mouseStart));
+
+				// To move the membrane, we actually move each receptor inside the membrane.
+				selectedMembrane.Receptors.ForEach(r =>
+					{
+						Point curPos = receptorLocation[r]; 
+						receptorLocation[r] = Point.Add(curPos, new Size(offset));
+					});
+
+				mouseStart = args.Location;
+				CreateReceptorConnections();
+				RecalcMembranes();
 				Invalidate(true);
 			}
 			else if (rubberBand)
@@ -956,6 +1069,65 @@ namespace TypeSystemExplorer.Views
 				});
 		}
 
+		protected void RecalcMembranes()
+		{
+			if (showMembranes)
+			{
+				List<IMembrane> toRemove = new List<IMembrane>();
+				Dictionary<IMembrane, Circle> updates = new Dictionary<IMembrane, Circle>();
+
+				// Get the center of all receptors within a membrane.
+				membraneLocation.Keys.ForEach(m =>
+				{
+					// Membrane must have receptors and can't be the root (skin) membrane.
+					if ((m.Receptors.Count > 0) && (m.ParentMembrane != null))
+					{
+						int cx = 0, cy = 0;
+
+						// Much easier than using aggregate with Point structures.
+						m.Receptors.ForEach(r =>
+							{
+								Point p = receptorLocation[r];
+								cx += p.X;
+								cy += p.Y;
+							});
+
+						cx /= m.Receptors.Count;
+						cy /= m.Receptors.Count;
+
+						// Get radius by finding the most distant receptor.
+						double radius = 0;
+
+						m.Receptors.ForEach(r =>
+							{
+								Point p = receptorLocation[r];
+								double dx = p.X - cx;
+								double dy = p.Y - cy;
+								double dist = Math.Sqrt(dx * dx + dy * dy);
+
+								if (dist > radius)
+								{
+									radius = dist;
+								}
+							});
+
+						// Add a factor to the radius
+						radius += 50;
+
+						// Can't even modify the value of a collection being iterated!
+						updates[m] = new Circle() { Center = new Point(cx, cy), Radius = (int)radius };
+					}
+					else
+					{
+						toRemove.Add(m);
+					}
+				});
+
+				toRemove.ForEach(m => membraneLocation.Remove(m));
+				updates.ForEach(kvp => membraneLocation[kvp.Key] = kvp.Value);
+			}
+		}
+
 		protected void OnVisualizerPaint(object sender, PaintEventArgs e)
 		{
 			try
@@ -963,7 +1135,49 @@ namespace TypeSystemExplorer.Views
 				Control ctrl = (Control)sender;
 
 				e.Graphics.FillRectangle(blackBrush, new Rectangle(Location, Size));
-				e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+				e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+				e.Graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+				if (showMembranes)
+				{
+					// Membranes are first
+					membraneLocation.Values.ForEach(m =>
+					{
+						// Draw the surrounding membrane.
+						GraphicsPath gp = new GraphicsPath();
+						Rectangle r = CircleToBoundingRectangle(m.Center, m.Radius);
+						r.Inflate(-20, -20);
+						gp.AddEllipse(r);
+						r.Inflate(20, 20);
+						gp.AddEllipse(r);
+						PathGradientBrush pgb = new PathGradientBrush(gp);
+						// Read about blending here: http://msdn.microsoft.com/en-us/library/system.drawing.drawing2d.blend.aspx
+						Blend b = new Blend();
+						b.Factors = new float[] { 0, 1, 1 };
+						b.Positions = new float[] { 0, .1f, 1 };
+						pgb.Blend = b;
+						// pgb.CenterPoint = m.Center;
+						pgb.CenterColor = Color.Black;
+						pgb.SurroundColors = new Color[] { Color.LightSlateGray };
+						e.Graphics.FillPath(pgb, gp);
+						pgb.Dispose();
+						gp.Dispose();
+
+						// Draw a nub at the center of the membrane.
+						gp = new GraphicsPath();
+						r = CircleToBoundingRectangle(m.Center, 10);
+						gp.AddEllipse(r);
+						pgb = new PathGradientBrush(gp);
+						pgb.CenterPoint = m.Center;
+						pgb.CenterColor = Color.LightSlateGray;
+						pgb.SurroundColors = new Color[] { Color.Black };
+						e.Graphics.FillPath(pgb, gp);
+						pgb.Dispose();
+						gp.Dispose();
+
+
+					});
+				}
 
 				e.Graphics.DrawImage(playButton, playButtonRect);
 				e.Graphics.DrawImage(pauseButton, pauseButtonRect);
@@ -1057,6 +1271,7 @@ namespace TypeSystemExplorer.Views
 
 						e.Graphics.DrawLines(penColors[3], triangle);
 					});
+// Rework Idea:
 /*
 				carousels.ForEach(kvp =>
 				{
@@ -1295,6 +1510,11 @@ namespace TypeSystemExplorer.Views
 			{
 				System.Diagnostics.Debugger.Break();
 			}
+		}
+
+		protected Rectangle CircleToBoundingRectangle(Point ctr, int radius)
+		{
+			return new Rectangle(ctr.X - radius, ctr.Y - radius, radius * 2, radius * 2);
 		}
 	}
 }

@@ -49,6 +49,7 @@ namespace TypeSystemExplorer.Models
 	public class MembraneDef
 	{
 		protected List<ReceptorDef> receptors;
+		protected List<MembraneDef> membranes;
 
 		public List<ReceptorDef> Receptors
 		{
@@ -56,9 +57,16 @@ namespace TypeSystemExplorer.Models
 			set { receptors = value; }
 		}
 
+		public List<MembraneDef> Membranes
+		{
+			get { return membranes; }
+			set { membranes = value; }
+		}
+
 		public MembraneDef()
 		{
 			Receptors = new List<ReceptorDef>();
+			Membranes = new List<MembraneDef>();
 		}
 	}
 

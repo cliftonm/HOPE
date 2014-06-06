@@ -4,23 +4,47 @@
       <ixm:Membranes>
         <ixm:MembraneDef Name="Skin">
           <ixm:Receptors>
-            <ixm:ReceptorDef Name="Text To Speech" AssemblyName="TextToSpeechReceptor.dll" Enabled="False" Location="101, 110" />
-            <ixm:ReceptorDef Name="SQLite Persistor" AssemblyName="PersistenceReceptor.dll" Enabled="True" Location="192, 25" />
-            <ixm:ReceptorDef Name="APOD" AssemblyName="APODScraperReceptor.dll" Enabled="True" Location="96, 361" />
-            <ixm:ReceptorDef Name="Thumbnail Viewer" AssemblyName="ThumbnailViewerReceptor.dll" Enabled="True" Location="732, 448" />
-            <ixm:ReceptorDef Name="Thumbnail Converter" AssemblyName="ThumbnailCreatorReceptor.dll" Enabled="True" Location="96, 231" />
             <ixm:ReceptorDef Name="Thumbnail Image Writer" AssemblyName="ImageWriterReceptor.dll" Enabled="False" Location="261, 231" />
-            <ixm:ReceptorDef Name="Carrier Exporter" AssemblyName="CarrierExporterReceptor.dll" Enabled="False" Location="194, 466" />
-            <ixm:ReceptorDef Name="Logger" AssemblyName="LoggingReceptor.dll" Enabled="True" Location="96, 466" />
-            <ixm:ReceptorDef Name="Weather Service" AssemblyName="WeatherServiceReceptor.dll" Enabled="True" Location="332, 690" />
-            <ixm:ReceptorDef Name="Zip Code Service" AssemblyName="ZipCodeReceptor.dll" Enabled="True" Location="205, 690" />
-            <ixm:ReceptorDef Name="Weather Info" AssemblyName="WeatherInfoReceptor.dll" Enabled="True" Location="259, 607" />
-            <ixm:ReceptorDef Name="Image Viewer" AssemblyName="ImageViewerReceptor.dll" Enabled="True" Location="460, 24" />
-            <ixm:ReceptorDef Name="Webpage Scraper" AssemblyName="WebPageScraperReceptor.dll" Enabled="True" Location="352, 24" />
-            <ixm:ReceptorDef Name="Interval Timer" AssemblyName="TimerReceptor.dll" Enabled="True" Location="188, 109" />
-            <ixm:ReceptorDef Name="Text Display" AssemblyName="TextDisplayReceptor.dll" Enabled="False" Location="103, 25" />
-            <ixm:ReceptorDef Name="URL" AssemblyName="UrlReceptor.dll" Enabled="True" Location="269, 24" />
+            <ixm:ReceptorDef Name="Carrier Exporter" AssemblyName="CarrierExporterReceptor.dll" Enabled="False" Location="250, 128" />
+            <ixm:ReceptorDef Name="Logger" AssemblyName="LoggingReceptor.dll" Enabled="True" Location="79, 306" />
+            <ixm:ReceptorDef Name="Interval Timer" AssemblyName="TimerReceptor.dll" Enabled="True" Location="398, 334" />
           </ixm:Receptors>
+          <ixm:Membranes>
+            <ixm:MembraneDef Name="">
+              <ixm:Receptors>
+                <ixm:ReceptorDef Name="Weather Service" AssemblyName="WeatherServiceReceptor.dll" Enabled="True" Location="808, 307" />
+                <ixm:ReceptorDef Name="Zip Code Service" AssemblyName="ZipCodeReceptor.dll" Enabled="True" Location="681, 307" />
+                <ixm:ReceptorDef Name="Weather Info" AssemblyName="WeatherInfoReceptor.dll" Enabled="True" Location="735, 224" />
+              </ixm:Receptors>
+            </ixm:MembraneDef>
+          </ixm:Membranes>
+          <ixm:Membranes>
+            <ixm:MembraneDef Name="">
+              <ixm:Receptors>
+                <ixm:ReceptorDef Name="SQLite Persistor" AssemblyName="PersistenceReceptor.dll" Enabled="True" Location="338, 521" />
+                <ixm:ReceptorDef Name="APOD" AssemblyName="APODScraperReceptor.dll" Enabled="True" Location="338, 684" />
+                <ixm:ReceptorDef Name="Thumbnail Converter" AssemblyName="ThumbnailCreatorReceptor.dll" Enabled="True" Location="398, 609" />
+                <ixm:ReceptorDef Name="Webpage Scraper" AssemblyName="WebPageScraperReceptor.dll" Enabled="True" Location="273, 605" />
+              </ixm:Receptors>
+            </ixm:MembraneDef>
+          </ixm:Membranes>
+          <ixm:Membranes>
+            <ixm:MembraneDef Name="">
+              <ixm:Receptors>
+                <ixm:ReceptorDef Name="Thumbnail Viewer" AssemblyName="ThumbnailViewerReceptor.dll" Enabled="True" Location="780, 674" />
+                <ixm:ReceptorDef Name="Image Viewer" AssemblyName="ImageViewerReceptor.dll" Enabled="True" Location="755, 564" />
+                <ixm:ReceptorDef Name="URL" AssemblyName="UrlReceptor.dll" Enabled="True" Location="876, 607" />
+              </ixm:Receptors>
+              <ixm:Membranes>
+                <ixm:MembraneDef Name="">
+                  <ixm:Receptors>
+                    <ixm:ReceptorDef Name="Text To Speech" AssemblyName="TextToSpeechReceptor.dll" Enabled="False" Location="1119, 385" />
+                    <ixm:ReceptorDef Name="Text Display" AssemblyName="TextDisplayReceptor.dll" Enabled="False" Location="1029, 394" />
+                  </ixm:Receptors>
+                </ixm:MembraneDef>
+              </ixm:Membranes>
+            </ixm:MembraneDef>
+          </ixm:Membranes>
         </ixm:MembraneDef>
       </ixm:Membranes>
     </ixm:MembranesDef>
