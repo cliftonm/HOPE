@@ -66,7 +66,7 @@ namespace Clifton.Receptor
 		// Yuck.  Way to much conversion going on here.
 		public ReadOnlyCollection<IReceptor> Receptors { get { return receptorSystem.Receptors.Cast<IReceptor>().ToList().AsReadOnly(); } }
 
-		public IMembrane ParentMembrane { get; protected set; }
+		public Membrane ParentMembrane { get; protected set; }
 
 		protected ReceptorsContainer receptorSystem;
 		protected ISemanticTypeSystem semanticTypeSystem;
@@ -140,6 +140,16 @@ namespace Clifton.Receptor
 		public void Remove(IReceptorInstance receptorInstance)
 		{
 			receptorSystem.Remove(receptorInstance);
+		}
+
+		/// <summary>
+		/// Remove this membrane, moving its receptors to the parent.
+		/// </summary>
+		public void Dissolve()
+		{
+			// TODO: To much conversion.
+			MoveReceptorsToMembrane(receptorSystem.Receptors.Cast<IReceptor>().ToList(), ParentMembrane);
+			ParentMembrane.Membranes.Remove(this);
 		}
 
 		/// <summary>

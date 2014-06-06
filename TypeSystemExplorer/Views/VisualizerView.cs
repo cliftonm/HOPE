@@ -313,6 +313,12 @@ namespace TypeSystemExplorer.Views
 		protected int orbitCount = 0;
 		protected bool paused;
 
+		// When the membrane is being moved, keeps a short of list of mouse offsets
+		// to determine whether the membrane is being "shaken" left-right.
+		protected DateTime shakeStart;
+		protected int shakeCurrentDirection;
+		protected int shakeLeftRightCount;
+
 		protected Pen receptorLineColor = new Pen(Color.FromArgb(40, 40, 60));
 
 		public VisualizerView()
@@ -729,6 +735,9 @@ namespace TypeSystemExplorer.Views
 
 					if (selectedMembranes.Count() > 0)
 					{
+						shakeStart = DateTime.Now;
+						shakeCurrentDirection = 0;
+						shakeLeftRightCount = 0;
 						selectedMembrane = selectedMembranes.First().Key;
 						movingMembrane = true;
 						mouseStart = args.Location;
@@ -837,17 +846,27 @@ namespace TypeSystemExplorer.Views
 				base.OnMouseMove(args);
 				Point offset = Point.Subtract(args.Location, new Size(mouseStart));
 
-				// To move the membrane, we actually move each receptor inside the membrane.
-				selectedMembrane.Receptors.ForEach(r =>
-					{
-						Point curPos = receptorLocation[r]; 
-						receptorLocation[r] = Point.Add(curPos, new Size(offset));
-					});
+				if (ShakeTest(offset))
+				{
+					selectedMembrane.Dissolve();
+					CreateReceptorConnections();
+					RecalcMembranes();
+					Invalidate(true);
+				}
+				else
+				{
+					// To move the membrane, we actually move each receptor inside the membrane.
+					selectedMembrane.Receptors.ForEach(r =>
+						{
+							Point curPos = receptorLocation[r];
+							receptorLocation[r] = Point.Add(curPos, new Size(offset));
+						});
 
-				mouseStart = args.Location;
-				CreateReceptorConnections();
-				RecalcMembranes();
-				Invalidate(true);
+					mouseStart = args.Location;
+					CreateReceptorConnections();
+					RecalcMembranes();
+					Invalidate(true);
+				}
 			}
 			else if (rubberBand)
 			{
@@ -856,6 +875,52 @@ namespace TypeSystemExplorer.Views
 			}
 
 			mouseHoverStartTime = DateTime.Now;
+		}
+
+		protected bool ShakeTest(Point offset)
+		{
+			bool ret = false;
+			TimeSpan ts = DateTime.Now - shakeStart;
+
+			// If no movement for 1/2 second, then reset.
+			if ((offset.X == 0) && ts.TotalMilliseconds > 500)
+			{
+				shakeStart = DateTime.Now;
+				shakeLeftRightCount = 0;
+				shakeCurrentDirection = 0;
+			}
+			else
+			{
+				// Or moving in the same direction, reset again.
+				if (Math.Sign(offset.X) == Math.Sign(shakeCurrentDirection) && ts.TotalMilliseconds > 500)
+				{
+					shakeStart = DateTime.Now;
+					shakeLeftRightCount = 0;
+					shakeCurrentDirection = offset.X;
+				}
+				else if (Math.Sign(offset.X) != Math.Sign(shakeCurrentDirection) && ts.TotalMilliseconds < 500)
+				{
+					// Changing direction in under 500ms.  Increment the shake counter and reset the timer.
+					shakeStart = DateTime.Now;
+					++shakeLeftRightCount;
+					shakeCurrentDirection = offset.X;
+
+					if (shakeLeftRightCount >= 10)
+					{
+						// Success.  We have detected left-right shaking.
+						ret = true;
+					}
+				}
+				else if (ts.TotalMilliseconds > 500)
+				{
+					// Same direction for more than 500ms, so reset again.
+					shakeStart = DateTime.Now;
+					shakeLeftRightCount = 0;
+					shakeCurrentDirection = offset.X;
+				}
+			}
+
+			return ret;
 		}
 
 		protected void MouseEnterEvent(object sender, EventArgs args)
@@ -1069,6 +1134,44 @@ namespace TypeSystemExplorer.Views
 				});
 		}
 
+		protected void GetCenter(Membrane m, ref int cx, ref int cy, ref int count)
+		{
+			// Can't use ref'd variables in lambda expressions.
+			foreach (IReceptor r in m.Receptors)
+			{
+				Point p = receptorLocation[r];
+				cx += p.X;
+				cy += p.Y;
+				++count;
+
+				foreach (Membrane inner in m.Membranes)
+				{
+					GetCenter(inner, ref cx, ref cy, ref count);
+				}
+			}
+		}
+
+		protected void GetMaxRadius(Membrane m, int cx, int cy, ref double radius)
+		{
+			foreach(Receptor r in m.Receptors)
+			{
+				Point p = receptorLocation[r];
+				double dx = p.X - cx;
+				double dy = p.Y - cy;
+				double dist = Math.Sqrt(dx * dx + dy * dy);
+
+				if (dist > radius)
+				{
+					radius = dist;
+				}
+
+				foreach (Membrane inner in m.Membranes)
+				{
+					GetMaxRadius(inner, cx, cy, ref radius);
+				}
+			}
+		}
+
 		protected void RecalcMembranes()
 		{
 			if (showMembranes)
@@ -1077,39 +1180,24 @@ namespace TypeSystemExplorer.Views
 				Dictionary<IMembrane, Circle> updates = new Dictionary<IMembrane, Circle>();
 
 				// Get the center of all receptors within a membrane.
-				membraneLocation.Keys.ForEach(m =>
+				// Can't use ref'd variables in lambda expressions.
+				foreach(Membrane m in membraneLocation.Keys)
 				{
 					// Membrane must have receptors and can't be the root (skin) membrane.
 					if ((m.Receptors.Count > 0) && (m.ParentMembrane != null))
 					{
-						int cx = 0, cy = 0;
+						int cx = 0, cy = 0, count = 0;
 
 						// Much easier than using aggregate with Point structures.
-						m.Receptors.ForEach(r =>
-							{
-								Point p = receptorLocation[r];
-								cx += p.X;
-								cy += p.Y;
-							});
+						// Recurse into inner membranes as well.
+						GetCenter(m, ref cx, ref cy, ref count);
 
-						cx /= m.Receptors.Count;
-						cy /= m.Receptors.Count;
+						cx /= count;
+						cy /= count;
 
 						// Get radius by finding the most distant receptor.
 						double radius = 0;
-
-						m.Receptors.ForEach(r =>
-							{
-								Point p = receptorLocation[r];
-								double dx = p.X - cx;
-								double dy = p.Y - cy;
-								double dist = Math.Sqrt(dx * dx + dy * dy);
-
-								if (dist > radius)
-								{
-									radius = dist;
-								}
-							});
+						GetMaxRadius(m, cx, cy, ref radius);
 
 						// Add a factor to the radius
 						radius += 50;
@@ -1121,7 +1209,7 @@ namespace TypeSystemExplorer.Views
 					{
 						toRemove.Add(m);
 					}
-				});
+				}
 
 				toRemove.ForEach(m => membraneLocation.Remove(m));
 				updates.ForEach(kvp => membraneLocation[kvp.Key] = kvp.Value);

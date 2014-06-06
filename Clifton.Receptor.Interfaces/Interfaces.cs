@@ -61,6 +61,7 @@ namespace Clifton.Receptor.Interfaces
 		ICarrier CreateInternalCarrier(ISemanticTypeStruct protocol, dynamic signal);
 		void Remove(IReceptorInstance receptorInstance);
 		ReadOnlyCollection<IReceptor> Receptors { get; }
-		IMembrane ParentMembrane { get; }
+		void Dissolve();
+		// IMembrane ParentMembrane { get; }
 	}
 }
