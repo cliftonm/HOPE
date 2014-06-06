@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
+using System.Xml.Schema;
 using System.Windows.Forms;
 
 using WeifenLuo.WinFormsUI.Docking;
@@ -48,6 +49,8 @@ namespace TypeSystemExplorer.Controllers
 		public OutputController OutputController { get; set; }
 		public SymbolTableController SymbolTableController { get; set; }
 		public VisualizerController VisualizerController { get; set; }
+
+		protected Applet applet;
 
 		public ApplicationFormController()
 		{
@@ -170,7 +173,7 @@ namespace TypeSystemExplorer.Controllers
 
 				if (res == DialogResult.OK)
 				{
-					MruMenu.AddFile(ofd.FileName);
+					// MruMenu.AddFile(ofd.FileName);
 					LoadXml(ofd.FileName);
 					CurrentFilename = ofd.FileName;
 				}
@@ -202,8 +205,8 @@ namespace TypeSystemExplorer.Controllers
 			{
 				CurrentFilename = sfd.FileName;
 				XmlEditorController.View.Editor.SaveFile(sfd.FileName);
-				MruMenu.AddFile(sfd.FileName);
-				SetCaption(sfd.FileName);
+				// MruMenu.AddFile(sfd.FileName);
+				// SetCaption(sfd.FileName);
 			}
 		}
 
@@ -228,7 +231,7 @@ namespace TypeSystemExplorer.Controllers
 		{
 			// Because I get tired of doing this manually.
 			LoadXml("protocols.xml");
-			LoadApplet();
+			// LoadApplet();
 		}
 
 		/// <summary>
@@ -472,9 +475,112 @@ namespace TypeSystemExplorer.Controllers
 			// t.X.Integer.Value = 5;
 		}
 
-		public void LoadApplet()
+		public void LoadReceptors(object sender, EventArgs args)
 		{
-			Applet applet = MycroParser.InstantiateFromFile<Applet>("Receptors2.xml", null);
+			OpenFileDialog ofd = new OpenFileDialog();
+			ofd.Filter = "xml files (*.xml)|*.xml|All files (*.*)|*.*";
+			DialogResult ret = ofd.ShowDialog();
+
+			if (ret == DialogResult.OK)
+			{
+				LoadApplet(ofd.FileName);
+				MruMenu.AddFile(ofd.FileName);
+				CurrentFilename = ofd.FileName;
+			}
+		}
+
+		public void SaveReceptors(object sender, EventArgs args)
+		{
+			SaveReceptorsInternal(CurrentFilename);
+		}
+
+		public void SaveReceptorsAs(object sender, EventArgs args)
+		{
+			SaveFileDialog sfd = new SaveFileDialog();
+			sfd.Filter = "xml files (*.xml)|*.xml|All files (*.*)|*.*";
+			sfd.OverwritePrompt = true;
+			DialogResult ret = sfd.ShowDialog();
+
+			if (ret == DialogResult.OK)
+			{
+				SaveReceptorsInternal(sfd.FileName);
+				MruMenu.AddFile(sfd.FileName);
+				CurrentFilename = sfd.FileName;
+			}
+		}
+
+		public void SaveReceptorsInternal(string filename)
+		{
+			XmlDocument xdoc = new XmlDocument();
+			
+			//Add the namespaces used in books.xml to the XmlNamespaceManager.
+			// xmlnsManager.AddNamespace("ixm", "TypeSystemExplorer.Models, TypeSystemExplorer");
+
+			XmlNode mycroXaml = xdoc.CreateElement("MycroXaml");
+			AddAttribute(mycroXaml, "xmlns:ixm", "TypeSystemExplorer.Models, TypeSystemExplorer");
+			AddAttribute(mycroXaml, "xmlns:def", "def");
+			AddAttribute(mycroXaml, "xmlns:ref", "ref");
+			xdoc.AppendChild(mycroXaml);
+			AddAttribute(mycroXaml, "Name", "Form");
+			XmlNode appletNode = xdoc.CreateElement("ixm", "Applet", "TypeSystemExplorer.Models, TypeSystemExplorer");
+			mycroXaml.AppendChild(appletNode);
+			XmlNode receptorsDef = xdoc.CreateElement("ixm", "ReceptorsDef", "TypeSystemExplorer.Models, TypeSystemExplorer");
+			appletNode.AppendChild(receptorsDef);
+			XmlNode receptors = xdoc.CreateElement("ixm", "Receptors", "TypeSystemExplorer.Models, TypeSystemExplorer");
+			receptorsDef.AppendChild(receptors);
+
+			Program.Receptors.Receptors.ForEach(r =>
+			{
+				// Ignore internal receptors that register themselves.
+				if (!String.IsNullOrEmpty(r.AssemblyName))
+				{
+					XmlNode rNode = xdoc.CreateElement("ixm", "ReceptorDef", "TypeSystemExplorer.Models, TypeSystemExplorer");
+					receptors.AppendChild(rNode);
+					AddAttribute(rNode, "Name", r.Name);
+					AddAttribute(rNode, "AssemblyName", r.AssemblyName);
+					AddAttribute(rNode, "Enabled", r.Enabled.ToString());
+
+					if (!r.Instance.IsHidden)
+					{
+						Point p = VisualizerController.View.GetLocation(r);
+						AddAttribute(rNode, "Location", p.X + ", " + p.Y);
+					}
+				}
+			});
+			
+			// Save the carriers defined in the applet that was loaded.
+
+			if (appletNode != null)
+			{
+				XmlNode carriersDef = xdoc.CreateElement("ixm", "CarriersDef", "TypeSystemExplorer.Models, TypeSystemExplorer");
+				appletNode.AppendChild(carriersDef);
+				XmlNode carriers = xdoc.CreateElement("ixm", "Carriers", "TypeSystemExplorer.Models, TypeSystemExplorer");
+				carriersDef.AppendChild(carriers);
+
+				applet.CarriersDef.Carriers.ForEach(c =>
+					{
+						XmlNode carrierDef = xdoc.CreateElement("ixm", "CarrierDef", "TypeSystemExplorer.Models, TypeSystemExplorer");
+						AddAttribute(carrierDef, "Protocol", c.Protocol);
+						carriers.AppendChild(carrierDef);
+						XmlNode attr = xdoc.CreateElement("ixm", "Attributes", "TypeSystemExplorer.Models, TypeSystemExplorer");
+						carrierDef.AppendChild(attr);
+
+						c.Attributes.ForEach(a =>
+							{
+								XmlNode attrVal = xdoc.CreateElement("ixm", "Attr", "TypeSystemExplorer.Models, TypeSystemExplorer");
+								AddAttribute(attrVal, "Name", a.Name);
+								AddAttribute(attrVal, "Value", a.Value);
+								attr.AppendChild(attrVal);
+							});
+					});
+			}
+
+			xdoc.Save(filename);
+		}
+
+		public void LoadApplet(string filename)
+		{
+			applet = MycroParser.InstantiateFromFile<Applet>(filename, null);
 
 			// Create the receptors.
 
@@ -532,32 +638,6 @@ namespace TypeSystemExplorer.Controllers
 
 					Program.Receptors.CreateCarrier(null, protocol, signal);
 				});
-		}
-
-		public void SaveReceptors(object sender, EventArgs args)
-		{
-			XmlDocument xdoc = new XmlDocument();
-			XmlNode parent = xdoc.CreateElement("Receptors");
-			xdoc.AppendChild(parent);
-
-			Program.Receptors.Receptors.ForEach(r =>
-				{
-					// Ignore internal receptors that register themselves.
-					if (!String.IsNullOrEmpty(r.AssemblyName))
-					{
-						XmlNode rNode = xdoc.CreateElement("Receptor");
-						parent.AppendChild(rNode);
-						AddAttribute(rNode, "Name", r.Name);
-						AddAttribute(rNode, "AssemblyName", r.AssemblyName);
-
-						if (!r.Instance.IsHidden)
-						{
-							AddAttribute(rNode, "Location", VisualizerController.View.GetLocation(r).ToString());
-						}
-					}
-				});
-
-			xdoc.Save("Receptors2.xml");
 		}
 
 		protected void AddAttribute(XmlNode node, string attrName, string attrValue)

@@ -35,7 +35,7 @@ namespace TypeSystemExplorer.Actions
 		{
 			if (ApplicationController.CheckDirtyModel())
 			{
-				ApplicationController.LoadXml(filename);
+				ApplicationController.LoadApplet(filename);
 			}
 		}
 	}
