@@ -103,6 +103,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Models\ApplicationModel.cs" />
+    <Compile Include="Models\ReceptorDef.cs" />
     <Compile Include="Models\SchemaHelper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -201,6 +202,7 @@
     <Content Include="bin\Debug\Receptors2.xml">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="bin\Debug\Receptors3.xml" />
     <Content Include="bin\Debug\semanticTypeTree.xml">
       <SubType>Designer</SubType>
     </Content>

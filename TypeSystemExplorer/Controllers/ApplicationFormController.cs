@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
@@ -23,6 +24,7 @@ using Clifton.Tools.Strings;
 using Clifton.Tools.Strings.Extensions;
 
 using TypeSystemExplorer.Actions;
+using TypeSystemExplorer.Models;
 using TypeSystemExplorer.Views;
 
 namespace TypeSystemExplorer.Controllers
@@ -226,7 +228,7 @@ namespace TypeSystemExplorer.Controllers
 		{
 			// Because I get tired of doing this manually.
 			LoadXml("protocols.xml");
-			LoadReceptors(this, EventArgs.Empty);
+			LoadApplet();
 		}
 
 		/// <summary>
@@ -470,24 +472,17 @@ namespace TypeSystemExplorer.Controllers
 			// t.X.Integer.Value = 5;
 		}
 
-		public void LoadReceptors(object sender, EventArgs args)
+		public void LoadApplet()
 		{
+			Applet applet = MycroParser.InstantiateFromFile<Applet>("Receptors2.xml", null);
+
+			// Create the receptors.
+
 			VisualizerController.View.StartDrop = true;
 			Point noLocation = new Point(-1, -1);
+			Dictionary<IReceptor, Point> receptorLocationMap = new Dictionary<IReceptor, Point>();
 
-			XDocument xdoc = XDocument.Load("Receptors2.xml");
-			var names = from receptor in xdoc.Descendants("Applet").Descendants("Receptors").Descendants("Receptor")
-						select new
-							{
-								Name = receptor.Attribute("Name").Value,
-								AssemblyName = receptor.Attribute("AssemblyName").Value,
-								Location = (receptor.Attribute("Location") != null) ? new Point(receptor.Attribute("Location").Value.Between('=', ',').to_i(), receptor.Attribute("Location").Value.RightOfRightmostOf('=').LeftOf('}').to_i()) : noLocation,
-								Enabled = (receptor.Attribute("Enabled") != null) ? Convert.ToBoolean(receptor.Attribute("Enabled").Value) : true
-							};
-
-			Dictionary<IReceptor, Point> receptorLocationMap = new Dictionary<IReceptor,Point>();
-
-			names.ForEach(n => 
+			applet.ReceptorsDef.Receptors.ForEach(n =>
 				{
 					IReceptor r = Program.Receptors.RegisterReceptor(n.Name, n.AssemblyName);
 					receptorLocationMap[r] = n.Location;
@@ -511,8 +506,32 @@ namespace TypeSystemExplorer.Controllers
 
 			VisualizerController.View.StartDrop = false;
 
-			// Load carriers:
-			VisualizerController.CreateCarriers(xdoc.Element("Applet").Element("Carriers"));
+			// Create the carriers.
+
+			applet.CarriersDef.Carriers.ForEach(c =>
+				{
+					ISemanticTypeStruct protocol = Program.Receptors.SemanticTypeSystem.GetSemanticTypeStruct(c.Protocol);
+					dynamic signal = Program.Receptors.SemanticTypeSystem.Create(c.Protocol);
+					Type t = signal.GetType();
+
+					c.Attributes.ForEach(attr =>
+						{
+							PropertyInfo pi = t.GetProperty(attr.Name);
+							TypeConverter tcFrom = TypeDescriptor.GetConverter(pi.PropertyType);
+
+							if (tcFrom.CanConvertFrom(typeof(string)))
+							{
+								object val = tcFrom.ConvertFromInvariantString(attr.Value);
+								pi.SetValue(signal, val);
+							}
+							else
+							{
+								throw new ApplicationException("Cannot convert string to type " + t.Name);
+							}
+						});
+
+					Program.Receptors.CreateCarrier(null, protocol, signal);
+				});
 		}
 
 		public void SaveReceptors(object sender, EventArgs args)
