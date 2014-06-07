@@ -31,15 +31,15 @@
           <ixm:Membranes>
             <ixm:MembraneDef Name="">
               <ixm:Receptors>
-                <ixm:ReceptorDef Name="Thumbnail Viewer" AssemblyName="ThumbnailViewerReceptor.dll" Enabled="True" Location="780, 674" />
-                <ixm:ReceptorDef Name="Image Viewer" AssemblyName="ImageViewerReceptor.dll" Enabled="True" Location="755, 564" />
-                <ixm:ReceptorDef Name="URL" AssemblyName="UrlReceptor.dll" Enabled="True" Location="876, 607" />
+                <ixm:ReceptorDef Name="Thumbnail Viewer" AssemblyName="ThumbnailViewerReceptor.dll" Enabled="True" Location="949, 617" />
+                <ixm:ReceptorDef Name="Image Viewer" AssemblyName="ImageViewerReceptor.dll" Enabled="True" Location="889, 600" />
+                <ixm:ReceptorDef Name="URL" AssemblyName="UrlReceptor.dll" Enabled="True" Location="1012, 604" />
               </ixm:Receptors>
               <ixm:Membranes>
                 <ixm:MembraneDef Name="">
                   <ixm:Receptors>
-                    <ixm:ReceptorDef Name="Text To Speech" AssemblyName="TextToSpeechReceptor.dll" Enabled="False" Location="1119, 385" />
-                    <ixm:ReceptorDef Name="Text Display" AssemblyName="TextDisplayReceptor.dll" Enabled="False" Location="1029, 394" />
+                    <ixm:ReceptorDef Name="Text To Speech" AssemblyName="TextToSpeechReceptor.dll" Enabled="False" Location="979, 497" />
+                    <ixm:ReceptorDef Name="Text Display" AssemblyName="TextDisplayReceptor.dll" Enabled="False" Location="913, 519" />
                   </ixm:Receptors>
                 </ixm:MembraneDef>
               </ixm:Membranes>

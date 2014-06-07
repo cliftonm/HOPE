@@ -556,7 +556,7 @@ namespace TypeSystemExplorer.Views
 			// Remove any "-thumbnail" so we get the master image.
 			signal.ImageFilename.Filename = Path.GetFileName(img.Tag.ToString().Surrounding("-thumbnail"));
 			// signal.ResponseProtocol = "HaveImageMetadata";
-			// TODO: The carrier should be created inside the membrane on to which the user dropped the carrier.
+			// TODO: The carrier should be created inside the membrane associated with the viewer requesting the metadata.
 			Program.Skin.CreateCarrier(null, protocol, signal);
 		}
 
@@ -712,6 +712,7 @@ namespace TypeSystemExplorer.Views
 			receptorLocation.Remove(e.Receptor);
 			carousels.Remove(e.Receptor);
 			carrierAnimations.RemoveAll(a => a.Target == e.Receptor.Instance);
+			CreateReceptorConnections();
 			RecalcMembranes();
 			Invalidate(true);
 		}
@@ -786,9 +787,9 @@ namespace TypeSystemExplorer.Views
 
 				if ((selectedReceptor != null) && (!ClientRectangle.Contains(args.Location)))
 				{
-					// Remove the receptor.
+					// Remove the receptor completely from the surface.
 					// TODO: Remove the receptor from the appropriate membrane.
-					Program.Skin.Remove(selectedReceptor);
+					GetReceptorMembrane(selectedReceptor).Remove(selectedReceptor);
 
 					// Cleaning up our collections will happen when the ReceptorRemoved event fires.
 				}
@@ -816,6 +817,7 @@ namespace TypeSystemExplorer.Views
 				if (receptors.Count() > 0)
 				{
 					// Verify that they are all currently contained within a single membrane.
+					// The Skin membrane will return all the membranes containing this list of receptors.
 					List<Membrane> membranes = Program.Skin.GetMembranesContaining(receptors);
 
 					if (membranes.Count == 1)
@@ -913,8 +915,12 @@ namespace TypeSystemExplorer.Views
 		{
 			m.Receptors.ForEach(r =>
 			{
-				Point curPos = receptorLocation[r];
-				receptorLocation[r] = Point.Add(curPos, new Size(offset));
+				// System receptors aren't moved.  Their hidden.
+				if (!r.Instance.IsHidden)
+				{
+					Point curPos = receptorLocation[r];
+					receptorLocation[r] = Point.Add(curPos, new Size(offset));
+				}
 			});
 
 			((Membrane)m).Membranes.ForEach(inner => MoveReceptors(inner, offset));
@@ -1260,10 +1266,14 @@ namespace TypeSystemExplorer.Views
 			// Can't use ref'd variables in lambda expressions.
 			foreach (IReceptor r in m.Receptors)
 			{
-				Point p = receptorLocation[r];
-				cx += p.X;
-				cy += p.Y;
-				++count;
+				// System receptors are hidden.
+				if (!r.Instance.IsHidden)
+				{
+					Point p = receptorLocation[r];
+					cx += p.X;
+					cy += p.Y;
+					++count;
+				}
 
 				foreach (Membrane inner in m.Membranes)
 				{
@@ -1276,14 +1286,18 @@ namespace TypeSystemExplorer.Views
 		{
 			foreach(Receptor r in m.Receptors)
 			{
-				Point p = receptorLocation[r];
-				double dx = p.X - cx;
-				double dy = p.Y - cy;
-				double dist = Math.Sqrt(dx * dx + dy * dy);
-
-				if (dist > radius)
+				// System receptors are hidden.
+				if (!r.Instance.IsHidden)
 				{
-					radius = dist;
+					Point p = receptorLocation[r];
+					double dx = p.X - cx;
+					double dy = p.Y - cy;
+					double dist = Math.Sqrt(dx * dx + dy * dy);
+
+					if (dist > radius)
+					{
+						radius = dist;
+					}
 				}
 
 				foreach (Membrane inner in m.Membranes)

@@ -495,10 +495,12 @@ namespace Clifton.Receptor
 		// TODO: We probably could use some global carrier creation library.
 		protected void Say(string msg)
 		{
-			ISemanticTypeStruct protocol = SemanticTypeSystem.GetSemanticTypeStruct("TextToSpeech");
-			dynamic signal = SemanticTypeSystem.Create("TextToSpeech");
-			signal.Text = msg;
-			CreateCarrier(null, protocol, signal);
+			// TODO: I've turned this off because every membrane's receptor system is now talking!!!!
+
+			//ISemanticTypeStruct protocol = SemanticTypeSystem.GetSemanticTypeStruct("TextToSpeech");
+			//dynamic signal = SemanticTypeSystem.Create("TextToSpeech");
+			//signal.Text = msg;
+			//CreateCarrier(null, protocol, signal);
 		}
 
 		protected void WhenEnabledStateChanged(object sender, ReceptorEnabledEventArgs e)

@@ -669,6 +669,8 @@ namespace TypeSystemExplorer.Controllers
 			membraneDef.Membranes.ForEach(innerMembraneDef => 
 				{
 					Membrane innerMembrane = membrane.CreateInnerMembrane();
+					// Each membrane needs a system receptor to handle, among other things, the carrier animation.
+					innerMembrane.RegisterReceptor("System", this);
 					DeserializeMembranes(innerMembraneDef, innerMembrane);	
 				});
 
