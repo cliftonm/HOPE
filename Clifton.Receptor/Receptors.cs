@@ -153,7 +153,7 @@ namespace Clifton.Receptor
 		/// instantiate (if necessary) and register the receptors.  This also generates the 
 		/// protocol-receptor map for the currently registered receptors.
 		/// </summary>
-		public void LoadReceptors(Action<Receptor> afterRegister = null)
+		public void LoadReceptors(Action<IReceptor> afterRegister = null)
 		{
 			int processedCount = 0;
 			string receptorName;

@@ -52,6 +52,7 @@ namespace TypeSystemExplorer.Controllers
 			bool receptorsRegistered = false;
 			View.DropPoint = new Point(args.X, args.Y);
 			View.StartDrop = true;
+			IMembrane dropInto = View.GetMembraneAt(View.DropPoint);
 
 			if (args.Data.GetFormats().Contains("FileDrop"))
 			{
@@ -68,8 +69,7 @@ namespace TypeSystemExplorer.Controllers
 							once = false;
 						}
 
-						// TODO: This needs to know which inner membrane (or if on the skin) on which this receptor is being dropped.
-						Program.Skin.RegisterReceptor(fn);
+						dropInto.RegisterReceptor(fn);
 						receptorsRegistered = true;
 					}
 					else if (fn.ToLower().EndsWith(".jpg"))
@@ -84,9 +84,7 @@ namespace TypeSystemExplorer.Controllers
 						ISemanticTypeStruct protocol = Program.SemanticTypeSystem.GetSemanticTypeStruct("ImageFilename");
 						dynamic signal = Program.SemanticTypeSystem.Create("ImageFilename");
 						signal.Filename = fn;
-						// TODO: The null here is really the "System" receptor.
-						// TODO: This needs to know which inner membrane (or if on the skin) on which this receptor is being dropped.
-						Program.Skin.CreateCarrier(null, protocol, signal);
+						dropInto.CreateCarrier(null, protocol, signal);
 					}
 					else if (fn.ToLower().EndsWith(".xml"))
 					{
@@ -97,15 +95,14 @@ namespace TypeSystemExplorer.Controllers
 							once = false;
 						}
 						XDocument xdoc = XDocument.Load(fn);
-						CreateCarriers(xdoc.Element("Carriers"));
+						CreateCarriers(dropInto, xdoc.Element("Carriers"));
 					}
 				}
 			}
 
 			if (receptorsRegistered)
 			{
-				// TODO: This would actually be the membrane on which the receptors were dropped.
-				Program.Skin.LoadReceptors();
+				dropInto.LoadReceptors();
 			}
 
 			View.StartDrop = false;
@@ -121,7 +118,7 @@ namespace TypeSystemExplorer.Controllers
 			Program.Skin.CreateCarrier(null, protocol, signal);
 		}
 
-		public static void CreateCarriers(XElement el)
+		public static void CreateCarriers(IMembrane dropInto, XElement el)
 		{
 			Dictionary<string, ICarrier> carriers = new Dictionary<string, ICarrier>();
 
@@ -166,7 +163,7 @@ namespace TypeSystemExplorer.Controllers
 					}
 				});
 
-				ICarrier carrier = Program.Skin.CreateCarrier(null, protocol, signal);
+				ICarrier carrier = dropInto.CreateCarrier(null, protocol, signal);
 				carriers[protocol.DeclTypeName] = carrier;
 			});
 		}

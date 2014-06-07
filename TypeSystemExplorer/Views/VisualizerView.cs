@@ -238,7 +238,7 @@ namespace TypeSystemExplorer.Views
 		protected Size ReceptorSize = new Size(40, 40);
 		protected Size ReceptorHalfSize = new Size(20, 20);
 		protected Point dropPoint;
-		protected bool showMembranes;
+		protected bool showMembranes = true;
 
 		public ApplicationModel Model { get; protected set; }
 		public ApplicationFormController ApplicationController { get; protected set; }
@@ -266,6 +266,7 @@ namespace TypeSystemExplorer.Views
 		/// </summary>
 		public Point DropPoint
 		{
+			get { return dropPoint; }
 			set { dropPoint = PointToClient(value); }
 		}
 
@@ -494,6 +495,34 @@ namespace TypeSystemExplorer.Views
 				InitializeMetadata(protocol, packets, metadata.Signal);
 				Invalidate(true);
 			}
+		}
+
+		/// <summary>
+		/// Returns the innermost membrane at the specified point or the skin membrane.
+		/// </summary>
+		public IMembrane GetMembraneAt(Point p)
+		{
+			IMembrane m = Program.Skin;
+			IMembrane inner = null;
+
+			// An inner membrane will always have a smaller radius
+			double radius = double.MaxValue;
+
+			membraneLocation.ForEach(kvp =>
+				{
+					if (CircleToBoundingRectangle(kvp.Value.Center, kvp.Value.Radius).Contains(p) && (kvp.Value.Radius < radius))
+					{
+						radius = kvp.Value.Radius;
+						inner = kvp.Key;
+					}
+				});
+
+			if (inner != null)
+			{
+				m = inner;
+			}
+
+			return m;
 		}
 
 		// This is complex piece of code.
@@ -1076,7 +1105,9 @@ namespace TypeSystemExplorer.Views
 			bool match = false;
 
 			// Get the carousel state for the carousel with the active image that the user clicked on.
-			CarouselState cstate = carousels.FirstOrDefault(kvp => kvp.Value.ActiveImageLocation.Contains(p)).Value;
+			var carousel = carousels.FirstOrDefault(kvp => kvp.Value.ActiveImageLocation.Contains(p));
+			IReceptor r = carousel.Key;
+			CarouselState cstate = carousel.Value;
 
 			// If this is actually a carousel image:
 			if (cstate != null)
@@ -1086,8 +1117,8 @@ namespace TypeSystemExplorer.Views
 				dynamic signal = Program.SemanticTypeSystem.Create("ViewImage");
 				signal.ImageFilename.Filename = imageFile.Surrounding("-thumbnail");
 
-				// TODO: Create the carrier in the membrane of the thumbnail viewer receptor.
-				Program.Skin.CreateCarrier(null, protocol, signal);
+				IMembrane m = Program.Skin.GetMembraneContaining(r);
+				m.CreateCarrier(null, protocol, signal);
 				match = true;
 			}
 
@@ -1269,6 +1300,11 @@ namespace TypeSystemExplorer.Views
 				// System receptors are hidden.
 				if (!r.Instance.IsHidden)
 				{
+					if (!receptorLocation.ContainsKey(r))
+					{
+						System.Diagnostics.Debugger.Break();
+					}
+
 					Point p = receptorLocation[r];
 					cx += p.X;
 					cy += p.Y;

@@ -535,30 +535,37 @@ namespace TypeSystemExplorer.Controllers
 			SerializeMembrane(membranesDefNode, Program.Skin);
 			
 			// Save the carriers defined in the applet that was loaded.
-
-			if (appletNode != null)
+			if (applet != null)
 			{
-				XmlNode carriersDef = xdoc.CreateElement("ixm", "CarriersDef", "TypeSystemExplorer.Models, TypeSystemExplorer");
-				appletNode.AppendChild(carriersDef);
-				XmlNode carriers = xdoc.CreateElement("ixm", "Carriers", "TypeSystemExplorer.Models, TypeSystemExplorer");
-				carriersDef.AppendChild(carriers);
+				if (appletNode != null)
+				{
+					XmlNode carriersDef = xdoc.CreateElement("ixm", "CarriersDef", "TypeSystemExplorer.Models, TypeSystemExplorer");
+					appletNode.AppendChild(carriersDef);
+					XmlNode carriers = xdoc.CreateElement("ixm", "Carriers", "TypeSystemExplorer.Models, TypeSystemExplorer");
+					carriersDef.AppendChild(carriers);
 
-				applet.CarriersDef.Carriers.ForEach(c =>
+					// Were there any carriers defined in the original?
+					// TODO: See TODO Comment in ReceptorDef.cs model and MycroParser bug.
+					if (applet.CarriersDef != null)
 					{
-						XmlNode carrierDef = xdoc.CreateElement("ixm", "CarrierDef", "TypeSystemExplorer.Models, TypeSystemExplorer");
-						AddAttribute(carrierDef, "Protocol", c.Protocol);
-						carriers.AppendChild(carrierDef);
-						XmlNode attr = xdoc.CreateElement("ixm", "Attributes", "TypeSystemExplorer.Models, TypeSystemExplorer");
-						carrierDef.AppendChild(attr);
-
-						c.Attributes.ForEach(a =>
+						applet.CarriersDef.Carriers.ForEach(c =>
 							{
-								XmlNode attrVal = xdoc.CreateElement("ixm", "Attr", "TypeSystemExplorer.Models, TypeSystemExplorer");
-								AddAttribute(attrVal, "Name", a.Name);
-								AddAttribute(attrVal, "Value", a.Value);
-								attr.AppendChild(attrVal);
+								XmlNode carrierDef = xdoc.CreateElement("ixm", "CarrierDef", "TypeSystemExplorer.Models, TypeSystemExplorer");
+								AddAttribute(carrierDef, "Protocol", c.Protocol);
+								carriers.AppendChild(carrierDef);
+								XmlNode attr = xdoc.CreateElement("ixm", "Attributes", "TypeSystemExplorer.Models, TypeSystemExplorer");
+								carrierDef.AppendChild(attr);
+
+								c.Attributes.ForEach(a =>
+									{
+										XmlNode attrVal = xdoc.CreateElement("ixm", "Attr", "TypeSystemExplorer.Models, TypeSystemExplorer");
+										AddAttribute(attrVal, "Name", a.Name);
+										AddAttribute(attrVal, "Value", a.Value);
+										attr.AppendChild(attrVal);
+									});
 							});
-					});
+					}
+				}
 			}
 
 			xdoc.Save(filename);
@@ -624,33 +631,36 @@ namespace TypeSystemExplorer.Controllers
 			VisualizerController.View.StartDrop = false;
 			VisualizerController.View.ShowMembranes = true;
 
-			// Create the carriers.
+			// Create the carriers if they exist.
 
-			// TODO: Carriers need to specify into which membrane they are placed.
-			applet.CarriersDef.Carriers.ForEach(c =>
-				{
-					ISemanticTypeStruct protocol = Program.Skin.SemanticTypeSystem.GetSemanticTypeStruct(c.Protocol);
-					dynamic signal = Program.Skin.SemanticTypeSystem.Create(c.Protocol);
-					Type t = signal.GetType();
+			if (applet.CarriersDef != null)
+			{
+				applet.CarriersDef.Carriers.ForEach(c =>
+					{
+						ISemanticTypeStruct protocol = Program.Skin.SemanticTypeSystem.GetSemanticTypeStruct(c.Protocol);
+						dynamic signal = Program.Skin.SemanticTypeSystem.Create(c.Protocol);
+						Type t = signal.GetType();
 
-					c.Attributes.ForEach(attr =>
-						{
-							PropertyInfo pi = t.GetProperty(attr.Name);
-							TypeConverter tcFrom = TypeDescriptor.GetConverter(pi.PropertyType);
-
-							if (tcFrom.CanConvertFrom(typeof(string)))
+						c.Attributes.ForEach(attr =>
 							{
-								object val = tcFrom.ConvertFromInvariantString(attr.Value);
-								pi.SetValue(signal, val);
-							}
-							else
-							{
-								throw new ApplicationException("Cannot convert string to type " + t.Name);
-							}
-						});
+								PropertyInfo pi = t.GetProperty(attr.Name);
+								TypeConverter tcFrom = TypeDescriptor.GetConverter(pi.PropertyType);
 
-					Program.Skin.CreateCarrier(null, protocol, signal);
-				});
+								if (tcFrom.CanConvertFrom(typeof(string)))
+								{
+									object val = tcFrom.ConvertFromInvariantString(attr.Value);
+									pi.SetValue(signal, val);
+								}
+								else
+								{
+									throw new ApplicationException("Cannot convert string to type " + t.Name);
+								}
+							});
+
+						// TODO: Carriers need to specify into which membrane they are placed.
+						Program.Skin.CreateCarrier(null, protocol, signal);
+					});
+			}
 		}
 
 		protected void DeserializeMembranes(MembraneDef membraneDef, Membrane membrane)

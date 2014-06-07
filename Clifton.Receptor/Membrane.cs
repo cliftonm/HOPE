@@ -95,7 +95,7 @@ namespace Clifton.Receptor
 			ProtocolPermeability.Clear();
 		}
 
-		public void LoadReceptors(Action<Receptor> afterRegister = null)
+		public void LoadReceptors(Action<IReceptor> afterRegister = null)
 		{
 			receptorSystem.LoadReceptors(afterRegister);
 		}

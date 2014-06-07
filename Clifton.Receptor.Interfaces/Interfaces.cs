@@ -62,6 +62,8 @@ namespace Clifton.Receptor.Interfaces
 		void Remove(IReceptorInstance receptorInstance);
 		ReadOnlyCollection<IReceptor> Receptors { get; }
 		void Dissolve();
+		void RegisterReceptor(string fn);
+		void LoadReceptors(Action<IReceptor> afterRegister = null);
 		// IMembrane ParentMembrane { get; }
 	}
 }

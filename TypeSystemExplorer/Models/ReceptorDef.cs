@@ -27,6 +27,9 @@ namespace TypeSystemExplorer.Models
 
 		public Applet()
 		{
+			// TODO: Why does setting these properties cause MycroParser to assert?
+			// membranesDef = new MembranesDef();
+			// carriersDef = new CarriersDef();
 		}
 	}
 
