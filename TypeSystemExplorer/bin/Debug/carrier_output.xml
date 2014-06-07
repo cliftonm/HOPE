@@ -1,11 +1,1 @@
-﻿<Carriers>
-  <Carrier Protocol="ImageFilename" Filename="E:\HOPE\TypeSystemExplorer\bin\Debug\Images\02mantar_feresten.jpg" />
-  <Carrier Protocol="ThumbnailImage" Filename="E:\HOPE\TypeSystemExplorer\bin\Debug\Images\02mantar_feresten-thumbnail.jpg" Image="System.Drawing.Bitmap" />
-  <Carrier Protocol="GetImageMetadata" ImageFile="E:\HOPE\TypeSystemExplorer\bin\Debug\Images\02mantar_feresten.jpg" ResponseProtocol="HaveImageMetadata" />
-  <Carrier Protocol="DatabaseRecord" ResponseProtocol="APOD" TableName="APOD" Action="select" Where="ImageFile LIKE '%02mantar_feresten.jpg'" Tag="HaveImageMetadata" />
-  <Carrier Protocol="APODRecordset" Tag="HaveImageMetadata">
-    <Recordset>
-      <APOD ID="3003" URL="http://apod.nasa.gov/apod/ap031206.html" ImageFile="Images\02mantar_feresten.jpg" Keywords="sundial, observatory, india" Title="Jaipur Observatory Sundial" Explanation="&lt;a href=&quot;http://www.bomhard.de/_englisch/index.htm&quot;&gt;Walk through&lt;/a&gt; these doors and up the stairs to begin your journey along a line from Jaipur, India toward the &lt;a href=&quot;ap980912.html&quot;&gt;North Celestial Pole&lt;/a&gt;.  Such cosmic alignments abound in &lt;a href=&quot;http://www.ferestenphoto.com/mantar_subdirect.html&quot;&gt;marvelous Indian observatories&lt;/a&gt; where the architecture itself allows astronomical measurements.  The structures were &lt;a href=&quot;http://www.atco-fr.com/cadrans/jaipur/jaip_uk.php3&quot;&gt;built in Jaipur&lt;/a&gt; and other cities in the eighteenth century by the Maharaja &lt;a href=&quot;http://www.atributetohinduism.com/ articles_hinduism/46.htm&quot;&gt;Jai Singh II (1686-1743)&lt;/a&gt;.  Rising about 90 feet high, this stairway actually forms a shadow caster or &lt;a href=&quot;http://www.cosmicgnomon.com/sdindex.htm&quot;&gt;gnomon&lt;/a&gt;, part of what is still perhaps the largest &lt;a href=&quot;http://www.sundials.org/&quot;&gt;sundial on planet Earth&lt;/a&gt;.  Testaments to Jai Singh II's passion for astronomy, the design and large scale of his observatories' structures still provide impressively accurate measurements of &lt;a href=&quot;http://www.nsta.org/awsday&quot;&gt;shadows and sightings&lt;/a&gt; of celestial angles." Errors="" />
-    </Recordset>
-  </Carrier>
-</Carriers>
+﻿<Carriers />
