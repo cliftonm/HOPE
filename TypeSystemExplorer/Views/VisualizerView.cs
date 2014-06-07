@@ -849,23 +849,20 @@ namespace TypeSystemExplorer.Views
 				if (shakeOK && VerticalShakeTest(offset))
 				{
 					shakeOK = false;			// User must release and start again.
-					Membrane m = (Membrane)membraneLocation.Keys.Where(mTest => mTest.Receptors.Contains(selectedReceptor)).FirstOrDefault();
+					// Receptors always belong to membranes.
+					Membrane m = GetReceptorMembrane(selectedReceptor);
 
-					// If the receptor is in a membrane...
-					if (m != null)
+					// And the membrane has a parent (not skin)...
+					if (m.ParentMembrane != null)
 					{
-						// And the membrane has a parent (not skin)...
-						if (m.ParentMembrane != null)
-						{
-							// Move the receptor to the parent membrane.
-							m.MoveReceptorToMembrane(selectedReceptor, m.ParentMembrane);
-							Point curPos = receptorLocation[selectedReceptor];
-							receptorLocation[selectedReceptor] = Point.Add(curPos, new Size(offset));
-							mouseStart = args.Location;
-							CreateReceptorConnections();
-							RecalcMembranes();
-							Invalidate(true);
-						}
+						// Move the receptor to the parent membrane.
+						m.MoveReceptorToMembrane(selectedReceptor, m.ParentMembrane);
+						Point curPos = receptorLocation[selectedReceptor];
+						receptorLocation[selectedReceptor] = Point.Add(curPos, new Size(offset));
+						mouseStart = args.Location;
+						CreateReceptorConnections();
+						RecalcMembranes();
+						Invalidate(true);
 					}
 				}
 				else
@@ -895,12 +892,8 @@ namespace TypeSystemExplorer.Views
 				else
 				{
 					// To move the membrane, we actually move each receptor inside the membrane.
-					selectedMembrane.Receptors.ForEach(r =>
-						{
-							Point curPos = receptorLocation[r];
-							receptorLocation[r] = Point.Add(curPos, new Size(offset));
-						});
-
+					// Move receptors in this membrane and all inner membranes.
+					MoveReceptors(selectedMembrane, offset);
 					mouseStart = args.Location;
 					CreateReceptorConnections();
 					RecalcMembranes();
@@ -914,6 +907,17 @@ namespace TypeSystemExplorer.Views
 			}
 
 			mouseHoverStartTime = DateTime.Now;
+		}
+
+		protected void MoveReceptors(IMembrane m, Point offset)
+		{
+			m.Receptors.ForEach(r =>
+			{
+				Point curPos = receptorLocation[r];
+				receptorLocation[r] = Point.Add(curPos, new Size(offset));
+			});
+
+			((Membrane)m).Membranes.ForEach(inner => MoveReceptors(inner, offset));
 		}
 
 		protected bool HorizontalShakeTest(Point offset)
@@ -1210,21 +1214,45 @@ namespace TypeSystemExplorer.Views
 			// Iterate through all receptors.
 			receptorLocation.ForEach(kvp1 =>
 				{
+					Membrane m1 = GetReceptorMembrane(kvp1.Key);
 					// Iterate through receptors with a second search.
 					receptorLocation.ForEach(kvp2 =>
 						{
-							// Get all the receive protocols of kvp1
-							kvp1.Key.Instance.GetReceiveProtocols().ForEach(prot1 =>
-								{
-									// If any match the emitted protocols of kvp2...
-									if (kvp2.Key.Instance.GetEmittedProtocols().Contains(prot1))
+							Membrane m2 = GetReceptorMembrane(kvp2.Key);
+
+							// Receptors must be in the same membrane.
+							if (m1 == m2)
+							{
+								// Get all the receive protocols of kvp1
+								kvp1.Key.Instance.GetReceiveProtocols().ForEach(prot1 =>
 									{
-										// Then these two receptors are connected.
-										receptorConnections.Add(new Line() { P1 = kvp1.Value, P2 = kvp2.Value });
-									}
-								});
+										// If any match the emitted protocols of kvp2...
+										if (kvp2.Key.Instance.GetEmittedProtocols().Contains(prot1))
+										{
+											// Then these two receptors are connected.
+											receptorConnections.Add(new Line() { P1 = kvp1.Value, P2 = kvp2.Value });
+										}
+									});
+							}
 						});
 				});
+		}
+
+		/// <summary>
+		/// Return the membrane containing the receptor.
+		/// </summary>
+		protected Membrane GetReceptorMembrane(IReceptor r)
+		{
+			// Receptors always belong to membranes, and a receptor can never belong to more than one membrane.
+			Membrane m = (Membrane)membraneLocation.Keys.Where(mTest => mTest.Receptors.Contains(r)).SingleOrDefault();
+
+			if (m == null)
+			{
+				// TODO: Fix this so that the skin membrane is in the membrane location?
+				m = Program.Skin;
+			}
+
+			return m;
 		}
 
 		protected void GetCenter(Membrane m, ref int cx, ref int cy, ref int count)

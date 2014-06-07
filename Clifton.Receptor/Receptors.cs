@@ -296,6 +296,18 @@ namespace Clifton.Receptor
 			Initialize();
 		}
 
+		// TODO: Re-implement by providing methods to add/remove instantiated receptors which
+		// would support moving receptors between membranes.  This is a brute force approach
+		// for now.
+		/// <summary>
+		/// Recreates the protocol receptor map from scratch.
+		/// </summary>
+		public void ReloadProtocolReceptorMap()
+		{
+			protocolReceptorMap.Clear();
+			Receptors.ForEach(r => GatherProtocolReceivers(r));
+		}
+
 		/// <summary>
 		/// Clears out all data.
 		/// </summary>
@@ -403,7 +415,7 @@ namespace Clifton.Receptor
 		/// <summary>
 		/// If a queued carrier has a receptor to receive the protocol, execute the action and remove it from the queue.
 		/// </summary>
-		protected void ProcessQueuedCarriers()
+		public void ProcessQueuedCarriers()
 		{
 			List<QueuedCarrierAction> removeActions = new List<QueuedCarrierAction>();
 

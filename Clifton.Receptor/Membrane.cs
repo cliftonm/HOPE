@@ -208,6 +208,9 @@ namespace Clifton.Receptor
 		{
 			receptorSystem.Receptors.Remove((Receptor)receptor);
 			targetMembrane.receptorSystem.Receptors.Add((Receptor)receptor);
+			// Process any queued carriers that may now become active.
+			targetMembrane.receptorSystem.ReloadProtocolReceptorMap();
+			targetMembrane.receptorSystem.ProcessQueuedCarriers();
 		}
 
 		public Membrane CreateInnerMembrane()
