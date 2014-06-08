@@ -5,9 +5,16 @@ What is the Higher Order Programming Environment?
 
 Hope is a "surface" enabling end-users to create user-specific applications from "receptor" components.
 
-Applications have a limited surface area of functionality (behavior.)  The user can only extend behavior by going outside of the application, either to the cloud or another desktop application.
+Typical applications have a limited surface area of functionality / behavior  -- in other words, applications are frequently very monolithic.  The user can only "extend" behavior by going outside of the application, either to the cloud or another desktop application.
 
-Conversely, receptors provide specific behaviors with which other receptors interact.  By "dropping" a customized configuration of receptors onto the surface, the end-user can create a behavior tailored specifically to his/her needs.
+Conversely, the Higher Order Programming Environment provides a dynamic, runtime, adaptive surface.  "Rreceptors" provide specific behaviors with which other receptors interact via "carriers" of information.  By "dropping" a customized configuration of receptors onto the surface, the end-user can create a behavior tailored specifically to his/her needs.  This behavior can be altered on-the-fly by introducing new receptors, removing existing ones, or re-organizing interactions within "membranes."
+
+Screenshots
+----
+
+* An APOD website scraper applet:
+
+![APOD Viewer](http://www.codeproject.com/KB/cs/781135/M33.png)
 
 Demos
 ----
@@ -24,6 +31,26 @@ Read the articles:
 
  - [Introductory Article]
  - [APOD Scraper Article] 
+
+To Contribute
+----
+
+We are actively looking for developers interested in:
+
+1. Expanding our library of receptors.  Some ideas: Email "reader", stock quotes reader, news feed, etc.
+2. Porting HOPE to a web application supporting both desktop and mobile devices
+3. Improving on visualizations
+4. Developing applets from receptors
+
+Marketing / Funding
+----
+
+We are actively seeking to create interest in a variety of markets, including education, finance, presentation, and information management.  We are also seeking investors for both the open source implementation and in the development of the commercial, revenue-generating arm.
+
+Workshops / Training Tools
+----
+
+Workshops will be schelued and specific training tools will available after the initial development cycle is complete.
 
 License
 ----
