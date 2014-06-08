@@ -52,6 +52,7 @@ namespace TypeSystemExplorer.Controllers
 			bool receptorsRegistered = false;
 			View.DropPoint = new Point(args.X, args.Y);
 			View.StartDrop = true;
+			IMembrane dropInto = View.GetMembraneAt(View.DropPoint);
 
 			if (args.Data.GetFormats().Contains("FileDrop"))
 			{
@@ -68,7 +69,7 @@ namespace TypeSystemExplorer.Controllers
 							once = false;
 						}
 
-						Program.Receptors.RegisterReceptor(fn);
+						dropInto.RegisterReceptor(fn);
 						receptorsRegistered = true;
 					}
 					else if (fn.ToLower().EndsWith(".jpg"))
@@ -83,8 +84,7 @@ namespace TypeSystemExplorer.Controllers
 						ISemanticTypeStruct protocol = Program.SemanticTypeSystem.GetSemanticTypeStruct("ImageFilename");
 						dynamic signal = Program.SemanticTypeSystem.Create("ImageFilename");
 						signal.Filename = fn;
-						// TODO: The null here is really the "System" receptor.
-						Program.Receptors.CreateCarrier(null, protocol, signal);
+						dropInto.CreateCarrier(null, protocol, signal);
 					}
 					else if (fn.ToLower().EndsWith(".xml"))
 					{
@@ -95,14 +95,14 @@ namespace TypeSystemExplorer.Controllers
 							once = false;
 						}
 						XDocument xdoc = XDocument.Load(fn);
-						CreateCarriers(xdoc.Element("Carriers"));
+						CreateCarriers(dropInto, xdoc.Element("Carriers"));
 					}
 				}
 			}
 
 			if (receptorsRegistered)
 			{
-				Program.Receptors.LoadReceptors();
+				dropInto.LoadReceptors();
 			}
 
 			View.StartDrop = false;
@@ -111,21 +111,24 @@ namespace TypeSystemExplorer.Controllers
 		// TODO: Duplicate code.
 		protected void Say(string msg)
 		{
+			/*
 			ISemanticTypeStruct protocol = Program.SemanticTypeSystem.GetSemanticTypeStruct("TextToSpeech");
 			dynamic signal = Program.SemanticTypeSystem.Create("TextToSpeech");
 			signal.Text = msg;
-			Program.Receptors.CreateCarrier(null, protocol, signal);
+			// TODO: Is this always the skin membrane?
+			Program.Skin.CreateCarrierIfReceiver(null, protocol, signal);
+			 */
 		}
 
-		public static void CreateCarriers(XElement el)
+		public static void CreateCarriers(IMembrane dropInto, XElement el)
 		{
 			Dictionary<string, ICarrier> carriers = new Dictionary<string, ICarrier>();
 
 			el.Descendants().ForEach(xelem =>
 			{
 				string protocolName = xelem.Attribute("Protocol").Value;
-				ISemanticTypeStruct protocol = Program.Receptors.SemanticTypeSystem.GetSemanticTypeStruct(protocolName);
-				dynamic signal = Program.Receptors.SemanticTypeSystem.Create(protocolName);
+				ISemanticTypeStruct protocol = Program.Skin.SemanticTypeSystem.GetSemanticTypeStruct(protocolName);
+				dynamic signal = Program.Skin.SemanticTypeSystem.Create(protocolName);
 
 				// Use reflection to assign all property values since they're defined in the XML.
 				xelem.Attributes().Where(a => a.Name != "Protocol").ForEach(attr =>
@@ -162,7 +165,7 @@ namespace TypeSystemExplorer.Controllers
 					}
 				});
 
-				ICarrier carrier = Program.Receptors.CreateCarrier(null, protocol, signal);
+				ICarrier carrier = dropInto.CreateCarrier(null, protocol, signal);
 				carriers[protocol.DeclTypeName] = carrier;
 			});
 		}

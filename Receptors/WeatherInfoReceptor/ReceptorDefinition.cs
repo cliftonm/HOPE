@@ -25,6 +25,12 @@ namespace WeatherInfoReceptor
 		public bool IsEdgeReceptor { get { return false; } }
 		public bool IsHidden { get { return false; } }
 
+		public IReceptorSystem ReceptorSystem
+		{
+			get { return rsys; }
+			set { rsys = value; }
+		}
+
 		protected IReceptorSystem rsys;
 		protected Dictionary<string, FullInfo> zipcodeInfoMap;
 
@@ -37,6 +43,11 @@ namespace WeatherInfoReceptor
 		public string[] GetReceiveProtocols()
 		{
 			return new string[] { "WeatherInfo", "Location" };
+		}
+
+		public string[] GetEmittedProtocols()
+		{
+			return new string[] { "TextToSpeech" };
 		}
 
 		public Func<dynamic, dynamic, bool> Qualifier = new Func<dynamic, dynamic, bool>((w, l) =>

@@ -18,6 +18,12 @@ namespace TextDisplayReceptor
 		public bool IsEdgeReceptor { get { return false; } }
 		public bool IsHidden { get { return false; } }
 
+		public IReceptorSystem ReceptorSystem
+		{
+			get { return rsys; }
+			set { rsys = value; }
+		}
+
 		protected IReceptorSystem rsys;
 		protected TextBox tb;
 
@@ -37,6 +43,11 @@ namespace TextDisplayReceptor
 		public string[] GetReceiveProtocols()
 		{
 			return new string[] { "Text", "TextToSpeech" };
+		}
+
+		public string[] GetEmittedProtocols()
+		{
+			return new string[] { };
 		}
 
 		public void ProcessCarrier(ICarrier carrier)

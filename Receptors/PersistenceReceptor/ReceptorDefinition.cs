@@ -30,6 +30,12 @@ namespace PersistenceReceptor
 		public bool IsEdgeReceptor { get { return true; } }
 		public bool IsHidden { get { return false; } }
 
+		public IReceptorSystem ReceptorSystem
+		{
+			get { return rsys; }
+			set { rsys = value; }
+		}
+
 		protected IReceptorSystem rsys;
 		protected SQLiteConnection conn;
 		protected Dictionary<string, Action<dynamic>> protocolActionMap;
@@ -57,6 +63,11 @@ namespace PersistenceReceptor
 		public string[] GetReceiveProtocols()
 		{
 			return protocolActionMap.Keys.ToArray();
+		}
+
+		public string[] GetEmittedProtocols()
+		{
+			return rsys.GetProtocolsEndingWith("Recordset").ToArray();
 		}
 
 		public void Initialize()

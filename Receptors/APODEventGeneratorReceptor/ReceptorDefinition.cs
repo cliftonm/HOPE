@@ -15,6 +15,12 @@ namespace APODEventGeneratorReceptor
 		public bool IsEdgeReceptor { get { return false; } }
 		public bool IsHidden { get { return false; } }
 
+		public IReceptorSystem ReceptorSystem
+		{
+			get { return rsys; }
+			set { rsys = value; }
+		}
+
 		protected IReceptorSystem rsys;
 
 		public ReceptorDefinition(IReceptorSystem rsys)
@@ -47,6 +53,11 @@ namespace APODEventGeneratorReceptor
 		public string[] GetReceiveProtocols()
 		{
 			return new string[] { };
+		}
+
+		public string[] GetEmittedProtocols()
+		{
+			return new string[] { "ScrapeAPOD" };
 		}
 
 		public void ProcessCarrier(ICarrier carrier)

@@ -16,6 +16,12 @@ namespace HelloWorldReceptor
 		public bool IsEdgeReceptor { get { return false; } }
 		public bool IsHidden { get { return false; } }
 
+		public IReceptorSystem ReceptorSystem
+		{
+			get { return rsys; }
+			set { rsys = value; }
+		}
+
 		protected IReceptorSystem rsys;
 		protected Timer timer;
 
@@ -38,6 +44,11 @@ namespace HelloWorldReceptor
 		public string[] GetReceiveProtocols()
 		{
 			return new string[] {};
+		}
+
+		public string[] GetEmittedProtocols()
+		{
+			return new string[] { "DebugMessage" };
 		}
 
 		public void ProcessCarrier(ICarrier carrier)

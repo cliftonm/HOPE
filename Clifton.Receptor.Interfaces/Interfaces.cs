@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,7 +17,13 @@ namespace Clifton.Receptor.Interfaces
 		string Name { get; }
 		bool IsEdgeReceptor { get; }
 		bool IsHidden { get; }
+
+		// The receptor system must be reset when a receptor moves to a different membrane,
+		// that is, to another receptor system.
+		IReceptorSystem ReceptorSystem { get; set; }
+
 		string[] GetReceiveProtocols();
+		string[] GetEmittedProtocols();
 		void ProcessCarrier(ICarrier carrier);
 
 		/// <summary>
@@ -29,11 +36,12 @@ namespace Clifton.Receptor.Interfaces
 
 	public interface IReceptorSystem
 	{
-		ISemanticTypeSystem SemanticTypeSystem { get; set; }
+		ISemanticTypeSystem SemanticTypeSystem { get; }
 		ICarrier CreateCarrier(IReceptorInstance from, ISemanticTypeStruct protocol, dynamic signal);
 		void CreateCarrierIfReceiver(IReceptorInstance from, ISemanticTypeStruct protocol, dynamic signal);
 		ICarrier CreateInternalCarrier(ISemanticTypeStruct protocol, dynamic signal);
 		void Remove(IReceptorInstance receptorInstance);
+		List<string> GetProtocolsEndingWith(string match);
 	}
 
 	public interface ICarrier
@@ -45,7 +53,28 @@ namespace Clifton.Receptor.Interfaces
 	public interface IReceptor
 	{
 		string Name { get; }
+		string AssemblyName { get; }
 		IReceptorInstance Instance { get; }
 		bool Enabled { get; set; }
+	}
+
+	public interface IMembrane
+	{
+		event EventHandler<MembraneEventArgs> NewMembrane;
+		event EventHandler<ReceptorEventArgs> NewReceptor;
+		event EventHandler<NewCarrierEventArgs> NewCarrier;
+		event EventHandler<ReceptorEventArgs> ReceptorRemoved;
+
+		ISemanticTypeSystem SemanticTypeSystem { get; }
+		ICarrier CreateCarrier(IReceptorInstance from, ISemanticTypeStruct protocol, dynamic signal);
+		void CreateCarrierIfReceiver(IReceptorInstance from, ISemanticTypeStruct protocol, dynamic signal);
+		ICarrier CreateInternalCarrier(ISemanticTypeStruct protocol, dynamic signal);
+		void Remove(IReceptorInstance receptorInstance);
+		ReadOnlyCollection<IReceptor> Receptors { get; }
+		void Dissolve();
+		void RegisterReceptor(string fn);
+		void RegisterReceptor(string name, IReceptorInstance instance);
+		void LoadReceptors(Action<IReceptor> afterRegister = null);
+		// IMembrane ParentMembrane { get; }
 	}
 }

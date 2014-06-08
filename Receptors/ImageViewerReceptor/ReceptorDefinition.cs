@@ -17,6 +17,12 @@ namespace ImageViewerReceptor
 		public bool IsEdgeReceptor { get { return false; } }
 		public bool IsHidden { get { return false; } }
 
+		public IReceptorSystem ReceptorSystem
+		{
+			get { return rsys; }
+			set { rsys = value; }
+		}
+
 		protected IReceptorSystem rsys;
 
 		public ReceptorDefinition(IReceptorSystem rsys)
@@ -35,6 +41,11 @@ namespace ImageViewerReceptor
 		public string[] GetReceiveProtocols()
 		{
 			return new string[] { "ViewImage" };
+		}
+
+		public string[] GetEmittedProtocols()
+		{
+			return new string[] { };
 		}
 
 		public void ProcessCarrier(ICarrier carrier)

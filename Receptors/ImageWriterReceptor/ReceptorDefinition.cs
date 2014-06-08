@@ -17,6 +17,12 @@ namespace HelloWorldReceptor
 		public bool IsEdgeReceptor { get { return true; } }
 		public bool IsHidden { get { return false; } }
 
+		public IReceptorSystem ReceptorSystem
+		{
+			get { return rsys; }
+			set { rsys = value; }
+		}
+
 		protected IReceptorSystem rsys;
 
 		public ReceptorDefinition(IReceptorSystem rsys)
@@ -27,6 +33,11 @@ namespace HelloWorldReceptor
 		public string[] GetReceiveProtocols()
 		{
 			return new string[] { "ThumbnailImage" };
+		}
+
+		public string[] GetEmittedProtocols()
+		{
+			return new string[] { };
 		}
 
 		public void Initialize()

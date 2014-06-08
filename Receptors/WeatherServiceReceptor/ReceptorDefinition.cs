@@ -33,6 +33,12 @@ namespace WeatherServiceReceptor
 		public bool IsEdgeReceptor { get { return false; } }
 		public bool IsHidden { get { return false; } }
 
+		public IReceptorSystem ReceptorSystem
+		{
+			get { return rsys; }
+			set { rsys = value; }
+		}
+
 		protected IReceptorSystem rsys;
 
 		public ReceptorDefinition(IReceptorSystem rsys)
@@ -45,6 +51,11 @@ namespace WeatherServiceReceptor
 			return new string[] { "Zipcode" };
 		}
 
+		public string[] GetEmittedProtocols()
+		{
+			return new string[] { "TextToSpeech", "WeatherInfo" };
+		}
+
 		public void Initialize()
 		{
 		}
@@ -55,26 +66,37 @@ namespace WeatherServiceReceptor
 
 		public async void ProcessCarrier(ICarrier carrier)
 		{
-			XDocument xdoc = await Task.Run(() =>
+			XDocument xdoc;
+
+			try
 			{
-				string zipcode = carrier.Signal.Value;
-				ndfdXML weather = new ndfdXML();
-				string latLonXml = weather.LatLonListZipCode(zipcode);
-				XDocument xdoc2 = XDocument.Parse(latLonXml);
-				string[] latLon = xdoc2.Element("dwml").Element("latLonList").Value.Split(',');
-
-				if (String.IsNullOrEmpty(latLon[0]))
+				xdoc = await Task.Run(() =>
 				{
-					return null;
-				}
+					string zipcode = carrier.Signal.Value;
+					ndfdXML weather = new ndfdXML();
+					string latLonXml = weather.LatLonListZipCode(zipcode);
+					XDocument xdoc2 = XDocument.Parse(latLonXml);
+					string[] latLon = xdoc2.Element("dwml").Element("latLonList").Value.Split(',');
 
-				decimal lat = Convert.ToDecimal(latLon[0]);
-				decimal lon = Convert.ToDecimal(latLon[1]);
-				string weatherXml = weather.NDFDgenByDay(lat, lon, DateTime.Now, "1", "e", "24 hourly");
-				xdoc2 = XDocument.Parse(weatherXml);
+					if (String.IsNullOrEmpty(latLon[0]))
+					{
+						return null;
+					}
 
-				return xdoc2;
-			});
+					decimal lat = Convert.ToDecimal(latLon[0]);
+					decimal lon = Convert.ToDecimal(latLon[1]);
+					string weatherXml = weather.NDFDgenByDay(lat, lon, DateTime.Now, "1", "e", "24 hourly");
+					xdoc2 = XDocument.Parse(weatherXml);
+
+					return xdoc2;
+				});
+			}
+			catch (Exception ex)
+			{
+				Say("We're sorry, there's a problem with response from NOAA.");
+				
+				return;
+			}
 
 			if (xdoc == null)
 			{
@@ -84,44 +106,53 @@ namespace WeatherServiceReceptor
 			ISemanticTypeStruct outProtocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct("WeatherInfo");
 			dynamic outSignal = rsys.SemanticTypeSystem.Create("WeatherInfo");
 
-			outSignal.Zipcode = carrier.Signal.Value;
-			outSignal.Low = xdoc.Element("dwml").Element("data").Element("parameters").Elements("temperature").Where(el => el.Attribute("type").Value == "minimum").Single().Element("value").Value.Trim();
-			outSignal.High = xdoc.Element("dwml").Element("data").Element("parameters").Elements("temperature").Where(el => el.Attribute("type").Value == "maximum").Single().Element("value").Value.Trim();
-			outSignal.Summary = xdoc.Element("dwml").Element("data").Element("parameters").Element("weather").Element("weather-conditions").Attribute("weather-summary").Value;
-			outSignal.Conditions = new List<dynamic>();
-			outSignal.Hazards = new List<dynamic>();
-			
-			// Process Conditions:
-			var weatherElements = xdoc.Element("dwml").Element("data").Element("parameters").Element("weather").Element("weather-conditions").Elements("value");
+			try
+			{
+				outSignal.Zipcode = carrier.Signal.Value;
+				outSignal.Low = xdoc.Element("dwml").Element("data").Element("parameters").Elements("temperature").Where(el => el.Attribute("type").Value == "minimum").Single().Element("value").Value.Trim();
+				outSignal.High = xdoc.Element("dwml").Element("data").Element("parameters").Elements("temperature").Where(el => el.Attribute("type").Value == "maximum").Single().Element("value").Value.Trim();
+				outSignal.Summary = xdoc.Element("dwml").Element("data").Element("parameters").Element("weather").Element("weather-conditions").Attribute("weather-summary").Value;
+				outSignal.Conditions = new List<dynamic>();
+				outSignal.Hazards = new List<dynamic>();
 
-			weatherElements.ForEach(v =>
-				{
-					dynamic condition = rsys.SemanticTypeSystem.Create("WeatherCondition");
+				// Process Conditions:
+				var weatherElements = xdoc.Element("dwml").Element("data").Element("parameters").Element("weather").Element("weather-conditions").Elements("value");
 
-					if (v.Attribute("additive") != null)
+				weatherElements.ForEach(v =>
 					{
-						condition.Additive = v.Attribute("additive").Value;
-					}
+						dynamic condition = rsys.SemanticTypeSystem.Create("WeatherCondition");
 
-					condition.Coverage = v.Attribute("coverage").Value;
-					condition.Intensity = v.Attribute("intensity").Value;
-					condition.WeatherType = v.Attribute("weather-type").Value;
-					condition.Qualifier = v.Attribute("qualifier").Value;
+						if (v.Attribute("additive") != null)
+						{
+							condition.Additive = v.Attribute("additive").Value;
+						}
 
-					outSignal.Conditions.Add(condition);
-				});
+						condition.Coverage = v.Attribute("coverage").Value;
+						condition.Intensity = v.Attribute("intensity").Value;
+						condition.WeatherType = v.Attribute("weather-type").Value;
+						condition.Qualifier = v.Attribute("qualifier").Value;
 
-			// Process hazards
-			var hazardElements = xdoc.Element("dwml").Element("data").Element("parameters").Element("hazards").Element("hazard-conditions").Elements("hazard");
+						outSignal.Conditions.Add(condition);
+					});
 
-			hazardElements.ForEach(h =>
-				{
-					dynamic hazard = rsys.SemanticTypeSystem.Create("WeatherHazard");
-					hazard.Phenomena = h.Attribute("phenomena").Value;
-					hazard.Significance = h.Attribute("significance").Value;
+				// Process hazards
+				var hazardElements = xdoc.Element("dwml").Element("data").Element("parameters").Element("hazards").Element("hazard-conditions").Elements("hazard");
 
-					outSignal.Hazards.Add(hazard);
-				});
+				hazardElements.ForEach(h =>
+					{
+						dynamic hazard = rsys.SemanticTypeSystem.Create("WeatherHazard");
+						hazard.Phenomena = h.Attribute("phenomena").Value;
+						hazard.Significance = h.Attribute("significance").Value;
+
+						outSignal.Hazards.Add(hazard);
+					});
+			}
+			catch (Exception ex)
+			{
+				Say("We're sorry, there's a problem with response from NOAA.");
+
+				return;
+			}
 
 			rsys.CreateCarrier(this, outProtocol, outSignal);
 		}

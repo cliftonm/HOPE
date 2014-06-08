@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.IO;
 using System.Text;
@@ -11,34 +12,6 @@ using Clifton.SemanticTypeSystem.Interfaces;
 
 namespace Clifton.Receptor
 {
-	/// <summary>
-	/// Event args for a new receptor notification.
-	/// </summary>
-	public class ReceptorEventArgs : EventArgs
-	{
-		public IReceptor Receptor { get; protected set; }
-
-		public ReceptorEventArgs(IReceptor receptor)
-		{
-			Receptor = receptor;
-		}
-	}
-
-	/// <summary>
-	/// Event args for a new carrier notification.
-	/// </summary>
-	public class NewCarrierEventArgs : EventArgs
-	{
-		public IReceptorInstance From { get; protected set; }
-		public ICarrier Carrier { get; protected set; }
-
-		public NewCarrierEventArgs(IReceptorInstance from, ICarrier carrier)
-		{
-			From = from;
-			Carrier = carrier;
-		}
-	}
-
 	/// <summary>
 	/// Internal class for managing the queued carrier and the action to carry out when 
 	/// a receptor receiving the carrier's protocol becomes available.
@@ -73,29 +46,31 @@ namespace Clifton.Receptor
 		/// <summary>
 		/// The collection of receptors currently in the system.
 		/// </summary>
-		public List<Receptor> Receptors { get; protected set; }
+		// public List<Receptor> Receptors { get; protected set; }
+		// Yuck.  Way to much conversion going on here.
+		public ReadOnlyCollection<IReceptor> Receptors { get { return receptors.Cast<IReceptor>().ToList().AsReadOnly(); } }
 
 		/// <summary>
 		/// The Semantic Type System instance that defines the carrier protocols.
 		/// </summary>
-		public ISemanticTypeSystem SemanticTypeSystem { get; set; }
+		public ISemanticTypeSystem SemanticTypeSystem { get; protected set; }
 
 		/// <summary>
 		/// The list of receptors to which each protocol maps.
 		/// </summary>
-		protected Dictionary<string, List<Receptor>> protocolReceptorMap;
+		protected Dictionary<string, List<IReceptor>> protocolReceptorMap;
 
 		/// <summary>
 		/// A map of registered receptors.  These are receptors that are instantiated
 		/// and whose protocols have been associated in the protocolReceptorMap.
 		/// </summary>
-		protected  Dictionary<Receptor, bool> registeredReceptorMap;
+		protected  Dictionary<IReceptor, bool> registeredReceptorMap;
 
 		/// <summary>
 		/// Internal list of global receptors, which are handled slightly differently
 		/// as they receive all carriers.
 		/// </summary>
-		protected List<Receptor> globalReceptors;
+		protected List<IReceptor> globalReceptors;
 
 		/// <summary>
 		/// The list of queued carriers because there are no receptors available to process the 
@@ -104,10 +79,16 @@ namespace Clifton.Receptor
 		private List<QueuedCarrierAction> queuedCarriers;
 
 		/// <summary>
+		/// Internal collection of receptors in this receptor system.
+		/// </summary>
+		protected List<Receptor> receptors;
+
+		/// <summary>
 		/// Constructor, initializes internal collections.
 		/// </summary>
-		public ReceptorsContainer()
+		public ReceptorsContainer(ISemanticTypeSystem sts)
 		{
+			SemanticTypeSystem = sts;
 			Initialize();
 		}
 
@@ -119,7 +100,7 @@ namespace Clifton.Receptor
 		{
 			Receptor r = new Receptor(receptorName, assemblyName);
 			r.EnabledStateChanged += WhenEnabledStateChanged;
-			Receptors.Add(r);
+			receptors.Add(r);
 
 			return r;
 		}
@@ -133,7 +114,7 @@ namespace Clifton.Receptor
 		{
 			Receptor r = new Receptor(name, inst);
 			r.EnabledStateChanged += WhenEnabledStateChanged;
-			Receptors.Add(r);
+			receptors.Add(r);
 		}
 
 		/// <summary>
@@ -144,7 +125,7 @@ namespace Clifton.Receptor
 		public void RegisterReceptor(string filename)
 		{
 			Receptor r = Receptor.FromFile(filename).Instantiate(this);
-			Receptors.Add(r);
+			receptors.Add(r);
 		}
 
 		/// <summary>
@@ -152,10 +133,11 @@ namespace Clifton.Receptor
 		/// instantiate (if necessary) and register the receptors.  This also generates the 
 		/// protocol-receptor map for the currently registered receptors.
 		/// </summary>
-		public void LoadReceptors(Action<Receptor> afterRegister = null)
+		public void LoadReceptors(Action<IReceptor> afterRegister = null)
 		{
 			int processedCount = 0;
 			string receptorName;
+			List<Receptor> newReceptors = new List<Receptor>();
 
 			// TODO: Refactor out of this code.
 			Say("Loading receptors.");
@@ -176,22 +158,30 @@ namespace Clifton.Receptor
 					// Get the protocols that this receptor is receiving, updating the protocolReceptorMap, adding this
 					// receptor to the specified protocols.
 					GatherProtocolReceivers(r);
-
-					if (afterRegister != null)
-					{
-						afterRegister(r);
-					}
-
-					// Let interested parties know that we have a new receptor and handle how we want to announce the fact.
-					// TODO: Refactor the announcement out of this code.
-					NewReceptor.Fire(this, new ReceptorEventArgs(r));
-
-					// Let the receptor instance perform additional initialization, such as creating carriers.
-					r.Instance.Initialize();
+					newReceptors.Add(r);
 					++processedCount;
 					receptorName = r.Name;
 				}
 			}
+
+			// This order is important.  The visualizer needs to know all the receptors within this membrane AFTER
+			// the receptors have been instantiated.  Secondly, the receptors can't be initialized until the visualizer
+			// knows where they are.
+
+			// Let interested parties know that we have new receptors and handle how we want to announce the fact.
+			newReceptors.ForEach(r =>
+			{
+				if (afterRegister != null)
+				{
+					afterRegister(r);
+				}
+
+				NewReceptor.Fire(this, new ReceptorEventArgs(r));
+			});
+
+			// Let the receptor instance perform additional initialization, such as creating carriers.
+			newReceptors.ForEach(r => r.Instance.Initialize());
+
 
 			// Any queued carriers are now checked to determine whether receptors now exist to process their protocols.
 			ProcessQueuedCarriers();
@@ -206,6 +196,18 @@ namespace Clifton.Receptor
 			{
 				Say("Receptors online.");
 			}
+		}
+
+		/// <summary>
+		/// Kludge to get protocols ending with "Recordset".
+		/// </summary>
+		public List<string> GetProtocolsEndingWith(string match)
+		{
+			List<string> ret = new List<string>();
+
+			ret.AddRange(SemanticTypeSystem.SemanticTypes.Keys.Where(k => k.EndsWith(match)));
+
+			return ret;
 		}
 
 		/// <summary>
@@ -254,7 +256,8 @@ namespace Clifton.Receptor
 		{
 			receptor.Instance.Terminate();
 			// TODO: If our collections were IReceptor, then we wouldn't need the "as".
-			Receptors.Remove(receptor as Receptor);
+			receptors.Remove(receptor as Receptor);
+			registeredReceptorMap.Remove(receptor);
 			protocolReceptorMap.ForEach(kvp => kvp.Value.Remove(receptor as Receptor));
 			ReceptorRemoved.Fire(this, new ReceptorEventArgs(receptor));
 
@@ -270,7 +273,7 @@ namespace Clifton.Receptor
 		public void Remove(IReceptorInstance receptorInstance)
 		{
 			// Clone the list because the master list will change.
-			Receptors.Where(r => r.Instance == receptorInstance).ToList().ForEach(r => Remove(r));
+			receptors.Where(r => r.Instance == receptorInstance).ToList().ForEach(r => Remove(r));
 		}
 
 		/// <summary>
@@ -283,23 +286,66 @@ namespace Clifton.Receptor
 			Initialize();
 		}
 
+		// TODO: Re-implement by providing methods to add/remove instantiated receptors which
+		// would support moving receptors between membranes.  This is a brute force approach
+		// for now.
+		/// <summary>
+		/// Recreates the protocol receptor map from scratch.
+		/// </summary>
+		public void ReloadProtocolReceptorMap()
+		{
+			protocolReceptorMap.Clear();
+			Receptors.ForEach(r => GatherProtocolReceivers(r));
+		}
+
+		public void MoveReceptorTo(IReceptor receptor, ReceptorsContainer target)
+		{
+			InternalRemove(receptor);
+			target.InternalAdd(receptor);
+		}
+
+		/// <summary>
+		/// Remove the receptor without generating remove events or terminating the receptor.
+		/// </summary>
+		protected void InternalRemove(IReceptor receptor)
+		{
+			receptors.Remove(receptor as Receptor);
+			registeredReceptorMap.Remove(receptor);
+			protocolReceptorMap.ForEach(kvp => kvp.Value.Remove(receptor as Receptor));
+		}
+
+		/// <summary>
+		/// Add the receptor, without generating add events.
+		/// </summary>
+		protected void InternalAdd(IReceptor receptor)
+		{
+			// TODO: If receptors was List<IReceptor>, we wouldn't need this cast.
+			receptors.Add(receptor as Receptor);
+			registeredReceptorMap[receptor] = true;
+			// The receptor instance is now using this receptor system!
+			receptor.Instance.ReceptorSystem = this;
+			// Process any queued carriers that may now become active.
+			ReloadProtocolReceptorMap();
+			ProcessQueuedCarriers();
+		}
+
 		/// <summary>
 		/// Clears out all data.
 		/// </summary>
 		protected void Initialize()
 		{
-			Receptors = new List<Receptor>();
-			protocolReceptorMap = new Dictionary<string, List<Receptor>>();
+			receptors = new List<Receptor>();
+			protocolReceptorMap = new Dictionary<string, List<IReceptor>>();
 			queuedCarriers = new List<QueuedCarrierAction>();
-			globalReceptors = new List<Receptor>();
-			registeredReceptorMap = new Dictionary<Receptor, bool>();
+			globalReceptors = new List<IReceptor>();
+			registeredReceptorMap = new Dictionary<IReceptor, bool>();
 		}
 
 		/// <summary>
 		/// Get the protocols that this receptor is receiving, updating the protocolReceptorMap, adding this
 		/// receptor to the specified protocols.
 		/// </summary>
-		protected void GatherProtocolReceivers(Receptor r)
+		protected void GatherProtocolReceivers(IReceptor r)
 		{
 			// For each protocol...
 			r.Instance.GetReceiveProtocols().ForEach(protocolName =>
@@ -314,11 +360,11 @@ namespace Clifton.Receptor
 					else
 					{
 						// Get the list of receiving receptors for the protocol, or, if it doesn't exist, create it.
-						List<Receptor> receivingReceptors;
+						List<IReceptor> receivingReceptors;
 
 						if (!protocolReceptorMap.TryGetValue(protocolName, out receivingReceptors))
 						{
-							receivingReceptors = new List<Receptor>();
+							receivingReceptors = new List<IReceptor>();
 							protocolReceptorMap[protocolName] = receivingReceptors;
 							// Append all current global receptors to this protocol - receptor map.
 							globalReceptors.ForEach(gr => receivingReceptors.Add(gr));
@@ -351,7 +397,7 @@ namespace Clifton.Receptor
 		protected bool HaveEnabledReceptors(ISemanticTypeStruct protocol)
 		{
 			bool found = false;
-			List<Receptor> receptors; 
+			List<IReceptor> receptors; 
 			bool haveCarrierMap = protocolReceptorMap.TryGetValue(protocol.DeclTypeName, out receptors);
 
 			if (haveCarrierMap)
@@ -370,7 +416,7 @@ namespace Clifton.Receptor
 		{
 			// Get the action that we are supposed to perform on the carrier.
 			Action action = GetProcessAction(from, carrier, stopRecursion);
-			List<Receptor> receptors;
+			List<IReceptor> receptors;
 
 			bool haveCarrierMap = protocolReceptorMap.TryGetValue(carrier.Protocol.DeclTypeName, out receptors);
 
@@ -390,7 +436,7 @@ namespace Clifton.Receptor
 		/// <summary>
 		/// If a queued carrier has a receptor to receive the protocol, execute the action and remove it from the queue.
 		/// </summary>
-		protected void ProcessQueuedCarriers()
+		public void ProcessQueuedCarriers()
 		{
 			List<QueuedCarrierAction> removeActions = new List<QueuedCarrierAction>();
 
@@ -398,7 +444,7 @@ namespace Clifton.Receptor
 			// collection with an indexer rather than a foreach.
 			queuedCarriers.IndexerForEach(action =>
 			{
-				List<Receptor> receptors;
+				List<IReceptor> receptors;
 
 				bool haveCarrierMap = protocolReceptorMap.TryGetValue(action.Carrier.Protocol.DeclTypeName, out receptors);
 
@@ -470,10 +516,12 @@ namespace Clifton.Receptor
 		// TODO: We probably could use some global carrier creation library.
 		protected void Say(string msg)
 		{
-			ISemanticTypeStruct protocol = SemanticTypeSystem.GetSemanticTypeStruct("TextToSpeech");
-			dynamic signal = SemanticTypeSystem.Create("TextToSpeech");
-			signal.Text = msg;
-			CreateCarrier(null, protocol, signal);
+			// TODO: I've turned this off because every membrane's receptor system is now talking!!!!
+
+			//ISemanticTypeStruct protocol = SemanticTypeSystem.GetSemanticTypeStruct("TextToSpeech");
+			//dynamic signal = SemanticTypeSystem.Create("TextToSpeech");
+			//signal.Text = msg;
+			//CreateCarrier(null, protocol, signal);
 		}
 
 		protected void WhenEnabledStateChanged(object sender, ReceptorEnabledEventArgs e)

@@ -1,23 +1,64 @@
-<Applet>
-  <Receptors>
-    <Receptor Name="Text To Speech" AssemblyName="TextToSpeechReceptor.dll" Location="{X=101,Y=110}" />
-    <Receptor Name="SQLite Persistor" AssemblyName="PersistenceReceptor.dll" Location="{X=192,Y=25}" />
-    <Receptor Name="APOD" AssemblyName="APODScraperReceptor.dll" Location="{X=96,Y=361}" />
-    <Receptor Name="Thumbnail Viewer" AssemblyName="ThumbnailViewerReceptor.dll" Location="{X=732,Y=448}" />
-    <Receptor Name="Thumbnail Converter" AssemblyName="ThumbnailCreatorReceptor.dll" Location="{X=96,Y=231}" />
-    <Receptor Name="Thumbnail Image Writer" AssemblyName="ImageWriterReceptor.dll" Location="{X=261,Y=231}" Enabled="false" />
-    <Receptor Name="Carrier Exporter" AssemblyName="CarrierExporterReceptor.dll" Location="{X=194,Y=466}" Enabled="false" />
-    <Receptor Name="Logger" AssemblyName="LoggingReceptor.dll" Location="{X=96,Y=466}" />
-    <Receptor Name="Weather Service" AssemblyName="WeatherServiceReceptor.dll" Location="{X=332,Y=690}" />
-    <Receptor Name="Zip Code Service" AssemblyName="ZipCodeReceptor.dll" Location="{X=205,Y=690}" />
-    <Receptor Name="Weather Info" AssemblyName="WeatherInfoReceptor.dll" Location="{X=259,Y=607}" />
-    <Receptor Name="Image Viewer" AssemblyName="ImageViewerReceptor.dll" Location="{X=460,Y=24}" />
-    <Receptor Name="Webpage Scraper" AssemblyName="WebPageScraperReceptor.dll" Location="{X=352,Y=24}" />
-    <Receptor Name="Interval Timer" AssemblyName="TimerReceptor.dll" Location="{X=188,Y=109}" />
-    <Receptor Name="Text Display" AssemblyName="TextDisplayReceptor.dll" Location="{X=103,Y=25}" />
-    <Receptor Name="URL" AssemblyName="UrlReceptor.dll" Location="{X=269,Y=24}" />
-  </Receptors>
-  <Carriers>
-    <Carrier Protocol="IntervalTimerConfiguration" StartDateTime="8:00 AM" Interval="86400" EventName="ScrapeAPOD" IgnoreMissedIntervals="false"/>
-  </Carriers>
-</Applet>
+<MycroXaml xmlns:ixm="TypeSystemExplorer.Models, TypeSystemExplorer" xmlns:def="def" xmlns:ref="ref" Name="Form">
+  <ixm:Applet>
+    <ixm:MembranesDef>
+      <ixm:Membranes>
+        <ixm:MembraneDef Name="Skin">
+          <ixm:Receptors>
+            <ixm:ReceptorDef Name="Thumbnail Image Writer" AssemblyName="ImageWriterReceptor.dll" Enabled="False" Location="261, 231" />
+            <ixm:ReceptorDef Name="Carrier Exporter" AssemblyName="CarrierExporterReceptor.dll" Enabled="False" Location="250, 128" />
+            <ixm:ReceptorDef Name="Logger" AssemblyName="LoggingReceptor.dll" Enabled="True" Location="79, 306" />
+            <ixm:ReceptorDef Name="Interval Timer" AssemblyName="TimerReceptor.dll" Enabled="True" Location="398, 334" />
+          </ixm:Receptors>
+          <ixm:Membranes>
+            <ixm:MembraneDef Name="">
+              <ixm:Receptors>
+                <ixm:ReceptorDef Name="Weather Service" AssemblyName="WeatherServiceReceptor.dll" Enabled="True" Location="808, 307" />
+                <ixm:ReceptorDef Name="Zip Code Service" AssemblyName="ZipCodeReceptor.dll" Enabled="True" Location="681, 307" />
+                <ixm:ReceptorDef Name="Weather Info" AssemblyName="WeatherInfoReceptor.dll" Enabled="True" Location="735, 224" />
+              </ixm:Receptors>
+            </ixm:MembraneDef>
+          </ixm:Membranes>
+          <ixm:Membranes>
+            <ixm:MembraneDef Name="">
+              <ixm:Receptors>
+                <ixm:ReceptorDef Name="SQLite Persistor" AssemblyName="PersistenceReceptor.dll" Enabled="True" Location="338, 521" />
+                <ixm:ReceptorDef Name="APOD" AssemblyName="APODScraperReceptor.dll" Enabled="True" Location="338, 684" />
+                <ixm:ReceptorDef Name="Thumbnail Converter" AssemblyName="ThumbnailCreatorReceptor.dll" Enabled="True" Location="398, 609" />
+                <ixm:ReceptorDef Name="Webpage Scraper" AssemblyName="WebPageScraperReceptor.dll" Enabled="True" Location="273, 605" />
+              </ixm:Receptors>
+            </ixm:MembraneDef>
+          </ixm:Membranes>
+          <ixm:Membranes>
+            <ixm:MembraneDef Name="">
+              <ixm:Receptors>
+                <ixm:ReceptorDef Name="Thumbnail Viewer" AssemblyName="ThumbnailViewerReceptor.dll" Enabled="True" Location="949, 617" />
+                <ixm:ReceptorDef Name="Image Viewer" AssemblyName="ImageViewerReceptor.dll" Enabled="True" Location="889, 600" />
+                <ixm:ReceptorDef Name="URL" AssemblyName="UrlReceptor.dll" Enabled="True" Location="1012, 604" />
+              </ixm:Receptors>
+              <ixm:Membranes>
+                <ixm:MembraneDef Name="">
+                  <ixm:Receptors>
+                    <ixm:ReceptorDef Name="Text To Speech" AssemblyName="TextToSpeechReceptor.dll" Enabled="False" Location="979, 497" />
+                    <ixm:ReceptorDef Name="Text Display" AssemblyName="TextDisplayReceptor.dll" Enabled="False" Location="913, 519" />
+                  </ixm:Receptors>
+                </ixm:MembraneDef>
+              </ixm:Membranes>
+            </ixm:MembraneDef>
+          </ixm:Membranes>
+        </ixm:MembraneDef>
+      </ixm:Membranes>
+    </ixm:MembranesDef>
+    <ixm:CarriersDef>
+      <ixm:Carriers>
+        <ixm:CarrierDef Protocol="IntervalTimerConfiguration">
+          <ixm:Attributes>
+            <ixm:Attr Name="StartDateTime" Value="8:00 AM" />
+            <ixm:Attr Name="Interval" Value="86400" />
+            <ixm:Attr Name="EventName" Value="ScrapeAPOD" />
+            <ixm:Attr Name="IgnoreMissedIntervals" Value="false" />
+          </ixm:Attributes>
+        </ixm:CarrierDef>
+      </ixm:Carriers>
+    </ixm:CarriersDef>
+  </ixm:Applet>
+</MycroXaml>

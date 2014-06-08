@@ -17,8 +17,14 @@ namespace TypeSystemExplorer
 	{
 		public static Form MainForm;
 		public static StatePersistence AppState;
+
+		// TODO: Make this a protected property at some point?
 		public static STS SemanticTypeSystem;
-		public static ReceptorsContainer Receptors;
+
+		// public static ReceptorsContainer Receptors;
+		// The outermost membrane is called the "skin."
+
+		public static Membrane Skin;
 
 		[STAThread]
 		static void Main()
@@ -26,8 +32,10 @@ namespace TypeSystemExplorer
 			try
 			{
 				SemanticTypeSystem = new STS();
-				Receptors = new ReceptorsContainer();
-				Receptors.SemanticTypeSystem = SemanticTypeSystem;
+				Skin = new Membrane(SemanticTypeSystem);
+				Skin.Name = "Skin";
+				// Receptors = new ReceptorsContainer();
+				// Receptors.SemanticTypeSystem = SemanticTypeSystem;
 
 				Application.EnableVisualStyles();
 				Application.SetCompatibleTextRenderingDefault(false);

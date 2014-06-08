@@ -4,10 +4,12 @@ using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
+using System.Xml.Schema;
 using System.Windows.Forms;
 
 using WeifenLuo.WinFormsUI.Docking;
@@ -16,6 +18,7 @@ using Clifton.ApplicationStateManagement;
 using Clifton.Assertions;
 using Clifton.ExtensionMethods;
 using Clifton.MycroParser;
+using Clifton.Receptor;
 using Clifton.Receptor.Interfaces;
 using Clifton.SemanticTypeSystem;
 using Clifton.SemanticTypeSystem.Interfaces;
@@ -23,6 +26,7 @@ using Clifton.Tools.Strings;
 using Clifton.Tools.Strings.Extensions;
 
 using TypeSystemExplorer.Actions;
+using TypeSystemExplorer.Models;
 using TypeSystemExplorer.Views;
 
 namespace TypeSystemExplorer.Controllers
@@ -47,12 +51,25 @@ namespace TypeSystemExplorer.Controllers
 		public SymbolTableController SymbolTableController { get; set; }
 		public VisualizerController VisualizerController { get; set; }
 
+		protected Applet applet;
+
 		public ApplicationFormController()
 		{
 
 			// documentControllerMap = new DiagnosticDictionary<IDockContent, NotecardController>("DocumentControllerMap");
 			RegisterUserStateOperations();
-			Program.Receptors.RegisterReceptor("System", this);
+			Program.Skin.RegisterReceptor("System", this);
+			Program.Skin.NewMembrane += OnNewMembrane;
+		}
+
+		/// <summary>
+		/// Register ourselves ("System") as a receptor and listen to new membranes being added to this membrane.
+		/// </summary>
+		protected void OnNewMembrane(object sender, MembraneEventArgs e)
+		{
+			e.Membrane.RegisterReceptor("System", this);
+			e.Membrane.NewMembrane += OnNewMembrane;
+			e.Membrane.LoadReceptors();				// finish initializing the system receptor.
 		}
 
 		protected void FormClosingEvent(object sender, FormClosingEventArgs args)
@@ -107,7 +124,7 @@ namespace TypeSystemExplorer.Controllers
 			// Now we can load our receptors, once the protocol dictionary is loaded.
 			// TODO: How do we KNOW the protocol dictionary has been loaded?
 			// Speak("Protocols loaded.");
-			Program.Receptors.LoadReceptors();				// Process immediately.
+			Program.Skin.LoadReceptors();				// Process immediately.
 		}
 
 		protected void ActiveDocumentChanged(object sender, EventArgs args)
@@ -130,13 +147,13 @@ namespace TypeSystemExplorer.Controllers
 			OutputController.IfNotNull(c => c.View.Clear());
 			SymbolTableController.IfNotNull(c => c.View.Clear());
 			InternalReset();
-			Program.Receptors.RegisterReceptor("System", this);
+			Program.Skin.RegisterReceptor("System", this);
 		}
 
 		protected void InternalReset()
 		{
 			Program.SemanticTypeSystem.Reset();
-			Program.Receptors.Reset();
+			Program.Skin.Reset();
 			VisualizerController.View.Reset();
 		}
 
@@ -168,7 +185,7 @@ namespace TypeSystemExplorer.Controllers
 
 				if (res == DialogResult.OK)
 				{
-					MruMenu.AddFile(ofd.FileName);
+					// MruMenu.AddFile(ofd.FileName);
 					LoadXml(ofd.FileName);
 					CurrentFilename = ofd.FileName;
 				}
@@ -200,8 +217,8 @@ namespace TypeSystemExplorer.Controllers
 			{
 				CurrentFilename = sfd.FileName;
 				XmlEditorController.View.Editor.SaveFile(sfd.FileName);
-				MruMenu.AddFile(sfd.FileName);
-				SetCaption(sfd.FileName);
+				// MruMenu.AddFile(sfd.FileName);
+				// SetCaption(sfd.FileName);
 			}
 		}
 
@@ -226,7 +243,7 @@ namespace TypeSystemExplorer.Controllers
 		{
 			// Because I get tired of doing this manually.
 			LoadXml("protocols.xml");
-			LoadReceptors(this, EventArgs.Empty);
+			// LoadApplet();
 		}
 
 		/// <summary>
@@ -472,33 +489,212 @@ namespace TypeSystemExplorer.Controllers
 
 		public void LoadReceptors(object sender, EventArgs args)
 		{
+			OpenFileDialog ofd = new OpenFileDialog();
+			ofd.Filter = "xml files (*.xml)|*.xml|All files (*.*)|*.*";
+			DialogResult ret = ofd.ShowDialog();
+
+			if (ret == DialogResult.OK)
+			{
+				LoadApplet(ofd.FileName);
+				MruMenu.AddFile(ofd.FileName);
+			}
+		}
+
+		public void SaveReceptors(object sender, EventArgs args)
+		{
+			SaveReceptorsInternal(CurrentFilename);
+		}
+
+		public void SaveReceptorsAs(object sender, EventArgs args)
+		{
+			SaveFileDialog sfd = new SaveFileDialog();
+			sfd.Filter = "xml files (*.xml)|*.xml|All files (*.*)|*.*";
+			sfd.OverwritePrompt = true;
+			DialogResult ret = sfd.ShowDialog();
+
+			if (ret == DialogResult.OK)
+			{
+				SaveReceptorsInternal(sfd.FileName);
+				MruMenu.AddFile(sfd.FileName);
+			}
+		}
+
+		public void SaveReceptorsInternal(string filename)
+		{
+			CurrentFilename = filename;
+			SetCaption(filename);
+
+			XmlDocument xdoc = new XmlDocument();
+			
+			//Add the namespaces used in books.xml to the XmlNamespaceManager.
+			// xmlnsManager.AddNamespace("ixm", "TypeSystemExplorer.Models, TypeSystemExplorer");
+
+			XmlNode mycroXaml = xdoc.CreateElement("MycroXaml");
+			AddAttribute(mycroXaml, "xmlns:ixm", "TypeSystemExplorer.Models, TypeSystemExplorer");
+			AddAttribute(mycroXaml, "xmlns:def", "def");
+			AddAttribute(mycroXaml, "xmlns:ref", "ref");
+			xdoc.AppendChild(mycroXaml);
+			AddAttribute(mycroXaml, "Name", "Form");
+			
+			XmlNode appletNode = xdoc.CreateElement("ixm", "Applet", "TypeSystemExplorer.Models, TypeSystemExplorer");
+			mycroXaml.AppendChild(appletNode);
+			
+			XmlNode membranesDefNode = xdoc.CreateElement("ixm", "MembranesDef", "TypeSystemExplorer.Models, TypeSystemExplorer");
+			appletNode.AppendChild(membranesDefNode);
+
+			// Save membrane and its receptors.
+			SerializeMembrane(membranesDefNode, Program.Skin);
+			
+			// Save the carriers defined in the applet that was loaded.
+			if (applet != null)
+			{
+				if (appletNode != null)
+				{
+					XmlNode carriersDef = xdoc.CreateElement("ixm", "CarriersDef", "TypeSystemExplorer.Models, TypeSystemExplorer");
+					appletNode.AppendChild(carriersDef);
+					XmlNode carriers = xdoc.CreateElement("ixm", "Carriers", "TypeSystemExplorer.Models, TypeSystemExplorer");
+					carriersDef.AppendChild(carriers);
+
+					// Were there any carriers defined in the original?
+					// TODO: See TODO Comment in ReceptorDef.cs model and MycroParser bug.
+					if (applet.CarriersDef != null)
+					{
+						applet.CarriersDef.Carriers.ForEach(c =>
+							{
+								XmlNode carrierDef = xdoc.CreateElement("ixm", "CarrierDef", "TypeSystemExplorer.Models, TypeSystemExplorer");
+								AddAttribute(carrierDef, "Protocol", c.Protocol);
+								carriers.AppendChild(carrierDef);
+								XmlNode attr = xdoc.CreateElement("ixm", "Attributes", "TypeSystemExplorer.Models, TypeSystemExplorer");
+								carrierDef.AppendChild(attr);
+
+								c.Attributes.ForEach(a =>
+									{
+										XmlNode attrVal = xdoc.CreateElement("ixm", "Attr", "TypeSystemExplorer.Models, TypeSystemExplorer");
+										AddAttribute(attrVal, "Name", a.Name);
+										AddAttribute(attrVal, "Value", a.Value);
+										attr.AppendChild(attrVal);
+									});
+							});
+					}
+				}
+			}
+
+			xdoc.Save(filename);
+		}
+
+		protected void SerializeMembrane(XmlNode membranesDefNode, Membrane m)
+		{
+			XmlDocument xdoc = membranesDefNode.OwnerDocument;
+
+			XmlNode membranesNode = xdoc.CreateElement("ixm", "Membranes", "TypeSystemExplorer.Models, TypeSystemExplorer");
+			membranesDefNode.AppendChild(membranesNode);
+
+			XmlNode membraneDefNode = xdoc.CreateElement("ixm", "MembraneDef", "TypeSystemExplorer.Models, TypeSystemExplorer");
+			AddAttribute(membraneDefNode, "Name", m.Name);
+			membranesNode.AppendChild(membraneDefNode);
+
+			XmlNode receptors = xdoc.CreateElement("ixm", "Receptors", "TypeSystemExplorer.Models, TypeSystemExplorer");
+			membraneDefNode.AppendChild(receptors);
+
+			// TODO: The serialization needs to start at the membrane level and support recursion into inner membranes.
+			m.Receptors.ForEach(r =>
+			{
+				// Ignore internal receptors that register themselves.
+				if (!String.IsNullOrEmpty(r.AssemblyName))
+				{
+					XmlNode rNode = xdoc.CreateElement("ixm", "ReceptorDef", "TypeSystemExplorer.Models, TypeSystemExplorer");
+					receptors.AppendChild(rNode);
+					AddAttribute(rNode, "Name", r.Name);
+					AddAttribute(rNode, "AssemblyName", r.AssemblyName);
+					AddAttribute(rNode, "Enabled", r.Enabled.ToString());
+
+					if (!r.Instance.IsHidden)
+					{
+						Point p = VisualizerController.View.GetLocation(r);
+						AddAttribute(rNode, "Location", p.X + ", " + p.Y);
+					}
+				}
+			});
+
+			// Recurse into child membranes (if they have receptors.)
+			m.Membranes.ForEach(innerMembrane =>
+				{
+					if (innerMembrane.Receptors.Count > 0)
+					{
+						SerializeMembrane(membraneDefNode, innerMembrane);
+					}
+				});
+			
+		}
+
+		public void LoadApplet(string filename)
+		{
+			CurrentFilename = filename;
+			SetCaption(filename);
+			applet = MycroParser.InstantiateFromFile<Applet>(filename, null);
+
+			// Create the receptors.
+
 			VisualizerController.View.StartDrop = true;
+			VisualizerController.View.ShowMembranes = false;
+			// Skin is the the root membrane.  It has no siblings.
+			DeserializeMembranes(applet.MembranesDef.Membranes[0], Program.Skin);
+			VisualizerController.View.StartDrop = false;
+			VisualizerController.View.ShowMembranes = true;
+
+			// Create the carriers if they exist.
+
+			if (applet.CarriersDef != null)
+			{
+				applet.CarriersDef.Carriers.ForEach(c =>
+					{
+						ISemanticTypeStruct protocol = Program.Skin.SemanticTypeSystem.GetSemanticTypeStruct(c.Protocol);
+						dynamic signal = Program.Skin.SemanticTypeSystem.Create(c.Protocol);
+						Type t = signal.GetType();
+
+						c.Attributes.ForEach(attr =>
+							{
+								PropertyInfo pi = t.GetProperty(attr.Name);
+								TypeConverter tcFrom = TypeDescriptor.GetConverter(pi.PropertyType);
+
+								if (tcFrom.CanConvertFrom(typeof(string)))
+								{
+									object val = tcFrom.ConvertFromInvariantString(attr.Value);
+									pi.SetValue(signal, val);
+								}
+								else
+								{
+									throw new ApplicationException("Cannot convert string to type " + t.Name);
+								}
+							});
+
+						// TODO: Carriers need to specify into which membrane they are placed.
+						Program.Skin.CreateCarrier(null, protocol, signal);
+					});
+			}
+		}
+
+		protected void DeserializeMembranes(MembraneDef membraneDef, Membrane membrane)
+		{
+			Dictionary<IReceptor, Point> receptorLocationMap = new Dictionary<IReceptor, Point>();
 			Point noLocation = new Point(-1, -1);
 
-			XDocument xdoc = XDocument.Load("Receptors2.xml");
-			var names = from receptor in xdoc.Descendants("Applet").Descendants("Receptors").Descendants("Receptor")
-						select new
-							{
-								Name = receptor.Attribute("Name").Value,
-								AssemblyName = receptor.Attribute("AssemblyName").Value,
-								Location = (receptor.Attribute("Location") != null) ? new Point(receptor.Attribute("Location").Value.Between('=', ',').to_i(), receptor.Attribute("Location").Value.RightOfRightmostOf('=').LeftOf('}').to_i()) : noLocation,
-								Enabled = (receptor.Attribute("Enabled") != null) ? Convert.ToBoolean(receptor.Attribute("Enabled").Value) : true
-							};
-
-			Dictionary<IReceptor, Point> receptorLocationMap = new Dictionary<IReceptor,Point>();
-
-			names.ForEach(n => 
+			membraneDef.Receptors.ForEach(n =>
 				{
-					IReceptor r = Program.Receptors.RegisterReceptor(n.Name, n.AssemblyName);
+					IReceptor r = membrane.RegisterReceptor(n.Name, n.AssemblyName);
 					receptorLocationMap[r] = n.Location;
 					r.Enabled = n.Enabled;
 				});
 
 			// After registration, but before the NewReceptor fire event, set the drop point.
-			Program.Receptors.LoadReceptors((rec) => 
-				{
-					Point p = receptorLocationMap[rec];
+			// Load all the receptors defined in this membrane first.
+			membrane.LoadReceptors((rec) =>
+			{
+				Point p;
 
+				// Internal receptors, like ourselves, will not be in this deserialized collection.
+				if (receptorLocationMap.TryGetValue(rec, out p))
+				{
 					if (p == noLocation)
 					{
 						VisualizerController.View.ClientDropPoint = VisualizerController.View.GetRandomLocation();
@@ -507,38 +703,18 @@ namespace TypeSystemExplorer.Controllers
 					{
 						VisualizerController.View.ClientDropPoint = p;
 					}
-				});
+				}
+			});
 
-			VisualizerController.View.StartDrop = false;
-
-			// Load carriers:
-			VisualizerController.CreateCarriers(xdoc.Element("Applet").Element("Carriers"));
-		}
-
-		public void SaveReceptors(object sender, EventArgs args)
-		{
-			XmlDocument xdoc = new XmlDocument();
-			XmlNode parent = xdoc.CreateElement("Receptors");
-			xdoc.AppendChild(parent);
-
-			Program.Receptors.Receptors.ForEach(r =>
-				{
-					// Ignore internal receptors that register themselves.
-					if (!String.IsNullOrEmpty(r.AssemblyName))
-					{
-						XmlNode rNode = xdoc.CreateElement("Receptor");
-						parent.AppendChild(rNode);
-						AddAttribute(rNode, "Name", r.Name);
-						AddAttribute(rNode, "AssemblyName", r.AssemblyName);
-
-						if (!r.Instance.IsHidden)
-						{
-							AddAttribute(rNode, "Location", VisualizerController.View.GetLocation(r).ToString());
-						}
-					}
-				});
-
-			xdoc.Save("Receptors2.xml");
+			// Next, load the inner membrane and receptors.
+			membraneDef.Membranes.ForEach(innerMembraneDef =>
+			{
+				Membrane innerMembrane = membrane.CreateInnerMembrane();
+				// Handled now by the NewMembrane event handler.
+				// Each membrane needs a system receptor to handle, among other things, the carrier animation.
+				// innerMembrane.RegisterReceptor("System", this);
+				DeserializeMembranes(innerMembraneDef, innerMembrane);
+			});
 		}
 
 		protected void AddAttribute(XmlNode node, string attrName, string attrValue)
@@ -623,9 +799,20 @@ namespace TypeSystemExplorer.Controllers
 		public bool IsEdgeReceptor { get { return false; } }
 		public bool IsHidden { get { return true; } }
 
+		public IReceptorSystem ReceptorSystem
+		{
+			get { throw new ApplicationException("A call to get the system receptor container should never be made."); }
+			set { throw new ApplicationException("A call to set the system receptor container should never be made."); }
+		}
+
 		public string[] GetReceiveProtocols()
 		{
 			return new string[] { "SystemMessage", "CarrierAnimation", "SystemShowImage", "HaveImageMetadata" };
+		}
+
+		public string[] GetEmittedProtocols()
+		{
+			return new string[] { };
 		}
 
 		public void Initialize()

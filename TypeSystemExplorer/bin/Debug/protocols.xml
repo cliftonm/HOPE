@@ -384,7 +384,6 @@
     <SemanticTypeStruct DeclType="ScrapeWebpage">
       <Attributes>
         <SemanticElement Name="URL"/>
-        <NativeType Name="ResponseProtocol" ImplementingType="string"/>
       </Attributes>
     </SemanticTypeStruct>
     
@@ -392,11 +391,11 @@
 
     <SemanticTypeDecl OfType="Noun">
       <AttributeValues>
-        <Attribute Name="Name" Value="APODWebpage"/>
+        <Attribute Name="Name" Value="WebpageHtml"/>
       </AttributeValues>
     </SemanticTypeDecl>
 
-    <SemanticTypeStruct DeclType="APODWebpage">
+    <SemanticTypeStruct DeclType="WebpageHtml">
       <Attributes>
         <NativeType Name="URL" ImplementingType="string"/>
         <NativeType Name="HTML" ImplementingType="string"/>

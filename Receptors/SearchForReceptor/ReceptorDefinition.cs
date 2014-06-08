@@ -24,6 +24,12 @@ namespace SearchForReceptor
 		public bool IsEdgeReceptor { get { return false; } }
 		public bool IsHidden { get { return false; } }
 
+		public IReceptorSystem ReceptorSystem
+		{
+			get { return rsys; }
+			set { rsys = value; }
+		}
+
 		protected IReceptorSystem rsys;
 		protected TextBox tb;
 
@@ -45,6 +51,11 @@ namespace SearchForReceptor
 		{
 			// Doesn't listen to anything.
 			return new string[] { };
+		}
+
+		public string[] GetEmittedProtocols()
+		{
+			return new string[] { "SearchFor" };
 		}
 
 		public void ProcessCarrier(ICarrier carrier)

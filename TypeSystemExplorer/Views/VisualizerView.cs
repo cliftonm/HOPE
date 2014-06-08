@@ -1,8 +1,11 @@
-﻿using System;
+﻿#define VIVEK
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Dynamic;
 using System.IO;
 using System.Linq;
@@ -10,6 +13,7 @@ using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
 
+using Clifton.Drawing;
 using Clifton.ExtensionMethods;
 using Clifton.Receptor;
 using Clifton.Receptor.Interfaces;
@@ -158,6 +162,11 @@ namespace TypeSystemExplorer.Views
 		}
 	}
 
+	public class Line
+	{
+		public Point P1 {get;set;}
+		public Point P2 {get;set;}
+	}
 
 	public class FlyoutItem
 	{
@@ -214,6 +223,12 @@ namespace TypeSystemExplorer.Views
 		}
 	}
 
+	public class Circle
+	{
+		public Point Center { get; set; }
+		public int Radius { get; set; }
+	}
+
 	public class VisualizerView : UserControl
 	{
 		const int RenderTime = 120;
@@ -223,6 +238,7 @@ namespace TypeSystemExplorer.Views
 		protected Size ReceptorSize = new Size(40, 40);
 		protected Size ReceptorHalfSize = new Size(20, 20);
 		protected Point dropPoint;
+		protected bool showMembranes = true;
 
 		public ApplicationModel Model { get; protected set; }
 		public ApplicationFormController ApplicationController { get; protected set; }
@@ -230,12 +246,27 @@ namespace TypeSystemExplorer.Views
 		public VisualizerControl Visualizer { get; set; }
 
 		public bool StartDrop { get; set; }
+		public bool ShowMembranes
+		{
+			get { return ShowMembranes; }
+			set
+			{
+				showMembranes = value;
+				
+				if (showMembranes)
+				{
+					RecalcMembranes();
+					Invalidate(true);
+				}
+			}
+		}
 
 		/// <summary>
 		/// Sets the drop point, converting from screen coordinates to client coordinates.
 		/// </summary>
 		public Point DropPoint
 		{
+			get { return dropPoint; }
 			set { dropPoint = PointToClient(value); }
 		}
 
@@ -248,9 +279,12 @@ namespace TypeSystemExplorer.Views
 		}
 
 		protected Dictionary<IReceptor, Point> receptorLocation;
+		protected Dictionary<IMembrane, Circle> membraneLocation;
+
 		protected List<FlyoutItem> flyouts;
 		protected List<CarrierAnimationItem> carrierAnimations;
 		protected Dictionary<IReceptor, CarouselState> carousels;
+		protected List<Line> receptorConnections;
 
 		protected Brush blackBrush;
 		protected Brush whiteBrush;
@@ -265,8 +299,11 @@ namespace TypeSystemExplorer.Views
 		protected Timer timer;
 		
 		// Mouse capture / recepture moving fields:
-		protected bool moving;
+		protected bool movingReceptor;
+		protected bool movingMembrane;
+		protected bool rubberBand;
 		protected IReceptor selectedReceptor;
+		protected IMembrane selectedMembrane;
 		protected Point mouseStart;
 		protected Point mousePosition;
 		protected DateTime mouseHoverStartTime;
@@ -276,6 +313,15 @@ namespace TypeSystemExplorer.Views
 
 		protected int orbitCount = 0;
 		protected bool paused;
+
+		// When the membrane is being moved, keeps a short of list of mouse offsets
+		// to determine whether the membrane is being "shaken" left-right.
+		protected DateTime shakeStart;
+		protected int shakeCurrentDirection;
+		protected int shakeCount;
+		protected bool shakeOK;			// Used to stop further "pops".
+
+		protected Pen receptorLineColor = new Pen(Color.Cyan); // new Pen(Color.FromArgb(40, 40, 60));
 
 		public VisualizerView()
 		{
@@ -303,9 +349,10 @@ namespace TypeSystemExplorer.Views
 
 			rnd = new Random();
 
-			Program.Receptors.NewReceptor += OnNewReceptor;
-			Program.Receptors.NewCarrier += OnNewCarrier;
-			Program.Receptors.ReceptorRemoved += OnReceptorRemoved;
+			Program.Skin.NewReceptor += OnNewReceptor;
+			Program.Skin.NewCarrier += OnNewCarrier;
+			Program.Skin.ReceptorRemoved += OnReceptorRemoved;
+			Program.Skin.NewMembrane += OnNewMembrane;
 
 			timer = new Timer();
 			timer.Interval = 1000 / 30;		// 30 hz refresh rate in milliseconds;
@@ -316,6 +363,11 @@ namespace TypeSystemExplorer.Views
 		public Point GetLocation(IReceptor r)
 		{
 			return receptorLocation[r];
+		}
+
+		public Circle GetLocation(IMembrane m)
+		{
+			return membraneLocation[m];
 		}
 
 		public void Reset()
@@ -333,9 +385,11 @@ namespace TypeSystemExplorer.Views
 		protected void InitializeCollections()
 		{
 			receptorLocation = new Dictionary<IReceptor, Point>();
+			membraneLocation = new Dictionary<IMembrane, Circle>();
 			flyouts = new List<FlyoutItem>();
 			carrierAnimations = new List<CarrierAnimationItem>();
 			carousels = new Dictionary<IReceptor, CarouselState>();
+			receptorConnections = new List<Line>();
 		}
 
 		public void Flyout(string msg, IReceptorInstance receptorInstance)
@@ -406,7 +460,7 @@ namespace TypeSystemExplorer.Views
 				ImageMetadata imeta = new ImageMetadata() { Image = image };
 				cstate.Images.Add(imeta);
 
-				GetImageMetadata(imeta);
+				GetImageMetadata(r, imeta);
 				Invalidate(true);
 			}
 			else
@@ -441,6 +495,34 @@ namespace TypeSystemExplorer.Views
 				InitializeMetadata(protocol, packets, metadata.Signal);
 				Invalidate(true);
 			}
+		}
+
+		/// <summary>
+		/// Returns the innermost membrane at the specified point or the skin membrane.
+		/// </summary>
+		public IMembrane GetMembraneAt(Point p)
+		{
+			IMembrane m = Program.Skin;
+			IMembrane inner = null;
+
+			// An inner membrane will always have a smaller radius
+			double radius = double.MaxValue;
+
+			membraneLocation.ForEach(kvp =>
+				{
+					if (CircleToBoundingRectangle(kvp.Value.Center, kvp.Value.Radius).Contains(p) && (kvp.Value.Radius < radius))
+					{
+						radius = kvp.Value.Radius;
+						inner = kvp.Key;
+					}
+				});
+
+			if (inner != null)
+			{
+				m = inner;
+			}
+
+			return m;
 		}
 
 		// This is complex piece of code.
@@ -495,7 +577,7 @@ namespace TypeSystemExplorer.Views
 				});
 		}
 
-		protected void GetImageMetadata(ImageMetadata imeta)
+		protected void GetImageMetadata(IReceptor r, ImageMetadata imeta)
 		{
 			Image img = imeta.Image;
 			ISemanticTypeStruct protocol = Program.SemanticTypeSystem.GetSemanticTypeStruct("GetImageMetadata");
@@ -503,7 +585,7 @@ namespace TypeSystemExplorer.Views
 			// Remove any "-thumbnail" so we get the master image.
 			signal.ImageFilename.Filename = Path.GetFileName(img.Tag.ToString().Surrounding("-thumbnail"));
 			// signal.ResponseProtocol = "HaveImageMetadata";
-			Program.Receptors.CreateCarrier(null, protocol, signal);
+			GetReceptorMembrane(r).CreateCarrierIfReceiver(r.Instance, protocol, signal);
 		}
 
 		protected void OnTimerTick(object sender, EventArgs e)
@@ -585,6 +667,23 @@ namespace TypeSystemExplorer.Views
 			return more;
 		}
 
+		/// <summary>
+		/// Wire up events that we want to listen to for this new membrane.
+		/// </summary>
+		protected void OnNewMembrane(object sender, MembraneEventArgs e)
+		{
+			Membrane m = (Membrane)e.Membrane;
+			m.NewMembrane += OnNewMembrane;
+			m.NewReceptor += OnNewReceptor;
+			m.NewCarrier += OnNewCarrier;
+			m.ReceptorRemoved += OnReceptorRemoved;
+
+			// Placeholder only.
+			// Because membranes are dynamic in size based on their receptor locations, 
+			// the current membrane location is always recalculated when a receptor moves.
+			membraneLocation[m] = new Circle() { Center = new Point(-1, -1), Radius = 0 };
+		}
+
 		protected void OnNewReceptor(object sender, ReceptorEventArgs e)
 		{
 			// int hw = ctrl.ClientRectangle.Width / 2;
@@ -599,6 +698,8 @@ namespace TypeSystemExplorer.Views
 			if (!e.Receptor.Instance.IsHidden)
 			{
 				receptorLocation[e.Receptor] = p;
+				CreateReceptorConnections();
+				RecalcMembranes();
 				Invalidate(true);
 			}
 		}
@@ -639,6 +740,9 @@ namespace TypeSystemExplorer.Views
 			receptorLocation.Remove(e.Receptor);
 			carousels.Remove(e.Receptor);
 			carrierAnimations.RemoveAll(a => a.Target == e.Receptor.Instance);
+			CreateReceptorConnections();
+			RecalcMembranes();
+			Invalidate(true);
 		}
 
 		protected void MouseDownEvent(object sender, MouseEventArgs args)
@@ -647,13 +751,43 @@ namespace TypeSystemExplorer.Views
 			{
 				CheckPlayPauseButtons(args.Location);
 
-				var selectedReceptors = receptorLocation.Where(kvp => (new Rectangle(Point.Subtract(kvp.Value, ReceptorHalfSize), ReceptorSize)).Contains(args.Location));
+				var selectedReceptors = receptorLocation.Where(kvp => CircleToBoundingRectangle(kvp.Value, ReceptorSize.Width/2).Contains(args.Location));
 
 				if (selectedReceptors.Count() > 0)
 				{
 					selectedReceptor = selectedReceptors.First().Key;
-					moving = true;
+					movingReceptor = true;
 					mouseStart = args.Location;
+
+					// Setup for vertical shake test.
+					shakeStart = DateTime.Now;
+					shakeCurrentDirection = 0;
+					shakeCount = 0;
+					shakeOK = true;
+				}
+				else
+				{
+					var selectedMembranes = membraneLocation.Where(kvp => CircleToBoundingRectangle(kvp.Value.Center, 10).Contains(args.Location));
+
+					if (selectedMembranes.Count() > 0)
+					{
+						// Setup for horizontal shake test.
+						shakeStart = DateTime.Now;
+						shakeCurrentDirection = 0;
+						shakeCount = 0;
+						shakeOK = true;
+
+						selectedMembrane = selectedMembranes.First().Key;
+						movingMembrane = true;
+						mouseStart = args.Location;
+					}
+					else
+					{
+						selectedReceptor = null;
+						rubberBand = true;
+						mouseStart = args.Location;
+						mousePosition = args.Location;
+					}
 				}
 			}
 		}
@@ -675,34 +809,262 @@ namespace TypeSystemExplorer.Views
 
 		protected void MouseUpEvent(object sender, MouseEventArgs args)
 		{
-			moving = false;
-
-			if ((selectedReceptor != null) && (!ClientRectangle.Contains(args.Location)) )
+			if (movingReceptor)
 			{
-				// Remove the receptor.
-				Program.Receptors.Remove(selectedReceptor);
+				movingReceptor = false;
 
-				// Cleaning up our collections will happen when the ReceptorRemoved event fires.
+				if ((selectedReceptor != null) && (!ClientRectangle.Contains(args.Location)))
+				{
+					// Remove the receptor completely from the surface.
+					GetReceptorMembrane(selectedReceptor).Remove(selectedReceptor);
+					// Cleaning up our collections will happen when the ReceptorRemoved event fires.
+				}
+				else
+				{
+					// If the final position for the receptor is in a different membrane, move the receptor there.
+					Membrane sourceMembrane = GetReceptorMembrane(selectedReceptor);
+					Membrane destMembrane = (Membrane)GetMembraneAt(args.Location);
+
+					if (sourceMembrane != destMembrane)
+					{
+						sourceMembrane.MoveReceptorToMembrane(selectedReceptor, destMembrane);
+						CreateReceptorConnections(); 
+						RecalcMembranes();
+						Invalidate(true);
+					}
+				}
+
+				selectedReceptor = null;
 			}
+			else if (movingMembrane)
+			{
+				movingMembrane = false;
+				selectedMembrane = null;
+			}
+			else if (rubberBand)
+			{
+				// Gather and contained receptors into a membrane.
+				// mouseStart and mousePosition define the rectangle.
+				rubberBand = false;
 
-			selectedReceptor = null;
+				// The containing rectangle.
+				Rectangle r = Rectangle.FromLTRB(Math.Min(mouseStart.X, mousePosition.X), Math.Min(mouseStart.Y, mousePosition.Y), Math.Max(mouseStart.X, mousePosition.X), Math.Max(mouseStart.Y, mousePosition.Y));
+
+				// Get receptors inside the rectangle, ignoring any hidden receptors--a defensive measure if we ever decide to show the system receptor.
+				List<IReceptor> receptors = receptorLocation.Where(kvp => r.Contains(kvp.Value) && !kvp.Key.Instance.IsHidden).Select(kvp => kvp.Key).ToList();
+
+				// Do we have any?
+				if (receptors.Count() > 0)
+				{
+					// Verify that they are all currently contained within a single membrane.
+					// The Skin membrane will return all the membranes containing this list of receptors.
+					List<Membrane> membranes = Program.Skin.GetMembranesContaining(receptors);
+
+					if (membranes.Count == 1)
+					{
+						Membrane membrane = membranes[0];
+						Membrane innerMembrane = membrane.CreateInnerMembrane();
+						membrane.MoveReceptorsToMembrane(receptors, innerMembrane);
+						CreateReceptorConnections();
+						RecalcMembranes();
+					}
+					else
+					{
+						// Not supported?
+					}
+
+				}
+
+				Invalidate(true);
+			}
 		}
 
 		protected void MouseMoveEvent(object sender, MouseEventArgs args)
 		{
 			mousePosition = args.Location;
 
-			if (moving)
+			if (movingReceptor)
 			{
 				base.OnMouseMove(args);
 				Point offset = Point.Subtract(args.Location, new Size(mouseStart));
-				Point curPos = receptorLocation[selectedReceptor];
-				receptorLocation[selectedReceptor] = Point.Add(curPos, new Size(offset));
-				mouseStart = args.Location;
+
+				// If vertically shook, the receptor will move to the parent membrane.
+				if (shakeOK && VerticalShakeTest(offset))
+				{
+					shakeOK = false;			// User must release and start again.
+					// Receptors always belong to membranes.
+					Membrane m = GetReceptorMembrane(selectedReceptor);
+
+					// And the membrane has a parent (not skin)...
+					if (m.ParentMembrane != null)
+					{
+						// Move the receptor to the parent membrane.
+						m.MoveReceptorToMembrane(selectedReceptor, m.ParentMembrane);
+						Point curPos = receptorLocation[selectedReceptor];
+						receptorLocation[selectedReceptor] = Point.Add(curPos, new Size(offset));
+						mouseStart = args.Location;
+						CreateReceptorConnections();
+						RecalcMembranes();
+						Invalidate(true);
+					}
+				}
+				else
+				{
+					Point curPos = receptorLocation[selectedReceptor];
+					receptorLocation[selectedReceptor] = Point.Add(curPos, new Size(offset));
+					mouseStart = args.Location;
+					CreateReceptorConnections();
+					RecalcMembranes();
+					Invalidate(true);
+				}
+			}
+			else if (movingMembrane)
+			{
+				base.OnMouseMove(args);
+				Point offset = Point.Subtract(args.Location, new Size(mouseStart));
+
+				// If horizontally shook, the mebrane will disolve.
+				if (shakeOK && HorizontalShakeTest(offset))
+				{
+					shakeOK = false;			// User must release and start again.
+					selectedMembrane.Dissolve();
+					CreateReceptorConnections();
+					RecalcMembranes();
+					Invalidate(true);
+				}
+				else
+				{
+					// To move the membrane, we actually move each receptor inside the membrane.
+					// Move receptors in this membrane and all inner membranes.
+					MoveReceptors(selectedMembrane, offset);
+					mouseStart = args.Location;
+					CreateReceptorConnections();
+					RecalcMembranes();
+					Invalidate(true);
+				}
+			}
+			else if (rubberBand)
+			{
+				// Redraw the rubberband rectangle.
 				Invalidate(true);
 			}
 
 			mouseHoverStartTime = DateTime.Now;
+		}
+
+		protected void MoveReceptors(IMembrane m, Point offset)
+		{
+			m.Receptors.ForEach(r =>
+			{
+				// System receptors aren't moved.  Their hidden.
+				if (!r.Instance.IsHidden)
+				{
+					Point curPos = receptorLocation[r];
+					receptorLocation[r] = Point.Add(curPos, new Size(offset));
+				}
+			});
+
+			((Membrane)m).Membranes.ForEach(inner => MoveReceptors(inner, offset));
+		}
+
+		protected bool HorizontalShakeTest(Point offset)
+		{
+			bool ret = false;
+			TimeSpan ts = DateTime.Now - shakeStart;
+
+			// Test only if dx is > dy
+			if (Math.Abs(offset.X) > Math.Abs(offset.Y))
+			{
+				// If no movement for 1/2 second, then reset.
+				if ((offset.X == 0) && ts.TotalMilliseconds > 500)
+				{
+					shakeStart = DateTime.Now;
+					shakeCount = 0;
+					shakeCurrentDirection = 0;
+				}
+				else
+				{
+					// Or moving in the same direction, reset again.
+					if (Math.Sign(offset.X) == Math.Sign(shakeCurrentDirection) && ts.TotalMilliseconds > 500)
+					{
+						shakeStart = DateTime.Now;
+						shakeCount = 0;
+						shakeCurrentDirection = offset.X;
+					}
+					else if (Math.Sign(offset.X) != Math.Sign(shakeCurrentDirection) && ts.TotalMilliseconds < 500)
+					{
+						// Changing direction in under 500ms.  Increment the shake counter and reset the timer.
+						shakeStart = DateTime.Now;
+						++shakeCount;
+						shakeCurrentDirection = offset.X;
+
+						if (shakeCount >= 10)
+						{
+							// Success.  We have detected left-right shaking.
+							ret = true;
+						}
+					}
+					else if (ts.TotalMilliseconds > 500)
+					{
+						// Same direction for more than 500ms, so reset again.
+						shakeStart = DateTime.Now;
+						shakeCount = 0;
+						shakeCurrentDirection = offset.X;
+					}
+				}
+			}
+
+			return ret;
+		}
+
+		protected bool VerticalShakeTest(Point offset)
+		{
+			bool ret = false;
+			TimeSpan ts = DateTime.Now - shakeStart;
+
+			// Test only if dy > dx
+			if (Math.Abs(offset.Y) > Math.Abs(offset.X))
+			{
+				// If no movement for 1/2 second, then reset.
+				if ((offset.Y == 0) && ts.TotalMilliseconds > 500)
+				{
+					shakeStart = DateTime.Now;
+					shakeCount = 0;
+					shakeCurrentDirection = 0;
+				}
+				else
+				{
+					// Or moving in the same direction, reset again.
+					if (Math.Sign(offset.Y) == Math.Sign(shakeCurrentDirection) && ts.TotalMilliseconds > 500)
+					{
+						shakeStart = DateTime.Now;
+						shakeCount = 0;
+						shakeCurrentDirection = offset.Y;
+					}
+					else if (Math.Sign(offset.Y) != Math.Sign(shakeCurrentDirection) && ts.TotalMilliseconds < 500)
+					{
+						// Changing direction in under 500ms.  Increment the shake counter and reset the timer.
+						shakeStart = DateTime.Now;
+						++shakeCount;
+						shakeCurrentDirection = offset.Y;
+
+						if (shakeCount >= 10)
+						{
+							// Success.  We have detected left-right shaking.
+							ret = true;
+						}
+					}
+					else if (ts.TotalMilliseconds > 500)
+					{
+						// Same direction for more than 500ms, so reset again.
+						shakeStart = DateTime.Now;
+						shakeCount = 0;
+						shakeCurrentDirection = offset.Y;
+					}
+				}
+			}
+
+			return ret;
 		}
 
 		protected void MouseEnterEvent(object sender, EventArgs args)
@@ -755,7 +1117,9 @@ namespace TypeSystemExplorer.Views
 			bool match = false;
 
 			// Get the carousel state for the carousel with the active image that the user clicked on.
-			CarouselState cstate = carousels.FirstOrDefault(kvp => kvp.Value.ActiveImageLocation.Contains(p)).Value;
+			var carousel = carousels.FirstOrDefault(kvp => kvp.Value.ActiveImageLocation.Contains(p));
+			IReceptor r = carousel.Key;
+			CarouselState cstate = carousel.Value;
 
 			// If this is actually a carousel image:
 			if (cstate != null)
@@ -764,7 +1128,9 @@ namespace TypeSystemExplorer.Views
 				ISemanticTypeStruct protocol = Program.SemanticTypeSystem.GetSemanticTypeStruct("ViewImage");
 				dynamic signal = Program.SemanticTypeSystem.Create("ViewImage");
 				signal.ImageFilename.Filename = imageFile.Surrounding("-thumbnail");
-				Program.Receptors.CreateCarrier(null, protocol, signal);
+
+				IMembrane m = Program.Skin.GetMembraneContaining(r);
+				m.CreateCarrier(r.Instance, protocol, signal);
 				match = true;
 			}
 
@@ -803,7 +1169,8 @@ namespace TypeSystemExplorer.Views
 									ISemanticTypeStruct protocol = Program.SemanticTypeSystem.GetSemanticTypeStruct(meta.PropertyName);
 									dynamic signal = Program.SemanticTypeSystem.Create(meta.PropertyName);
 									protocol.AllTypes.Single(e => e.Name == implementingPropertyName).SetValue(Program.SemanticTypeSystem, signal, meta.Value);
-									Program.Receptors.CreateCarrier(null, protocol, signal);
+									IReceptor r = kvp.Key;
+									GetReceptorMembrane(r).CreateCarrier(r.Instance, protocol, signal);
 										
 									// Ugh, I hate doing this, but it's a lot easier to just exit all these nests.
 									return true;
@@ -814,7 +1181,8 @@ namespace TypeSystemExplorer.Views
 									ISemanticTypeStruct protocol = Program.SemanticTypeSystem.GetSemanticTypeStruct(meta.ProtocolName);
 									dynamic signal = Program.SemanticTypeSystem.Create(meta.ProtocolName);
 									sts.GetSemanticTypeStruct(meta.ProtocolName).NativeTypes.Single(st => st.Name == meta.PropertyName).SetValue(Program.SemanticTypeSystem, signal, meta.Value);
-									Program.Receptors.CreateCarrier(null, protocol, signal);
+									IReceptor r = kvp.Key;
+									GetReceptorMembrane(r).CreateCarrier(r.Instance, protocol, signal);
 
 									// Ugh, I hate doing this, but it's a lot easier to just exit all these nests.
 									return true;
@@ -885,6 +1253,152 @@ namespace TypeSystemExplorer.Views
 			}
 		}
 
+		/// <summary>
+		/// Create the connections between receptors.
+		/// </summary>
+		protected void CreateReceptorConnections()
+		{
+			receptorConnections = new List<Line>();
+
+			// Iterate through all receptors.
+			receptorLocation.ForEach(kvp1 =>
+				{
+					Membrane m1 = GetReceptorMembrane(kvp1.Key);
+					// Iterate through receptors with a second search.
+					receptorLocation.ForEach(kvp2 =>
+						{
+							Membrane m2 = GetReceptorMembrane(kvp2.Key);
+
+							// Receptors must be in the same membrane.
+							if (m1 == m2)
+							{
+								// Get all the receive protocols of kvp1
+								kvp1.Key.Instance.GetReceiveProtocols().ForEach(prot1 =>
+									{
+										// If any match the emitted protocols of kvp2...
+										if (kvp2.Key.Instance.GetEmittedProtocols().Contains(prot1))
+										{
+											// Then these two receptors are connected.
+											receptorConnections.Add(new Line() { P1 = kvp1.Value, P2 = kvp2.Value });
+										}
+									});
+							}
+						});
+				});
+		}
+
+		/// <summary>
+		/// Return the membrane containing the receptor.
+		/// </summary>
+		protected Membrane GetReceptorMembrane(IReceptor r)
+		{
+			// Receptors always belong to membranes, and a receptor can never belong to more than one membrane.
+			Membrane m = (Membrane)membraneLocation.Keys.Where(mTest => mTest.Receptors.Contains(r)).SingleOrDefault();
+
+			if (m == null)
+			{
+				// TODO: Fix this so that the skin membrane is in the membrane location?
+				m = Program.Skin;
+			}
+
+			return m;
+		}
+
+		protected void GetCenter(Membrane m, ref int cx, ref int cy, ref int count)
+		{
+			// Can't use ref'd variables in lambda expressions.
+			foreach (IReceptor r in m.Receptors)
+			{
+				// System receptors are hidden.
+				if (!r.Instance.IsHidden)
+				{
+					if (!receptorLocation.ContainsKey(r))
+					{
+						System.Diagnostics.Debugger.Break();
+					}
+
+					Point p = receptorLocation[r];
+					cx += p.X;
+					cy += p.Y;
+					++count;
+				}
+
+				foreach (Membrane inner in m.Membranes)
+				{
+					GetCenter(inner, ref cx, ref cy, ref count);
+				}
+			}
+		}
+
+		protected void GetMaxRadius(Membrane m, int cx, int cy, ref double radius)
+		{
+			foreach(Receptor r in m.Receptors)
+			{
+				// System receptors are hidden.
+				if (!r.Instance.IsHidden)
+				{
+					Point p = receptorLocation[r];
+					double dx = p.X - cx;
+					double dy = p.Y - cy;
+					double dist = Math.Sqrt(dx * dx + dy * dy);
+
+					if (dist > radius)
+					{
+						radius = dist;
+					}
+				}
+
+				foreach (Membrane inner in m.Membranes)
+				{
+					GetMaxRadius(inner, cx, cy, ref radius);
+				}
+			}
+		}
+
+		protected void RecalcMembranes()
+		{
+			if (showMembranes)
+			{
+				List<IMembrane> toRemove = new List<IMembrane>();
+				Dictionary<IMembrane, Circle> updates = new Dictionary<IMembrane, Circle>();
+
+				// Get the center of all receptors within a membrane.
+				// Can't use ref'd variables in lambda expressions.
+				foreach(Membrane m in membraneLocation.Keys)
+				{
+					// Membrane must have receptors and can't be the root (skin) membrane.
+					if ((m.Receptors.Count > 0) && (m.ParentMembrane != null))
+					{
+						int cx = 0, cy = 0, count = 0;
+
+						// Much easier than using aggregate with Point structures.
+						// Recurse into inner membranes as well.
+						GetCenter(m, ref cx, ref cy, ref count);
+
+						cx /= count;
+						cy /= count;
+
+						// Get radius by finding the most distant receptor.
+						double radius = 0;
+						GetMaxRadius(m, cx, cy, ref radius);
+
+						// Add a factor to the radius
+						radius += 50;
+
+						// Can't even modify the value of a collection being iterated!
+						updates[m] = new Circle() { Center = new Point(cx, cy), Radius = (int)radius };
+					}
+					else
+					{
+						toRemove.Add(m);
+					}
+				}
+
+				toRemove.ForEach(m => membraneLocation.Remove(m));
+				updates.ForEach(kvp => membraneLocation[kvp.Key] = kvp.Value);
+			}
+		}
+
 		protected void OnVisualizerPaint(object sender, PaintEventArgs e)
 		{
 			try
@@ -892,10 +1406,58 @@ namespace TypeSystemExplorer.Views
 				Control ctrl = (Control)sender;
 
 				e.Graphics.FillRectangle(blackBrush, new Rectangle(Location, Size));
-				e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+				e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+				e.Graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+				if (showMembranes)
+				{
+					// Membranes are first
+					membraneLocation.Values.ForEach(m =>
+					{
+						// Draw the surrounding membrane.
+						GraphicsPath gp = new GraphicsPath();
+						Rectangle r = CircleToBoundingRectangle(m.Center, m.Radius);
+						r.Inflate(-20, -20);
+						gp.AddEllipse(r);
+						r.Inflate(20, 20);
+						gp.AddEllipse(r);
+						PathGradientBrush pgb = new PathGradientBrush(gp);
+						// Read about blending here: http://msdn.microsoft.com/en-us/library/system.drawing.drawing2d.blend.aspx
+						Blend b = new Blend();
+						b.Factors = new float[] { 0, 1, 1 };
+						b.Positions = new float[] { 0, .1f, 1 };
+						pgb.Blend = b;
+						// pgb.CenterPoint = m.Center;
+						pgb.CenterColor = Color.Black;
+						pgb.SurroundColors = new Color[] { Color.LightSlateGray };
+						e.Graphics.FillPath(pgb, gp);
+						pgb.Dispose();
+						gp.Dispose();
+
+						// Draw a nub at the center of the membrane.
+						gp = new GraphicsPath();
+						r = CircleToBoundingRectangle(m.Center, 10);
+						gp.AddEllipse(r);
+						pgb = new PathGradientBrush(gp);
+						pgb.CenterPoint = m.Center;
+						pgb.CenterColor = Color.LightSlateGray;
+						pgb.SurroundColors = new Color[] { Color.Black };
+						e.Graphics.FillPath(pgb, gp);
+						pgb.Dispose();
+						gp.Dispose();
+
+
+					});
+				}
 
 				e.Graphics.DrawImage(playButton, playButtonRect);
 				e.Graphics.DrawImage(pauseButton, pauseButtonRect);
+
+				// Draw connecting lines first, everything else is overlayed on top.
+				receptorConnections.ForEach(line =>
+				{
+					e.Graphics.DrawLine(receptorLineColor, line.P1, line.P2);
+				});
 
 				receptorLocation.ForEach(kvp =>
 					{
@@ -980,7 +1542,178 @@ namespace TypeSystemExplorer.Views
 
 						e.Graphics.DrawLines(penColors[3], triangle);
 					});
+// Rework Idea:
+/*
+				carousels.ForEach(kvp =>
+				{
+					Point p = receptorLocation[kvp.Key];
+					int imagesCount = kvp.Value.Images.Count;
+					int offset = kvp.Value.Offset;
+					int idx0 = 0;
+					//int sizeZ = 40;
+					//int idxReal = 0;
+					Image img = null;
+					//Point ip;
+					//double theta = 0;
+					//double dx = 0;
+					//double dy = 0;
 
+					// The images in the carousel should range from (relative to the receptor center):
+					// -80 ... +80  (see sizeZ, which is set to 160.)
+					// of course, on the left of the center image, this needs to be the right-edge position.
+					// and on the right of the cemter image, this needs to be the left-edge position.
+					// It would be easier to work with the center of the images on the carousel, which
+					// should be some % of the center width (160), decreasing as we move up the carousel, 
+					// to provide a 3D effect.
+					// If we assume an image width of 160 for the two edge images, then our offsets from center
+					// will be +/- 160.
+					// We can therefore compute the starting and ending angles assuming a maximum height of 100
+					// angle = acos(160/100)
+					// Of course, these angles need to be adjusted because the are in the 3rd and 4th quadrants:
+					// (in degrees):
+					//     starting angle = 270 - startangle
+					//     ending angle = 270 + startangle
+					// and we iterate from starting angle backwards to the ending angle.
+					// steps = (starting angle + (360 - ending angle)) / num images
+
+					double deg270 = 2 * Math.PI * 3 / 4;
+					double angle = Math.Atan(100 / 160);
+					double startingAngle = deg270 - angle;
+					double endingAngle = deg270 + angle;
+					double range = startingAngle + 2 * Math.PI - endingAngle;
+					double step = range / imagesCount;
+					double imageSizeStep = Math.PI / imagesCount;			// 0 to 180 degrees
+
+					kvp.Value.Images.ForEachWithIndex((imeta, idx) =>
+					{
+						Point ip = p;
+						int idxReal = Math.Abs((idx + offset) % imagesCount);
+						img = kvp.Value.Images[idxReal].Image;
+						double theta = startingAngle - step * idx;
+						double dx = 160 * Math.Cos(theta);
+						double dy = -100 * Math.Sin(theta);
+						ip.Offset((int)dx, (int)dy);
+
+						if (idxReal == 0)
+						{
+							// This is the "selected" image.
+							// We also don't want to display this image in the carousel, otherwise it appears twice.
+							idx0 = idx;
+						}
+						else
+						{
+							// from nearly full width as we go around the arc to where we have the smallest width at the top of the arc, then back again.
+							int sizeZ = (int)((160 - 10) * (1.0 - (0.25 + Math.Sin(imageSizeStep * idx) * 3 / 4)));
+							Rectangle rect = new Rectangle(new Point(ip.X - sizeZ/2 , ip.Y), new Size(sizeZ, sizeZ * img.Height / img.Width));
+							e.Graphics.DrawImage(img, rect);
+							e.Graphics.DrawString(idx.ToString(), font, whiteBrush, rect);
+						}
+					});
+
+					// Draw idx0 last so it appears on top.
+					// The image is centered below the receptor.
+					//idxReal = (idx0 + offset) % imagesCount;
+					//ip = p;
+					//theta = (Math.PI * 0.56) + 2 * Math.PI * idxReal / imagesCount;
+					//dx = 200 * Math.Cos(theta);
+					//dy = 100 * Math.Sin(theta);
+					//ip.Offset((int)dx, (int)dy);
+					img = kvp.Value.Images[idx0].Image;
+					//sizeZ = 160; //  (idxReal == 0) ? 160 : 10;
+					//var posY = ip.Y + 20;
+					//var posX = ip.X - 40; 
+
+					int sizeZ2 = 160;
+					Point rp = receptorLocation[kvp.Key];
+					rp.Offset(-sizeZ2 / 2, 172);
+
+					Rectangle location = new Rectangle(rp, new Size(sizeZ2, sizeZ2 * img.Height / img.Width));
+					e.Graphics.DrawImage(img, location);
+					kvp.Value.ActiveImageFilename = img.Tag.ToString();
+					kvp.Value.ActiveImageLocation = location;
+					kvp.Value.ActiveImageIndex = idx0;
+
+					int y = location.Bottom + 10;
+
+					kvp.Value.Images[idx0].MetadataPackets.ForEach(meta =>
+					{
+						Rectangle region = new Rectangle(location.X, y, location.Width, MetadataHeight);
+						string data = meta.Name + ": " + meta.Value;
+						e.Graphics.DrawString(data, font, whiteBrush, region);
+						y += MetadataHeight;
+					});
+				});
+*/
+
+#if VIVEK
+				carousels.ForEach(kvp =>
+				{
+					Point p = receptorLocation[kvp.Key];
+					int imagesCount = kvp.Value.Images.Count;
+					int offset = kvp.Value.Offset;
+					int idx0 = 0;
+					int sizeZ = 40;
+					int idxReal = 0;
+					Image img = null;
+					Point ip;
+					double theta = 0;
+					double dx = 0;
+					double dy = 0;
+
+					kvp.Value.Images.ForEachWithIndex((imeta, idx) =>
+					{
+						img = imeta.Image;
+						ip = p;
+						idxReal = (idx + offset) % imagesCount;
+						theta = (Math.PI * 0.43) + 2 * Math.PI * idxReal / imagesCount;
+						dx = 200 * Math.Cos(theta);
+						dy = 100 * Math.Sin(theta);
+						ip.Offset((int)dx, (int)dy);
+
+						if (idxReal == 0)
+						{
+							idx0 = idx;
+						}
+						else
+						{
+							sizeZ += (90 / imagesCount);
+
+							//e.Graphics.FillRectangle(new SolidBrush(Color.Yellow), ip.X-20, ip.Y-30, 5, 5); //markers
+							if (imagesCount < 10)
+								sizeZ = 75;
+
+							e.Graphics.DrawImage(img, new Rectangle(new Point(ip.X - 20, ip.Y - 30 * img.Width / img.Height), new Size(sizeZ, sizeZ * img.Height / img.Width)));
+						}
+
+					});
+
+					img = kvp.Value.Images[idx0].Image;
+					int sizeZ2 = 160;
+					Point rp = receptorLocation[kvp.Key];
+					rp.Offset(-sizeZ2 / 2, 100);		// 100 is some arbitrary vertical offset for testing.
+					Rectangle location = new Rectangle(rp, new Size(sizeZ2, sizeZ2 * img.Height / img.Width));
+					e.Graphics.DrawImage(img, location);
+
+					kvp.Value.ActiveImageFilename = img.Tag.ToString();
+					kvp.Value.ActiveImageLocation = location;
+					kvp.Value.ActiveImageIndex = idx0;
+
+					int y = location.Bottom + 10;
+
+					// We use ForEachWithIndex to ensure the same ordering as when the user double-clicks on the metadata.
+					kvp.Value.Images[idx0].MetadataPackets.ForEachWithIndex((meta, idx) =>
+					{
+						Rectangle region = new Rectangle(location.X, y, location.Width, MetadataHeight);
+						string data = meta.Name + ": " + meta.Value;
+						e.Graphics.DrawString(data, font, whiteBrush, region);
+						y += MetadataHeight;
+					});
+
+				});
+
+#endif
+// Decent.
+#if MINE
 				carousels.ForEach(kvp =>
 					{
 						Point p = receptorLocation[kvp.Key];
@@ -994,10 +1727,10 @@ namespace TypeSystemExplorer.Views
 							Image img = imeta.Image;
 							int idxReal = (idx + offset) % images;
 							Point ip = p;
-							double dx = 100 * Math.Cos((2 * Math.PI * 1 / 4) + 2 * Math.PI * idxReal / images);
+							double dx = 200 * Math.Cos((2 * Math.PI * 1 / 4) + 2 * Math.PI * idxReal / images);
 							double dy = 100 * Math.Sin((2 * Math.PI * 1 / 4) + 2 * Math.PI * idxReal / images);
 							ip.Offset((int)dx, (int)dy);
-							int sizer = (idxReal == 0) ? 150 : 100;
+							int sizer = (int)(100 * (0.25 + ((1.0 + Math.Sin((2 * Math.PI * 1 / 4) + 2 * Math.PI * idxReal / images) / 2) * 3 / 4)));
 
 							if (idxReal == 0)
 							{
@@ -1036,11 +1769,23 @@ namespace TypeSystemExplorer.Views
 								});
 						}
 					});
+#endif  
+
+				if (rubberBand)
+				{
+					Rectangle r = Rectangle.FromLTRB(Math.Min(mouseStart.X, mousePosition.X), Math.Min(mouseStart.Y, mousePosition.Y), Math.Max(mouseStart.X, mousePosition.X), Math.Max(mouseStart.Y, mousePosition.Y));
+					e.Graphics.DrawRectangle(whitePen, r);
+				}
 			}
 			catch (Exception ex)
 			{
 				System.Diagnostics.Debugger.Break();
 			}
+		}
+
+		protected Rectangle CircleToBoundingRectangle(Point ctr, int radius)
+		{
+			return new Rectangle(ctr.X - radius, ctr.Y - radius, radius * 2, radius * 2);
 		}
 	}
 }

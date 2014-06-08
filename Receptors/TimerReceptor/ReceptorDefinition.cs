@@ -22,6 +22,12 @@ namespace TimerReceptor
 		public bool Running { get { return running; } }
 		public bool PreExisting { get; set; }
 
+		public IReceptorSystem ReceptorSystem
+		{
+			get { return rsys; }
+			set { rsys = value; }
+		}
+
 		protected IReceptorSystem rsys;
 		protected IReceptorInstance receptor;
 
@@ -212,6 +218,12 @@ namespace TimerReceptor
 		public bool IsEdgeReceptor { get { return false; } }
 		public bool IsHidden { get { return false; } }
 
+		public IReceptorSystem ReceptorSystem
+		{
+			get { return rsys; }
+			set { rsys = value; }
+		}
+
 		protected IReceptorSystem rsys;
 		protected Dictionary<string, Action<dynamic>> protocolActionMap;
 		protected bool ready;
@@ -232,6 +244,11 @@ namespace TimerReceptor
 		public string[] GetReceiveProtocols()
 		{
 			return protocolActionMap.Keys.ToArray();
+		}
+
+		public string[] GetEmittedProtocols()
+		{
+			return new string[] { "RequireTable", "DatabaseRecord" };
 		}
 
 		/// <summary>

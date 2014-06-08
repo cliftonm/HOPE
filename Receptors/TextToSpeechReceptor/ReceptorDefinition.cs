@@ -17,6 +17,12 @@ namespace TextToSpeech
 		public bool IsEdgeReceptor { get { return true; } }
 		public bool IsHidden { get { return false; } }
 
+		public IReceptorSystem ReceptorSystem
+		{
+			get { return rsys; }
+			set { rsys = value; }
+		}
+
 		protected SpeechSynthesizer speechSynth;
 		protected Queue<string> speechQueue;
 		protected IReceptorSystem rsys;
@@ -34,6 +40,11 @@ namespace TextToSpeech
 		public string[] GetReceiveProtocols()
 		{
 			return new string[] { "TextToSpeech", "Text"};
+		}
+
+		public string[] GetEmittedProtocols()
+		{
+			return new string[] { };
 		}
 
 		public void Initialize()

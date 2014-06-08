@@ -124,9 +124,3 @@ namespace Clifton.SemanticTypeSystem
 	}
 }
 
-
-/*
-MethodInfo mi = _Assembly.EntryPoint;
-    object o = _Assembly.CreateInstance(mi.Name);
-    mi.Invoke( o, null);
-*/
