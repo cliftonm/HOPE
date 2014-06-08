@@ -137,6 +137,7 @@ namespace Clifton.Receptor
 		{
 			int processedCount = 0;
 			string receptorName;
+			List<Receptor> newReceptors = new List<Receptor>();
 
 			// TODO: Refactor out of this code.
 			Say("Loading receptors.");
@@ -157,22 +158,30 @@ namespace Clifton.Receptor
 					// Get the protocols that this receptor is receiving, updating the protocolReceptorMap, adding this
 					// receptor to the specified protocols.
 					GatherProtocolReceivers(r);
-
-					if (afterRegister != null)
-					{
-						afterRegister(r);
-					}
-
-					// Let interested parties know that we have a new receptor and handle how we want to announce the fact.
-					// TODO: Refactor the announcement out of this code.
-					NewReceptor.Fire(this, new ReceptorEventArgs(r));
-
-					// Let the receptor instance perform additional initialization, such as creating carriers.
-					r.Instance.Initialize();
+					newReceptors.Add(r);
 					++processedCount;
 					receptorName = r.Name;
 				}
 			}
+
+			// This order is important.  The visualizer needs to know all the receptors within this membrane AFTER
+			// the receptors have been instantiated.  Secondly, the receptors can't be initialized until the visualizer
+			// knows where they are.
+
+			// Let interested parties know that we have new receptors and handle how we want to announce the fact.
+			newReceptors.ForEach(r =>
+			{
+				if (afterRegister != null)
+				{
+					afterRegister(r);
+				}
+
+				NewReceptor.Fire(this, new ReceptorEventArgs(r));
+			});
+
+			// Let the receptor instance perform additional initialization, such as creating carriers.
+			newReceptors.ForEach(r => r.Instance.Initialize());
+
 
 			// Any queued carriers are now checked to determine whether receptors now exist to process their protocols.
 			ProcessQueuedCarriers();

@@ -321,7 +321,7 @@ namespace TypeSystemExplorer.Views
 		protected int shakeCount;
 		protected bool shakeOK;			// Used to stop further "pops".
 
-		protected Pen receptorLineColor = new Pen(Color.FromArgb(40, 40, 60));
+		protected Pen receptorLineColor = new Pen(Color.Cyan); // new Pen(Color.FromArgb(40, 40, 60));
 
 		public VisualizerView()
 		{
@@ -460,7 +460,7 @@ namespace TypeSystemExplorer.Views
 				ImageMetadata imeta = new ImageMetadata() { Image = image };
 				cstate.Images.Add(imeta);
 
-				GetImageMetadata(imeta);
+				GetImageMetadata(r, imeta);
 				Invalidate(true);
 			}
 			else
@@ -577,7 +577,7 @@ namespace TypeSystemExplorer.Views
 				});
 		}
 
-		protected void GetImageMetadata(ImageMetadata imeta)
+		protected void GetImageMetadata(IReceptor r, ImageMetadata imeta)
 		{
 			Image img = imeta.Image;
 			ISemanticTypeStruct protocol = Program.SemanticTypeSystem.GetSemanticTypeStruct("GetImageMetadata");
@@ -585,8 +585,7 @@ namespace TypeSystemExplorer.Views
 			// Remove any "-thumbnail" so we get the master image.
 			signal.ImageFilename.Filename = Path.GetFileName(img.Tag.ToString().Surrounding("-thumbnail"));
 			// signal.ResponseProtocol = "HaveImageMetadata";
-			// TODO: The carrier should be created inside the membrane associated with the viewer requesting the metadata.
-			Program.Skin.CreateCarrierIfReceiver(null, protocol, signal);
+			GetReceptorMembrane(r).CreateCarrierIfReceiver(r.Instance, protocol, signal);
 		}
 
 		protected void OnTimerTick(object sender, EventArgs e)
@@ -817,10 +816,22 @@ namespace TypeSystemExplorer.Views
 				if ((selectedReceptor != null) && (!ClientRectangle.Contains(args.Location)))
 				{
 					// Remove the receptor completely from the surface.
-					// TODO: Remove the receptor from the appropriate membrane.
 					GetReceptorMembrane(selectedReceptor).Remove(selectedReceptor);
-
 					// Cleaning up our collections will happen when the ReceptorRemoved event fires.
+				}
+				else
+				{
+					// If the final position for the receptor is in a different membrane, move the receptor there.
+					Membrane sourceMembrane = GetReceptorMembrane(selectedReceptor);
+					Membrane destMembrane = (Membrane)GetMembraneAt(args.Location);
+
+					if (sourceMembrane != destMembrane)
+					{
+						sourceMembrane.MoveReceptorToMembrane(selectedReceptor, destMembrane);
+						CreateReceptorConnections(); 
+						RecalcMembranes();
+						Invalidate(true);
+					}
 				}
 
 				selectedReceptor = null;
@@ -854,6 +865,7 @@ namespace TypeSystemExplorer.Views
 						Membrane membrane = membranes[0];
 						Membrane innerMembrane = membrane.CreateInnerMembrane();
 						membrane.MoveReceptorsToMembrane(receptors, innerMembrane);
+						CreateReceptorConnections();
 						RecalcMembranes();
 					}
 					else
@@ -1157,8 +1169,8 @@ namespace TypeSystemExplorer.Views
 									ISemanticTypeStruct protocol = Program.SemanticTypeSystem.GetSemanticTypeStruct(meta.PropertyName);
 									dynamic signal = Program.SemanticTypeSystem.Create(meta.PropertyName);
 									protocol.AllTypes.Single(e => e.Name == implementingPropertyName).SetValue(Program.SemanticTypeSystem, signal, meta.Value);
-									// TODO: Create the metadata carrier in the membrane containing the thumbnail viewer.
-									Program.Skin.CreateCarrier(null, protocol, signal);
+									IReceptor r = kvp.Key;
+									GetReceptorMembrane(r).CreateCarrier(r.Instance, protocol, signal);
 										
 									// Ugh, I hate doing this, but it's a lot easier to just exit all these nests.
 									return true;
@@ -1169,8 +1181,8 @@ namespace TypeSystemExplorer.Views
 									ISemanticTypeStruct protocol = Program.SemanticTypeSystem.GetSemanticTypeStruct(meta.ProtocolName);
 									dynamic signal = Program.SemanticTypeSystem.Create(meta.ProtocolName);
 									sts.GetSemanticTypeStruct(meta.ProtocolName).NativeTypes.Single(st => st.Name == meta.PropertyName).SetValue(Program.SemanticTypeSystem, signal, meta.Value);
-									// TODO: Create the metadata carrier in the membrane containing the thumbnail viewer.
-									Program.Skin.CreateCarrier(null, protocol, signal);
+									IReceptor r = kvp.Key;
+									GetReceptorMembrane(r).CreateCarrier(r.Instance, protocol, signal);
 
 									// Ugh, I hate doing this, but it's a lot easier to just exit all these nests.
 									return true;

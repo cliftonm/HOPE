@@ -686,17 +686,8 @@ namespace TypeSystemExplorer.Controllers
 					r.Enabled = n.Enabled;
 				});
 
-
-			membraneDef.Membranes.ForEach(innerMembraneDef => 
-				{
-					Membrane innerMembrane = membrane.CreateInnerMembrane();
-					// Handled now by the NewMembrane event handler.
-					// Each membrane needs a system receptor to handle, among other things, the carrier animation.
-					// innerMembrane.RegisterReceptor("System", this);
-					DeserializeMembranes(innerMembraneDef, innerMembrane);	
-				});
-
 			// After registration, but before the NewReceptor fire event, set the drop point.
+			// Load all the receptors defined in this membrane first.
 			membrane.LoadReceptors((rec) =>
 			{
 				Point p;
@@ -713,6 +704,16 @@ namespace TypeSystemExplorer.Controllers
 						VisualizerController.View.ClientDropPoint = p;
 					}
 				}
+			});
+
+			// Next, load the inner membrane and receptors.
+			membraneDef.Membranes.ForEach(innerMembraneDef =>
+			{
+				Membrane innerMembrane = membrane.CreateInnerMembrane();
+				// Handled now by the NewMembrane event handler.
+				// Each membrane needs a system receptor to handle, among other things, the carrier animation.
+				// innerMembrane.RegisterReceptor("System", this);
+				DeserializeMembranes(innerMembraneDef, innerMembrane);
 			});
 		}
 

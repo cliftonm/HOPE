@@ -111,11 +111,13 @@ namespace TypeSystemExplorer.Controllers
 		// TODO: Duplicate code.
 		protected void Say(string msg)
 		{
+			/*
 			ISemanticTypeStruct protocol = Program.SemanticTypeSystem.GetSemanticTypeStruct("TextToSpeech");
 			dynamic signal = Program.SemanticTypeSystem.Create("TextToSpeech");
 			signal.Text = msg;
 			// TODO: Is this always the skin membrane?
 			Program.Skin.CreateCarrierIfReceiver(null, protocol, signal);
+			 */
 		}
 
 		public static void CreateCarriers(IMembrane dropInto, XElement el)

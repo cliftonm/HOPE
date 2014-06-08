@@ -36,7 +36,7 @@ namespace ThumbnailViewerReceptor
 
 		public string[] GetEmittedProtocols()
 		{
-			return new string[] { "SystemShowImage", "ViewImage" };
+			return new string[] { "SystemShowImage", "ViewImage", "GetImageMetadata" };
 		}
 
 		public void Initialize()
