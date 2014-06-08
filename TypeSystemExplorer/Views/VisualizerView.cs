@@ -1130,16 +1130,21 @@ namespace TypeSystemExplorer.Views
 		protected void MouseDoubleClickEvent(object sender, MouseEventArgs args)
 		{
 			Point p = args.Location;			// Mouse position
+			// view the active image?
+			// The selected image location is already adjusted for the surface offset.
 			bool match = TestCarouselActiveImageDoubleClick(p);
 
 			if (!match)
 			{
+				// Select image metadata?
+				// The selected image location is already adjusted for the surface offset.
 				match = TestImageMetadataDoubleClick(p);
 			}
 
 			if (!match)
 			{
-				match = TestReceptorDoubleClick(p);
+				// Enable/disable receptor?
+				match = TestReceptorDoubleClick(NegativeSurfaceOffsetAdjust(p));
 			}
 		}
 
@@ -1227,6 +1232,9 @@ namespace TypeSystemExplorer.Views
 			return false;
 		}
 
+		/// <summary>
+		/// Enable or disable the receptor being double-clicked.
+		/// </summary>
 		protected bool TestReceptorDoubleClick(Point p)
 		{
 			bool match = false;
