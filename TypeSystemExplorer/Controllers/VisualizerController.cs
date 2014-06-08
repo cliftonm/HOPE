@@ -50,7 +50,7 @@ namespace TypeSystemExplorer.Controllers
 		{
 			bool once = true;
 			bool receptorsRegistered = false;
-			View.DropPoint = new Point(args.X, args.Y);
+			View.DropPoint = View.NegativeSurfaceOffsetAdjust(new Point(args.X, args.Y));
 			View.StartDrop = true;
 			IMembrane dropInto = View.GetMembraneAt(View.DropPoint);
 

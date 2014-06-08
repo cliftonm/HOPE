@@ -235,6 +235,8 @@ namespace TypeSystemExplorer.Views
 		const int CarrierTime = 25; // 25 for 1 second delay.  50 for 2 second delay.
 		const int OrbitCountMax = 50;
 		const int MetadataHeight = 15;	// the row height for metadata text.
+		const int MembraneNumbRadius = 10;
+
 		protected Size ReceptorSize = new Size(40, 40);
 		protected Size ReceptorHalfSize = new Size(20, 20);
 		protected Point dropPoint;
@@ -302,8 +304,10 @@ namespace TypeSystemExplorer.Views
 		protected bool movingReceptor;
 		protected bool movingMembrane;
 		protected bool rubberBand;
+		protected bool dragSurface;
 		protected IReceptor selectedReceptor;
 		protected IMembrane selectedMembrane;
+		protected Point surfaceOffset = new Point(0, 0);
 		protected Point mouseStart;
 		protected Point mousePosition;
 		protected DateTime mouseHoverStartTime;
@@ -747,11 +751,13 @@ namespace TypeSystemExplorer.Views
 
 		protected void MouseDownEvent(object sender, MouseEventArgs args)
 		{
+			Point testPoint = NegativeSurfaceOffsetAdjust(args.Location);
+
 			if (args.Button == MouseButtons.Left)
 			{
 				CheckPlayPauseButtons(args.Location);
 
-				var selectedReceptors = receptorLocation.Where(kvp => CircleToBoundingRectangle(kvp.Value, ReceptorSize.Width/2).Contains(args.Location));
+				var selectedReceptors = receptorLocation.Where(kvp => CircleToBoundingRectangle(kvp.Value, ReceptorSize.Width/2).Contains(testPoint));
 
 				if (selectedReceptors.Count() > 0)
 				{
@@ -767,7 +773,7 @@ namespace TypeSystemExplorer.Views
 				}
 				else
 				{
-					var selectedMembranes = membraneLocation.Where(kvp => CircleToBoundingRectangle(kvp.Value.Center, 10).Contains(args.Location));
+					var selectedMembranes = membraneLocation.Where(kvp => CircleToBoundingRectangle(kvp.Value.Center, MembraneNumbRadius).Contains(testPoint));
 
 					if (selectedMembranes.Count() > 0)
 					{
@@ -790,6 +796,20 @@ namespace TypeSystemExplorer.Views
 					}
 				}
 			}
+			else if (args.Button == MouseButtons.Right)
+			{
+				// If no membrane is selected, move the entire surface.
+				var selectedMembranes = membraneLocation.Where(kvp => CircleToBoundingRectangle(SurfaceOffsetAdjust(kvp.Value.Center), MembraneNumbRadius).Contains(testPoint));
+
+				// Only move the surface if no membrane is selected.  
+				// TODO: Do we really need to do this?
+				if (selectedMembranes.Count() == 0)
+				{
+					dragSurface = true;
+					mouseStart = NegativeSurfaceOffsetAdjust(args.Location);
+					mousePosition = NegativeSurfaceOffsetAdjust(args.Location);
+				}
+			}
 		}
 
 		protected static Rectangle playButtonRect = new Rectangle(0, 0, 32, 32);
@@ -809,11 +829,14 @@ namespace TypeSystemExplorer.Views
 
 		protected void MouseUpEvent(object sender, MouseEventArgs args)
 		{
+			dragSurface = false;
+			Point testPoint = NegativeSurfaceOffsetAdjust(args.Location);
+
 			if (movingReceptor)
 			{
 				movingReceptor = false;
 
-				if ((selectedReceptor != null) && (!ClientRectangle.Contains(args.Location)))
+				if ((selectedReceptor != null) && (!ClientRectangle.Contains(testPoint)))
 				{
 					// Remove the receptor completely from the surface.
 					GetReceptorMembrane(selectedReceptor).Remove(selectedReceptor);
@@ -823,7 +846,7 @@ namespace TypeSystemExplorer.Views
 				{
 					// If the final position for the receptor is in a different membrane, move the receptor there.
 					Membrane sourceMembrane = GetReceptorMembrane(selectedReceptor);
-					Membrane destMembrane = (Membrane)GetMembraneAt(args.Location);
+					Membrane destMembrane = (Membrane)GetMembraneAt(testPoint);
 
 					if (sourceMembrane != destMembrane)
 					{
@@ -849,9 +872,10 @@ namespace TypeSystemExplorer.Views
 
 				// The containing rectangle.
 				Rectangle r = Rectangle.FromLTRB(Math.Min(mouseStart.X, mousePosition.X), Math.Min(mouseStart.Y, mousePosition.Y), Math.Max(mouseStart.X, mousePosition.X), Math.Max(mouseStart.Y, mousePosition.Y));
+				Rectangle testR = new Rectangle(NegativeSurfaceOffsetAdjust(r.Location), r.Size);
 
 				// Get receptors inside the rectangle, ignoring any hidden receptors--a defensive measure if we ever decide to show the system receptor.
-				List<IReceptor> receptors = receptorLocation.Where(kvp => r.Contains(kvp.Value) && !kvp.Key.Instance.IsHidden).Select(kvp => kvp.Key).ToList();
+				List<IReceptor> receptors = receptorLocation.Where(kvp => testR.Contains(kvp.Value) && !kvp.Key.Instance.IsHidden).Select(kvp => kvp.Key).ToList();
 
 				// Do we have any?
 				if (receptors.Count() > 0)
@@ -872,8 +896,8 @@ namespace TypeSystemExplorer.Views
 					{
 						// Not supported?
 					}
-
 				}
+				// else no receptors selected.
 
 				Invalidate(true);
 			}
@@ -946,6 +970,12 @@ namespace TypeSystemExplorer.Views
 			else if (rubberBand)
 			{
 				// Redraw the rubberband rectangle.
+				Invalidate(true);
+			}
+			else if (dragSurface)
+			{
+				base.OnMouseMove(args);
+				surfaceOffset = Point.Subtract(args.Location, new Size(mouseStart));
 				Invalidate(true);
 			}
 
@@ -1075,7 +1105,8 @@ namespace TypeSystemExplorer.Views
 
 		protected void MouseWheelEvent(object sender, MouseEventArgs args)
 		{
-			var hoverReceptors = receptorLocation.Where(kvp => (new Rectangle(Point.Subtract(kvp.Value, ReceptorHalfSize), ReceptorSize)).Contains(args.Location));
+			Point testPoint = NegativeSurfaceOffsetAdjust(args.Location);
+			var hoverReceptors = receptorLocation.Where(kvp => (new Rectangle(Point.Subtract(kvp.Value, ReceptorHalfSize), ReceptorSize)).Contains(testPoint));
 			IReceptor hoverReceptor = null;
 
 			if (hoverReceptors.Count() > 0)
@@ -1416,7 +1447,7 @@ namespace TypeSystemExplorer.Views
 					{
 						// Draw the surrounding membrane.
 						GraphicsPath gp = new GraphicsPath();
-						Rectangle r = CircleToBoundingRectangle(m.Center, m.Radius);
+						Rectangle r = CircleToBoundingRectangle(SurfaceOffsetAdjust(m.Center), m.Radius);
 						r.Inflate(-20, -20);
 						gp.AddEllipse(r);
 						r.Inflate(20, 20);
@@ -1436,10 +1467,10 @@ namespace TypeSystemExplorer.Views
 
 						// Draw a nub at the center of the membrane.
 						gp = new GraphicsPath();
-						r = CircleToBoundingRectangle(m.Center, 10);
+						r = CircleToBoundingRectangle(SurfaceOffsetAdjust(m.Center), MembraneNumbRadius);
 						gp.AddEllipse(r);
 						pgb = new PathGradientBrush(gp);
-						pgb.CenterPoint = m.Center;
+						pgb.CenterPoint = SurfaceOffsetAdjust(m.Center);
 						pgb.CenterColor = Color.LightSlateGray;
 						pgb.SurroundColors = new Color[] { Color.Black };
 						e.Graphics.FillPath(pgb, gp);
@@ -1456,14 +1487,15 @@ namespace TypeSystemExplorer.Views
 				// Draw connecting lines first, everything else is overlayed on top.
 				receptorConnections.ForEach(line =>
 				{
-					e.Graphics.DrawLine(receptorLineColor, line.P1, line.P2);
+					e.Graphics.DrawLine(receptorLineColor, SurfaceOffsetAdjust(line.P1), SurfaceOffsetAdjust(line.P2));
 				});
 
+				// Draw receptors.
 				receptorLocation.ForEach(kvp =>
 					{
 						// red for disabled receptors, green for enabled.
 						Pen pen = kvp.Key.Enabled ? penColors[1] : penColors[0];
-						Point p = kvp.Value;
+						Point p = SurfaceOffsetAdjust(kvp.Value);
 						p.Offset(-ReceptorSize.Width / 2, -ReceptorSize.Height / 2);
 						Point bottom = p;
 						bottom.Offset(0, ReceptorSize.Height);
@@ -1490,7 +1522,7 @@ namespace TypeSystemExplorer.Views
 
 				flyouts.ForEach(f =>
 					{
-						e.Graphics.DrawString(f.Text, font, whiteBrush, f.Location);
+						e.Graphics.DrawString(f.Text, font, whiteBrush, SurfaceOffsetAdjust(f.Location));
 					});
 
 				// Show carriers with targets.
@@ -1510,10 +1542,10 @@ namespace TypeSystemExplorer.Views
 
 						Point[] triangle = new Point[] 
 					{ 
-						new Point(a.StartPosition.X + idx, a.StartPosition.Y + idy), 
-						new Point(a.StartPosition.X + idx - 5, a.StartPosition.Y + idy + 5), 
-						new Point(a.StartPosition.X + idx + 5, a.StartPosition.Y + idy + 5),
-						new Point(a.StartPosition.X + idx, a.StartPosition.Y + idy), 
+						SurfaceOffsetAdjust(new Point(a.StartPosition.X + idx, a.StartPosition.Y + idy)), 
+						SurfaceOffsetAdjust(new Point(a.StartPosition.X + idx - 5, a.StartPosition.Y + idy + 5)), 
+						SurfaceOffsetAdjust(new Point(a.StartPosition.X + idx + 5, a.StartPosition.Y + idy + 5)),
+						SurfaceOffsetAdjust(new Point(a.StartPosition.X + idx, a.StartPosition.Y + idy)), 
 					};
 
 						e.Graphics.DrawLines(penColors[3], triangle);
@@ -1534,10 +1566,10 @@ namespace TypeSystemExplorer.Views
 
 						Point[] triangle = new Point[] 
 					{ 
-						new Point(a.StartPosition.X + idx, a.StartPosition.Y + idy), 
-						new Point(a.StartPosition.X + idx - 5, a.StartPosition.Y + idy + 5), 
-						new Point(a.StartPosition.X + idx + 5, a.StartPosition.Y + idy + 5),
-						new Point(a.StartPosition.X + idx, a.StartPosition.Y + idy), 
+						SurfaceOffsetAdjust(new Point(a.StartPosition.X + idx, a.StartPosition.Y + idy)), 
+						SurfaceOffsetAdjust(new Point(a.StartPosition.X + idx - 5, a.StartPosition.Y + idy + 5)), 
+						SurfaceOffsetAdjust(new Point(a.StartPosition.X + idx + 5, a.StartPosition.Y + idy + 5)),
+						SurfaceOffsetAdjust(new Point(a.StartPosition.X + idx, a.StartPosition.Y + idy)), 
 					};
 
 						e.Graphics.DrawLines(penColors[3], triangle);
@@ -1648,7 +1680,7 @@ namespace TypeSystemExplorer.Views
 #if VIVEK
 				carousels.ForEach(kvp =>
 				{
-					Point p = receptorLocation[kvp.Key];
+					Point p = SurfaceOffsetAdjust(receptorLocation[kvp.Key]);
 					int imagesCount = kvp.Value.Images.Count;
 					int offset = kvp.Value.Offset;
 					int idx0 = 0;
@@ -1689,7 +1721,7 @@ namespace TypeSystemExplorer.Views
 
 					img = kvp.Value.Images[idx0].Image;
 					int sizeZ2 = 160;
-					Point rp = receptorLocation[kvp.Key];
+					Point rp = SurfaceOffsetAdjust(receptorLocation[kvp.Key]);
 					rp.Offset(-sizeZ2 / 2, 100);		// 100 is some arbitrary vertical offset for testing.
 					Rectangle location = new Rectangle(rp, new Size(sizeZ2, sizeZ2 * img.Height / img.Width));
 					e.Graphics.DrawImage(img, location);
@@ -1786,6 +1818,28 @@ namespace TypeSystemExplorer.Views
 		protected Rectangle CircleToBoundingRectangle(Point ctr, int radius)
 		{
 			return new Rectangle(ctr.X - radius, ctr.Y - radius, radius * 2, radius * 2);
+		}
+
+		/// <summary>
+		/// Returns a point adjusted (adding) for the surface offset.
+		/// </summary>
+		public Point SurfaceOffsetAdjust(Point src)
+		{
+			Point p = src;
+			p.Offset(surfaceOffset);
+
+			return p;
+		}
+
+		/// <summary>
+		/// Returns a point adjusted for the surface offset by subtracting the current surface offset.
+		/// </summary>
+		public Point NegativeSurfaceOffsetAdjust(Point src)
+		{
+			Point p = src;
+			p.Offset(-surfaceOffset.X, -surfaceOffset.Y);
+
+			return p;
 		}
 	}
 }
