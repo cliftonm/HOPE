@@ -59,6 +59,17 @@ namespace TypeSystemExplorer.Controllers
 			// documentControllerMap = new DiagnosticDictionary<IDockContent, NotecardController>("DocumentControllerMap");
 			RegisterUserStateOperations();
 			Program.Skin.RegisterReceptor("System", this);
+			Program.Skin.NewMembrane += OnNewMembrane;
+		}
+
+		/// <summary>
+		/// Register ourselves ("System") as a receptor and listen to new membranes being added to this membrane.
+		/// </summary>
+		protected void OnNewMembrane(object sender, MembraneEventArgs e)
+		{
+			e.Membrane.RegisterReceptor("System", this);
+			e.Membrane.NewMembrane += OnNewMembrane;
+			e.Membrane.LoadReceptors();				// finish initializing the system receptor.
 		}
 
 		protected void FormClosingEvent(object sender, FormClosingEventArgs args)
@@ -679,8 +690,9 @@ namespace TypeSystemExplorer.Controllers
 			membraneDef.Membranes.ForEach(innerMembraneDef => 
 				{
 					Membrane innerMembrane = membrane.CreateInnerMembrane();
+					// Handled now by the NewMembrane event handler.
 					// Each membrane needs a system receptor to handle, among other things, the carrier animation.
-					innerMembrane.RegisterReceptor("System", this);
+					// innerMembrane.RegisterReceptor("System", this);
 					DeserializeMembranes(innerMembraneDef, innerMembrane);	
 				});
 
@@ -785,6 +797,12 @@ namespace TypeSystemExplorer.Controllers
 		public string Name { get { return "System"; } }
 		public bool IsEdgeReceptor { get { return false; } }
 		public bool IsHidden { get { return true; } }
+
+		public IReceptorSystem ReceptorSystem
+		{
+			get { throw new ApplicationException("A call to get the system receptor container should never be made."); }
+			set { throw new ApplicationException("A call to set the system receptor container should never be made."); }
+		}
 
 		public string[] GetReceiveProtocols()
 		{

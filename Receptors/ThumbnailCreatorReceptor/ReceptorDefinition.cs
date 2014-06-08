@@ -23,6 +23,12 @@ namespace ThumbnailCreatorReceptor
 		public bool IsEdgeReceptor { get { return false; } }
 		public bool IsHidden { get { return false; } }
 
+		public IReceptorSystem ReceptorSystem
+		{
+			get { return rsys; }
+			set { rsys = value; }
+		}
+
 		protected IReceptorSystem rsys;
 
 		public ReceptorDefinition(IReceptorSystem rsys)
@@ -131,7 +137,7 @@ namespace ThumbnailCreatorReceptor
 			signal.ImageFilename.Filename = filename.LeftOfRightmostOf('.') + "-thumbnail." + filename.RightOfRightmostOf('.');
 			image.Tag = signal.ImageFilename.Filename;
 			signal.Image = image;
-			rsys.CreateCarrierIfReceiver(this, protocol, signal);
+			rsys.CreateCarrier(this, protocol, signal);
 		}
 	}
 }

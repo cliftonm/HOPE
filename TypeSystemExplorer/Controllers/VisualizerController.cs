@@ -115,7 +115,7 @@ namespace TypeSystemExplorer.Controllers
 			dynamic signal = Program.SemanticTypeSystem.Create("TextToSpeech");
 			signal.Text = msg;
 			// TODO: Is this always the skin membrane?
-			Program.Skin.CreateCarrier(null, protocol, signal);
+			Program.Skin.CreateCarrierIfReceiver(null, protocol, signal);
 		}
 
 		public static void CreateCarriers(IMembrane dropInto, XElement el)

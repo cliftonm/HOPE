@@ -17,6 +17,11 @@ namespace Clifton.Receptor.Interfaces
 		string Name { get; }
 		bool IsEdgeReceptor { get; }
 		bool IsHidden { get; }
+
+		// The receptor system must be reset when a receptor moves to a different membrane,
+		// that is, to another receptor system.
+		IReceptorSystem ReceptorSystem { get; set; }
+
 		string[] GetReceiveProtocols();
 		string[] GetEmittedProtocols();
 		void ProcessCarrier(ICarrier carrier);
@@ -55,6 +60,11 @@ namespace Clifton.Receptor.Interfaces
 
 	public interface IMembrane
 	{
+		event EventHandler<MembraneEventArgs> NewMembrane;
+		event EventHandler<ReceptorEventArgs> NewReceptor;
+		event EventHandler<NewCarrierEventArgs> NewCarrier;
+		event EventHandler<ReceptorEventArgs> ReceptorRemoved;
+
 		ISemanticTypeSystem SemanticTypeSystem { get; }
 		ICarrier CreateCarrier(IReceptorInstance from, ISemanticTypeStruct protocol, dynamic signal);
 		void CreateCarrierIfReceiver(IReceptorInstance from, ISemanticTypeStruct protocol, dynamic signal);
@@ -63,6 +73,7 @@ namespace Clifton.Receptor.Interfaces
 		ReadOnlyCollection<IReceptor> Receptors { get; }
 		void Dissolve();
 		void RegisterReceptor(string fn);
+		void RegisterReceptor(string name, IReceptorInstance instance);
 		void LoadReceptors(Action<IReceptor> afterRegister = null);
 		// IMembrane ParentMembrane { get; }
 	}

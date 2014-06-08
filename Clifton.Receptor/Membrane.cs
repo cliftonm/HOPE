@@ -12,16 +12,6 @@ using Clifton.SemanticTypeSystem.Interfaces;
 
 namespace Clifton.Receptor
 {
-	public class MembraneEventArgs : EventArgs
-	{
-		public IMembrane Membrane { get; protected set; }
-
-		public MembraneEventArgs(IMembrane m)
-		{
-			Membrane = m;
-		}
-	}
-
 	/// <summary>
 	/// Membranes contain receptors and other membranes.
 	/// </summary>
@@ -63,8 +53,8 @@ namespace Clifton.Receptor
 		public List<Membrane> Membranes { get; protected set; }
 		public Dictionary<string, Permeability> ProtocolPermeability {get; protected set;}
 
-		// Yuck.  Way to much conversion going on here.
-		public ReadOnlyCollection<IReceptor> Receptors { get { return receptorSystem.Receptors.Cast<IReceptor>().ToList().AsReadOnly(); } }
+		// Return non-system receptors.
+		public ReadOnlyCollection<IReceptor> Receptors { get { return receptorSystem.Receptors.Where(r => !r.Instance.IsHidden).ToList().AsReadOnly(); } }
 
 		public Membrane ParentMembrane { get; protected set; }
 
@@ -148,7 +138,7 @@ namespace Clifton.Receptor
 		public void Dissolve()
 		{
 			// TODO: To much conversion.
-			MoveReceptorsToMembrane(receptorSystem.Receptors.Cast<IReceptor>().ToList(), ParentMembrane);
+			MoveReceptorsToMembrane(Receptors.Cast<IReceptor>().ToList(), ParentMembrane);
 			ParentMembrane.Membranes.Remove(this);
 		}
 
@@ -206,11 +196,7 @@ namespace Clifton.Receptor
 		/// </summary>
 		public void MoveReceptorToMembrane(IReceptor receptor, Membrane targetMembrane)
 		{
-			receptorSystem.Receptors.Remove((Receptor)receptor);
-			targetMembrane.receptorSystem.Receptors.Add((Receptor)receptor);
-			// Process any queued carriers that may now become active.
-			targetMembrane.receptorSystem.ReloadProtocolReceptorMap();
-			targetMembrane.receptorSystem.ProcessQueuedCarriers();
+			receptorSystem.MoveReceptorTo(receptor, targetMembrane.receptorSystem);
 		}
 
 		public Membrane CreateInnerMembrane()

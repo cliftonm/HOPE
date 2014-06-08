@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.IO;
 using System.Text;
@@ -11,34 +12,6 @@ using Clifton.SemanticTypeSystem.Interfaces;
 
 namespace Clifton.Receptor
 {
-	/// <summary>
-	/// Event args for a new receptor notification.
-	/// </summary>
-	public class ReceptorEventArgs : EventArgs
-	{
-		public IReceptor Receptor { get; protected set; }
-
-		public ReceptorEventArgs(IReceptor receptor)
-		{
-			Receptor = receptor;
-		}
-	}
-
-	/// <summary>
-	/// Event args for a new carrier notification.
-	/// </summary>
-	public class NewCarrierEventArgs : EventArgs
-	{
-		public IReceptorInstance From { get; protected set; }
-		public ICarrier Carrier { get; protected set; }
-
-		public NewCarrierEventArgs(IReceptorInstance from, ICarrier carrier)
-		{
-			From = from;
-			Carrier = carrier;
-		}
-	}
-
 	/// <summary>
 	/// Internal class for managing the queued carrier and the action to carry out when 
 	/// a receptor receiving the carrier's protocol becomes available.
@@ -73,7 +46,9 @@ namespace Clifton.Receptor
 		/// <summary>
 		/// The collection of receptors currently in the system.
 		/// </summary>
-		public List<Receptor> Receptors { get; protected set; }
+		// public List<Receptor> Receptors { get; protected set; }
+		// Yuck.  Way to much conversion going on here.
+		public ReadOnlyCollection<IReceptor> Receptors { get { return receptors.Cast<IReceptor>().ToList().AsReadOnly(); } }
 
 		/// <summary>
 		/// The Semantic Type System instance that defines the carrier protocols.
@@ -83,25 +58,30 @@ namespace Clifton.Receptor
 		/// <summary>
 		/// The list of receptors to which each protocol maps.
 		/// </summary>
-		protected Dictionary<string, List<Receptor>> protocolReceptorMap;
+		protected Dictionary<string, List<IReceptor>> protocolReceptorMap;
 
 		/// <summary>
 		/// A map of registered receptors.  These are receptors that are instantiated
 		/// and whose protocols have been associated in the protocolReceptorMap.
 		/// </summary>
-		protected  Dictionary<Receptor, bool> registeredReceptorMap;
+		protected  Dictionary<IReceptor, bool> registeredReceptorMap;
 
 		/// <summary>
 		/// Internal list of global receptors, which are handled slightly differently
 		/// as they receive all carriers.
 		/// </summary>
-		protected List<Receptor> globalReceptors;
+		protected List<IReceptor> globalReceptors;
 
 		/// <summary>
 		/// The list of queued carriers because there are no receptors available to process the 
 		/// carrier's protocol.
 		/// </summary>
 		private List<QueuedCarrierAction> queuedCarriers;
+
+		/// <summary>
+		/// Internal collection of receptors in this receptor system.
+		/// </summary>
+		protected List<Receptor> receptors;
 
 		/// <summary>
 		/// Constructor, initializes internal collections.
@@ -120,7 +100,7 @@ namespace Clifton.Receptor
 		{
 			Receptor r = new Receptor(receptorName, assemblyName);
 			r.EnabledStateChanged += WhenEnabledStateChanged;
-			Receptors.Add(r);
+			receptors.Add(r);
 
 			return r;
 		}
@@ -134,7 +114,7 @@ namespace Clifton.Receptor
 		{
 			Receptor r = new Receptor(name, inst);
 			r.EnabledStateChanged += WhenEnabledStateChanged;
-			Receptors.Add(r);
+			receptors.Add(r);
 		}
 
 		/// <summary>
@@ -145,7 +125,7 @@ namespace Clifton.Receptor
 		public void RegisterReceptor(string filename)
 		{
 			Receptor r = Receptor.FromFile(filename).Instantiate(this);
-			Receptors.Add(r);
+			receptors.Add(r);
 		}
 
 		/// <summary>
@@ -267,7 +247,8 @@ namespace Clifton.Receptor
 		{
 			receptor.Instance.Terminate();
 			// TODO: If our collections were IReceptor, then we wouldn't need the "as".
-			Receptors.Remove(receptor as Receptor);
+			receptors.Remove(receptor as Receptor);
+			registeredReceptorMap.Remove(receptor);
 			protocolReceptorMap.ForEach(kvp => kvp.Value.Remove(receptor as Receptor));
 			ReceptorRemoved.Fire(this, new ReceptorEventArgs(receptor));
 
@@ -283,7 +264,7 @@ namespace Clifton.Receptor
 		public void Remove(IReceptorInstance receptorInstance)
 		{
 			// Clone the list because the master list will change.
-			Receptors.Where(r => r.Instance == receptorInstance).ToList().ForEach(r => Remove(r));
+			receptors.Where(r => r.Instance == receptorInstance).ToList().ForEach(r => Remove(r));
 		}
 
 		/// <summary>
@@ -308,23 +289,54 @@ namespace Clifton.Receptor
 			Receptors.ForEach(r => GatherProtocolReceivers(r));
 		}
 
+		public void MoveReceptorTo(IReceptor receptor, ReceptorsContainer target)
+		{
+			InternalRemove(receptor);
+			target.InternalAdd(receptor);
+		}
+
+		/// <summary>
+		/// Remove the receptor without generating remove events or terminating the receptor.
+		/// </summary>
+		protected void InternalRemove(IReceptor receptor)
+		{
+			receptors.Remove(receptor as Receptor);
+			registeredReceptorMap.Remove(receptor);
+			protocolReceptorMap.ForEach(kvp => kvp.Value.Remove(receptor as Receptor));
+		}
+
+		/// <summary>
+		/// Add the receptor, without generating add events.
+		/// </summary>
+		protected void InternalAdd(IReceptor receptor)
+		{
+			// TODO: If receptors was List<IReceptor>, we wouldn't need this cast.
+			receptors.Add(receptor as Receptor);
+			registeredReceptorMap[receptor] = true;
+			// The receptor instance is now using this receptor system!
+			receptor.Instance.ReceptorSystem = this;
+			// Process any queued carriers that may now become active.
+			ReloadProtocolReceptorMap();
+			ProcessQueuedCarriers();
+		}
+
 		/// <summary>
 		/// Clears out all data.
 		/// </summary>
 		protected void Initialize()
 		{
-			Receptors = new List<Receptor>();
-			protocolReceptorMap = new Dictionary<string, List<Receptor>>();
+			receptors = new List<Receptor>();
+			protocolReceptorMap = new Dictionary<string, List<IReceptor>>();
 			queuedCarriers = new List<QueuedCarrierAction>();
-			globalReceptors = new List<Receptor>();
-			registeredReceptorMap = new Dictionary<Receptor, bool>();
+			globalReceptors = new List<IReceptor>();
+			registeredReceptorMap = new Dictionary<IReceptor, bool>();
 		}
 
 		/// <summary>
 		/// Get the protocols that this receptor is receiving, updating the protocolReceptorMap, adding this
 		/// receptor to the specified protocols.
 		/// </summary>
-		protected void GatherProtocolReceivers(Receptor r)
+		protected void GatherProtocolReceivers(IReceptor r)
 		{
 			// For each protocol...
 			r.Instance.GetReceiveProtocols().ForEach(protocolName =>
@@ -339,11 +351,11 @@ namespace Clifton.Receptor
 					else
 					{
 						// Get the list of receiving receptors for the protocol, or, if it doesn't exist, create it.
-						List<Receptor> receivingReceptors;
+						List<IReceptor> receivingReceptors;
 
 						if (!protocolReceptorMap.TryGetValue(protocolName, out receivingReceptors))
 						{
-							receivingReceptors = new List<Receptor>();
+							receivingReceptors = new List<IReceptor>();
 							protocolReceptorMap[protocolName] = receivingReceptors;
 							// Append all current global receptors to this protocol - receptor map.
 							globalReceptors.ForEach(gr => receivingReceptors.Add(gr));
@@ -376,7 +388,7 @@ namespace Clifton.Receptor
 		protected bool HaveEnabledReceptors(ISemanticTypeStruct protocol)
 		{
 			bool found = false;
-			List<Receptor> receptors; 
+			List<IReceptor> receptors; 
 			bool haveCarrierMap = protocolReceptorMap.TryGetValue(protocol.DeclTypeName, out receptors);
 
 			if (haveCarrierMap)
@@ -395,7 +407,7 @@ namespace Clifton.Receptor
 		{
 			// Get the action that we are supposed to perform on the carrier.
 			Action action = GetProcessAction(from, carrier, stopRecursion);
-			List<Receptor> receptors;
+			List<IReceptor> receptors;
 
 			bool haveCarrierMap = protocolReceptorMap.TryGetValue(carrier.Protocol.DeclTypeName, out receptors);
 
@@ -423,7 +435,7 @@ namespace Clifton.Receptor
 			// collection with an indexer rather than a foreach.
 			queuedCarriers.IndexerForEach(action =>
 			{
-				List<Receptor> receptors;
+				List<IReceptor> receptors;
 
 				bool haveCarrierMap = protocolReceptorMap.TryGetValue(action.Carrier.Protocol.DeclTypeName, out receptors);
 

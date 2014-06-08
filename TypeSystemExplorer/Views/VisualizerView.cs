@@ -586,7 +586,7 @@ namespace TypeSystemExplorer.Views
 			signal.ImageFilename.Filename = Path.GetFileName(img.Tag.ToString().Surrounding("-thumbnail"));
 			// signal.ResponseProtocol = "HaveImageMetadata";
 			// TODO: The carrier should be created inside the membrane associated with the viewer requesting the metadata.
-			Program.Skin.CreateCarrier(null, protocol, signal);
+			Program.Skin.CreateCarrierIfReceiver(null, protocol, signal);
 		}
 
 		protected void OnTimerTick(object sender, EventArgs e)
@@ -839,8 +839,8 @@ namespace TypeSystemExplorer.Views
 				// The containing rectangle.
 				Rectangle r = Rectangle.FromLTRB(Math.Min(mouseStart.X, mousePosition.X), Math.Min(mouseStart.Y, mousePosition.Y), Math.Max(mouseStart.X, mousePosition.X), Math.Max(mouseStart.Y, mousePosition.Y));
 
-				// Get receptors inside the rectangle:
-				List<IReceptor> receptors = receptorLocation.Where(kvp => r.Contains(kvp.Value)).Select(kvp => kvp.Key).ToList();
+				// Get receptors inside the rectangle, ignoring any hidden receptors--a defensive measure if we ever decide to show the system receptor.
+				List<IReceptor> receptors = receptorLocation.Where(kvp => r.Contains(kvp.Value) && !kvp.Key.Instance.IsHidden).Select(kvp => kvp.Key).ToList();
 
 				// Do we have any?
 				if (receptors.Count() > 0)
@@ -1118,7 +1118,7 @@ namespace TypeSystemExplorer.Views
 				signal.ImageFilename.Filename = imageFile.Surrounding("-thumbnail");
 
 				IMembrane m = Program.Skin.GetMembraneContaining(r);
-				m.CreateCarrier(null, protocol, signal);
+				m.CreateCarrier(r.Instance, protocol, signal);
 				match = true;
 			}
 

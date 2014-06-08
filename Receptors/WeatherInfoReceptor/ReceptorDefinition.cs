@@ -25,6 +25,12 @@ namespace WeatherInfoReceptor
 		public bool IsEdgeReceptor { get { return false; } }
 		public bool IsHidden { get { return false; } }
 
+		public IReceptorSystem ReceptorSystem
+		{
+			get { return rsys; }
+			set { rsys = value; }
+		}
+
 		protected IReceptorSystem rsys;
 		protected Dictionary<string, FullInfo> zipcodeInfoMap;
 

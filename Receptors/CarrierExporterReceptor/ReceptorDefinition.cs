@@ -23,6 +23,12 @@ namespace CarrierExporterReceptor
 		public bool IsEdgeReceptor { get { return true; } }
 		public bool IsHidden { get { return false; } }
 
+		public IReceptorSystem ReceptorSystem
+		{
+			get { return rsys; }
+			set { rsys = value; }
+		}
+
 		protected IReceptorSystem rsys;
 		protected XmlDocument xdoc;
 		protected XmlNode carriersNode;
