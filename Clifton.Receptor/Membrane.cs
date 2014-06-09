@@ -233,6 +233,11 @@ namespace Clifton.Receptor
 			return ret.Distinct().ToList();
 		}
 
+		public void ProcessQueuedCarriers()
+		{
+			receptorSystem.ProcessQueuedCarriers();
+		}
+
 		protected void OnNewReceptor(object sender, ReceptorEventArgs args)
 		{
 			// Forward to other listeners.

@@ -95,6 +95,7 @@ namespace Clifton.Receptor.Interfaces
 		void RegisterReceptor(string fn);
 		void RegisterReceptor(string name, IReceptorInstance instance);
 		void LoadReceptors(Action<IReceptor> afterRegister = null);
+		void ProcessQueuedCarriers();
 		
 		IMembrane ParentMembrane { get; }
 		List<string> GetEmittedProtocols();

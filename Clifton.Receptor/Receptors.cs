@@ -234,7 +234,9 @@ namespace Clifton.Receptor
 			// This calls the internal method with recursion set to false.  We don't want to expose this 
 			// flag, so this method is a public front, as receptors should never set the "stop recursion" flag
 			// to true when creating carriers.
-			return CreateCarrier(from, protocol, signal, false);
+			ICarrier carrier = CreateCarrier(from, protocol, signal, false);
+
+			return carrier;
 		}
 
 		/// <summary>
@@ -430,15 +432,29 @@ namespace Clifton.Receptor
 
 		protected List<IReceptor> GetTargetReceptorsFor(IReceptor from, ISemanticTypeStruct protocol)
 		{
-			List<IReceptor> targets = new List<IReceptor>();
-			
+			List<IReceptor> targets;
+
+			// When the try fails, it sets targets to null.
 			if (!MasterReceptorConnectionList.TryGetValue(from, out targets))
 			{
-				// Get receivers from the protocol map:
-				protocolReceptorMap.TryGetValue(protocol.DeclTypeName, out targets);
+				targets = new List<IReceptor>();
 			}
 
-			return targets.Where(r => r.Enabled && r.Instance.GetReceiveProtocols().Contains(protocol.DeclTypeName)).ToList();
+			// Only enabled receptors.
+			List<IReceptor> filteredTargets = targets.Where(r => r.Enabled && r.Instance.GetReceiveProtocols().Contains(protocol.DeclTypeName)).ToList();
+
+			// Will have a count of 0 if the receptor is the system receptor, ie, carrier animations or other protocols.
+			// TODO: This seems kludgy, is there a better way of working with this?
+			if (filteredTargets.Count == 0)
+			{
+				// When the try fails, it sets targets to null.
+				if (protocolReceptorMap.TryGetValue(protocol.DeclTypeName, out targets))
+				{
+					filteredTargets = targets.Where(r => r.Enabled).ToList();
+				}
+			}
+
+			return filteredTargets;
 		}
 
 		/// <summary>

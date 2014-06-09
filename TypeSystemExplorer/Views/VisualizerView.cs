@@ -1342,6 +1342,9 @@ namespace TypeSystemExplorer.Views
 				});
 
 			CreateReceptorConnections();
+
+			// Check queued receptors in all membranes.
+			membraneLocation.Keys.ForEach(m => m.ProcessQueuedCarriers());
 			Invalidate(true);
 		}
 
