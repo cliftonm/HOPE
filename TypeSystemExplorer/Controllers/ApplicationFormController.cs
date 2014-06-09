@@ -649,12 +649,14 @@ namespace TypeSystemExplorer.Controllers
 			SetCaption(filename);
 			applet = MycroParser.InstantiateFromFile<Applet>(filename, null);
 
-			// Create the receptors.
+			// Create the membranes and their containing receptors:
+			List<Membrane> membraneList = new List<Membrane>();
+			membraneList.Add(Program.Skin);
 
 			VisualizerController.View.StartDrop = true;
 			VisualizerController.View.ShowMembranes = false;
 			// Skin is the the root membrane.  It has no siblings.
-			DeserializeMembranes(applet.MembranesDef.Membranes[0], Program.Skin);
+			DeserializeMembranes(applet.MembranesDef.Membranes[0], Program.Skin, membraneList);
 			VisualizerController.View.StartDrop = false;
 			VisualizerController.View.ShowMembranes = true;
 
@@ -685,7 +687,16 @@ namespace TypeSystemExplorer.Controllers
 							});
 
 						// TODO: Carriers need to specify into which membrane they are placed.
-						Program.Skin.CreateCarrier(null, protocol, signal);
+						Membrane inMembrane = membraneList.SingleOrDefault(m => m.Name == c.Membrane);
+
+						if (inMembrane != null)
+						{
+							inMembrane.CreateCarrier(Program.Skin["System"].Instance, protocol, signal);
+						}
+						else
+						{
+							// TODO: Inform user that carrier is not associated with a defined membrane.
+						}
 					});
 			}
 
@@ -694,10 +705,11 @@ namespace TypeSystemExplorer.Controllers
 			VisualizerController.View.UpdateConnections();
 		}
 
-		protected void DeserializeMembranes(MembraneDef membraneDef, Membrane membrane)
+		protected void DeserializeMembranes(MembraneDef membraneDef, Membrane membrane, List<Membrane> membraneList)
 		{
 			Dictionary<IReceptor, Point> receptorLocationMap = new Dictionary<IReceptor, Point>();
 			Point noLocation = new Point(-1, -1);
+			membrane.Name = membraneDef.Name;
 
 			membraneDef.Receptors.ForEach(n =>
 				{
@@ -742,10 +754,11 @@ namespace TypeSystemExplorer.Controllers
 			membraneDef.Membranes.ForEach(innerMembraneDef =>
 			{
 				Membrane innerMembrane = membrane.CreateInnerMembrane();
+				membraneList.Add(innerMembrane);
 				// Handled now by the NewMembrane event handler.
 				// Each membrane needs a system receptor to handle, among other things, the carrier animation.
 				// innerMembrane.RegisterReceptor("System", this);
-				DeserializeMembranes(innerMembraneDef, innerMembrane);
+				DeserializeMembranes(innerMembraneDef, innerMembrane, membraneList);
 			});
 		}
 

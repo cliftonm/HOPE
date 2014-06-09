@@ -125,6 +125,7 @@ namespace TypeSystemExplorer.Models
 	public class CarrierDef
 	{
 		public string Protocol { get; set; }
+		public string Membrane { get; set; }
 
 		protected List<Attr> attributes;
 
