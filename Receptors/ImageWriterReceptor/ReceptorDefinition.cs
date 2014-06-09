@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -67,7 +68,8 @@ namespace HelloWorldReceptor
 				//		}
 				//	});
 
-				img.Save(fn);
+				// TODO: Make sure we save the image in the filename specified by the extension.
+				img.Save(fn, ImageFormat.Jpeg);
 			}
 		}
 	}

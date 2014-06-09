@@ -425,8 +425,9 @@ namespace TypeSystemExplorer.Views
 				// TODO: This is not necessarily true.  The same carrier could be sourced by different receptors!
 				CarrierAnimationItem existing = carrierAnimations.FirstOrDefault(q => (q.Carrier == carrier) && (q.Target != null));
 
-				if (existing == null)
+				if (existing != null)
 				{
+					// Use an existing carrier animation from the source receptor to get the starting position.
 					carrierAnimations.Add(new CarrierAnimationItem() { StartPosition = existing.StartPosition, OnArrivalDo = action, Target = to, Carrier = carrier });
 				}
 				else
