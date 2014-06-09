@@ -540,6 +540,7 @@ namespace Clifton.Receptor
 							signal.From = from;
 							signal.To = receptor.Instance;
 							signal.Carrier = carrier;
+							// Simulate coming from the system, as it IS a system message.
 							CreateCarrier(from, protocol, signal, receptor.Instance.GetReceiveProtocols().Contains("*"));
 						}
 					});
