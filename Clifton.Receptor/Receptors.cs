@@ -18,6 +18,7 @@ namespace Clifton.Receptor
 	/// </summary>
 	internal class QueuedCarrierAction
 	{
+		public IReceptor From { get; set; }
 		public Carrier Carrier { get; set; }
 		public Action Action { get; set; }
 	}
@@ -57,6 +58,9 @@ namespace Clifton.Receptor
 
 		/// <summary>
 		/// The list of receptors to which each protocol maps.
+		/// This list supports unmapped "from receptors" in the registered receptor map,
+		/// allowing the "system" to drop carriers into a particular membrane and have that
+		/// carrier be processed by a receive-only receptor in the membrane.
 		/// </summary>
 		protected Dictionary<string, List<IReceptor>> protocolReceptorMap;
 
@@ -82,6 +86,15 @@ namespace Clifton.Receptor
 		/// Internal collection of receptors in this receptor system.
 		/// </summary>
 		protected List<Receptor> receptors;
+
+		// TODO: The receptors container should acquire this list, rather than it being set.
+		/// <summary>
+		/// The master list of receptor connections, which oddly at this point is being computed
+		/// by the visualizer.
+		/// </summary>
+		public Dictionary<IReceptor, List<IReceptor>> MasterReceptorConnectionList { get; set; }
+
+		public IReceptor this[string name] { get { return receptors.Single(r => r.Name == name); } }
 
 		/// <summary>
 		/// Constructor, initializes internal collections.
@@ -221,7 +234,9 @@ namespace Clifton.Receptor
 			// This calls the internal method with recursion set to false.  We don't want to expose this 
 			// flag, so this method is a public front, as receptors should never set the "stop recursion" flag
 			// to true when creating carriers.
-			return CreateCarrier(from, protocol, signal, false);
+			ICarrier carrier = CreateCarrier(from, protocol, signal, false);
+
+			return carrier;
 		}
 
 		/// <summary>
@@ -233,7 +248,7 @@ namespace Clifton.Receptor
 		/// <param name="signal">The signal in the protocol's format.</param>
 		public void CreateCarrierIfReceiver(IReceptorInstance from, ISemanticTypeStruct protocol, dynamic signal)
 		{
-			if (protocolReceptorMap.ContainsKey(protocol.DeclTypeName))
+			if (TargetReceptorExistsFor(ReceptorFromInstance(from), protocol))
 			{
 				CreateCarrier(from, protocol, signal);
 			}
@@ -273,7 +288,7 @@ namespace Clifton.Receptor
 		public void Remove(IReceptorInstance receptorInstance)
 		{
 			// Clone the list because the master list will change.
-			receptors.Where(r => r.Instance == receptorInstance).ToList().ForEach(r => Remove(r));
+			receptors.Remove((Receptor)ReceptorFromInstance(receptorInstance));
 		}
 
 		/// <summary>
@@ -339,6 +354,7 @@ namespace Clifton.Receptor
 			queuedCarriers = new List<QueuedCarrierAction>();
 			globalReceptors = new List<IReceptor>();
 			registeredReceptorMap = new Dictionary<IReceptor, bool>();
+			MasterReceptorConnectionList = new Dictionary<IReceptor, List<IReceptor>>();
 		}
 
 		/// <summary>
@@ -392,20 +408,53 @@ namespace Clifton.Receptor
 		}
 
 		/// <summary>
-		/// Return true if receptors exist and are enabled for this protocol.
+		/// Returns true if there is an enabled target from the specified receptor with the specified protocol.
 		/// </summary>
-		protected bool HaveEnabledReceptors(ISemanticTypeStruct protocol)
+		protected bool TargetReceptorExistsFor(IReceptor from, ISemanticTypeStruct protocol)
 		{
-			bool found = false;
-			List<IReceptor> receptors; 
-			bool haveCarrierMap = protocolReceptorMap.TryGetValue(protocol.DeclTypeName, out receptors);
+			bool ret = false;
 
-			if (haveCarrierMap)
+			List<IReceptor> targets = new List<IReceptor>();
+			if (MasterReceptorConnectionList.TryGetValue(from, out targets))
 			{
-				found = receptors.Exists(r => r.Enabled);
+				// We're only interested in enabled receptors.
+				ret = targets.Any(r => r.Enabled && r.Instance.GetReceiveProtocols().Contains(protocol.DeclTypeName));
 			}
 
-			return found;
+			if (!ret)
+			{
+				// check protocol map for receivers:
+				ret = protocolReceptorMap.ContainsKey(protocol.DeclTypeName);
+			}
+
+			return ret;
+		}
+
+		protected List<IReceptor> GetTargetReceptorsFor(IReceptor from, ISemanticTypeStruct protocol)
+		{
+			List<IReceptor> targets;
+
+			// When the try fails, it sets targets to null.
+			if (!MasterReceptorConnectionList.TryGetValue(from, out targets))
+			{
+				targets = new List<IReceptor>();
+			}
+
+			// Only enabled receptors.
+			List<IReceptor> filteredTargets = targets.Where(r => r.Enabled && r.Instance.GetReceiveProtocols().Contains(protocol.DeclTypeName)).ToList();
+
+			// Will have a count of 0 if the receptor is the system receptor, ie, carrier animations or other protocols.
+			// TODO: This seems kludgy, is there a better way of working with this?
+			if (filteredTargets.Count == 0)
+			{
+				// When the try fails, it sets targets to null.
+				if (protocolReceptorMap.TryGetValue(protocol.DeclTypeName, out targets))
+				{
+					filteredTargets = targets.Where(r => r.Enabled).ToList();
+				}
+			}
+
+			return filteredTargets;
 		}
 
 		/// <summary>
@@ -416,12 +465,10 @@ namespace Clifton.Receptor
 		{
 			// Get the action that we are supposed to perform on the carrier.
 			Action action = GetProcessAction(from, carrier, stopRecursion);
-			List<IReceptor> receptors;
-
-			bool haveCarrierMap = protocolReceptorMap.TryGetValue(carrier.Protocol.DeclTypeName, out receptors);
+			List<IReceptor> receptors = GetTargetReceptorsFor(ReceptorFromInstance(from), carrier.Protocol);
 
 			// If we have any enabled receptor for this carrier (a mapping of carrier to receptor list exists and receptors actually exist in that map)...
-			if (haveCarrierMap && receptors.Where(r => r.Enabled).Count() > 0)
+			if (receptors.Count > 0)
 			{
 				// ...perform the action.
 				action();
@@ -429,7 +476,7 @@ namespace Clifton.Receptor
 			else
 			{
 				// ...othwerise, queue up the carrier for when there is a receptor for it.
-				queuedCarriers.Add(new QueuedCarrierAction() { Carrier = carrier, Action = action });
+				queuedCarriers.Add(new QueuedCarrierAction() { From = ReceptorFromInstance(from), Carrier = carrier, Action = action });
 			}
 		}
 
@@ -444,12 +491,10 @@ namespace Clifton.Receptor
 			// collection with an indexer rather than a foreach.
 			queuedCarriers.IndexerForEach(action =>
 			{
-				List<IReceptor> receptors;
-
-				bool haveCarrierMap = protocolReceptorMap.TryGetValue(action.Carrier.Protocol.DeclTypeName, out receptors);
+				List<IReceptor> receptors = GetTargetReceptorsFor(action.From, action.Carrier.Protocol);
 
 				// If we have any enabled receptor for this carrier (a mapping of carrier to receptor list exists and receptors actually exist in that map)...
-				if (haveCarrierMap && receptors.Where(r => r.Enabled).Count() > 0)
+				if (receptors.Count > 0)
 				{
 					action.Action();
 					// Collect actions that need to be removed.
@@ -470,10 +515,10 @@ namespace Clifton.Receptor
 			Action action = new Action(() =>
 				{
 					// Get the receptors receiving the protocol.
-					var receptors = protocolReceptorMap[carrier.Protocol.DeclTypeName];
+					List<IReceptor> receptors = GetTargetReceptorsFor(ReceptorFromInstance(from), carrier.Protocol);
 
 					// For each receptor that is enabled...
-					receptors.Where(r=>r.Enabled).ForEach(receptor =>
+					receptors.ForEach(receptor =>
 					{
 						// The action is "ProcessCarrier".
 						// TODO: *** Pass in the carrier, not the carrier's fields!!! ***
@@ -495,7 +540,7 @@ namespace Clifton.Receptor
 							signal.From = from;
 							signal.To = receptor.Instance;
 							signal.Carrier = carrier;
-							CreateCarrier(null, protocol, signal, receptor.Instance.GetReceiveProtocols().Contains("*"));
+							CreateCarrier(from, protocol, signal, receptor.Instance.GetReceiveProtocols().Contains("*"));
 						}
 					});
 				});
@@ -528,6 +573,11 @@ namespace Clifton.Receptor
 		{
 			// Any queued carriers are now checked to determine whether receptors are now enabled to process their protocols.
 			ProcessQueuedCarriers();
+		}
+
+		protected IReceptor ReceptorFromInstance(IReceptorInstance inst)
+		{
+			return receptors.SingleOrDefault(r => r.Instance == inst);
 		}
 	}
 }

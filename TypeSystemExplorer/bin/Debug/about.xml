@@ -10,9 +10,9 @@
   xmlns:ref="ref">
   <wf:Form Text="About" Size="300, 120" StartPosition="CenterScreen" ShowInTaskbar="false" FormBorderStyle="FixedSingle" MinimizeBox="false" MaximizeBox="false">
     <wf:Controls>
-      <wf:Label Location="0, 10" Size="300, 15" Text="Type System Explorer" TextAlign="TopCenter"/>
+      <wf:Label Location="0, 10" Size="300, 15" Text="Higher Order Programming Environment (HOPE)" TextAlign="TopCenter"/>
       <wf:Label Location="0, 30" Size="300, 15" Text="Version 0.1" TextAlign="TopCenter"/>
-      <wf:Label Location="0, 45" Size="300, 15" Text="© 2013 Marc Clifton" TextAlign="TopCenter"/>
+      <wf:Label Location="0, 45" Size="300, 15" Text="© 2014 Marc Clifton" TextAlign="TopCenter"/>
       <wf:Label Location="0, 60" Size="300, 15" Text="All Rights Reserved." TextAlign="TopCenter"/>
     </wf:Controls>                                 
   </wf:Form>

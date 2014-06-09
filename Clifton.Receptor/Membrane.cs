@@ -37,26 +37,17 @@ namespace Clifton.Receptor
 		/// </summary>
 		public event EventHandler<ReceptorEventArgs> ReceptorRemoved;
 
-		/// <summary>
-		/// A membrane has permeability to protocols.
-		/// </summary>
-		public enum Permeability
-		{
-			None,
-			In,
-			Out,
-			Bidirectional,
-		}
-
 		public string Name { get; set; }
 		public ISemanticTypeSystem SemanticTypeSystem { get; protected set; }
-		public List<Membrane> Membranes { get; protected set; }
-		public Dictionary<string, Permeability> ProtocolPermeability {get; protected set;}
+		public List<IMembrane> Membranes { get; protected set; }
+		public Dictionary<string, PermeabilityConfiguration> ProtocolPermeability {get; protected set;}
 
 		// Return non-system receptors.
 		public ReadOnlyCollection<IReceptor> Receptors { get { return receptorSystem.Receptors.Where(r => !r.Instance.IsHidden).ToList().AsReadOnly(); } }
 
-		public Membrane ParentMembrane { get; protected set; }
+		public IMembrane ParentMembrane { get; protected set; }
+
+		public IReceptor this[string name] { get { return receptorSystem[name]; } }
 
 		protected ReceptorsContainer receptorSystem;
 		protected ISemanticTypeSystem semanticTypeSystem;
@@ -70,8 +61,8 @@ namespace Clifton.Receptor
 			receptorSystem.NewCarrier += OnNewCarrier;
 			receptorSystem.ReceptorRemoved += OnReceptorRemoved;
 
-			Membranes = new List<Membrane>();
-			ProtocolPermeability = new Dictionary<string, Permeability>();
+			Membranes = new List<IMembrane>();
+			ProtocolPermeability = new Dictionary<string, PermeabilityConfiguration>();
 		}
 
 		/// <summary>
@@ -83,6 +74,12 @@ namespace Clifton.Receptor
 			receptorSystem.Reset();
 			Membranes.Clear();
 			ProtocolPermeability.Clear();
+		}
+
+		// TODO: The receptors container should acquire this list, rather than it being set.
+		public void UpdateMasterConnectionList(Dictionary<IReceptor, List<IReceptor>> masterList)
+		{
+			receptorSystem.MasterReceptorConnectionList = masterList;
 		}
 
 		public void LoadReceptors(Action<IReceptor> afterRegister = null)
@@ -186,7 +183,7 @@ namespace Clifton.Receptor
 		/// <summary>
 		/// Moves receptors in this membrane to the target membrane.
 		/// </summary>
-		public void MoveReceptorsToMembrane(List<IReceptor> receptors, Membrane targetMembrane)
+		public void MoveReceptorsToMembrane(List<IReceptor> receptors, IMembrane targetMembrane)
 		{
 			receptors.ForEach(r=>MoveReceptorToMembrane(r, targetMembrane));
 		}
@@ -194,9 +191,11 @@ namespace Clifton.Receptor
 		/// <summary>
 		/// Moves the receptor in this membrane to the specified target membrane.
 		/// </summary>
-		public void MoveReceptorToMembrane(IReceptor receptor, Membrane targetMembrane)
+		public void MoveReceptorToMembrane(IReceptor receptor, IMembrane targetMembrane)
 		{
-			receptorSystem.MoveReceptorTo(receptor, targetMembrane.receptorSystem);
+			receptorSystem.MoveReceptorTo(receptor, ((Membrane)targetMembrane).receptorSystem);
+			UpdatePermeability();
+			((Membrane)targetMembrane).UpdatePermeability();
 		}
 
 		public Membrane CreateInnerMembrane()
@@ -209,10 +208,41 @@ namespace Clifton.Receptor
 			return inner;
 		}
 
+		/// <summary>
+		/// Returns the list of distinct protocols that each receptor instance in the membrane emits.
+		/// </summary>
+		public List<string> GetEmittedProtocols()
+		{
+			List<string> ret = new List<string>();
+
+			Receptors.ForEach(r => ret.AddRange(r.Instance.GetEmittedProtocols()));
+
+			return ret.Distinct().ToList();
+		}
+
+		/// <summary>
+		///  Returns the list of distinct protocols that each receptor isntance in the membrane can receive.
+		/// </summary>
+		/// <returns></returns>
+		public List<string> GetListeningProtocols()
+		{
+			List<string> ret = new List<string>();
+
+			Receptors.ForEach(r => ret.AddRange(r.Instance.GetReceiveProtocols()));
+
+			return ret.Distinct().ToList();
+		}
+
+		public void ProcessQueuedCarriers()
+		{
+			receptorSystem.ProcessQueuedCarriers();
+		}
+
 		protected void OnNewReceptor(object sender, ReceptorEventArgs args)
 		{
 			// Forward to other listeners.
 			NewReceptor.Fire(this, args);
+			UpdatePermeability();
 		}
 
 		protected void OnNewCarrier(object sender, NewCarrierEventArgs args)
@@ -225,6 +255,48 @@ namespace Clifton.Receptor
 		{
 			// Forward to other listeners.
 			ReceptorRemoved.Fire(this, args);
+			UpdatePermeability();
+		}
+
+		/// <summary>
+		/// Updates (creating new, deleting removed) protocol permeability.
+		/// </summary>
+		protected void UpdatePermeability()
+		{
+			// Create new entries for new emitted protocols:
+			List<string> emitted = GetEmittedProtocols();
+
+			emitted.ForEach(p =>
+				{
+					if (!ProtocolPermeability.ContainsKey(p))
+					{
+						ProtocolPermeability[p] = new PermeabilityConfiguration() { Direction = PermeabilityDirection.Out, Permeable = false };
+					}
+				});
+
+			// Create new entries for new receiving protocols:
+			List<string> listening = GetListeningProtocols();
+
+			listening.ForEach(p=>
+				{
+					if (!ProtocolPermeability.ContainsKey(p))
+					{
+						ProtocolPermeability[p] = new PermeabilityConfiguration() { Direction = PermeabilityDirection.In, Permeable = false };
+					}
+				});
+
+			// Remove old:
+			List<string> toRemove = new List<string>();
+
+			ProtocolPermeability.Keys.ForEach(p =>
+				{
+					if (!emitted.Contains(p) && !listening.Contains(p))
+					{
+						toRemove.Add(p);
+					}
+				});
+
+			toRemove.ForEach(p => ProtocolPermeability.Remove(p));
 		}
 	}
 }

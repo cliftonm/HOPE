@@ -582,7 +582,7 @@ namespace TypeSystemExplorer.Controllers
 			xdoc.Save(filename);
 		}
 
-		protected void SerializeMembrane(XmlNode membranesDefNode, Membrane m)
+		protected void SerializeMembrane(XmlNode membranesDefNode, IMembrane m)
 		{
 			XmlDocument xdoc = membranesDefNode.OwnerDocument;
 
@@ -592,6 +592,8 @@ namespace TypeSystemExplorer.Controllers
 			XmlNode membraneDefNode = xdoc.CreateElement("ixm", "MembraneDef", "TypeSystemExplorer.Models, TypeSystemExplorer");
 			AddAttribute(membraneDefNode, "Name", m.Name);
 			membranesNode.AppendChild(membraneDefNode);
+
+			// Serialize receptors.
 
 			XmlNode receptors = xdoc.CreateElement("ixm", "Receptors", "TypeSystemExplorer.Models, TypeSystemExplorer");
 			membraneDefNode.AppendChild(receptors);
@@ -615,6 +617,20 @@ namespace TypeSystemExplorer.Controllers
 					}
 				}
 			});
+
+			// Serialize membranes.
+
+			XmlNode permeabilities = xdoc.CreateElement("ixm", "Permeabilities", "TypeSystemExplorer.Models, TypeSystemExplorer");
+			membraneDefNode.AppendChild(permeabilities);
+
+			m.ProtocolPermeability.ForEach(kvp =>
+				{
+					XmlNode permeable = xdoc.CreateElement("ixm", "PermeabilityDef", "TypeSystemExplorer.Models, TypeSystemExplorer");
+					AddAttribute(permeable, "Protocol", kvp.Key);
+					AddAttribute(permeable, "Direction", kvp.Value.Direction.ToString());
+					AddAttribute(permeable, "Permeable", kvp.Value.Permeable.ToString());
+					permeabilities.AppendChild(permeable);
+				});
 
 			// Recurse into child membranes (if they have receptors.)
 			m.Membranes.ForEach(innerMembrane =>
@@ -672,6 +688,10 @@ namespace TypeSystemExplorer.Controllers
 						Program.Skin.CreateCarrier(null, protocol, signal);
 					});
 			}
+
+			// When we're all done, recreate the connections because the membrane permeability might have changed.
+			// TODO: Should this be an event the visualizer picks up on?
+			VisualizerController.View.UpdateConnections();
 		}
 
 		protected void DeserializeMembranes(MembraneDef membraneDef, Membrane membrane)
@@ -705,6 +725,18 @@ namespace TypeSystemExplorer.Controllers
 					}
 				}
 			});
+
+			// Load the permeability configuration.  We do this after loading the receptors, because
+			// this way the permeability has been initialized via the NewReceptor event hook.
+			membraneDef.Permeabilities.ForEach(p =>
+				{
+					if (!membrane.ProtocolPermeability.ContainsKey(p.Protocol))
+					{
+						membrane.ProtocolPermeability[p.Protocol] = new PermeabilityConfiguration() { Direction = p.Direction };
+					}
+
+					membrane.ProtocolPermeability[p.Protocol].Permeable = p.Permeable;
+				});
 
 			// Next, load the inner membrane and receptors.
 			membraneDef.Membranes.ForEach(innerMembraneDef =>

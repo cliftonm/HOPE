@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Dynamic;
@@ -15,11 +16,13 @@ using System.Windows.Forms;
 
 using Clifton.Drawing;
 using Clifton.ExtensionMethods;
+using Clifton.MycroParser;
+using Clifton.Tools.Strings.Extensions;
+
 using Clifton.Receptor;
 using Clifton.Receptor.Interfaces;
 using Clifton.SemanticTypeSystem;
 using Clifton.SemanticTypeSystem.Interfaces;
-using Clifton.Tools.Strings.Extensions;
 
 
 using TypeSystemExplorer.Controls;
@@ -235,6 +238,8 @@ namespace TypeSystemExplorer.Views
 		const int CarrierTime = 25; // 25 for 1 second delay.  50 for 2 second delay.
 		const int OrbitCountMax = 50;
 		const int MetadataHeight = 15;	// the row height for metadata text.
+		const int MembraneNumbRadius = 10;
+
 		protected Size ReceptorSize = new Size(40, 40);
 		protected Size ReceptorHalfSize = new Size(20, 20);
 		protected Point dropPoint;
@@ -302,11 +307,15 @@ namespace TypeSystemExplorer.Views
 		protected bool movingReceptor;
 		protected bool movingMembrane;
 		protected bool rubberBand;
+		protected bool dragSurface;
 		protected IReceptor selectedReceptor;
 		protected IMembrane selectedMembrane;
+		protected Point surfaceOffset = new Point(0, 0);
 		protected Point mouseStart;
 		protected Point mousePosition;
 		protected DateTime mouseHoverStartTime;
+
+		protected IMembrane membraneBeingConfigured;
 
 		protected Image pauseButton;
 		protected Image playButton;
@@ -373,6 +382,12 @@ namespace TypeSystemExplorer.Views
 		public void Reset()
 		{
 			InitializeCollections();
+			Invalidate(true);
+		}
+
+		public void UpdateConnections()
+		{
+			CreateReceptorConnections();
 			Invalidate(true);
 		}
 
@@ -710,7 +725,7 @@ namespace TypeSystemExplorer.Views
 			// TODO: We need to check if any receptors exist and whether any are hidden or not.  If it's hidden, then we don't create a carrier animation instance.
 			if (!ApplicationController.GetReceiveProtocols().Contains(e.Carrier.Protocol.DeclTypeName))
 			{
-				if (e.From == null)
+				if (e.From == Program.Skin["System"].Instance)
 				{
 					Point p = dropPoint;
 					
@@ -747,11 +762,13 @@ namespace TypeSystemExplorer.Views
 
 		protected void MouseDownEvent(object sender, MouseEventArgs args)
 		{
+			Point testPoint = NegativeSurfaceOffsetAdjust(args.Location);
+
 			if (args.Button == MouseButtons.Left)
 			{
 				CheckPlayPauseButtons(args.Location);
 
-				var selectedReceptors = receptorLocation.Where(kvp => CircleToBoundingRectangle(kvp.Value, ReceptorSize.Width/2).Contains(args.Location));
+				var selectedReceptors = receptorLocation.Where(kvp => CircleToBoundingRectangle(kvp.Value, ReceptorSize.Width/2).Contains(testPoint));
 
 				if (selectedReceptors.Count() > 0)
 				{
@@ -767,7 +784,7 @@ namespace TypeSystemExplorer.Views
 				}
 				else
 				{
-					var selectedMembranes = membraneLocation.Where(kvp => CircleToBoundingRectangle(kvp.Value.Center, 10).Contains(args.Location));
+					var selectedMembranes = membraneLocation.Where(kvp => CircleToBoundingRectangle(kvp.Value.Center, MembraneNumbRadius).Contains(testPoint));
 
 					if (selectedMembranes.Count() > 0)
 					{
@@ -790,6 +807,20 @@ namespace TypeSystemExplorer.Views
 					}
 				}
 			}
+			else if (args.Button == MouseButtons.Right)
+			{
+				// If no membrane is selected, move the entire surface.
+				var selectedMembranes = membraneLocation.Where(kvp => CircleToBoundingRectangle(SurfaceOffsetAdjust(kvp.Value.Center), MembraneNumbRadius).Contains(testPoint));
+
+				// Only move the surface if no membrane is selected.  
+				// TODO: Do we really need to do this?
+				if (selectedMembranes.Count() == 0)
+				{
+					dragSurface = true;
+					mouseStart = NegativeSurfaceOffsetAdjust(args.Location);
+					mousePosition = NegativeSurfaceOffsetAdjust(args.Location);
+				}
+			}
 		}
 
 		protected static Rectangle playButtonRect = new Rectangle(0, 0, 32, 32);
@@ -809,11 +840,14 @@ namespace TypeSystemExplorer.Views
 
 		protected void MouseUpEvent(object sender, MouseEventArgs args)
 		{
+			dragSurface = false;
+			Point testPoint = NegativeSurfaceOffsetAdjust(args.Location);
+
 			if (movingReceptor)
 			{
 				movingReceptor = false;
 
-				if ((selectedReceptor != null) && (!ClientRectangle.Contains(args.Location)))
+				if ((selectedReceptor != null) && (!ClientRectangle.Contains(testPoint)))
 				{
 					// Remove the receptor completely from the surface.
 					GetReceptorMembrane(selectedReceptor).Remove(selectedReceptor);
@@ -823,7 +857,7 @@ namespace TypeSystemExplorer.Views
 				{
 					// If the final position for the receptor is in a different membrane, move the receptor there.
 					Membrane sourceMembrane = GetReceptorMembrane(selectedReceptor);
-					Membrane destMembrane = (Membrane)GetMembraneAt(args.Location);
+					Membrane destMembrane = (Membrane)GetMembraneAt(testPoint);
 
 					if (sourceMembrane != destMembrane)
 					{
@@ -849,9 +883,10 @@ namespace TypeSystemExplorer.Views
 
 				// The containing rectangle.
 				Rectangle r = Rectangle.FromLTRB(Math.Min(mouseStart.X, mousePosition.X), Math.Min(mouseStart.Y, mousePosition.Y), Math.Max(mouseStart.X, mousePosition.X), Math.Max(mouseStart.Y, mousePosition.Y));
+				Rectangle testR = new Rectangle(NegativeSurfaceOffsetAdjust(r.Location), r.Size);
 
 				// Get receptors inside the rectangle, ignoring any hidden receptors--a defensive measure if we ever decide to show the system receptor.
-				List<IReceptor> receptors = receptorLocation.Where(kvp => r.Contains(kvp.Value) && !kvp.Key.Instance.IsHidden).Select(kvp => kvp.Key).ToList();
+				List<IReceptor> receptors = receptorLocation.Where(kvp => testR.Contains(kvp.Value) && !kvp.Key.Instance.IsHidden).Select(kvp => kvp.Key).ToList();
 
 				// Do we have any?
 				if (receptors.Count() > 0)
@@ -872,8 +907,8 @@ namespace TypeSystemExplorer.Views
 					{
 						// Not supported?
 					}
-
 				}
+				// else no receptors selected.
 
 				Invalidate(true);
 			}
@@ -946,6 +981,12 @@ namespace TypeSystemExplorer.Views
 			else if (rubberBand)
 			{
 				// Redraw the rubberband rectangle.
+				Invalidate(true);
+			}
+			else if (dragSurface)
+			{
+				base.OnMouseMove(args);
+				surfaceOffset = Point.Subtract(args.Location, new Size(mouseStart));
 				Invalidate(true);
 			}
 
@@ -1075,7 +1116,8 @@ namespace TypeSystemExplorer.Views
 
 		protected void MouseWheelEvent(object sender, MouseEventArgs args)
 		{
-			var hoverReceptors = receptorLocation.Where(kvp => (new Rectangle(Point.Subtract(kvp.Value, ReceptorHalfSize), ReceptorSize)).Contains(args.Location));
+			Point testPoint = NegativeSurfaceOffsetAdjust(args.Location);
+			var hoverReceptors = receptorLocation.Where(kvp => (new Rectangle(Point.Subtract(kvp.Value, ReceptorHalfSize), ReceptorSize)).Contains(testPoint));
 			IReceptor hoverReceptor = null;
 
 			if (hoverReceptors.Count() > 0)
@@ -1099,16 +1141,26 @@ namespace TypeSystemExplorer.Views
 		protected void MouseDoubleClickEvent(object sender, MouseEventArgs args)
 		{
 			Point p = args.Location;			// Mouse position
+			// view the active image?
+			// The selected image location is already adjusted for the surface offset.
 			bool match = TestCarouselActiveImageDoubleClick(p);
 
 			if (!match)
 			{
+				// Select image metadata?
+				// The selected image location is already adjusted for the surface offset.
 				match = TestImageMetadataDoubleClick(p);
 			}
 
 			if (!match)
 			{
-				match = TestReceptorDoubleClick(p);
+				// Enable/disable receptor?
+				match = TestReceptorDoubleClick(NegativeSurfaceOffsetAdjust(p));
+			}
+
+			if (!match)
+			{
+				match = TestMembraneDoubleClick(NegativeSurfaceOffsetAdjust(p));
 			}
 		}
 
@@ -1196,6 +1248,9 @@ namespace TypeSystemExplorer.Views
 			return false;
 		}
 
+		/// <summary>
+		/// Enable or disable the receptor being double-clicked.
+		/// </summary>
 		protected bool TestReceptorDoubleClick(Point p)
 		{
 			bool match = false;
@@ -1216,6 +1271,81 @@ namespace TypeSystemExplorer.Views
 			}
 
 			return match;
+		}
+
+		protected bool TestMembraneDoubleClick(Point p)
+		{
+			bool match = false;
+
+			// Double clicking on the surface outside of any membrane automatically selects the skin.
+			IMembrane membrane = GetMembraneAt(p);
+
+			// We ignore double-clicking on the skin.
+			if (membrane != Program.Skin)
+			{
+				// The grid we present to the user should look like this:
+				// Membrane: [name]
+				// Emits (outgoing):
+				// [emitted protocol name] [permeable Y/N] (outgoing)
+				// ...
+				// Awaits (incoming):
+				// [awaited protocol name] [permable Y/N] (incoming)
+
+				// TODO: Should the membrane's permeability list include protocols not currently part of its receptor list?
+				// At the moment, no.
+
+				membraneBeingConfigured = membrane;
+				Form form = MycroParser.InstantiateFromFile<Form>("membranePermeability.xml", null);
+
+				// Create a data table here.  There's probably a better place to do this.
+				// TODO: The first two columns are suppposed to be read-only.
+				DataTable dt = new DataTable();
+				dt.Columns.Add(new DataColumn("Protocol", typeof(string)));	
+				dt.Columns.Add(new DataColumn("Direction", typeof(string)));
+				dt.Columns.Add(new DataColumn("Permeable", typeof(bool)));
+
+				membrane.ProtocolPermeability.ForEach(kvp =>
+					{
+						DataRow row = dt.NewRow();
+						row[0] = kvp.Key;
+						row[1] = kvp.Value.Direction;
+						row[2] = kvp.Value.Permeable;
+						dt.Rows.Add(row);
+					});
+
+
+				// Setup the data source.
+				DataView dv = new DataView(dt);
+				((DataGridView)form.Controls[0]).DataSource = dv;
+				form.FormClosing += OnPermeabilityFormClosing;
+				
+				form.ShowDialog();
+			}
+
+			return match;
+		}
+
+		void OnPermeabilityFormClosing(object sender, FormClosingEventArgs e)
+		{
+			Form form = (Form)sender;
+			DataGridView dgv = (DataGridView)form.Controls[0];
+			dgv.EndEdit();
+			DataView dv = (DataView)dgv.DataSource;
+			dv.Table.AcceptChanges();
+
+			// Save any changes the user made to permeability.
+			dv.ForEach(row =>
+				{
+					string protocol = (string)row[0];
+					bool permeable = (bool)row[2];
+					membraneBeingConfigured.ProtocolPermeability[protocol].Permeable = permeable;
+				});
+
+			CreateReceptorConnections();
+
+			// Check queued receptors in all membranes.
+			membraneLocation.Keys.ForEach(m => m.ProcessQueuedCarriers());
+			Invalidate(true);
 		}
 
 		/// <summary>
@@ -1259,32 +1389,87 @@ namespace TypeSystemExplorer.Views
 		protected void CreateReceptorConnections()
 		{
 			receptorConnections = new List<Line>();
+			Program.MasterReceptorConnectionList.Clear();
 
 			// Iterate through all receptors.
 			receptorLocation.ForEach(kvp1 =>
 				{
 					Membrane m1 = GetReceptorMembrane(kvp1.Key);
-					// Iterate through receptors with a second search.
-					receptorLocation.ForEach(kvp2 =>
-						{
-							Membrane m2 = GetReceptorMembrane(kvp2.Key);
 
-							// Receptors must be in the same membrane.
-							if (m1 == m2)
-							{
-								// Get all the receive protocols of kvp1
-								kvp1.Key.Instance.GetReceiveProtocols().ForEach(prot1 =>
-									{
-										// If any match the emitted protocols of kvp2...
-										if (kvp2.Key.Instance.GetEmittedProtocols().Contains(prot1))
-										{
-											// Then these two receptors are connected.
-											receptorConnections.Add(new Line() { P1 = kvp1.Value, P2 = kvp2.Value });
-										}
-									});
-							}
+					// Get the emitted protocols of this receptor.
+					kvp1.Key.Instance.GetEmittedProtocols().ForEach(prot1 =>
+						{
+							FindConnectionsWith(kvp1.Key, m1, prot1, kvp1.Value);
 						});
 				});
+
+			// The "System" receptor can also be the originator of protocols.  Any protocol that the membrane's receptors receive protocols that aren't mapped to emitting receptors should be mapped to system.
+			// However, because carriers are dropped into a particular membrane, we can't just assign the global system receptor to a bunch of receiving receptors, as these could be in different membranes.
+			// the master receptor connection list is keyed by receptor instances in particular membranes, so this is ok.  The same cannot be said of the global system receptor.  Therefore, we have to
+			// rely on the receptor system's protocol map for unmapped receivers.
+
+			membraneLocation.Keys.ForEach(m => m.UpdateMasterConnectionList(Program.MasterReceptorConnectionList));
+			Program.Skin.UpdateMasterConnectionList(Program.MasterReceptorConnectionList);
+		}
+
+		protected void FindConnectionsWith(IReceptor r, IMembrane m1, string prot1, Point rPoint, IMembrane source = null)
+		{
+			// Iterate through receptors with a second search.
+			receptorLocation.ForEach(kvp2 =>
+			{
+				Membrane m2 = GetReceptorMembrane(kvp2.Key);
+
+				// Receptors must be in the same membrane.
+				if (m1 == m2)
+				{
+					// If any match the receive protocols of kvp2...
+					if (kvp2.Key.Instance.GetReceiveProtocols().Contains(prot1))
+					{
+						// Then these two receptors are connected.
+						receptorConnections.Add(new Line() { P1 = rPoint, P2 = kvp2.Value });
+
+						// Add this to the master connection list.
+						// TODO: THIS SHOULD NOT BE COMPUTED IN THE VISUALIZER!!!!
+						if (!Program.MasterReceptorConnectionList.ContainsKey(r))
+						{
+							Program.MasterReceptorConnectionList[r] = new List<IReceptor>();
+						}
+
+						Program.MasterReceptorConnectionList[r].Add(kvp2.Key);
+					}
+				}
+			});
+
+			// Does the membrane allow this receptor protocol to move out?
+			// Also, have we just come from the outer membrane, because we don't want to check it again as we
+			// recurse inner membranes.
+			if ( (m1.ProtocolPermeability.ContainsKey(prot1)) && (m1.ParentMembrane != source) )
+			{
+				// Yes it does, check this membrane's receptors 
+				// It must be an OUT direction, and it must be enabled.
+				if ( (m1.ProtocolPermeability[prot1].Direction == PermeabilityDirection.Out) && (m1.ProtocolPermeability[prot1].Permeable) )
+				{
+					// Check outer mebranes, passing ourselves as the "inner source" (m1)
+					FindConnectionsWith(r, m1.ParentMembrane, prot1, rPoint, m1);
+				}
+			}
+
+			// Check inner membranes other than the outer membrane we are coming from.
+			m1.Membranes.Where(m => m != source).ForEach(m =>
+				{
+					// Does the inner membrane allow IN permeability?
+					if (m.ProtocolPermeability.ContainsKey(prot1))
+					{
+						// Yes it does, check this membrane's receptors 
+						// It must be an OUT direction, and it must be enabled.
+						if ((m.ProtocolPermeability[prot1].Direction == PermeabilityDirection.In) && (m.ProtocolPermeability[prot1].Permeable))
+						{
+							// Check the inner membrane.
+							FindConnectionsWith(r, m, prot1, rPoint, m1);
+						}
+					}
+				});
+
 		}
 
 		/// <summary>
@@ -1416,7 +1601,7 @@ namespace TypeSystemExplorer.Views
 					{
 						// Draw the surrounding membrane.
 						GraphicsPath gp = new GraphicsPath();
-						Rectangle r = CircleToBoundingRectangle(m.Center, m.Radius);
+						Rectangle r = CircleToBoundingRectangle(SurfaceOffsetAdjust(m.Center), m.Radius);
 						r.Inflate(-20, -20);
 						gp.AddEllipse(r);
 						r.Inflate(20, 20);
@@ -1436,10 +1621,10 @@ namespace TypeSystemExplorer.Views
 
 						// Draw a nub at the center of the membrane.
 						gp = new GraphicsPath();
-						r = CircleToBoundingRectangle(m.Center, 10);
+						r = CircleToBoundingRectangle(SurfaceOffsetAdjust(m.Center), MembraneNumbRadius);
 						gp.AddEllipse(r);
 						pgb = new PathGradientBrush(gp);
-						pgb.CenterPoint = m.Center;
+						pgb.CenterPoint = SurfaceOffsetAdjust(m.Center);
 						pgb.CenterColor = Color.LightSlateGray;
 						pgb.SurroundColors = new Color[] { Color.Black };
 						e.Graphics.FillPath(pgb, gp);
@@ -1456,14 +1641,15 @@ namespace TypeSystemExplorer.Views
 				// Draw connecting lines first, everything else is overlayed on top.
 				receptorConnections.ForEach(line =>
 				{
-					e.Graphics.DrawLine(receptorLineColor, line.P1, line.P2);
+					e.Graphics.DrawLine(receptorLineColor, SurfaceOffsetAdjust(line.P1), SurfaceOffsetAdjust(line.P2));
 				});
 
+				// Draw receptors.
 				receptorLocation.ForEach(kvp =>
 					{
 						// red for disabled receptors, green for enabled.
 						Pen pen = kvp.Key.Enabled ? penColors[1] : penColors[0];
-						Point p = kvp.Value;
+						Point p = SurfaceOffsetAdjust(kvp.Value);
 						p.Offset(-ReceptorSize.Width / 2, -ReceptorSize.Height / 2);
 						Point bottom = p;
 						bottom.Offset(0, ReceptorSize.Height);
@@ -1490,7 +1676,7 @@ namespace TypeSystemExplorer.Views
 
 				flyouts.ForEach(f =>
 					{
-						e.Graphics.DrawString(f.Text, font, whiteBrush, f.Location);
+						e.Graphics.DrawString(f.Text, font, whiteBrush, SurfaceOffsetAdjust(f.Location));
 					});
 
 				// Show carriers with targets.
@@ -1510,10 +1696,10 @@ namespace TypeSystemExplorer.Views
 
 						Point[] triangle = new Point[] 
 					{ 
-						new Point(a.StartPosition.X + idx, a.StartPosition.Y + idy), 
-						new Point(a.StartPosition.X + idx - 5, a.StartPosition.Y + idy + 5), 
-						new Point(a.StartPosition.X + idx + 5, a.StartPosition.Y + idy + 5),
-						new Point(a.StartPosition.X + idx, a.StartPosition.Y + idy), 
+						SurfaceOffsetAdjust(new Point(a.StartPosition.X + idx, a.StartPosition.Y + idy)), 
+						SurfaceOffsetAdjust(new Point(a.StartPosition.X + idx - 5, a.StartPosition.Y + idy + 5)), 
+						SurfaceOffsetAdjust(new Point(a.StartPosition.X + idx + 5, a.StartPosition.Y + idy + 5)),
+						SurfaceOffsetAdjust(new Point(a.StartPosition.X + idx, a.StartPosition.Y + idy)), 
 					};
 
 						e.Graphics.DrawLines(penColors[3], triangle);
@@ -1534,10 +1720,10 @@ namespace TypeSystemExplorer.Views
 
 						Point[] triangle = new Point[] 
 					{ 
-						new Point(a.StartPosition.X + idx, a.StartPosition.Y + idy), 
-						new Point(a.StartPosition.X + idx - 5, a.StartPosition.Y + idy + 5), 
-						new Point(a.StartPosition.X + idx + 5, a.StartPosition.Y + idy + 5),
-						new Point(a.StartPosition.X + idx, a.StartPosition.Y + idy), 
+						SurfaceOffsetAdjust(new Point(a.StartPosition.X + idx, a.StartPosition.Y + idy)), 
+						SurfaceOffsetAdjust(new Point(a.StartPosition.X + idx - 5, a.StartPosition.Y + idy + 5)), 
+						SurfaceOffsetAdjust(new Point(a.StartPosition.X + idx + 5, a.StartPosition.Y + idy + 5)),
+						SurfaceOffsetAdjust(new Point(a.StartPosition.X + idx, a.StartPosition.Y + idy)), 
 					};
 
 						e.Graphics.DrawLines(penColors[3], triangle);
@@ -1648,7 +1834,7 @@ namespace TypeSystemExplorer.Views
 #if VIVEK
 				carousels.ForEach(kvp =>
 				{
-					Point p = receptorLocation[kvp.Key];
+					Point p = SurfaceOffsetAdjust(receptorLocation[kvp.Key]);
 					int imagesCount = kvp.Value.Images.Count;
 					int offset = kvp.Value.Offset;
 					int idx0 = 0;
@@ -1689,7 +1875,7 @@ namespace TypeSystemExplorer.Views
 
 					img = kvp.Value.Images[idx0].Image;
 					int sizeZ2 = 160;
-					Point rp = receptorLocation[kvp.Key];
+					Point rp = SurfaceOffsetAdjust(receptorLocation[kvp.Key]);
 					rp.Offset(-sizeZ2 / 2, 100);		// 100 is some arbitrary vertical offset for testing.
 					Rectangle location = new Rectangle(rp, new Size(sizeZ2, sizeZ2 * img.Height / img.Width));
 					e.Graphics.DrawImage(img, location);
@@ -1786,6 +1972,28 @@ namespace TypeSystemExplorer.Views
 		protected Rectangle CircleToBoundingRectangle(Point ctr, int radius)
 		{
 			return new Rectangle(ctr.X - radius, ctr.Y - radius, radius * 2, radius * 2);
+		}
+
+		/// <summary>
+		/// Returns a point adjusted (adding) for the surface offset.
+		/// </summary>
+		public Point SurfaceOffsetAdjust(Point src)
+		{
+			Point p = src;
+			p.Offset(surfaceOffset);
+
+			return p;
+		}
+
+		/// <summary>
+		/// Returns a point adjusted for the surface offset by subtracting the current surface offset.
+		/// </summary>
+		public Point NegativeSurfaceOffsetAdjust(Point src)
+		{
+			Point p = src;
+			p.Offset(-surfaceOffset.X, -surfaceOffset.Y);
+
+			return p;
 		}
 	}
 }

@@ -6,9 +6,11 @@ using System.Windows.Forms;
 using System.Xml.Linq;
 
 using Clifton.ApplicationStateManagement;
-using Clifton.Tools.Strings.Extensions;
 using Clifton.MycroParser;
+using Clifton.Tools.Strings.Extensions;
+
 using Clifton.Receptor;
+using Clifton.Receptor.Interfaces;
 using Clifton.SemanticTypeSystem;
 
 namespace TypeSystemExplorer
@@ -25,6 +27,9 @@ namespace TypeSystemExplorer
 		// The outermost membrane is called the "skin."
 
 		public static Membrane Skin;
+
+		// TODO: Eventually put this somewhere.
+		public static Dictionary<IReceptor, List<IReceptor>> MasterReceptorConnectionList = new Dictionary<IReceptor, List<IReceptor>>();
 
 		[STAThread]
 		static void Main()
