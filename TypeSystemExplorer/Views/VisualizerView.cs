@@ -425,7 +425,7 @@ namespace TypeSystemExplorer.Views
 				// TODO: This is not necessarily true.  The same carrier could be sourced by different receptors!
 				CarrierAnimationItem existing = carrierAnimations.FirstOrDefault(q => (q.Carrier == carrier) && (q.Target != null));
 
-				if (existing != null)
+				if (existing == null)
 				{
 					carrierAnimations.Add(new CarrierAnimationItem() { StartPosition = existing.StartPosition, OnArrivalDo = action, Target = to, Carrier = carrier });
 				}
@@ -1426,6 +1426,7 @@ namespace TypeSystemExplorer.Views
 					if (kvp2.Key.Instance.GetReceiveProtocols().Contains(prot1))
 					{
 						// Then these two receptors are connected.
+						// P1 is always the emitter, P2 is always the receiver.
 						receptorConnections.Add(new Line() { P1 = rPoint, P2 = kvp2.Value });
 
 						// Add this to the master connection list.
@@ -1639,12 +1640,38 @@ namespace TypeSystemExplorer.Views
 				e.Graphics.DrawImage(pauseButton, pauseButtonRect);
 
 				// Draw connecting lines first, everything else is overlayed on top.
+
 				receptorConnections.ForEach(line =>
 				{
-					e.Graphics.DrawLine(receptorLineColor, SurfaceOffsetAdjust(line.P1), SurfaceOffsetAdjust(line.P2));
+					// Just a straight line:
+					// e.Graphics.DrawLine(receptorLineColor, SurfaceOffsetAdjust(line.P1), SurfaceOffsetAdjust(line.P2));
+
+					// The source starting point of the line should be placed on the edge of the receptor.
+					double dx = line.P1.X - line.P2.X;
+					double dy = line.P1.Y - line.P2.Y;
+					double length = Math.Sqrt(dx * dx + dy * dy);
+
+					// Don't bother if the receptors are nearly on top of each other.
+					if (length > 2)
+					{
+						double ratio = 1.0 - (20 / length);
+						Point start = new Point((int)(dx * ratio + line.P2.X), (int)(dy * ratio + line.P2.Y));
+
+						double th = Math.Atan2(dy, dx);
+						double th1 = th + 3 * Math.PI / 4;  // 45 degree offset
+						double th2 = th + Math.PI / 4;  // 45 degree offset
+						Point cp1 = new Point((int)(40 * Math.Cos(th1) + start.X), ((int)(40 * Math.Sin(th1) + start.Y)));
+						Point cp2 = new Point((int)(40 * Math.Cos(th2) + line.P2.X), ((int)(40 * Math.Sin(th2) + line.P2.Y)));
+						e.Graphics.DrawBezier(receptorLineColor, SurfaceOffsetAdjust(start), SurfaceOffsetAdjust(cp1), SurfaceOffsetAdjust(cp2), SurfaceOffsetAdjust(line.P2));
+
+						Point ctr = SurfaceOffsetAdjust(line.P2);
+						// draw a small numb at the terminating point.
+						e.Graphics.FillEllipse(new SolidBrush(receptorLineColor.Color), new Rectangle(ctr.X - 3, ctr.Y - 3, 6, 6));
+					}
 				});
 
 				// Draw receptors.
+
 				receptorLocation.ForEach(kvp =>
 					{
 						// red for disabled receptors, green for enabled.
