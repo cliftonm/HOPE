@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Clifton.Receptor.Interfaces;
+
 /// Serializeable / Deserializable classes
 namespace TypeSystemExplorer.Models
 {
@@ -49,10 +51,20 @@ namespace TypeSystemExplorer.Models
 		}
 	}
 
+	public class PermeabilityDef
+	{
+		public string Protocol { get; set; }
+		public PermeabilityDirection Direction { get; set; }
+		public bool Permeable { get; set; }
+	}
+
 	public class MembraneDef
 	{
 		protected List<ReceptorDef> receptors;
 		protected List<MembraneDef> membranes;
+		protected List<PermeabilityDef> permeabilities;
+
+		public string Name { get; set; }
 
 		public List<ReceptorDef> Receptors
 		{
@@ -66,10 +78,17 @@ namespace TypeSystemExplorer.Models
 			set { membranes = value; }
 		}
 
+		public List<PermeabilityDef> Permeabilities
+		{
+			get { return permeabilities; }
+			set { permeabilities = value; }
+		}
+
 		public MembraneDef()
 		{
 			Receptors = new List<ReceptorDef>();
 			Membranes = new List<MembraneDef>();
+			Permeabilities = new List<PermeabilityDef>();
 		}
 	}
 

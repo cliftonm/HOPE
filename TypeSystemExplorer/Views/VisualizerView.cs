@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Dynamic;
@@ -15,11 +16,13 @@ using System.Windows.Forms;
 
 using Clifton.Drawing;
 using Clifton.ExtensionMethods;
+using Clifton.MycroParser;
+using Clifton.Tools.Strings.Extensions;
+
 using Clifton.Receptor;
 using Clifton.Receptor.Interfaces;
 using Clifton.SemanticTypeSystem;
 using Clifton.SemanticTypeSystem.Interfaces;
-using Clifton.Tools.Strings.Extensions;
 
 
 using TypeSystemExplorer.Controls;
@@ -312,6 +315,8 @@ namespace TypeSystemExplorer.Views
 		protected Point mousePosition;
 		protected DateTime mouseHoverStartTime;
 
+		protected IMembrane membraneBeingConfigured;
+
 		protected Image pauseButton;
 		protected Image playButton;
 
@@ -377,6 +382,12 @@ namespace TypeSystemExplorer.Views
 		public void Reset()
 		{
 			InitializeCollections();
+			Invalidate(true);
+		}
+
+		public void UpdateConnections()
+		{
+			CreateReceptorConnections();
 			Invalidate(true);
 		}
 
@@ -1146,6 +1157,11 @@ namespace TypeSystemExplorer.Views
 				// Enable/disable receptor?
 				match = TestReceptorDoubleClick(NegativeSurfaceOffsetAdjust(p));
 			}
+
+			if (!match)
+			{
+				match = TestMembraneDoubleClick(NegativeSurfaceOffsetAdjust(p));
+			}
 		}
 
 		protected bool TestCarouselActiveImageDoubleClick(Point p)
@@ -1257,6 +1273,78 @@ namespace TypeSystemExplorer.Views
 			return match;
 		}
 
+		protected bool TestMembraneDoubleClick(Point p)
+		{
+			bool match = false;
+
+			// Double clicking on the surface outside of any membrane automatically selects the skin.
+			IMembrane membrane = GetMembraneAt(p);
+
+			// We ignore double-clicking on the skin.
+			if (membrane != Program.Skin)
+			{
+				// The grid we present to the user should look like this:
+				// Membrane: [name]
+				// Emits (outgoing):
+				// [emitted protocol name] [permeable Y/N] (outgoing)
+				// ...
+				// Awaits (incoming):
+				// [awaited protocol name] [permable Y/N] (incoming)
+
+				// TODO: Should the membrane's permeability list include protocols not currently part of its receptor list?
+				// At the moment, no.
+
+				membraneBeingConfigured = membrane;
+				Form form = MycroParser.InstantiateFromFile<Form>("membranePermeability.xml", null);
+
+				// Create a data table here.  There's probably a better place to do this.
+				// TODO: The first two columns are suppposed to be read-only.
+				DataTable dt = new DataTable();
+				dt.Columns.Add(new DataColumn("Protocol", typeof(string)));	
+				dt.Columns.Add(new DataColumn("Direction", typeof(string)));
+				dt.Columns.Add(new DataColumn("Permeable", typeof(bool)));
+
+				membrane.ProtocolPermeability.ForEach(kvp =>
+					{
+						DataRow row = dt.NewRow();
+						row[0] = kvp.Key;
+						row[1] = kvp.Value.Direction;
+						row[2] = kvp.Value.Permeable;
+						dt.Rows.Add(row);
+					});
+
+
+				// Setup the data source.
+				DataView dv = new DataView(dt);
+				((DataGridView)form.Controls[0]).DataSource = dv;
+				form.FormClosing += OnPermeabilityFormClosing;
+				
+				form.ShowDialog();
+			}
+
+			return match;
+		}
+
+		void OnPermeabilityFormClosing(object sender, FormClosingEventArgs e)
+		{
+			Form form = (Form)sender;
+			DataGridView dgv = (DataGridView)form.Controls[0];
+			dgv.EndEdit();
+			DataView dv = (DataView)dgv.DataSource;
+			dv.Table.AcceptChanges();
+
+			// Save any changes the user made to permeability.
+			dv.ForEach(row =>
+				{
+					string protocol = (string)row[0];
+					bool permeable = (bool)row[2];
+					membraneBeingConfigured.ProtocolPermeability[protocol].Permeable = permeable;
+				});
+
+			CreateReceptorConnections();
+			Invalidate(true);
+		}
+
 		/// <summary>
 		/// The .NET MouseHoverEvent is f*cked.  It will not re-trigger until the mouse moves outside of the control.
 		/// Even that seems problematic.  So we have a manual implementation.  Possibly wiring the event to the ViewControl 
@@ -1303,27 +1391,64 @@ namespace TypeSystemExplorer.Views
 			receptorLocation.ForEach(kvp1 =>
 				{
 					Membrane m1 = GetReceptorMembrane(kvp1.Key);
-					// Iterate through receptors with a second search.
-					receptorLocation.ForEach(kvp2 =>
-						{
-							Membrane m2 = GetReceptorMembrane(kvp2.Key);
 
-							// Receptors must be in the same membrane.
-							if (m1 == m2)
-							{
-								// Get all the receive protocols of kvp1
-								kvp1.Key.Instance.GetReceiveProtocols().ForEach(prot1 =>
-									{
-										// If any match the emitted protocols of kvp2...
-										if (kvp2.Key.Instance.GetEmittedProtocols().Contains(prot1))
-										{
-											// Then these two receptors are connected.
-											receptorConnections.Add(new Line() { P1 = kvp1.Value, P2 = kvp2.Value });
-										}
-									});
-							}
+					// Get the emitted protocols of this receptor.
+					kvp1.Key.Instance.GetEmittedProtocols().ForEach(prot1 =>
+						{
+							FindConnectionsWith(m1, prot1, kvp1.Value);
 						});
 				});
+		}
+
+		protected void FindConnectionsWith(IMembrane m1, string prot1, Point rPoint, IMembrane source = null)
+		{
+			// Iterate through receptors with a second search.
+			receptorLocation.ForEach(kvp2 =>
+			{
+				Membrane m2 = GetReceptorMembrane(kvp2.Key);
+
+				// Receptors must be in the same membrane.
+				if (m1 == m2)
+				{
+					// If any match the receive protocols of kvp2...
+					if (kvp2.Key.Instance.GetReceiveProtocols().Contains(prot1))
+					{
+						// Then these two receptors are connected.
+						receptorConnections.Add(new Line() { P1 = rPoint, P2 = kvp2.Value });
+					}
+				}
+			});
+
+			// Does the membrane allow this receptor protocol to move out?
+			// Also, have we just come from the outer membrane, because we don't want to check it again as we
+			// recurse inner membranes.
+			if ( (m1.ProtocolPermeability.ContainsKey(prot1)) && (m1.ParentMembrane != source) )
+			{
+				// Yes it does, check this membrane's receptors 
+				// It must be an OUT direction, and it must be enabled.
+				if ( (m1.ProtocolPermeability[prot1].Direction == PermeabilityDirection.Out) && (m1.ProtocolPermeability[prot1].Permeable) )
+				{
+					// Check outer mebranes, passing ourselves as the "inner source" (m1)
+					FindConnectionsWith(m1.ParentMembrane, prot1, rPoint, m1);
+				}
+			}
+
+			// Check inner membranes other than the outer membrane we are coming from.
+			m1.Membranes.Where(m => m != source).ForEach(m =>
+				{
+					// Does the inner membrane allow IN permeability?
+					if (m.ProtocolPermeability.ContainsKey(prot1))
+					{
+						// Yes it does, check this membrane's receptors 
+						// It must be an OUT direction, and it must be enabled.
+						if ((m.ProtocolPermeability[prot1].Direction == PermeabilityDirection.In) && (m.ProtocolPermeability[prot1].Permeable))
+						{
+							// Check the inner membrane.
+							FindConnectionsWith(m, prot1, rPoint, m1);
+						}
+					}
+				});
+
 		}
 
 		/// <summary>

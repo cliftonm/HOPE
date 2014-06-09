@@ -58,6 +58,21 @@ namespace Clifton.Receptor.Interfaces
 		bool Enabled { get; set; }
 	}
 
+	/// <summary>
+	/// A membrane has permeability to protocols.
+	/// </summary>
+	public enum PermeabilityDirection
+	{
+		In,
+		Out,
+	}
+
+	public class PermeabilityConfiguration
+	{
+		public PermeabilityDirection Direction { get; set; }
+		public bool Permeable { get; set; }
+	}
+
 	public interface IMembrane
 	{
 		event EventHandler<MembraneEventArgs> NewMembrane;
@@ -65,16 +80,24 @@ namespace Clifton.Receptor.Interfaces
 		event EventHandler<NewCarrierEventArgs> NewCarrier;
 		event EventHandler<ReceptorEventArgs> ReceptorRemoved;
 
+		string Name { get; set; }
 		ISemanticTypeSystem SemanticTypeSystem { get; }
+		List<IMembrane> Membranes { get; }
+		ReadOnlyCollection<IReceptor> Receptors { get; }
+		Dictionary<string, PermeabilityConfiguration> ProtocolPermeability { get; }
+
 		ICarrier CreateCarrier(IReceptorInstance from, ISemanticTypeStruct protocol, dynamic signal);
 		void CreateCarrierIfReceiver(IReceptorInstance from, ISemanticTypeStruct protocol, dynamic signal);
 		ICarrier CreateInternalCarrier(ISemanticTypeStruct protocol, dynamic signal);
 		void Remove(IReceptorInstance receptorInstance);
-		ReadOnlyCollection<IReceptor> Receptors { get; }
+		void Reset();
 		void Dissolve();
 		void RegisterReceptor(string fn);
 		void RegisterReceptor(string name, IReceptorInstance instance);
 		void LoadReceptors(Action<IReceptor> afterRegister = null);
-		// IMembrane ParentMembrane { get; }
+		
+		IMembrane ParentMembrane { get; }
+		List<string> GetEmittedProtocols();
+		List<string> GetListeningProtocols();
 	}
 }
