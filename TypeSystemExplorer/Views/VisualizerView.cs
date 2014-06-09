@@ -165,7 +165,7 @@ namespace TypeSystemExplorer.Views
 		}
 	}
 
-	public class Line
+	public struct Line
 	{
 		public Point P1 {get;set;}
 		public Point P2 {get;set;}
@@ -1428,7 +1428,13 @@ namespace TypeSystemExplorer.Views
 					{
 						// Then these two receptors are connected.
 						// P1 is always the emitter, P2 is always the receiver.
-						receptorConnections.Add(new Line() { P1 = rPoint, P2 = kvp2.Value });
+						Line l = new Line() { P1 = rPoint, P2 = kvp2.Value };
+
+						// TODO: Yuck - there must be a better way of dealing with duplicates.
+						if (!receptorConnections.Contains(l))
+						{
+							receptorConnections.Add(l);
+						}
 
 						// Add this to the master connection list.
 						// TODO: THIS SHOULD NOT BE COMPUTED IN THE VISUALIZER!!!!
@@ -1437,7 +1443,11 @@ namespace TypeSystemExplorer.Views
 							Program.MasterReceptorConnectionList[r] = new List<IReceptor>();
 						}
 
-						Program.MasterReceptorConnectionList[r].Add(kvp2.Key);
+						// TODO: Yuck - there must be a better way of dealing with duplicates.
+						if (!Program.MasterReceptorConnectionList[r].Contains(kvp2.Key))
+						{
+							Program.MasterReceptorConnectionList[r].Add(kvp2.Key);
+						}
 					}
 				}
 			});
