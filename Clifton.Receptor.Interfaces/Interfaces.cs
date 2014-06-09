@@ -99,5 +99,7 @@ namespace Clifton.Receptor.Interfaces
 		IMembrane ParentMembrane { get; }
 		List<string> GetEmittedProtocols();
 		List<string> GetListeningProtocols();
+
+		void UpdateMasterConnectionList(Dictionary<IReceptor, List<IReceptor>> masterList);
 	}
 }

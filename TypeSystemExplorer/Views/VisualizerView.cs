@@ -725,7 +725,7 @@ namespace TypeSystemExplorer.Views
 			// TODO: We need to check if any receptors exist and whether any are hidden or not.  If it's hidden, then we don't create a carrier animation instance.
 			if (!ApplicationController.GetReceiveProtocols().Contains(e.Carrier.Protocol.DeclTypeName))
 			{
-				if (e.From == null)
+				if (e.From == Program.Skin["System"].Instance)
 				{
 					Point p = dropPoint;
 					
@@ -1386,6 +1386,7 @@ namespace TypeSystemExplorer.Views
 		protected void CreateReceptorConnections()
 		{
 			receptorConnections = new List<Line>();
+			Program.MasterReceptorConnectionList.Clear();
 
 			// Iterate through all receptors.
 			receptorLocation.ForEach(kvp1 =>
@@ -1395,12 +1396,20 @@ namespace TypeSystemExplorer.Views
 					// Get the emitted protocols of this receptor.
 					kvp1.Key.Instance.GetEmittedProtocols().ForEach(prot1 =>
 						{
-							FindConnectionsWith(m1, prot1, kvp1.Value);
+							FindConnectionsWith(kvp1.Key, m1, prot1, kvp1.Value);
 						});
 				});
+
+			// The "System" receptor can also be the originator of protocols.  Any protocol that the membrane's receptors receive protocols that aren't mapped to emitting receptors should be mapped to system.
+			// However, because carriers are dropped into a particular membrane, we can't just assign the global system receptor to a bunch of receiving receptors, as these could be in different membranes.
+			// the master receptor connection list is keyed by receptor instances in particular membranes, so this is ok.  The same cannot be said of the global system receptor.  Therefore, we have to
+			// rely on the receptor system's protocol map for unmapped receivers.
+
+			membraneLocation.Keys.ForEach(m => m.UpdateMasterConnectionList(Program.MasterReceptorConnectionList));
+			Program.Skin.UpdateMasterConnectionList(Program.MasterReceptorConnectionList);
 		}
 
-		protected void FindConnectionsWith(IMembrane m1, string prot1, Point rPoint, IMembrane source = null)
+		protected void FindConnectionsWith(IReceptor r, IMembrane m1, string prot1, Point rPoint, IMembrane source = null)
 		{
 			// Iterate through receptors with a second search.
 			receptorLocation.ForEach(kvp2 =>
@@ -1415,6 +1424,15 @@ namespace TypeSystemExplorer.Views
 					{
 						// Then these two receptors are connected.
 						receptorConnections.Add(new Line() { P1 = rPoint, P2 = kvp2.Value });
+
+						// Add this to the master connection list.
+						// TODO: THIS SHOULD NOT BE COMPUTED IN THE VISUALIZER!!!!
+						if (!Program.MasterReceptorConnectionList.ContainsKey(r))
+						{
+							Program.MasterReceptorConnectionList[r] = new List<IReceptor>();
+						}
+
+						Program.MasterReceptorConnectionList[r].Add(kvp2.Key);
 					}
 				}
 			});
@@ -1429,7 +1447,7 @@ namespace TypeSystemExplorer.Views
 				if ( (m1.ProtocolPermeability[prot1].Direction == PermeabilityDirection.Out) && (m1.ProtocolPermeability[prot1].Permeable) )
 				{
 					// Check outer mebranes, passing ourselves as the "inner source" (m1)
-					FindConnectionsWith(m1.ParentMembrane, prot1, rPoint, m1);
+					FindConnectionsWith(r, m1.ParentMembrane, prot1, rPoint, m1);
 				}
 			}
 
@@ -1444,7 +1462,7 @@ namespace TypeSystemExplorer.Views
 						if ((m.ProtocolPermeability[prot1].Direction == PermeabilityDirection.In) && (m.ProtocolPermeability[prot1].Permeable))
 						{
 							// Check the inner membrane.
-							FindConnectionsWith(m, prot1, rPoint, m1);
+							FindConnectionsWith(r, m, prot1, rPoint, m1);
 						}
 					}
 				});

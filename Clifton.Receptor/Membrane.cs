@@ -47,6 +47,8 @@ namespace Clifton.Receptor
 
 		public IMembrane ParentMembrane { get; protected set; }
 
+		public IReceptor this[string name] { get { return receptorSystem[name]; } }
+
 		protected ReceptorsContainer receptorSystem;
 		protected ISemanticTypeSystem semanticTypeSystem;
 
@@ -72,6 +74,12 @@ namespace Clifton.Receptor
 			receptorSystem.Reset();
 			Membranes.Clear();
 			ProtocolPermeability.Clear();
+		}
+
+		// TODO: The receptors container should acquire this list, rather than it being set.
+		public void UpdateMasterConnectionList(Dictionary<IReceptor, List<IReceptor>> masterList)
+		{
+			receptorSystem.MasterReceptorConnectionList = masterList;
 		}
 
 		public void LoadReceptors(Action<IReceptor> afterRegister = null)
