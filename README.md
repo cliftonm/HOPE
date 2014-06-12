@@ -16,7 +16,9 @@ Screenshots
 
 ![APOD Viewer](http://www.codeproject.com/KB/cs/781135/M33.png)
 
-![Membrane Computing using HOPE](https://marcclifton.files.wordpress.com/2014/06/membranes.png)
+* Membrane Computing (release 6-9-2014):
+
+![Membrane Computing](https://marcclifton.files.wordpress.com/2014/06/membranes.png)
 
 Demos
 ----
@@ -59,10 +61,8 @@ License
 
 MIT
 
-
-
-
 [Introduction]:http://youtu.be/O1V4XSYYNxs
 [An APOD Website Scraper]:http://youtu.be/NdapAL2tt7w
 [Introductory Article]: http://www.codeproject.com/Articles/777843/HOPE-Higher-Order-Programming-Environment
 [APOD Scraper Article]:http://www.codeproject.com/Articles/781135/APOD-Website-Scraper-a-HOPE-demonstration
+[Membrane Computing]:http://en.wikipedia.org/wiki/Membrane_computing
