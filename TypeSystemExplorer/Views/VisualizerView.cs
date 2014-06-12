@@ -1346,6 +1346,9 @@ namespace TypeSystemExplorer.Views
 
 			// Check queued receptors in all membranes.
 			membraneLocation.Keys.ForEach(m => m.ProcessQueuedCarriers());
+			// The skin, not part of this collection, needs its queued carriers checked as well.
+			Program.Skin.ProcessQueuedCarriers();
+
 			Invalidate(true);
 		}
 
@@ -1509,21 +1512,16 @@ namespace TypeSystemExplorer.Views
 				// System receptors are hidden.
 				if (!r.Instance.IsHidden)
 				{
-					if (!receptorLocation.ContainsKey(r))
-					{
-						System.Diagnostics.Debugger.Break();
-					}
-
 					Point p = receptorLocation[r];
 					cx += p.X;
 					cy += p.Y;
 					++count;
 				}
+			}
 
-				foreach (Membrane inner in m.Membranes)
-				{
-					GetCenter(inner, ref cx, ref cy, ref count);
-				}
+			foreach (Membrane inner in m.Membranes)
+			{
+				GetCenter(inner, ref cx, ref cy, ref count);
 			}
 		}
 
@@ -1544,11 +1542,11 @@ namespace TypeSystemExplorer.Views
 						radius = dist;
 					}
 				}
+			}
 
-				foreach (Membrane inner in m.Membranes)
-				{
-					GetMaxRadius(inner, cx, cy, ref radius);
-				}
+			foreach (Membrane inner in m.Membranes)
+			{
+				GetMaxRadius(inner, cx, cy, ref radius);
 			}
 		}
 
@@ -1572,6 +1570,7 @@ namespace TypeSystemExplorer.Views
 						// Recurse into inner membranes as well.
 						GetCenter(m, ref cx, ref cy, ref count);
 
+						// You can't have a membrane without receptors, so count is always non-zero.
 						cx /= count;
 						cy /= count;
 

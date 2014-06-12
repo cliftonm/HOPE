@@ -435,7 +435,11 @@ namespace TypeSystemExplorer.Controllers
 			try
 			{
 				Program.SemanticTypeSystem.Parse(XmlEditorController.View.Editor.Document.TextContent);
-				SemanticTypeTreeController.View.Update(Program.SemanticTypeSystem);
+
+				if (SemanticTypeTreeController != null)
+				{
+					SemanticTypeTreeController.View.Update(Program.SemanticTypeSystem);
+				}
 			}
 			catch (Exception ex)
 			{
