@@ -16,6 +16,8 @@ Screenshots
 
 ![APOD Viewer](http://www.codeproject.com/KB/cs/781135/M33.png)
 
+![Membrane Computing using HOPE](https://marcclifton.files.wordpress.com/2014/06/membranes.png)
+
 Demos
 ----
 
