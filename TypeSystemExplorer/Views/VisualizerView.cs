@@ -1346,6 +1346,9 @@ namespace TypeSystemExplorer.Views
 
 			// Check queued receptors in all membranes.
 			membraneLocation.Keys.ForEach(m => m.ProcessQueuedCarriers());
+			// The skin, not part of this collection, needs its queued carriers checked as well.
+			Program.Skin.ProcessQueuedCarriers();
+
 			Invalidate(true);
 		}
 
