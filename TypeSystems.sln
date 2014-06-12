@@ -5,8 +5,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TypeSystemExplorer", "TypeS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clifton.SemanticTypeSystem", "Clifton.SemanticTypeSystem\Clifton.SemanticTypeSystem.csproj", "{90A2EFB2-3EA4-4FEB-A21E-4AE15B3EC82B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clifton.DockableWindows", "Clifton.DockableWindows\Clifton.DockableWindows.csproj", "{1E6042D4-EB42-4096-A853-ACD2B30D55D7}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinFormsUI", "Clifton.DockableWindows\WinFormsUI\WinFormsUI.csproj", "{C75532C4-765B-418E-B09B-46D36B2ABDB1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "lib", "lib\lib.csproj", "{D1627A50-1C2B-4E28-AC6C-AB437B0138B4}"
@@ -81,12 +79,6 @@ Global
 		{90A2EFB2-3EA4-4FEB-A21E-4AE15B3EC82B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{90A2EFB2-3EA4-4FEB-A21E-4AE15B3EC82B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{90A2EFB2-3EA4-4FEB-A21E-4AE15B3EC82B}.Release|x86.ActiveCfg = Release|Any CPU
-		{1E6042D4-EB42-4096-A853-ACD2B30D55D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1E6042D4-EB42-4096-A853-ACD2B30D55D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1E6042D4-EB42-4096-A853-ACD2B30D55D7}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{1E6042D4-EB42-4096-A853-ACD2B30D55D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1E6042D4-EB42-4096-A853-ACD2B30D55D7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1E6042D4-EB42-4096-A853-ACD2B30D55D7}.Release|x86.ActiveCfg = Release|Any CPU
 		{C75532C4-765B-418E-B09B-46D36B2ABDB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C75532C4-765B-418E-B09B-46D36B2ABDB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C75532C4-765B-418E-B09B-46D36B2ABDB1}.Debug|x86.ActiveCfg = Debug|x86

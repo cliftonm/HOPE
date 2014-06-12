@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -127,10 +128,13 @@ namespace Clifton.ApplicationStateManagement
 		/// </summary>
 		public void ReadState(string filename)
 		{
-			XmlSerializer xs = new XmlSerializer(typeof(ApplicationState));
-			XmlTextReader xtr = new XmlTextReader(filename);
-			appState = xs.Deserialize(xtr) as ApplicationState;
-			xtr.Close();
+			if (File.Exists(filename))
+			{
+				XmlSerializer xs = new XmlSerializer(typeof(ApplicationState));
+				XmlTextReader xtr = new XmlTextReader(filename);
+				appState = xs.Deserialize(xtr) as ApplicationState;
+				xtr.Close();
+			}
 		}
 
 		/// <summary>
