@@ -288,7 +288,7 @@ namespace Clifton.Receptor
 		public void Remove(IReceptorInstance receptorInstance)
 		{
 			// Clone the list because the master list will change.
-			receptors.Remove((Receptor)ReceptorFromInstance(receptorInstance));
+			Remove((Receptor)ReceptorFromInstance(receptorInstance));
 		}
 
 		/// <summary>

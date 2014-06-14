@@ -14,6 +14,9 @@ namespace Clifton.Receptor.Interfaces
 	/// </summary>
 	public interface IReceptorInstance
 	{
+		event EventHandler<EventArgs> ReceiveProtocolsChanged;
+		event EventHandler<EventArgs> EmitProtocolsChanged;
+
 		string Name { get; }
 		bool IsEdgeReceptor { get; }
 		bool IsHidden { get; }

@@ -844,6 +844,11 @@ namespace TypeSystemExplorer.Controllers
 
 		// We are ourselves a receptor!
 
+#pragma warning disable 67
+		public event EventHandler<EventArgs> ReceiveProtocolsChanged;
+		public event EventHandler<EventArgs> EmitProtocolsChanged;
+#pragma warning restore 67
+
 		public string Name { get { return "System"; } }
 		public bool IsEdgeReceptor { get { return false; } }
 		public bool IsHidden { get { return true; } }

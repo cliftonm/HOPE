@@ -19,6 +19,11 @@ namespace CarrierExporterReceptor
 	/// </summary>
 	public class ReceptorDefinition : IReceptorInstance
 	{
+#pragma warning disable 67
+		public event EventHandler<EventArgs> ReceiveProtocolsChanged;
+		public event EventHandler<EventArgs> EmitProtocolsChanged;
+#pragma warning restore 67
+
 		public string Name { get { return "Carrier Exporter"; } }
 		public bool IsEdgeReceptor { get { return true; } }
 		public bool IsHidden { get { return false; } }
