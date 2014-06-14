@@ -79,7 +79,7 @@ namespace HuntTheWumpus
 							});
 					});
 
-				// rsys.Remove(this);
+				rsys.Remove(this);
 			}
 		}
 
