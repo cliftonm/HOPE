@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{6873FE54-25CA-4C2F-BF91-FC10993F8F50}</ProjectGuid>
+    <ProjectGuid>{0464CC7F-D2A8-44DC-A9DE-9C71059B7C19}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Clifton.Receptor.Interfaces</RootNamespace>
-    <AssemblyName>Clifton.Receptor.Interfaces</AssemblyName>
+    <RootNamespace>CaveReceptor</RootNamespace>
+    <AssemblyName>CaveReceptor</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -39,22 +39,27 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BaseReceptor.cs" />
-    <Compile Include="EventArgs.cs" />
-    <Compile Include="Interfaces.cs" />
+    <Compile Include="CaveReceptor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Clifton.SemanticTypeSystem.Interfaces\Clifton.SemanticTypeSystem.Interfaces.csproj">
+    <ProjectReference Include="..\..\..\Clifton.Receptor.Interfaces\Clifton.Receptor.Interfaces.csproj">
+      <Project>{6873fe54-25ca-4c2f-bf91-fc10993f8f50}</Project>
+      <Name>Clifton.Receptor.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Clifton.SemanticTypeSystem.Interfaces\Clifton.SemanticTypeSystem.Interfaces.csproj">
       <Project>{1fb6a5d3-6cda-4262-a40c-d4724ba5e2e1}</Project>
       <Name>Clifton.SemanticTypeSystem.Interfaces</Name>
     </ProjectReference>
-    <ProjectReference Include="..\lib\lib.csproj">
+    <ProjectReference Include="..\..\..\lib\lib.csproj">
       <Project>{d1627a50-1c2b-4e28-ac6c-ab437b0138b4}</Project>
       <Name>lib</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy CaveReceptor.dll ..\..\..\..\..\TypeSystemExplorer\bin\Debug</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

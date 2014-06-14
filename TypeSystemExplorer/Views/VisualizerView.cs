@@ -169,6 +169,26 @@ namespace TypeSystemExplorer.Views
 	{
 		public Point P1 {get;set;}
 		public Point P2 {get;set;}
+
+		public static bool operator ==(Line a, Line b)
+		{
+			return (a.P1 == b.P1) && (a.P2 == b.P2);
+		}
+
+		public static bool operator !=(Line a, Line b)
+		{
+			return (a.P1 != b.P1) || (a.P2 != b.P2);
+		}
+
+		public override bool Equals(object obj)
+		{
+			return ((Line)obj) == this;
+		}
+
+		public override int GetHashCode()
+		{
+			return base.GetHashCode();
+		}
 	}
 
 	public class FlyoutItem
@@ -232,6 +252,12 @@ namespace TypeSystemExplorer.Views
 		public int Radius { get; set; }
 	}
 
+	public struct Connection
+	{
+		public string Protocol { get; set; }
+		public Line Line { get; set; }
+	}
+
 	public class VisualizerView : UserControl
 	{
 		const int RenderTime = 120;
@@ -289,7 +315,7 @@ namespace TypeSystemExplorer.Views
 		protected List<FlyoutItem> flyouts;
 		protected List<CarrierAnimationItem> carrierAnimations;
 		protected Dictionary<IReceptor, CarouselState> carousels;
-		protected List<Line> receptorConnections;
+		protected List<Connection> receptorConnections;
 
 		protected Brush blackBrush;
 		protected Brush whiteBrush;
@@ -331,6 +357,8 @@ namespace TypeSystemExplorer.Views
 		protected bool shakeOK;			// Used to stop further "pops".
 
 		protected Pen receptorLineColor = new Pen(Color.Cyan); // new Pen(Color.FromArgb(40, 40, 60));
+		protected Pen receptorLineColor2 = new Pen(Color.Orange); // new Pen(Color.FromArgb(40, 40, 60));
+		protected Pen receptorLineColor3 = new Pen(Color.Pink); // new Pen(Color.FromArgb(40, 40, 60));
 
 		public VisualizerView()
 		{
@@ -404,7 +432,7 @@ namespace TypeSystemExplorer.Views
 			flyouts = new List<FlyoutItem>();
 			carrierAnimations = new List<CarrierAnimationItem>();
 			carousels = new Dictionary<IReceptor, CarouselState>();
-			receptorConnections = new List<Line>();
+			receptorConnections = new List<Connection>();
 		}
 
 		public void Flyout(string msg, IReceptorInstance receptorInstance)
@@ -713,11 +741,21 @@ namespace TypeSystemExplorer.Views
 
 			if (!e.Receptor.Instance.IsHidden)
 			{
+				e.Receptor.Instance.EmitProtocolsChanged += ProtocolsChanged;
+				e.Receptor.Instance.ReceiveProtocolsChanged+= ProtocolsChanged;
+
 				receptorLocation[e.Receptor] = p;
 				CreateReceptorConnections();
 				RecalcMembranes();
 				Invalidate(true);
 			}
+		}
+
+		protected void ProtocolsChanged(object sender, EventArgs e)
+		{
+			CreateReceptorConnections();
+			Program.Skin.ProcessQueuedCarriers();
+			Invalidate(true);
 		}
 
 		protected void OnNewCarrier(object sender, NewCarrierEventArgs e)
@@ -1392,7 +1430,7 @@ namespace TypeSystemExplorer.Views
 		/// </summary>
 		protected void CreateReceptorConnections()
 		{
-			receptorConnections = new List<Line>();
+			receptorConnections = new List<Connection>();
 			Program.MasterReceptorConnectionList.Clear();
 
 			// Iterate through all receptors.
@@ -1434,9 +1472,10 @@ namespace TypeSystemExplorer.Views
 						Line l = new Line() { P1 = rPoint, P2 = kvp2.Value };
 
 						// TODO: Yuck - there must be a better way of dealing with duplicates.
-						if (!receptorConnections.Contains(l))
+						Connection conn = new Connection() { Protocol = prot1, Line = l };
+						if (!receptorConnections.Any(rc => rc.Line == l))
 						{
-							receptorConnections.Add(l);
+							receptorConnections.Add(conn);
 						}
 
 						// Add this to the master connection list.
@@ -1651,8 +1690,24 @@ namespace TypeSystemExplorer.Views
 
 				// Draw connecting lines first, everything else is overlayed on top.
 
-				receptorConnections.ForEach(line =>
+				receptorConnections.ForEach(conn =>
 				{
+					Line line = conn.Line;
+					Pen pen;
+
+					switch (conn.Protocol)
+					{
+						case "Text":
+							pen = receptorLineColor2;
+							break;
+						case "HW_Player":
+						case "HW_MoveTo":
+							pen = receptorLineColor3;
+							break;
+						default:
+							pen = receptorLineColor;
+							break;
+					}
 					// Just a straight line:
 					// e.Graphics.DrawLine(receptorLineColor, SurfaceOffsetAdjust(line.P1), SurfaceOffsetAdjust(line.P2));
 
@@ -1672,11 +1727,11 @@ namespace TypeSystemExplorer.Views
 						double th2 = th + Math.PI / 4;  // 45 degree offset
 						Point cp1 = new Point((int)(40 * Math.Cos(th1) + start.X), ((int)(40 * Math.Sin(th1) + start.Y)));
 						Point cp2 = new Point((int)(40 * Math.Cos(th2) + line.P2.X), ((int)(40 * Math.Sin(th2) + line.P2.Y)));
-						e.Graphics.DrawBezier(receptorLineColor, SurfaceOffsetAdjust(start), SurfaceOffsetAdjust(cp1), SurfaceOffsetAdjust(cp2), SurfaceOffsetAdjust(line.P2));
+						e.Graphics.DrawBezier(pen, SurfaceOffsetAdjust(start), SurfaceOffsetAdjust(cp1), SurfaceOffsetAdjust(cp2), SurfaceOffsetAdjust(line.P2));
 
 						Point ctr = SurfaceOffsetAdjust(line.P2);
 						// draw a small numb at the terminating point.
-						e.Graphics.FillEllipse(new SolidBrush(receptorLineColor.Color), new Rectangle(ctr.X - 3, ctr.Y - 3, 6, 6));
+						e.Graphics.FillEllipse(new SolidBrush(pen.Color), new Rectangle(ctr.X - 3, ctr.Y - 3, 6, 6));
 					}
 				});
 

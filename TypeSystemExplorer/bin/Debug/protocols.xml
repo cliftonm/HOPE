@@ -553,5 +553,582 @@
     </SemanticTypeStruct>
 
     <!-- ==== -->
+
+    <!-- ======================== HUNT THE WUMPUS ========================== -->
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="HW_WhereAmI"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="HW_WhereAmI">
+      <Attributes>
+        <NativeType Name="ID" ImplementingType="Guid"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="HW_YouAre"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="HW_YouAre">
+      <Attributes>
+        <NativeType Name="ID" ImplementingType="Guid"/>
+        <NativeType Name="CaveNumber" ImplementingType="int"/>
+        <NativeType Name="AdjoiningCave1" ImplementingType="int"/>
+        <NativeType Name="AdjoiningCave2" ImplementingType="int"/>
+        <NativeType Name="AdjoiningCave3" ImplementingType="int"/>
+        <NativeType Name="HasBottomlessPit" ImplementingType="bool"/>
+        <NativeType Name="HasSuperBats" ImplementingType="bool"/>
+        <NativeType Name="HasWumpus" ImplementingType="bool"/>
+        <NativeType Name="HasPlayer" ImplementingType="bool"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="HW_Player"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="HW_Player">
+      <Attributes>
+        <NativeType Name="CaveNumber" ImplementingType="int"/>
+        <NativeType Name="AdjoiningCave1" ImplementingType="int"/>
+        <NativeType Name="AdjoiningCave2" ImplementingType="int"/>
+        <NativeType Name="AdjoiningCave3" ImplementingType="int"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="HW_GameState"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="HW_GameState">
+      <Attributes>
+        <NativeType Name="PlayerEatenByWumpus" ImplementingType="bool"/>
+        <NativeType Name="SuperBatSnatch" ImplementingType="bool"/>
+        <NativeType Name="PlayerFellIntoPit" ImplementingType="bool"/>
+        <NativeType Name="WumpusIsDead" ImplementingType="bool"/>
+        <NativeType Name="PlayerShotSelf" ImplementingType="bool"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="HW_MoveTo"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="HW_MoveTo">
+      <Attributes>
+        <NativeType Name="NewCaveNumber" ImplementingType="int"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="HW_ShootInto"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="HW_ShootInto">
+      <Attributes>
+        <NativeType Name="CaveNumber" ImplementingType="int"/>
+        <NativeType Name="RemainingLife" ImplementingType="int"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <!-- -->
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="HW_Announce0"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="HW_ProcessInfo0"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="HW_Announce1"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="HW_ProcessInfo1"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="HW_Announce2"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="HW_ProcessInfo2"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="HW_Announce3"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="HW_ProcessInfo3"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="HW_Announce4"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="HW_ProcessInfo4"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="HW_Announce5"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="HW_ProcessInfo5"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="HW_Announce6"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="HW_ProcessInfo6"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="HW_Announce7"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="HW_ProcessInfo7"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="HW_Announce8"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="HW_ProcessInfo8"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="HW_Announce9"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="HW_ProcessInfo9"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="HW_Announce10"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="HW_ProcessInfo10"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="HW_Announce11"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="HW_ProcessInfo11"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="HW_Announce12"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="HW_ProcessInfo12"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="HW_Announce13"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="HW_ProcessInfo13"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="HW_Announce14"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="HW_ProcessInfo14"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="HW_Announce15"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="HW_ProcessInfo15"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="HW_Announce16"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="HW_ProcessInfo16"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="HW_Announce17"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="HW_ProcessInfo17"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="HW_Announce18"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="HW_ProcessInfo18"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="HW_Announce19"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="HW_ProcessInfo19"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+
+    <SemanticTypeStruct DeclType="HW_Announce0">
+      <Attributes>
+      </Attributes>
+    </SemanticTypeStruct>
+    <SemanticTypeStruct DeclType="HW_ProcessInfo0">
+      <Attributes>
+        <NativeType Name="HaveBottomlessPit" ImplementingType="bool"/>
+        <NativeType Name="HaveSuperBats" ImplementingType="bool"/>
+        <NativeType Name="HaveWumpus" ImplementingType="bool"/>
+        <NativeType Name="HaveHunter" ImplementingType="bool"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <SemanticTypeStruct DeclType="HW_Announce1">
+      <Attributes>
+      </Attributes>
+    </SemanticTypeStruct>
+    <SemanticTypeStruct DeclType="HW_ProcessInfo1">
+      <Attributes>
+        <NativeType Name="HaveBottomlessPit" ImplementingType="bool"/>
+        <NativeType Name="HaveSuperBats" ImplementingType="bool"/>
+        <NativeType Name="HaveWumpus" ImplementingType="bool"/>
+        <NativeType Name="HaveHunter" ImplementingType="bool"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <SemanticTypeStruct DeclType="HW_Announce2">
+      <Attributes>
+      </Attributes>
+    </SemanticTypeStruct>
+    <SemanticTypeStruct DeclType="HW_ProcessInfo2">
+      <Attributes>
+        <NativeType Name="HaveBottomlessPit" ImplementingType="bool"/>
+        <NativeType Name="HaveSuperBats" ImplementingType="bool"/>
+        <NativeType Name="HaveWumpus" ImplementingType="bool"/>
+        <NativeType Name="HaveHunter" ImplementingType="bool"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <SemanticTypeStruct DeclType="HW_Announce3">
+      <Attributes>
+      </Attributes>
+    </SemanticTypeStruct>
+    <SemanticTypeStruct DeclType="HW_ProcessInfo3">
+      <Attributes>
+        <NativeType Name="HaveBottomlessPit" ImplementingType="bool"/>
+        <NativeType Name="HaveSuperBats" ImplementingType="bool"/>
+        <NativeType Name="HaveWumpus" ImplementingType="bool"/>
+        <NativeType Name="HaveHunter" ImplementingType="bool"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <SemanticTypeStruct DeclType="HW_Announce4">
+      <Attributes>
+      </Attributes>
+    </SemanticTypeStruct>
+    <SemanticTypeStruct DeclType="HW_ProcessInfo4">
+      <Attributes>
+        <NativeType Name="HaveBottomlessPit" ImplementingType="bool"/>
+        <NativeType Name="HaveSuperBats" ImplementingType="bool"/>
+        <NativeType Name="HaveWumpus" ImplementingType="bool"/>
+        <NativeType Name="HaveHunter" ImplementingType="bool"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <SemanticTypeStruct DeclType="HW_Announce5">
+      <Attributes>
+      </Attributes>
+    </SemanticTypeStruct>
+    <SemanticTypeStruct DeclType="HW_ProcessInfo5">
+      <Attributes>
+        <NativeType Name="HaveBottomlessPit" ImplementingType="bool"/>
+        <NativeType Name="HaveSuperBats" ImplementingType="bool"/>
+        <NativeType Name="HaveWumpus" ImplementingType="bool"/>
+        <NativeType Name="HaveHunter" ImplementingType="bool"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <SemanticTypeStruct DeclType="HW_Announce6">
+      <Attributes>
+      </Attributes>
+    </SemanticTypeStruct>
+    <SemanticTypeStruct DeclType="HW_ProcessInfo6">
+      <Attributes>
+        <NativeType Name="HaveBottomlessPit" ImplementingType="bool"/>
+        <NativeType Name="HaveSuperBats" ImplementingType="bool"/>
+        <NativeType Name="HaveWumpus" ImplementingType="bool"/>
+        <NativeType Name="HaveHunter" ImplementingType="bool"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <SemanticTypeStruct DeclType="HW_Announce7">
+      <Attributes>
+      </Attributes>
+    </SemanticTypeStruct>
+    <SemanticTypeStruct DeclType="HW_ProcessInfo7">
+      <Attributes>
+        <NativeType Name="HaveBottomlessPit" ImplementingType="bool"/>
+        <NativeType Name="HaveSuperBats" ImplementingType="bool"/>
+        <NativeType Name="HaveWumpus" ImplementingType="bool"/>
+        <NativeType Name="HaveHunter" ImplementingType="bool"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <SemanticTypeStruct DeclType="HW_Announce8">
+      <Attributes>
+      </Attributes>
+    </SemanticTypeStruct>
+    <SemanticTypeStruct DeclType="HW_ProcessInfo8">
+      <Attributes>
+        <NativeType Name="HaveBottomlessPit" ImplementingType="bool"/>
+        <NativeType Name="HaveSuperBats" ImplementingType="bool"/>
+        <NativeType Name="HaveWumpus" ImplementingType="bool"/>
+        <NativeType Name="HaveHunter" ImplementingType="bool"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <SemanticTypeStruct DeclType="HW_Announce9">
+      <Attributes>
+      </Attributes>
+    </SemanticTypeStruct>
+    <SemanticTypeStruct DeclType="HW_ProcessInfo9">
+      <Attributes>
+        <NativeType Name="HaveBottomlessPit" ImplementingType="bool"/>
+        <NativeType Name="HaveSuperBats" ImplementingType="bool"/>
+        <NativeType Name="HaveWumpus" ImplementingType="bool"/>
+        <NativeType Name="HaveHunter" ImplementingType="bool"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <SemanticTypeStruct DeclType="HW_Announce10">
+      <Attributes>
+      </Attributes>
+    </SemanticTypeStruct>
+    <SemanticTypeStruct DeclType="HW_ProcessInfo10">
+      <Attributes>
+        <NativeType Name="HaveBottomlessPit" ImplementingType="bool"/>
+        <NativeType Name="HaveSuperBats" ImplementingType="bool"/>
+        <NativeType Name="HaveWumpus" ImplementingType="bool"/>
+        <NativeType Name="HaveHunter" ImplementingType="bool"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <SemanticTypeStruct DeclType="HW_Announce11">
+      <Attributes>
+      </Attributes>
+    </SemanticTypeStruct>
+    <SemanticTypeStruct DeclType="HW_ProcessInfo11">
+      <Attributes>
+        <NativeType Name="HaveBottomlessPit" ImplementingType="bool"/>
+        <NativeType Name="HaveSuperBats" ImplementingType="bool"/>
+        <NativeType Name="HaveWumpus" ImplementingType="bool"/>
+        <NativeType Name="HaveHunter" ImplementingType="bool"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <SemanticTypeStruct DeclType="HW_Announce12">
+      <Attributes>
+      </Attributes>
+    </SemanticTypeStruct>
+    <SemanticTypeStruct DeclType="HW_ProcessInfo12">
+      <Attributes>
+        <NativeType Name="HaveBottomlessPit" ImplementingType="bool"/>
+        <NativeType Name="HaveSuperBats" ImplementingType="bool"/>
+        <NativeType Name="HaveWumpus" ImplementingType="bool"/>
+        <NativeType Name="HaveHunter" ImplementingType="bool"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <SemanticTypeStruct DeclType="HW_Announce13">
+      <Attributes>
+      </Attributes>
+    </SemanticTypeStruct>
+    <SemanticTypeStruct DeclType="HW_ProcessInfo13">
+      <Attributes>
+        <NativeType Name="HaveBottomlessPit" ImplementingType="bool"/>
+        <NativeType Name="HaveSuperBats" ImplementingType="bool"/>
+        <NativeType Name="HaveWumpus" ImplementingType="bool"/>
+        <NativeType Name="HaveHunter" ImplementingType="bool"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <SemanticTypeStruct DeclType="HW_Announce14">
+      <Attributes>
+      </Attributes>
+    </SemanticTypeStruct>
+    <SemanticTypeStruct DeclType="HW_ProcessInfo14">
+      <Attributes>
+        <NativeType Name="HaveBottomlessPit" ImplementingType="bool"/>
+        <NativeType Name="HaveSuperBats" ImplementingType="bool"/>
+        <NativeType Name="HaveWumpus" ImplementingType="bool"/>
+        <NativeType Name="HaveHunter" ImplementingType="bool"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <SemanticTypeStruct DeclType="HW_Announce15">
+      <Attributes>
+      </Attributes>
+    </SemanticTypeStruct>
+    <SemanticTypeStruct DeclType="HW_ProcessInfo15">
+      <Attributes>
+        <NativeType Name="HaveBottomlessPit" ImplementingType="bool"/>
+        <NativeType Name="HaveSuperBats" ImplementingType="bool"/>
+        <NativeType Name="HaveWumpus" ImplementingType="bool"/>
+        <NativeType Name="HaveHunter" ImplementingType="bool"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <SemanticTypeStruct DeclType="HW_Announce16">
+      <Attributes>
+      </Attributes>
+    </SemanticTypeStruct>
+    <SemanticTypeStruct DeclType="HW_ProcessInfo16">
+      <Attributes>
+        <NativeType Name="HaveBottomlessPit" ImplementingType="bool"/>
+        <NativeType Name="HaveSuperBats" ImplementingType="bool"/>
+        <NativeType Name="HaveWumpus" ImplementingType="bool"/>
+        <NativeType Name="HaveHunter" ImplementingType="bool"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <SemanticTypeStruct DeclType="HW_Announce17">
+      <Attributes>
+      </Attributes>
+    </SemanticTypeStruct>
+    <SemanticTypeStruct DeclType="HW_ProcessInfo17">
+      <Attributes>
+        <NativeType Name="HaveBottomlessPit" ImplementingType="bool"/>
+        <NativeType Name="HaveSuperBats" ImplementingType="bool"/>
+        <NativeType Name="HaveWumpus" ImplementingType="bool"/>
+        <NativeType Name="HaveHunter" ImplementingType="bool"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <SemanticTypeStruct DeclType="HW_Announce18">
+      <Attributes>
+      </Attributes>
+    </SemanticTypeStruct>
+    <SemanticTypeStruct DeclType="HW_ProcessInfo18">
+      <Attributes>
+        <NativeType Name="HaveBottomlessPit" ImplementingType="bool"/>
+        <NativeType Name="HaveSuperBats" ImplementingType="bool"/>
+        <NativeType Name="HaveWumpus" ImplementingType="bool"/>
+        <NativeType Name="HaveHunter" ImplementingType="bool"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <SemanticTypeStruct DeclType="HW_Announce19">
+      <Attributes>
+      </Attributes>
+    </SemanticTypeStruct>
+    <SemanticTypeStruct DeclType="HW_ProcessInfo19">
+      <Attributes>
+        <NativeType Name="HaveBottomlessPit" ImplementingType="bool"/>
+        <NativeType Name="HaveSuperBats" ImplementingType="bool"/>
+        <NativeType Name="HaveWumpus" ImplementingType="bool"/>
+        <NativeType Name="HaveHunter" ImplementingType="bool"/>
+      </Attributes>
+    </SemanticTypeStruct>
+    
+    <!-- TODO: Probably don't need HaveHunter -->
+    <!-- TODO: Definitely don't need ProcessInfo -->
+
   </Collection>
 </SemanticTypes>
