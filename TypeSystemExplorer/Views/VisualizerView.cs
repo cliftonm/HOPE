@@ -169,6 +169,26 @@ namespace TypeSystemExplorer.Views
 	{
 		public Point P1 {get;set;}
 		public Point P2 {get;set;}
+
+		public static bool operator ==(Line a, Line b)
+		{
+			return (a.P1 == b.P1) && (a.P2 == b.P2);
+		}
+
+		public static bool operator !=(Line a, Line b)
+		{
+			return (a.P1 != b.P1) || (a.P2 != b.P2);
+		}
+
+		public override bool Equals(object obj)
+		{
+			return ((Line)obj) == this;
+		}
+
+		public override int GetHashCode()
+		{
+			return base.GetHashCode();
+		}
 	}
 
 	public class FlyoutItem
@@ -338,6 +358,7 @@ namespace TypeSystemExplorer.Views
 
 		protected Pen receptorLineColor = new Pen(Color.Cyan); // new Pen(Color.FromArgb(40, 40, 60));
 		protected Pen receptorLineColor2 = new Pen(Color.Orange); // new Pen(Color.FromArgb(40, 40, 60));
+		protected Pen receptorLineColor3 = new Pen(Color.Pink); // new Pen(Color.FromArgb(40, 40, 60));
 
 		public VisualizerView()
 		{
@@ -1452,7 +1473,7 @@ namespace TypeSystemExplorer.Views
 
 						// TODO: Yuck - there must be a better way of dealing with duplicates.
 						Connection conn = new Connection() { Protocol = prot1, Line = l };
-						if (!receptorConnections.Contains(conn))
+						if (!receptorConnections.Any(rc => rc.Line == l))
 						{
 							receptorConnections.Add(conn);
 						}
@@ -1672,7 +1693,21 @@ namespace TypeSystemExplorer.Views
 				receptorConnections.ForEach(conn =>
 				{
 					Line line = conn.Line;
-					Pen pen = (conn.Protocol == "Text" ? receptorLineColor2 : receptorLineColor);
+					Pen pen;
+
+					switch (conn.Protocol)
+					{
+						case "Text":
+							pen = receptorLineColor2;
+							break;
+						case "HW_Player":
+						case "HW_MoveTo":
+							pen = receptorLineColor3;
+							break;
+						default:
+							pen = receptorLineColor;
+							break;
+					}
 					// Just a straight line:
 					// e.Graphics.DrawLine(receptorLineColor, SurfaceOffsetAdjust(line.P1), SurfaceOffsetAdjust(line.P2));
 

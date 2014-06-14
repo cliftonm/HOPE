@@ -64,6 +64,7 @@ namespace TextDisplayReceptor
 				form.Text = "Text Output";
 				form.Location = new Point(100, 100);
 				form.Size = new Size(400, 400);
+				form.StartPosition = FormStartPosition.Manual;
 				form.TopMost = true;
 				tb = new TextBox();
 				tb.Multiline = true;

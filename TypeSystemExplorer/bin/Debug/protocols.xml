@@ -587,12 +587,68 @@
         <NativeType Name="HasPlayer" ImplementingType="bool"/>
       </Attributes>
     </SemanticTypeStruct>
-    
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="HW_Player"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="HW_Player">
+      <Attributes>
+        <NativeType Name="CaveNumber" ImplementingType="int"/>
+        <NativeType Name="AdjoiningCave1" ImplementingType="int"/>
+        <NativeType Name="AdjoiningCave2" ImplementingType="int"/>
+        <NativeType Name="AdjoiningCave3" ImplementingType="int"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="HW_GameState"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="HW_GameState">
+      <Attributes>
+        <NativeType Name="PlayerEatenByWumpus" ImplementingType="bool"/>
+        <NativeType Name="SuperBatSnatch" ImplementingType="bool"/>
+        <NativeType Name="PlayerFellIntoPit" ImplementingType="bool"/>
+        <NativeType Name="WumpusIsDead" ImplementingType="bool"/>
+        <NativeType Name="PlayerShotSelf" ImplementingType="bool"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="HW_MoveTo"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="HW_MoveTo">
+      <Attributes>
+        <NativeType Name="NewCaveNumber" ImplementingType="int"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="HW_ShootInto"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="HW_ShootInto">
+      <Attributes>
+        <NativeType Name="CaveNumber" ImplementingType="int"/>
+        <NativeType Name="RemainingLife" ImplementingType="int"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
     <!-- -->
 
     <SemanticTypeDecl OfType="Noun">
       <AttributeValues>
-        <Attribute Name="Name" Value="HW_RequestInfo0"/>
+        <Attribute Name="Name" Value="HW_Announce0"/>
       </AttributeValues>
     </SemanticTypeDecl>
     <SemanticTypeDecl OfType="Noun">
@@ -603,7 +659,7 @@
 
     <SemanticTypeDecl OfType="Noun">
       <AttributeValues>
-        <Attribute Name="Name" Value="HW_RequestInfo1"/>
+        <Attribute Name="Name" Value="HW_Announce1"/>
       </AttributeValues>
     </SemanticTypeDecl>
     <SemanticTypeDecl OfType="Noun">
@@ -614,7 +670,7 @@
 
     <SemanticTypeDecl OfType="Noun">
       <AttributeValues>
-        <Attribute Name="Name" Value="HW_RequestInfo2"/>
+        <Attribute Name="Name" Value="HW_Announce2"/>
       </AttributeValues>
     </SemanticTypeDecl>
     <SemanticTypeDecl OfType="Noun">
@@ -625,7 +681,7 @@
 
     <SemanticTypeDecl OfType="Noun">
       <AttributeValues>
-        <Attribute Name="Name" Value="HW_RequestInfo3"/>
+        <Attribute Name="Name" Value="HW_Announce3"/>
       </AttributeValues>
     </SemanticTypeDecl>
     <SemanticTypeDecl OfType="Noun">
@@ -636,7 +692,7 @@
 
     <SemanticTypeDecl OfType="Noun">
       <AttributeValues>
-        <Attribute Name="Name" Value="HW_RequestInfo4"/>
+        <Attribute Name="Name" Value="HW_Announce4"/>
       </AttributeValues>
     </SemanticTypeDecl>
     <SemanticTypeDecl OfType="Noun">
@@ -647,7 +703,7 @@
 
     <SemanticTypeDecl OfType="Noun">
       <AttributeValues>
-        <Attribute Name="Name" Value="HW_RequestInfo5"/>
+        <Attribute Name="Name" Value="HW_Announce5"/>
       </AttributeValues>
     </SemanticTypeDecl>
     <SemanticTypeDecl OfType="Noun">
@@ -658,7 +714,7 @@
 
     <SemanticTypeDecl OfType="Noun">
       <AttributeValues>
-        <Attribute Name="Name" Value="HW_RequestInfo6"/>
+        <Attribute Name="Name" Value="HW_Announce6"/>
       </AttributeValues>
     </SemanticTypeDecl>
     <SemanticTypeDecl OfType="Noun">
@@ -669,7 +725,7 @@
 
     <SemanticTypeDecl OfType="Noun">
       <AttributeValues>
-        <Attribute Name="Name" Value="HW_RequestInfo7"/>
+        <Attribute Name="Name" Value="HW_Announce7"/>
       </AttributeValues>
     </SemanticTypeDecl>
     <SemanticTypeDecl OfType="Noun">
@@ -680,7 +736,7 @@
 
     <SemanticTypeDecl OfType="Noun">
       <AttributeValues>
-        <Attribute Name="Name" Value="HW_RequestInfo8"/>
+        <Attribute Name="Name" Value="HW_Announce8"/>
       </AttributeValues>
     </SemanticTypeDecl>
     <SemanticTypeDecl OfType="Noun">
@@ -691,7 +747,7 @@
 
     <SemanticTypeDecl OfType="Noun">
       <AttributeValues>
-        <Attribute Name="Name" Value="HW_RequestInfo9"/>
+        <Attribute Name="Name" Value="HW_Announce9"/>
       </AttributeValues>
     </SemanticTypeDecl>
     <SemanticTypeDecl OfType="Noun">
@@ -702,7 +758,7 @@
 
     <SemanticTypeDecl OfType="Noun">
       <AttributeValues>
-        <Attribute Name="Name" Value="HW_RequestInfo10"/>
+        <Attribute Name="Name" Value="HW_Announce10"/>
       </AttributeValues>
     </SemanticTypeDecl>
     <SemanticTypeDecl OfType="Noun">
@@ -713,7 +769,7 @@
 
     <SemanticTypeDecl OfType="Noun">
       <AttributeValues>
-        <Attribute Name="Name" Value="HW_RequestInfo11"/>
+        <Attribute Name="Name" Value="HW_Announce11"/>
       </AttributeValues>
     </SemanticTypeDecl>
     <SemanticTypeDecl OfType="Noun">
@@ -724,7 +780,7 @@
 
     <SemanticTypeDecl OfType="Noun">
       <AttributeValues>
-        <Attribute Name="Name" Value="HW_RequestInfo12"/>
+        <Attribute Name="Name" Value="HW_Announce12"/>
       </AttributeValues>
     </SemanticTypeDecl>
     <SemanticTypeDecl OfType="Noun">
@@ -735,7 +791,7 @@
 
     <SemanticTypeDecl OfType="Noun">
       <AttributeValues>
-        <Attribute Name="Name" Value="HW_RequestInfo13"/>
+        <Attribute Name="Name" Value="HW_Announce13"/>
       </AttributeValues>
     </SemanticTypeDecl>
     <SemanticTypeDecl OfType="Noun">
@@ -746,7 +802,7 @@
 
     <SemanticTypeDecl OfType="Noun">
       <AttributeValues>
-        <Attribute Name="Name" Value="HW_RequestInfo14"/>
+        <Attribute Name="Name" Value="HW_Announce14"/>
       </AttributeValues>
     </SemanticTypeDecl>
     <SemanticTypeDecl OfType="Noun">
@@ -757,7 +813,7 @@
 
     <SemanticTypeDecl OfType="Noun">
       <AttributeValues>
-        <Attribute Name="Name" Value="HW_RequestInfo15"/>
+        <Attribute Name="Name" Value="HW_Announce15"/>
       </AttributeValues>
     </SemanticTypeDecl>
     <SemanticTypeDecl OfType="Noun">
@@ -768,7 +824,7 @@
 
     <SemanticTypeDecl OfType="Noun">
       <AttributeValues>
-        <Attribute Name="Name" Value="HW_RequestInfo16"/>
+        <Attribute Name="Name" Value="HW_Announce16"/>
       </AttributeValues>
     </SemanticTypeDecl>
     <SemanticTypeDecl OfType="Noun">
@@ -779,7 +835,7 @@
 
     <SemanticTypeDecl OfType="Noun">
       <AttributeValues>
-        <Attribute Name="Name" Value="HW_RequestInfo17"/>
+        <Attribute Name="Name" Value="HW_Announce17"/>
       </AttributeValues>
     </SemanticTypeDecl>
     <SemanticTypeDecl OfType="Noun">
@@ -790,7 +846,7 @@
 
     <SemanticTypeDecl OfType="Noun">
       <AttributeValues>
-        <Attribute Name="Name" Value="HW_RequestInfo18"/>
+        <Attribute Name="Name" Value="HW_Announce18"/>
       </AttributeValues>
     </SemanticTypeDecl>
     <SemanticTypeDecl OfType="Noun">
@@ -801,7 +857,7 @@
 
     <SemanticTypeDecl OfType="Noun">
       <AttributeValues>
-        <Attribute Name="Name" Value="HW_RequestInfo19"/>
+        <Attribute Name="Name" Value="HW_Announce19"/>
       </AttributeValues>
     </SemanticTypeDecl>
     <SemanticTypeDecl OfType="Noun">
@@ -811,9 +867,8 @@
     </SemanticTypeDecl>
 
 
-    <SemanticTypeStruct DeclType="HW_RequestInfo0">
+    <SemanticTypeStruct DeclType="HW_Announce0">
       <Attributes>
-        <NativeType Name="FromCaveNumber" ImplementingType="int"/>
       </Attributes>
     </SemanticTypeStruct>
     <SemanticTypeStruct DeclType="HW_ProcessInfo0">
@@ -825,9 +880,8 @@
       </Attributes>
     </SemanticTypeStruct>
 
-    <SemanticTypeStruct DeclType="HW_RequestInfo1">
+    <SemanticTypeStruct DeclType="HW_Announce1">
       <Attributes>
-        <NativeType Name="FromCaveNumber" ImplementingType="int"/>
       </Attributes>
     </SemanticTypeStruct>
     <SemanticTypeStruct DeclType="HW_ProcessInfo1">
@@ -839,9 +893,8 @@
       </Attributes>
     </SemanticTypeStruct>
 
-    <SemanticTypeStruct DeclType="HW_RequestInfo2">
+    <SemanticTypeStruct DeclType="HW_Announce2">
       <Attributes>
-        <NativeType Name="FromCaveNumber" ImplementingType="int"/>
       </Attributes>
     </SemanticTypeStruct>
     <SemanticTypeStruct DeclType="HW_ProcessInfo2">
@@ -853,9 +906,8 @@
       </Attributes>
     </SemanticTypeStruct>
 
-    <SemanticTypeStruct DeclType="HW_RequestInfo3">
+    <SemanticTypeStruct DeclType="HW_Announce3">
       <Attributes>
-        <NativeType Name="FromCaveNumber" ImplementingType="int"/>
       </Attributes>
     </SemanticTypeStruct>
     <SemanticTypeStruct DeclType="HW_ProcessInfo3">
@@ -867,9 +919,8 @@
       </Attributes>
     </SemanticTypeStruct>
 
-    <SemanticTypeStruct DeclType="HW_RequestInfo4">
+    <SemanticTypeStruct DeclType="HW_Announce4">
       <Attributes>
-        <NativeType Name="FromCaveNumber" ImplementingType="int"/>
       </Attributes>
     </SemanticTypeStruct>
     <SemanticTypeStruct DeclType="HW_ProcessInfo4">
@@ -881,9 +932,8 @@
       </Attributes>
     </SemanticTypeStruct>
 
-    <SemanticTypeStruct DeclType="HW_RequestInfo5">
+    <SemanticTypeStruct DeclType="HW_Announce5">
       <Attributes>
-        <NativeType Name="FromCaveNumber" ImplementingType="int"/>
       </Attributes>
     </SemanticTypeStruct>
     <SemanticTypeStruct DeclType="HW_ProcessInfo5">
@@ -895,9 +945,8 @@
       </Attributes>
     </SemanticTypeStruct>
 
-    <SemanticTypeStruct DeclType="HW_RequestInfo6">
+    <SemanticTypeStruct DeclType="HW_Announce6">
       <Attributes>
-        <NativeType Name="FromCaveNumber" ImplementingType="int"/>
       </Attributes>
     </SemanticTypeStruct>
     <SemanticTypeStruct DeclType="HW_ProcessInfo6">
@@ -909,9 +958,8 @@
       </Attributes>
     </SemanticTypeStruct>
 
-    <SemanticTypeStruct DeclType="HW_RequestInfo7">
+    <SemanticTypeStruct DeclType="HW_Announce7">
       <Attributes>
-        <NativeType Name="FromCaveNumber" ImplementingType="int"/>
       </Attributes>
     </SemanticTypeStruct>
     <SemanticTypeStruct DeclType="HW_ProcessInfo7">
@@ -923,9 +971,8 @@
       </Attributes>
     </SemanticTypeStruct>
 
-    <SemanticTypeStruct DeclType="HW_RequestInfo8">
+    <SemanticTypeStruct DeclType="HW_Announce8">
       <Attributes>
-        <NativeType Name="FromCaveNumber" ImplementingType="int"/>
       </Attributes>
     </SemanticTypeStruct>
     <SemanticTypeStruct DeclType="HW_ProcessInfo8">
@@ -937,9 +984,8 @@
       </Attributes>
     </SemanticTypeStruct>
 
-    <SemanticTypeStruct DeclType="HW_RequestInfo9">
+    <SemanticTypeStruct DeclType="HW_Announce9">
       <Attributes>
-        <NativeType Name="FromCaveNumber" ImplementingType="int"/>
       </Attributes>
     </SemanticTypeStruct>
     <SemanticTypeStruct DeclType="HW_ProcessInfo9">
@@ -951,9 +997,8 @@
       </Attributes>
     </SemanticTypeStruct>
 
-    <SemanticTypeStruct DeclType="HW_RequestInfo10">
+    <SemanticTypeStruct DeclType="HW_Announce10">
       <Attributes>
-        <NativeType Name="FromCaveNumber" ImplementingType="int"/>
       </Attributes>
     </SemanticTypeStruct>
     <SemanticTypeStruct DeclType="HW_ProcessInfo10">
@@ -965,9 +1010,8 @@
       </Attributes>
     </SemanticTypeStruct>
 
-    <SemanticTypeStruct DeclType="HW_RequestInfo11">
+    <SemanticTypeStruct DeclType="HW_Announce11">
       <Attributes>
-        <NativeType Name="FromCaveNumber" ImplementingType="int"/>
       </Attributes>
     </SemanticTypeStruct>
     <SemanticTypeStruct DeclType="HW_ProcessInfo11">
@@ -979,9 +1023,8 @@
       </Attributes>
     </SemanticTypeStruct>
 
-    <SemanticTypeStruct DeclType="HW_RequestInfo12">
+    <SemanticTypeStruct DeclType="HW_Announce12">
       <Attributes>
-        <NativeType Name="FromCaveNumber" ImplementingType="int"/>
       </Attributes>
     </SemanticTypeStruct>
     <SemanticTypeStruct DeclType="HW_ProcessInfo12">
@@ -993,9 +1036,8 @@
       </Attributes>
     </SemanticTypeStruct>
 
-    <SemanticTypeStruct DeclType="HW_RequestInfo13">
+    <SemanticTypeStruct DeclType="HW_Announce13">
       <Attributes>
-        <NativeType Name="FromCaveNumber" ImplementingType="int"/>
       </Attributes>
     </SemanticTypeStruct>
     <SemanticTypeStruct DeclType="HW_ProcessInfo13">
@@ -1007,9 +1049,8 @@
       </Attributes>
     </SemanticTypeStruct>
 
-    <SemanticTypeStruct DeclType="HW_RequestInfo14">
+    <SemanticTypeStruct DeclType="HW_Announce14">
       <Attributes>
-        <NativeType Name="FromCaveNumber" ImplementingType="int"/>
       </Attributes>
     </SemanticTypeStruct>
     <SemanticTypeStruct DeclType="HW_ProcessInfo14">
@@ -1021,9 +1062,8 @@
       </Attributes>
     </SemanticTypeStruct>
 
-    <SemanticTypeStruct DeclType="HW_RequestInfo15">
+    <SemanticTypeStruct DeclType="HW_Announce15">
       <Attributes>
-        <NativeType Name="FromCaveNumber" ImplementingType="int"/>
       </Attributes>
     </SemanticTypeStruct>
     <SemanticTypeStruct DeclType="HW_ProcessInfo15">
@@ -1035,9 +1075,8 @@
       </Attributes>
     </SemanticTypeStruct>
 
-    <SemanticTypeStruct DeclType="HW_RequestInfo16">
+    <SemanticTypeStruct DeclType="HW_Announce16">
       <Attributes>
-        <NativeType Name="FromCaveNumber" ImplementingType="int"/>
       </Attributes>
     </SemanticTypeStruct>
     <SemanticTypeStruct DeclType="HW_ProcessInfo16">
@@ -1049,9 +1088,8 @@
       </Attributes>
     </SemanticTypeStruct>
 
-    <SemanticTypeStruct DeclType="HW_RequestInfo17">
+    <SemanticTypeStruct DeclType="HW_Announce17">
       <Attributes>
-        <NativeType Name="FromCaveNumber" ImplementingType="int"/>
       </Attributes>
     </SemanticTypeStruct>
     <SemanticTypeStruct DeclType="HW_ProcessInfo17">
@@ -1063,9 +1101,8 @@
       </Attributes>
     </SemanticTypeStruct>
 
-    <SemanticTypeStruct DeclType="HW_RequestInfo18">
+    <SemanticTypeStruct DeclType="HW_Announce18">
       <Attributes>
-        <NativeType Name="FromCaveNumber" ImplementingType="int"/>
       </Attributes>
     </SemanticTypeStruct>
     <SemanticTypeStruct DeclType="HW_ProcessInfo18">
@@ -1077,9 +1114,8 @@
       </Attributes>
     </SemanticTypeStruct>
 
-    <SemanticTypeStruct DeclType="HW_RequestInfo19">
+    <SemanticTypeStruct DeclType="HW_Announce19">
       <Attributes>
-        <NativeType Name="FromCaveNumber" ImplementingType="int"/>
       </Attributes>
     </SemanticTypeStruct>
     <SemanticTypeStruct DeclType="HW_ProcessInfo19">
@@ -1092,7 +1128,7 @@
     </SemanticTypeStruct>
     
     <!-- TODO: Probably don't need HaveHunter -->
-
+    <!-- TODO: Definitely don't need ProcessInfo -->
 
   </Collection>
 </SemanticTypes>

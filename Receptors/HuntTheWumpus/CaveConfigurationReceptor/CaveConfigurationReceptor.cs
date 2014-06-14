@@ -61,6 +61,7 @@ namespace HuntTheWumpus
 				AssignBats();
 				AssignWumpus();
 				AssignPlayer();
+
 				idToIndexMap.ForEach((kvp) =>
 					{
 						int idx = kvp.Value;
@@ -78,7 +79,7 @@ namespace HuntTheWumpus
 							});
 					});
 
-				rsys.Remove(this);
+				// rsys.Remove(this);
 			}
 		}
 
