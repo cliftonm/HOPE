@@ -33,9 +33,9 @@ namespace HuntTheWumpus
 		public CaveReceptor(IReceptorSystem rsys)
 			: base(rsys)
 		{
-			receiveProtocols.Add("HW_YouAre");
-			receiveProtocols.Add("HW_MoveTo");
-			receiveProtocols.Add("HW_ShootInto");
+			AddReceiveProtocol("HW_YouAre", (signal) => signal.ID == id);
+			AddReceiveProtocol("HW_MoveTo");
+			AddReceiveProtocol("HW_ShootInto");
 			emitProtocols.Add("HW_WhereAmI");
 			emitProtocols.Add("HW_Player");
 			emitProtocols.Add("Text");

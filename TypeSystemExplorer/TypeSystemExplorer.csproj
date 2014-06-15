@@ -202,6 +202,7 @@
     <Content Include="bin\Debug\protocols.xml">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="bin\Debug\r-test4.xml" />
     <Content Include="bin\Debug\Receptors.xml" />
     <Content Include="bin\Debug\Receptors2.xml">
       <SubType>Designer</SubType>

@@ -13,24 +13,10 @@ using Clifton.SemanticTypeSystem.Interfaces;
 
 namespace ZipCodeReceptor
 {
-	public class ReceptorDefinition : IReceptorInstance
+	public class ReceptorDefinition : BaseReceptor
 	{
-#pragma warning disable 67
-		public event EventHandler<EventArgs> ReceiveProtocolsChanged;
-		public event EventHandler<EventArgs> EmitProtocolsChanged;
-#pragma warning restore 67
-
-		public string Name { get { return "Zip Code Service"; } }
-		public bool IsEdgeReceptor { get { return false; } }
-		public bool IsHidden { get { return false; } }
-
-		public IReceptorSystem ReceptorSystem
-		{
-			get { return rsys; }
-			set { rsys = value; }
-		}
-
-		protected IReceptorSystem rsys;
+		public override string Name { get { return "Zip Code Service"; } }
+		public override bool IsEdgeReceptor { get { return true; } }
 
 		public string[] abbreviations = new string[] {
 			"AL","ALABAMA",
@@ -94,30 +80,13 @@ namespace ZipCodeReceptor
 			"WY","WYOMING",
 		};
 
-		public ReceptorDefinition(IReceptorSystem rsys)
+		public ReceptorDefinition(IReceptorSystem rsys) : base(rsys)
 		{
-			this.rsys = rsys;
+			AddReceiveProtocol("Zipcode");
+			AddEmitProtocol("Location");
 		}
 
-		public string[] GetReceiveProtocols()
-		{
-			return new string[] { "Zipcode" };
-		}
-
-		public string[] GetEmittedProtocols()
-		{
-			return new string[] { "Location" };
-		}
-
-		public void Initialize()
-		{
-		}
-
-		public void Terminate()
-		{
-		}
-
-		public async void ProcessCarrier(ICarrier carrier)
+		public override async void ProcessCarrier(ICarrier carrier)
 		{
 			Tuple<string, string> location = await Task.Run(() =>
 				{

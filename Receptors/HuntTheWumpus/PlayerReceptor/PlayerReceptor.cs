@@ -29,10 +29,10 @@ namespace HuntTheWumpus
 		public PlayerReceptor(IReceptorSystem rsys)
 			: base(rsys)
 		{
-			receiveProtocols.Add("HW_Player");
-			receiveProtocols.Add("HW_GameState");
-			emitProtocols.Add("HW_MoveTo");
-			emitProtocols.Add("HW_ShootInto");
+			AddReceiveProtocol("HW_Player");
+			AddReceiveProtocol("HW_GameState");
+			AddEmitProtocol("HW_MoveTo");
+			AddEmitProtocol("HW_ShootInto");
 
 			rnd = new Random(10);			// use a specific seed for testing.
 

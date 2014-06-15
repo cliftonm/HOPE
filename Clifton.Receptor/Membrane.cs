@@ -228,7 +228,7 @@ namespace Clifton.Receptor
 		{
 			List<string> ret = new List<string>();
 
-			Receptors.ForEach(r => ret.AddRange(r.Instance.GetReceiveProtocols()));
+			Receptors.ForEach(r => ret.AddRange(r.Instance.GetReceiveProtocols().Select(rp=>rp.Protocol)));
 
 			return ret.Distinct().ToList();
 		}

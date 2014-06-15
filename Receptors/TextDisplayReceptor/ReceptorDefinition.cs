@@ -12,50 +12,18 @@ using Clifton.Tools.Strings.Extensions;
 
 namespace TextDisplayReceptor
 {
-	public class ReceptorDefinition : IReceptorInstance
+	public class ReceptorDefinition : BaseReceptor
 	{
-#pragma warning disable 67
-		public event EventHandler<EventArgs> ReceiveProtocolsChanged;
-		public event EventHandler<EventArgs> EmitProtocolsChanged;
-#pragma warning restore 67
-
-		public string Name { get { return "Text Display"; } }
-		public bool IsEdgeReceptor { get { return false; } }
-		public bool IsHidden { get { return false; } }
-
-		public IReceptorSystem ReceptorSystem
-		{
-			get { return rsys; }
-			set { rsys = value; }
-		}
-
-		protected IReceptorSystem rsys;
+		public override string Name { get { return "Text Display"; } }
 		protected TextBox tb;
 
-		public ReceptorDefinition(IReceptorSystem rsys)
+		public ReceptorDefinition(IReceptorSystem rsys) : base(rsys)
 		{
-			this.rsys = rsys;
+			AddReceiveProtocol("Text");
+			AddReceiveProtocol("TextToSpeech");
 		}
 
-		public void Initialize()
-		{
-		}
-
-		public void Terminate()
-		{
-		}
-
-		public string[] GetReceiveProtocols()
-		{
-			return new string[] { "Text", "TextToSpeech" };
-		}
-
-		public string[] GetEmittedProtocols()
-		{
-			return new string[] { };
-		}
-
-		public void ProcessCarrier(ICarrier carrier)
+		public override void ProcessCarrier(ICarrier carrier)
 		{
 			// Create the textbox if it doesn't exist.
 			if (tb == null)

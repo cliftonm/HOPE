@@ -11,59 +11,29 @@ using Clifton.Tools.Strings.Extensions;
 
 namespace TextToSpeech
 {
-	public class ReceptorDefinition : IReceptorInstance
+	public class ReceptorDefinition : BaseReceptor
 	{
-#pragma warning disable 67
-		public event EventHandler<EventArgs> ReceiveProtocolsChanged;
-		public event EventHandler<EventArgs> EmitProtocolsChanged;
-#pragma warning restore 67
-
-		public string Name { get { return "Text To Speech"; } }
-		public bool IsEdgeReceptor { get { return true; } }
-		public bool IsHidden { get { return false; } }
-
-		public IReceptorSystem ReceptorSystem
-		{
-			get { return rsys; }
-			set { rsys = value; }
-		}
+		public override string Name { get { return "Text To Speech"; } }
+		public override bool IsEdgeReceptor { get { return true; } }
 
 		protected SpeechSynthesizer speechSynth;
 		protected Queue<string> speechQueue;
-		protected IReceptorSystem rsys;
 
-		public ReceptorDefinition(IReceptorSystem rsys)
+		public ReceptorDefinition(IReceptorSystem rsys) : base(rsys)
 		{
-			this.rsys = rsys;
-
 			speechSynth = new SpeechSynthesizer();
 			speechSynth.SpeakCompleted += OnSpeakCompleted;
 			speechSynth.Rate = -4;
 			speechQueue = new Queue<string>();
-		}
 
-		public string[] GetReceiveProtocols()
-		{
-			return new string[] { "TextToSpeech", "Text"};
-		}
-
-		public string[] GetEmittedProtocols()
-		{
-			return new string[] { };
-		}
-
-		public void Initialize()
-		{
-		}
-
-		public void Terminate()
-		{
+			AddReceiveProtocol("TextToSpeech");
+			AddReceiveProtocol("Text");
 		}
 
 		/// <summary>
 		/// Handles both "TextToSpeech" and "Text" protocols.
 		/// </summary>
-		public void ProcessCarrier(ICarrier carrier)
+		public override void ProcessCarrier(ICarrier carrier)
 		{
 			string msg = String.Empty; ;
 

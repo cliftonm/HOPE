@@ -9,31 +9,16 @@ using Clifton.SemanticTypeSystem.Interfaces;
 
 namespace APODEventGeneratorReceptor
 {
-	public class ReceptorDefinition : IReceptorInstance
+	public class ReceptorDefinition : BaseReceptor
 	{
-#pragma warning disable 67
-		public event EventHandler<EventArgs> ReceiveProtocolsChanged;
-		public event EventHandler<EventArgs> EmitProtocolsChanged;
-#pragma warning restore 67
-
-		public string Name { get { return "APOD Date Generator"; } }
-		public bool IsEdgeReceptor { get { return false; } }
-		public bool IsHidden { get { return false; } }
-
-		public IReceptorSystem ReceptorSystem
+		public override string Name { get { return "APOD Date Generator"; } }
+		
+		public ReceptorDefinition(IReceptorSystem rsys) : base(rsys)
 		{
-			get { return rsys; }
-			set { rsys = value; }
+			AddEmitProtocol("ScrapeAPOD");
 		}
 
-		protected IReceptorSystem rsys;
-
-		public ReceptorDefinition(IReceptorSystem rsys)
-		{
-			this.rsys = rsys;
-		}
-
-		public void Initialize()
+		public override void Initialize()
 		{
 			DateTime start = DateTime.Parse("6/16/1995");
 			// DateTime stop = start.AddMonths(1);
@@ -49,24 +34,6 @@ namespace APODEventGeneratorReceptor
 			}
 
 			rsys.Remove(this);
-		}
-
-		public void Terminate()
-		{
-		}
-
-		public string[] GetReceiveProtocols()
-		{
-			return new string[] { };
-		}
-
-		public string[] GetEmittedProtocols()
-		{
-			return new string[] { "ScrapeAPOD" };
-		}
-
-		public void ProcessCarrier(ICarrier carrier)
-		{
 		}
 	}
 }

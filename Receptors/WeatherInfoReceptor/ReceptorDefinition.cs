@@ -19,56 +19,20 @@ namespace WeatherInfoReceptor
 		public bool Completed { get { return WeatherInfo != null && LocationInfo != null; } }
 	}
 
-	public class ReceptorDefinition : IReceptorInstance
+	public class ReceptorDefinition : BaseReceptor
 	{
-#pragma warning disable 67
-		public event EventHandler<EventArgs> ReceiveProtocolsChanged;
-		public event EventHandler<EventArgs> EmitProtocolsChanged;
-#pragma warning restore 67
-
-		public string Name { get { return "Weather Info"; } }
-		public bool IsEdgeReceptor { get { return false; } }
-		public bool IsHidden { get { return false; } }
-
-		public IReceptorSystem ReceptorSystem
-		{
-			get { return rsys; }
-			set { rsys = value; }
-		}
-
-		protected IReceptorSystem rsys;
+		public override string Name { get { return "Weather Info"; } }
 		protected Dictionary<string, FullInfo> zipcodeInfoMap;
 
-		public ReceptorDefinition(IReceptorSystem rsys)
+		public ReceptorDefinition(IReceptorSystem rsys) : base(rsys)
 		{
-			this.rsys = rsys;
 			zipcodeInfoMap = new Dictionary<string, FullInfo>();
+			AddReceiveProtocol("WeatherInfo");
+			AddReceiveProtocol("Location");
+			AddEmitProtocol("TextToSpeech");
 		}
 
-		public string[] GetReceiveProtocols()
-		{
-			return new string[] { "WeatherInfo", "Location" };
-		}
-
-		public string[] GetEmittedProtocols()
-		{
-			return new string[] { "TextToSpeech" };
-		}
-
-		public Func<dynamic, dynamic, bool> Qualifier = new Func<dynamic, dynamic, bool>((w, l) =>
-			{
-				return w.Zipcode == l.Zipcode;
-			});
-
-		public void Initialize()
-		{
-		}
-
-		public void Terminate()
-		{
-		}
-
-		public void ProcessCarrier(ICarrier carrier)
+		public override void ProcessCarrier(ICarrier carrier)
 		{
 			FullInfo fullInfo;
 

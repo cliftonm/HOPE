@@ -10,51 +10,19 @@ using System.Threading.Tasks;
 using Clifton.Receptor.Interfaces;
 using Clifton.SemanticTypeSystem.Interfaces;
 
-namespace HelloWorldReceptor
+namespace ImageWriterReceptor
 {
-	public class ReceptorDefinition : IReceptorInstance
+	public class ReceptorDefinition : BaseReceptor
 	{
-#pragma warning disable 67
-		public event EventHandler<EventArgs> ReceiveProtocolsChanged;
-		public event EventHandler<EventArgs> EmitProtocolsChanged;
-#pragma warning restore 67
+		public override string Name { get { return "Thumbnail Image Writer"; } }
+		public override bool IsEdgeReceptor { get { return true; } }
 
-		public string Name { get { return "Thumbnail Image Writer"; } }
-		public bool IsEdgeReceptor { get { return true; } }
-		public bool IsHidden { get { return false; } }
-
-		public IReceptorSystem ReceptorSystem
+		public ReceptorDefinition(IReceptorSystem rsys) : base(rsys)
 		{
-			get { return rsys; }
-			set { rsys = value; }
+			AddReceiveProtocol("ThumbnailImage");
 		}
 
-		protected IReceptorSystem rsys;
-
-		public ReceptorDefinition(IReceptorSystem rsys)
-		{
-			this.rsys = rsys;
-		}
-
-		public string[] GetReceiveProtocols()
-		{
-			return new string[] { "ThumbnailImage" };
-		}
-
-		public string[] GetEmittedProtocols()
-		{
-			return new string[] { };
-		}
-
-		public void Initialize()
-		{
-		}
-
-		public void Terminate()
-		{
-		}
-
-		public void ProcessCarrier(ICarrier carrier)
+		public override void ProcessCarrier(ICarrier carrier)
 		{
 			string fn = carrier.Signal.ImageFilename.Filename;
 

@@ -859,14 +859,17 @@ namespace TypeSystemExplorer.Controllers
 			set { throw new ApplicationException("A call to set the system receptor container should never be made."); }
 		}
 
-		public string[] GetReceiveProtocols()
+		public List<ReceiveQualifier> GetReceiveProtocols()
 		{
-			return new string[] { "SystemMessage", "CarrierAnimation", "SystemShowImage", "HaveImageMetadata" };
+			List<ReceiveQualifier> ret = new List<ReceiveQualifier>();
+			(new string[] { "SystemMessage", "CarrierAnimation", "SystemShowImage", "HaveImageMetadata" }).ForEach(p => ret.Add(new ReceiveQualifier(p)));
+
+			return ret;
 		}
 
-		public string[] GetEmittedProtocols()
+		public List<string> GetEmittedProtocols()
 		{
-			return new string[] { };
+			return new List<string>();
 		}
 
 		public void Initialize()

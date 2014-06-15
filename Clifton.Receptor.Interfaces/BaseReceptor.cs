@@ -22,7 +22,7 @@ namespace Clifton.Receptor.Interfaces
 		public virtual bool IsEdgeReceptor { get { return false; } }
 		public virtual bool IsHidden { get { return false; } }
 
-		protected List<string> receiveProtocols;
+		protected List<ReceiveQualifier> receiveProtocols;
 		protected List<string> emitProtocols;
 
 		public virtual IReceptorSystem ReceptorSystem
@@ -36,7 +36,7 @@ namespace Clifton.Receptor.Interfaces
 		public BaseReceptor(IReceptorSystem rsys)
 		{
 			this.rsys = rsys;
-			receiveProtocols = new List<string>();
+			receiveProtocols = new List<ReceiveQualifier>();
 			emitProtocols = new List<string>();
 		}
 
@@ -48,27 +48,35 @@ namespace Clifton.Receptor.Interfaces
 		{
 		}
 
-		public virtual string[] GetReceiveProtocols()
+		public virtual List<ReceiveQualifier> GetReceiveProtocols()
 		{
-			return receiveProtocols.ToArray();
+			return receiveProtocols;
 		}
 
-		public virtual string[] GetEmittedProtocols()
+		public virtual List<string> GetEmittedProtocols()
 		{
-			return emitProtocols.ToArray();
+			return emitProtocols;
 		}
 
-		public abstract void ProcessCarrier(ICarrier carrier);
+		public virtual void ProcessCarrier(ICarrier carrier)
+		{
+		}
 
 		protected virtual void AddReceiveProtocol(string p)
 		{
-			receiveProtocols.Add(p);
+			receiveProtocols.Add(new ReceiveQualifier(p));
+			ReceiveProtocolsChanged.Fire(this, EventArgs.Empty);
+		}
+
+		protected virtual void AddReceiveProtocol(string p, Func<dynamic, bool> q)
+		{
+			receiveProtocols.Add(new ReceiveQualifier(p, q));
 			ReceiveProtocolsChanged.Fire(this, EventArgs.Empty);
 		}
 
 		protected virtual void RemoveReceiveProtocol(string p)
 		{
-			receiveProtocols.Remove(p);
+			receiveProtocols.Remove(receiveProtocols.Single(rp=>rp.Protocol==p));
 			ReceiveProtocolsChanged.Fire(this, EventArgs.Empty);
 		}
 

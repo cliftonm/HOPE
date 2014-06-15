@@ -18,53 +18,15 @@ namespace SearchForReceptor
 	/// <summary>
 	/// Displays an input form for the user to enter a search string.
 	/// </summary>
-	public class ReceptorDefinition : IReceptorInstance
+	public class ReceptorDefinition : BaseReceptor
 	{
-#pragma warning disable 67
-		public event EventHandler<EventArgs> ReceiveProtocolsChanged;
-		public event EventHandler<EventArgs> EmitProtocolsChanged;
-#pragma warning restore 67
-
-		public string Name { get { return "Search For"; } }
-		public bool IsEdgeReceptor { get { return false; } }
-		public bool IsHidden { get { return false; } }
-
-		public IReceptorSystem ReceptorSystem
-		{
-			get { return rsys; }
-			set { rsys = value; }
-		}
-
-		protected IReceptorSystem rsys;
+		public override string Name { get { return "Search For"; } }
 		protected TextBox tb;
 
-		public ReceptorDefinition(IReceptorSystem rsys)
+		public ReceptorDefinition(IReceptorSystem rsys) : base(rsys)
 		{
-			this.rsys = rsys;
-		}
-
-		public void Initialize()
-		{
+			AddEmitProtocol("SearchFor");
 			CreateForm();
-		}
-
-		public void Terminate()
-		{
-		}
-
-		public string[] GetReceiveProtocols()
-		{
-			// Doesn't listen to anything.
-			return new string[] { };
-		}
-
-		public string[] GetEmittedProtocols()
-		{
-			return new string[] { "SearchFor" };
-		}
-
-		public void ProcessCarrier(ICarrier carrier)
-		{
 		}
 
 		protected void CreateForm()

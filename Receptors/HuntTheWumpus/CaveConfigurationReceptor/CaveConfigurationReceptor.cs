@@ -40,8 +40,8 @@ namespace HuntTheWumpus
 			idToIndexMap = new Dictionary<Guid, int>();
 			pits = new List<int>();
 			bats = new List<int>();
-			receiveProtocols.Add("HW_WhereAmI");
-			emitProtocols.Add("HW_YouAre");
+			AddReceiveProtocol("HW_WhereAmI");
+			AddEmitProtocol("HW_YouAre");
 			rnd = new Random(1);			// use a specific seed for testing.
 		}
 

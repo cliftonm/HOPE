@@ -24,33 +24,17 @@ using Clifton.Tools.Strings.Extensions;
 
 namespace PersistenceReceptor
 {
-	public class ReceptorDefinition : IReceptorInstance
+	public class ReceptorDefinition : BaseReceptor
 	{
-#pragma warning disable 67
-		public event EventHandler<EventArgs> ReceiveProtocolsChanged;
-		public event EventHandler<EventArgs> EmitProtocolsChanged;
-#pragma warning restore 67
-
-		public string Name { get { return "SQLite Persistor"; } }
-		public bool IsEdgeReceptor { get { return true; } }
-		public bool IsHidden { get { return false; } }
-
-		public IReceptorSystem ReceptorSystem
-		{
-			get { return rsys; }
-			set { rsys = value; }
-		}
-
-		protected IReceptorSystem rsys;
+		public override string Name { get { return "SQLite Persistor"; } }
+		public override bool IsEdgeReceptor { get { return true; } }
 		protected SQLiteConnection conn;
 		protected Dictionary<string, Action<dynamic>> protocolActionMap;
 		protected Dictionary<string, Action<dynamic>> crudMap;
 		const string DatabaseFileName = "hope.db";
 
-		public ReceptorDefinition(IReceptorSystem rsys)
+		public ReceptorDefinition(IReceptorSystem rsys) : base(rsys)
 		{
-			this.rsys = rsys;
-			
 			protocolActionMap = new Dictionary<string, Action<dynamic>>();
 			protocolActionMap["RequireTable"] = new Action<dynamic>((s) => RequireTable(s));
 			protocolActionMap["DatabaseRecord"] = new Action<dynamic>((s) => DatabaseRecord(s));
@@ -61,25 +45,14 @@ namespace PersistenceReceptor
 			crudMap["delete"] = new Action<dynamic>((s) => Delete(s));
 			crudMap["select"] = new Action<dynamic>((s) => Select(s));
 
+			protocolActionMap.Keys.ForEach(k => AddReceiveProtocol(k));
+			rsys.GetProtocolsEndingWith("Recordset").ForEach(p => AddEmitProtocol(p));
+
 			CreateDBIfMissing();
 			OpenDB();
 		}
 
-		public string[] GetReceiveProtocols()
-		{
-			return protocolActionMap.Keys.ToArray();
-		}
-
-		public string[] GetEmittedProtocols()
-		{
-			return rsys.GetProtocolsEndingWith("Recordset").ToArray();
-		}
-
-		public void Initialize()
-		{
-		}
-
-		public void Terminate()
+		public override void Terminate()
 		{
 			conn.Close();
 			conn.Dispose();
@@ -91,7 +64,7 @@ namespace PersistenceReceptor
 
 		}
 
-		public void ProcessCarrier(ICarrier carrier)
+		public override void ProcessCarrier(ICarrier carrier)
 		{
 			protocolActionMap[carrier.Protocol.DeclTypeName](carrier.Signal);
 		}

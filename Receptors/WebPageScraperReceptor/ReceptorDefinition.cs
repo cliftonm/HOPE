@@ -20,49 +20,18 @@ namespace WebPageScraperReceptor
 		public bool Completed { get { return WeatherInfo != null && LocationInfo != null; } }
 	}
 
-	public class ReceptorDefinition : IReceptorInstance
+	public class ReceptorDefinition : BaseReceptor
 	{
-#pragma warning disable 67
-		public event EventHandler<EventArgs> ReceiveProtocolsChanged;
-		public event EventHandler<EventArgs> EmitProtocolsChanged;
-#pragma warning restore 67
-
-		public string Name { get { return "Webpage Scraper"; } }
-		public bool IsEdgeReceptor { get { return true; } }
-		public bool IsHidden { get { return false; } }
-
-		public IReceptorSystem ReceptorSystem
+		public override string Name { get { return "Webpage Scraper"; } }
+		public override bool IsEdgeReceptor { get { return true; } }
+		
+		public ReceptorDefinition(IReceptorSystem rsys) : base(rsys)
 		{
-			get { return rsys; }
-			set { rsys = value; }
+			AddReceiveProtocol("ScrapeWebpage");
+			AddEmitProtocol("WebpageHtml");
 		}
 
-		protected IReceptorSystem rsys;
-
-		public ReceptorDefinition(IReceptorSystem rsys)
-		{
-			this.rsys = rsys;
-		}
-
-		public string[] GetReceiveProtocols()
-		{
-			return new string[] { "ScrapeWebpage" };
-		}
-
-		public string[] GetEmittedProtocols()
-		{
-			return new string[] { "WebpageHtml" };
-		}
-
-		public void Initialize()
-		{
-		}
-
-		public void Terminate()
-		{
-		}
-
-		public async void ProcessCarrier(ICarrier carrier)
+		public override async void ProcessCarrier(ICarrier carrier)
 		{
 			string url = carrier.Signal.URL.Value;
 

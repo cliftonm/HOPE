@@ -17,49 +17,21 @@ namespace CarrierExporterReceptor
 	/// <summary>
 	/// A universal carrier receptor -- it receives all carriers and exports their contents to XML, so that we can extract specific carriers for testing purposes.
 	/// </summary>
-	public class ReceptorDefinition : IReceptorInstance
+	public class ReceptorDefinition : BaseReceptor
 	{
-#pragma warning disable 67
-		public event EventHandler<EventArgs> ReceiveProtocolsChanged;
-		public event EventHandler<EventArgs> EmitProtocolsChanged;
-#pragma warning restore 67
-
-		public string Name { get { return "Carrier Exporter"; } }
-		public bool IsEdgeReceptor { get { return true; } }
-		public bool IsHidden { get { return false; } }
-
-		public IReceptorSystem ReceptorSystem
-		{
-			get { return rsys; }
-			set { rsys = value; }
-		}
-
-		protected IReceptorSystem rsys;
+		public override string Name { get { return "Carrier Exporter"; } }
+		public override bool IsEdgeReceptor { get { return true; } }
 		protected XmlDocument xdoc;
 		protected XmlNode carriersNode;
 
-		public ReceptorDefinition(IReceptorSystem rsys)
+		public ReceptorDefinition(IReceptorSystem rsys) : base(rsys)
 		{
-			this.rsys = rsys;
 			xdoc = new XmlDocument();
 			carriersNode = xdoc.AppendChild(xdoc.CreateElement("Carriers"));
+			AddReceiveProtocol("*");
 		}
 
-		public string[] GetReceiveProtocols()
-		{
-			return new string[] { "*" };
-		}
-
-		public string[] GetEmittedProtocols()
-		{
-			return new string[] { };
-		}
-
-		public void Initialize()
-		{
-		}
-
-		public void Terminate()
+		public override void Terminate()
 		{
 			XmlWriterSettings xws = new XmlWriterSettings();
 			xws.Indent = true;
@@ -69,7 +41,7 @@ namespace CarrierExporterReceptor
 			xw.Close();
 		}
 
-		public void ProcessCarrier(ICarrier carrier)
+		public override void ProcessCarrier(ICarrier carrier)
 		{
 			XmlNode node = xdoc.CreateElement("Carrier");
 			node.Attributes.Append(CreateAttribute(xdoc, "Protocol", carrier.Protocol.DeclTypeName));

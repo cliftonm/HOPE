@@ -10,54 +10,22 @@ using Clifton.SemanticTypeSystem.Interfaces;
 
 namespace HelloWorldReceptor
 {
-    public class ReceptorDefinition : IReceptorInstance
+    public class ReceptorDefinition : BaseReceptor
     {
-#pragma warning disable 67
-		public event EventHandler<EventArgs> ReceiveProtocolsChanged;
-		public event EventHandler<EventArgs> EmitProtocolsChanged;
-#pragma warning restore 67
+		public override string Name { get { return "Heartbeat"; } }
 
-		public string Name { get { return "Heartbeat"; } }
-		public bool IsEdgeReceptor { get { return false; } }
-		public bool IsHidden { get { return false; } }
-
-		public IReceptorSystem ReceptorSystem
-		{
-			get { return rsys; }
-			set { rsys = value; }
-		}
-
-		protected IReceptorSystem rsys;
 		protected Timer timer;
 
-		public ReceptorDefinition(IReceptorSystem rsys)
+		public ReceptorDefinition(IReceptorSystem rsys) : base(rsys)
 		{
-			this.rsys = rsys;
 			InitializeRepeatedHelloEvent();
+			AddEmitProtocol("DebugMessage");
 		}
 
-		public void Initialize()
-		{
-		}
-
-		public void Terminate()
+		public override void Terminate()
 		{
 			timer.Stop();
 			timer.Dispose();
-		}
-
-		public string[] GetReceiveProtocols()
-		{
-			return new string[] {};
-		}
-
-		public string[] GetEmittedProtocols()
-		{
-			return new string[] { "DebugMessage" };
-		}
-
-		public void ProcessCarrier(ICarrier carrier)
-		{
 		}
 
 		protected void InitializeRepeatedHelloEvent()

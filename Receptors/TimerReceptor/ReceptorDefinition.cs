@@ -217,67 +217,44 @@ namespace TimerReceptor
 		}
 	}
 
-	public class ReceptorDefinition : IReceptorInstance
+	public class ReceptorDefinition : BaseReceptor
 	{
-#pragma warning disable 67
-		public event EventHandler<EventArgs> ReceiveProtocolsChanged;
-		public event EventHandler<EventArgs> EmitProtocolsChanged;
-#pragma warning restore 67
-
-		public string Name { get { return "Interval Timer"; } }
-		public bool IsEdgeReceptor { get { return false; } }
-		public bool IsHidden { get { return false; } }
-
-		public IReceptorSystem ReceptorSystem
-		{
-			get { return rsys; }
-			set { rsys = value; }
-		}
-
-		protected IReceptorSystem rsys;
+		public override string Name { get { return "Interval Timer"; } }
 		protected Dictionary<string, Action<dynamic>> protocolActionMap;
 		protected bool ready;
 		protected Timer timer;
 
 		private Dictionary<string, IntervalTimer> intervalMap;
 
-		public ReceptorDefinition(IReceptorSystem rsys)
+		public ReceptorDefinition(IReceptorSystem rsys) : base(rsys)
 		{
-			this.rsys = rsys;
 			intervalMap = new Dictionary<string, IntervalTimer>();
-
 			protocolActionMap = new Dictionary<string, Action<dynamic>>();
 			protocolActionMap["IntervalTimerConfiguration"] = new Action<dynamic>((s) => IntervalTimerConfiguration(s));
 			protocolActionMap["LastEventDateTimeRecordset"] = new Action<dynamic>((s) => LastEventDateTimeRecordset(s));
-		}
-
-		public string[] GetReceiveProtocols()
-		{
-			return protocolActionMap.Keys.ToArray();
-		}
-
-		public string[] GetEmittedProtocols()
-		{
-			return new string[] { "RequireTable", "DatabaseRecord" };
+			
+			protocolActionMap.Keys.ForEach(p => AddReceiveProtocol(p));
+			AddEmitProtocol("RequireTable");
+			AddEmitProtocol("DatabaseRecord");
 		}
 
 		/// <summary>
 		/// Post-creation initialization.
 		/// </summary>
-		public void Initialize()
+		public override void Initialize()
 		{
 			RequireEventTable();
 			GetLastKnownEvents();
 			InitializeTimer();
 		}
 
-		public void Terminate()
+		public override void Terminate()
 		{
 			timer.Stop();
 			timer.Dispose();
 		}
 
-		public void ProcessCarrier(ICarrier carrier)
+		public override void ProcessCarrier(ICarrier carrier)
 		{
 			protocolActionMap[carrier.Protocol.DeclTypeName](carrier.Signal);
 		}

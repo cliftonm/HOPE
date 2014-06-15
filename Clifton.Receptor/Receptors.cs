@@ -364,10 +364,10 @@ namespace Clifton.Receptor
 		protected void GatherProtocolReceivers(IReceptor r)
 		{
 			// For each protocol...
-			r.Instance.GetReceiveProtocols().ForEach(protocolName =>
+			r.Instance.GetReceiveProtocols().ForEach(rq =>
 				{
 					// If it's a wildcard receptor, we handle it differently because "*" is a magic protocol.
-					if (protocolName == "*")
+					if (rq.Protocol == "*")
 					{
 						// This is a global receiver.  Attach it to all current carrier receptors, but don't create an instance in the CarrierReceptorMap.
 						protocolReceptorMap.ForEach(kvp => kvp.Value.Add(r));
@@ -378,16 +378,16 @@ namespace Clifton.Receptor
 						// Get the list of receiving receptors for the protocol, or, if it doesn't exist, create it.
 						List<IReceptor> receivingReceptors;
 
-						if (!protocolReceptorMap.TryGetValue(protocolName, out receivingReceptors))
+						if (!protocolReceptorMap.TryGetValue(rq.Protocol, out receivingReceptors))
 						{
 							receivingReceptors = new List<IReceptor>();
-							protocolReceptorMap[protocolName] = receivingReceptors;
+							protocolReceptorMap[rq.Protocol] = receivingReceptors;
 							// Append all current global receptors to this protocol - receptor map.
 							globalReceptors.ForEach(gr => receivingReceptors.Add(gr));
 						}
 
 						// Associate the receptor with the protocol it receives.
-						protocolReceptorMap[protocolName].Add(r);
+						protocolReceptorMap[rq.Protocol].Add(r);
 					}
 				});
 		}
@@ -418,7 +418,7 @@ namespace Clifton.Receptor
 			if (MasterReceptorConnectionList.TryGetValue(from, out targets))
 			{
 				// We're only interested in enabled receptors.
-				ret = targets.Any(r => r.Enabled && r.Instance.GetReceiveProtocols().Contains(protocol.DeclTypeName));
+				ret = targets.Any(r => r.Enabled && r.Instance.GetReceiveProtocols().Select(rp=>rp.Protocol).Contains(protocol.DeclTypeName));
 			}
 
 			if (!ret)
@@ -441,7 +441,7 @@ namespace Clifton.Receptor
 			}
 
 			// Only enabled receptors.
-			List<IReceptor> filteredTargets = targets.Where(r => r.Enabled && r.Instance.GetReceiveProtocols().Contains(protocol.DeclTypeName)).ToList();
+			List<IReceptor> filteredTargets = targets.Where(r => r.Enabled && r.Instance.GetReceiveProtocols().Select(rq=>rq.Protocol).Contains(protocol.DeclTypeName)).ToList();
 
 			// Will have a count of 0 if the receptor is the system receptor, ie, carrier animations or other protocols.
 			// TODO: This seems kludgy, is there a better way of working with this?
@@ -541,7 +541,7 @@ namespace Clifton.Receptor
 							signal.To = receptor.Instance;
 							signal.Carrier = carrier;
 							// Simulate coming from the system, as it IS a system message.
-							CreateCarrier(from, protocol, signal, receptor.Instance.GetReceiveProtocols().Contains("*"));
+							CreateCarrier(from, protocol, signal, receptor.Instance.GetReceiveProtocols().Select(rp=>rp.Protocol).Contains("*"));
 						}
 					});
 				});

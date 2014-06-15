@@ -43,6 +43,7 @@
     <Compile Include="EventArgs.cs" />
     <Compile Include="Interfaces.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReceiveQualifier.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Clifton.SemanticTypeSystem.Interfaces\Clifton.SemanticTypeSystem.Interfaces.csproj">

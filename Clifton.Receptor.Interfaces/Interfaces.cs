@@ -25,8 +25,8 @@ namespace Clifton.Receptor.Interfaces
 		// that is, to another receptor system.
 		IReceptorSystem ReceptorSystem { get; set; }
 
-		string[] GetReceiveProtocols();
-		string[] GetEmittedProtocols();
+		List<ReceiveQualifier> GetReceiveProtocols();
+		List<string> GetEmittedProtocols();
 		void ProcessCarrier(ICarrier carrier);
 
 		/// <summary>

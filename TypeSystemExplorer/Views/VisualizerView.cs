@@ -762,7 +762,7 @@ namespace TypeSystemExplorer.Views
 		{
 			// Make sure this isn't a system message, which is a hidden receptor.
 			// TODO: We need to check if any receptors exist and whether any are hidden or not.  If it's hidden, then we don't create a carrier animation instance.
-			if (!ApplicationController.GetReceiveProtocols().Contains(e.Carrier.Protocol.DeclTypeName))
+			if (!ApplicationController.GetReceiveProtocols().Select(rp=>rp.Protocol).Contains(e.Carrier.Protocol.DeclTypeName))
 			{
 				if (e.From == Program.Skin["System"].Instance)
 				{
@@ -1465,7 +1465,7 @@ namespace TypeSystemExplorer.Views
 				if (m1 == m2)
 				{
 					// If any match the receive protocols of kvp2...
-					if (kvp2.Key.Instance.GetReceiveProtocols().Contains(prot1))
+					if (kvp2.Key.Instance.GetReceiveProtocols().Select(rp=>rp.Protocol).Contains(prot1))
 					{
 						// Then these two receptors are connected.
 						// P1 is always the emitter, P2 is always the receiver.

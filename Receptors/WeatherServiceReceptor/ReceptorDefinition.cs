@@ -27,49 +27,18 @@ namespace WeatherServiceReceptor
 		}
 	}
 
-	public class ReceptorDefinition : IReceptorInstance
+	public class ReceptorDefinition : BaseReceptor
 	{
-#pragma warning disable 67
-		public event EventHandler<EventArgs> ReceiveProtocolsChanged;
-		public event EventHandler<EventArgs> EmitProtocolsChanged;
-#pragma warning restore 67
-
-		public string Name { get { return "Weather Service"; } }
-		public bool IsEdgeReceptor { get { return false; } }
-		public bool IsHidden { get { return false; } }
-
-		public IReceptorSystem ReceptorSystem
+		public override string Name { get { return "Weather Service"; } }
+		
+		public ReceptorDefinition(IReceptorSystem rsys) : base(rsys)
 		{
-			get { return rsys; }
-			set { rsys = value; }
+			AddReceiveProtocol("Zipcode");
+			AddEmitProtocol("TextToSpeech");
+			AddEmitProtocol("WeatherInfo");
 		}
 
-		protected IReceptorSystem rsys;
-
-		public ReceptorDefinition(IReceptorSystem rsys)
-		{
-			this.rsys = rsys;
-		}
-
-		public string[] GetReceiveProtocols()
-		{
-			return new string[] { "Zipcode" };
-		}
-
-		public string[] GetEmittedProtocols()
-		{
-			return new string[] { "TextToSpeech", "WeatherInfo" };
-		}
-
-		public void Initialize()
-		{
-		}
-
-		public void Terminate()
-		{
-		}
-
-		public async void ProcessCarrier(ICarrier carrier)
+		public override async void ProcessCarrier(ICarrier carrier)
 		{
 			XDocument xdoc;
 

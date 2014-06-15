@@ -11,49 +11,16 @@ using Clifton.SemanticTypeSystem.Interfaces;
 
 namespace ImageViewerReceptor
 {
-	public class ReceptorDefinition : IReceptorInstance
+	public class ReceptorDefinition : BaseReceptor
 	{
-#pragma warning disable 67
-		public event EventHandler<EventArgs> ReceiveProtocolsChanged;
-		public event EventHandler<EventArgs> EmitProtocolsChanged;
-#pragma warning restore 67
+		public override string Name { get { return "Image Viewer"; } }
 
-		public string Name { get { return "Image Viewer"; } }
-		public bool IsEdgeReceptor { get { return false; } }
-		public bool IsHidden { get { return false; } }
-
-		public IReceptorSystem ReceptorSystem
+		public ReceptorDefinition(IReceptorSystem rsys) : base(rsys)
 		{
-			get { return rsys; }
-			set { rsys = value; }
+			AddReceiveProtocol("ViewImage");
 		}
 
-		protected IReceptorSystem rsys;
-
-		public ReceptorDefinition(IReceptorSystem rsys)
-		{
-			this.rsys = rsys;
-		}
-
-		public void Initialize()
-		{				 
-		}
-
-		public void Terminate()
-		{
-		}
-
-		public string[] GetReceiveProtocols()
-		{
-			return new string[] { "ViewImage" };
-		}
-
-		public string[] GetEmittedProtocols()
-		{
-			return new string[] { };
-		}
-
-		public void ProcessCarrier(ICarrier carrier)
+		public override void ProcessCarrier(ICarrier carrier)
 		{
 			string fn = carrier.Signal.ImageFilename.Filename;
 			Form form = new Form();

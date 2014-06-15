@@ -17,46 +17,16 @@ using Clifton.SemanticTypeSystem.Interfaces;
 
 namespace ThumbnailCreatorReceptor
 {
-	public class ReceptorDefinition : IReceptorInstance
+	public class ReceptorDefinition : BaseReceptor
 	{
-#pragma warning disable 67
-		public event EventHandler<EventArgs> ReceiveProtocolsChanged;
-		public event EventHandler<EventArgs> EmitProtocolsChanged;
-#pragma warning restore 67
-
-		public string Name { get { return "Thumbnail Converter"; } }
-		public bool IsEdgeReceptor { get { return false; } }
-		public bool IsHidden { get { return false; } }
-
-		public IReceptorSystem ReceptorSystem
-		{
-			get { return rsys; }
-			set { rsys = value; }
-		}
-
-		protected IReceptorSystem rsys;
-
-		public ReceptorDefinition(IReceptorSystem rsys)
+		public override string Name { get { return "Thumbnail Converter"; } }
+		
+		public ReceptorDefinition(IReceptorSystem rsys) : base(rsys)
 		{
 			this.rsys = rsys;
-		}
-
-		public string[] GetReceiveProtocols()
-		{
-			return new string[] { "ImageFilename" };
-		}
-
-		public string[] GetEmittedProtocols()
-		{
-			return new string[] { "DebugMessage", "ThumbnailImage" };
-		}
-
-		public void Initialize()
-		{
-		}
-
-		public void Terminate()
-		{
+			AddReceiveProtocol("ImageFilename");
+			AddEmitProtocol("DebugMessage");
+			AddEmitProtocol("ThumbnailImage");
 		}
 
 		protected void ProcessImage(object state)
@@ -73,7 +43,7 @@ namespace ThumbnailCreatorReceptor
 			Thread.Sleep(100);
 		}
 
-		public async void ProcessCarrier(ICarrier carrier)
+		public override async void ProcessCarrier(ICarrier carrier)
 		{
 			if (carrier.Signal.Filename != null)
 			{

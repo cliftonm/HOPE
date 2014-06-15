@@ -16,33 +16,16 @@ using Clifton.Tools.Strings.Extensions;
 
 namespace APODScraperReceptor
 {
-	public class ReceptorDefinition : IReceptorInstance
+	public class ReceptorDefinition : BaseReceptor
 	{
-#pragma warning disable 67
-		public event EventHandler<EventArgs> ReceiveProtocolsChanged;
-		public event EventHandler<EventArgs> EmitProtocolsChanged;
-#pragma warning restore 67
-
-		public string Name { get { return "APOD"; } }
-		public bool IsEdgeReceptor { get { return false; } }
-		public bool IsHidden { get { return false; } }
-
-		public IReceptorSystem ReceptorSystem
-		{
-			get { return rsys; }
-			set { rsys = value; }
-		}
-
-		protected IReceptorSystem rsys;
+		public override string Name { get { return "APOD"; } }
 		protected Dictionary<string, Action<dynamic>> protocolActionMap;
 		protected int totalErrors = 0;
 
 		const string ImagesFolder = "Images";
 
-		public ReceptorDefinition(IReceptorSystem rsys)
+		public ReceptorDefinition(IReceptorSystem rsys) : base(rsys)
 		{
-			this.rsys = rsys;
-
 			protocolActionMap = new Dictionary<string, Action<dynamic>>();
 			protocolActionMap["TimerEvent"] = new Action<dynamic>((s) => TimerEvent(s));
 			protocolActionMap["WebpageHtml"] = new Action<dynamic>((s) => ProcessPage(s));
@@ -50,29 +33,18 @@ namespace APODScraperReceptor
 			protocolActionMap["APODRecordset"] = new Action<dynamic>((s) => ProcessAPODRecordset(s));
 			protocolActionMap["SearchFor"] = new Action<dynamic>((s) => SearchFor(s));
 			protocolActionMap["APODSearchResultsRecordset"] = new Action<dynamic>((s) => ProcessSearchResults(s));
+
+			protocolActionMap.Keys.ForEach(k => AddReceiveProtocol(k));
+			(new string[] { "RequireTable", "ScrapeWebpage", "ImageFilename", "DatabaseRecord", "DebugMessage", "APOD", "HaveImageMetadata" }).ForEach(p => AddEmitProtocol(p));
 		}
 
-		public string[] GetReceiveProtocols()
-		{
-			return protocolActionMap.Keys.ToArray();
-		}
-
-		public string[] GetEmittedProtocols()
-		{
-			return new string[] { "RequireTable", "ScrapeWebpage", "ImageFilename", "DatabaseRecord", "DebugMessage",  "APOD", "HaveImageMetadata" };
-		}
-
-		public void Initialize()
+		public override void Initialize()
 		{
 			RequireAPODTable();
 			InitializeImagesFolder();
 		}
 
-		public void Terminate()
-		{
-		}
-
-		public void ProcessCarrier(ICarrier carrier)
+		public override void ProcessCarrier(ICarrier carrier)
 		{
 			protocolActionMap[carrier.Protocol.DeclTypeName](carrier.Signal);
 		}
