@@ -430,9 +430,14 @@ namespace Clifton.Receptor
 			return ret;
 		}
 
-		protected List<IReceptor> GetTargetReceptorsFor(IReceptor from, ISemanticTypeStruct protocol)
+		// TODO: This code needs to be optimized.
+		/// <summary>
+		/// Returns the target receptors that are will receive the carrier protocol, qualified by the receptor's optional condition on the signal.
+		/// </summary>
+		protected List<IReceptor> GetTargetReceptorsFor(IReceptor from, ICarrier carrier)
 		{
 			List<IReceptor> targets;
+			ISemanticTypeStruct protocol = carrier.Protocol;
 
 			// When the try fails, it sets targets to null.
 			if (!MasterReceptorConnectionList.TryGetValue(from, out targets))
@@ -454,6 +459,9 @@ namespace Clifton.Receptor
 				}
 			}
 
+			// Lastly, filter the list by qualified receptors:
+			filteredTargets = filteredTargets.Where(t => t.Instance.GetReceiveProtocols().Single(rp => rp.Protocol == protocol.DeclTypeName).Qualifier(carrier.Signal)).ToList();
+
 			return filteredTargets;
 		}
 
@@ -465,7 +473,7 @@ namespace Clifton.Receptor
 		{
 			// Get the action that we are supposed to perform on the carrier.
 			Action action = GetProcessAction(from, carrier, stopRecursion);
-			List<IReceptor> receptors = GetTargetReceptorsFor(ReceptorFromInstance(from), carrier.Protocol);
+			List<IReceptor> receptors = GetTargetReceptorsFor(ReceptorFromInstance(from), carrier);
 
 			// If we have any enabled receptor for this carrier (a mapping of carrier to receptor list exists and receptors actually exist in that map)...
 			if (receptors.Count > 0)
@@ -491,7 +499,7 @@ namespace Clifton.Receptor
 			// collection with an indexer rather than a foreach.
 			queuedCarriers.IndexerForEach(action =>
 			{
-				List<IReceptor> receptors = GetTargetReceptorsFor(action.From, action.Carrier.Protocol);
+				List<IReceptor> receptors = GetTargetReceptorsFor(action.From, action.Carrier);
 
 				// If we have any enabled receptor for this carrier (a mapping of carrier to receptor list exists and receptors actually exist in that map)...
 				if (receptors.Count > 0)
@@ -515,7 +523,7 @@ namespace Clifton.Receptor
 			Action action = new Action(() =>
 				{
 					// Get the receptors receiving the protocol.
-					List<IReceptor> receptors = GetTargetReceptorsFor(ReceptorFromInstance(from), carrier.Protocol);
+					List<IReceptor> receptors = GetTargetReceptorsFor(ReceptorFromInstance(from), carrier);
 
 					// For each receptor that is enabled...
 					receptors.ForEach(receptor =>

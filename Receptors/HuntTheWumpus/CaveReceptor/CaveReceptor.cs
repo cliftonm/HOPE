@@ -35,7 +35,7 @@ namespace HuntTheWumpus
 		{
 			AddReceiveProtocol("HW_YouAre", (signal) => signal.ID == id);
 			AddReceiveProtocol("HW_MoveTo");
-			AddReceiveProtocol("HW_ShootInto");
+			AddReceiveProtocol("HW_ShootInto", (signal) => signal.CaveNumber == caveNumber);
 			emitProtocols.Add("HW_WhereAmI");
 			emitProtocols.Add("HW_Player");
 			emitProtocols.Add("Text");
@@ -55,30 +55,26 @@ namespace HuntTheWumpus
 			// Is it the "You are here" protocol?
 			if (carrier.Protocol.DeclTypeName == "HW_YouAre")
 			{
-				// And is it meant for me? (poor man's filtering for now!)
-				if (carrier.Signal.ID == id)
+				// Save our cave # and neighbor cave numbers.
+				caveNumber = carrier.Signal.CaveNumber;
+				caveNeighbors[0] = carrier.Signal.AdjoiningCave1;
+				caveNeighbors[1] = carrier.Signal.AdjoiningCave2;
+				caveNeighbors[2] = carrier.Signal.AdjoiningCave3;
+
+				hasBottomlessPit = carrier.Signal.HasBottomlessPit;
+				hasSuperBats = carrier.Signal.HasSuperBats;
+				hasWumpus = carrier.Signal.HasWumpus;
+				hasPlayer = carrier.Signal.HasPlayer;
+
+				// Configure emitters and listeners.
+				UpdateEmitters();
+				UpdateListeners();
+
+				if (hasPlayer)
 				{
-					// Save our cave # and neighbor cave numbers.
-					caveNumber = carrier.Signal.CaveNumber;
-					caveNeighbors[0] = carrier.Signal.AdjoiningCave1;
-					caveNeighbors[1] = carrier.Signal.AdjoiningCave2;
-					caveNeighbors[2] = carrier.Signal.AdjoiningCave3;
-
-					hasBottomlessPit = carrier.Signal.HasBottomlessPit;
-					hasSuperBats = carrier.Signal.HasSuperBats;
-					hasWumpus = carrier.Signal.HasWumpus;
-					hasPlayer = carrier.Signal.HasPlayer;
-
-					// Configure emitters and listeners.
-					UpdateEmitters();
-					UpdateListeners();
-
-					if (hasPlayer)
-					{
-						SayWhoIsNextToUs();
-						AskAboutOurNeighbors();
-						TalkToPlayer();
-					}
+					SayWhoIsNextToUs();
+					AskAboutOurNeighbors();
+					TalkToPlayer();
 				}
 			}
 			else if (carrier.Protocol.DeclTypeName.StartsWith("HW_Announce"))
@@ -118,33 +114,30 @@ namespace HuntTheWumpus
 			}
 			else if (carrier.Protocol.DeclTypeName == "HW_ShootInto")
 			{
-				if (carrier.Signal.CaveNumber == caveNumber)
+				if (hasPlayer)
 				{
-					if (hasPlayer)
-					{
-						CreateCarrier("Text", (outSignal) => outSignal.Value = "Ouch!  You shot yourself!!!!!!!!");
-						CreateCarrier("HW_GameState", (outSignal) => outSignal.PlayerShotSelf = true);
-					}
-					// This is my cave the hunter is shooting into!
-					else if (hasWumpus)
-					{
-						CreateCarrier("Text", (outSignal) => outSignal.Value = "Ouch!  You shot the Wumpus!!!!!!!!");
-						CreateCarrier("HW_GameState", (outSignal) => outSignal.WumpusIsDead = true);
-					}
-					else
-					{
-						int arrowLife = carrier.Signal.RemainingLife;
-						--arrowLife;
+					CreateCarrier("Text", (outSignal) => outSignal.Value = "Ouch!  You shot yourself!!!!!!!!");
+					CreateCarrier("HW_GameState", (outSignal) => outSignal.PlayerShotSelf = true);
+				}
+				// This is my cave the hunter is shooting into!
+				else if (hasWumpus)
+				{
+					CreateCarrier("Text", (outSignal) => outSignal.Value = "Ouch!  You shot the Wumpus!!!!!!!!");
+					CreateCarrier("HW_GameState", (outSignal) => outSignal.WumpusIsDead = true);
+				}
+				else
+				{
+					int arrowLife = carrier.Signal.RemainingLife;
+					--arrowLife;
 
-						if (arrowLife > 0)
+					if (arrowLife > 0)
+					{
+						// The arrow continues to a random room.
+						CreateCarrier("HW_ShootInto", (signal) =>
 						{
-							// The arrow continues to a random room.
-							CreateCarrier("HW_ShootInto", (signal) =>
-							{
-								signal.CaveNumber = caveNeighbors[rnd.Next(3)];
-								signal.RemainingLife = arrowLife;
-							});
-						}
+							signal.CaveNumber = caveNeighbors[rnd.Next(3)];
+							signal.RemainingLife = arrowLife;
+						});
 					}
 				}
 			}
