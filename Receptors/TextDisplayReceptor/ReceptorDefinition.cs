@@ -37,6 +37,8 @@ namespace TextDisplayReceptor
 				tb = new TextBox();
 				tb.Multiline = true;
 				tb.WordWrap = true;
+				tb.ReadOnly = true;
+				tb.ScrollBars = ScrollBars.Vertical;
 				form.Controls.Add(tb);
 				tb.Dock = DockStyle.Fill;
 				form.Show();
@@ -56,8 +58,8 @@ namespace TextDisplayReceptor
 
 			if (!String.IsNullOrEmpty(text))
 			{
-				tb.Text = tb.Text + text.StripHtml();
-				tb.Text = tb.Text + "\r\n";
+				tb.AppendText(text.StripHtml());
+				tb.AppendText("\r\n");
 			}
 		}
 

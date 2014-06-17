@@ -34,7 +34,7 @@ namespace HuntTheWumpus
 			AddEmitProtocol("HW_MoveTo");
 			AddEmitProtocol("HW_ShootInto");
 
-			rnd = new Random(10);			// use a specific seed for testing.
+			rnd = new Random();
 
 			form = new Form();
 			form.Text = "Hunt The Wumpus";
@@ -134,7 +134,11 @@ namespace HuntTheWumpus
 		protected void OnMove(object sender, EventArgs e)
 		{
 			int newCaveNumber = (int)((Button)sender).Tag;
-			CreateCarrier("HW_MoveTo", (signal) => signal.NewCaveNumber = newCaveNumber);
+			CreateCarrier("HW_MoveTo", (signal) => 
+				{
+					signal.FromCaveNumber = currentCaveNumber;
+					signal.NewCaveNumber = newCaveNumber;
+				});
 		}
 
 		protected void OnShoot(object sender, EventArgs e)

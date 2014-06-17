@@ -42,7 +42,7 @@ namespace HuntTheWumpus
 			bats = new List<int>();
 			AddReceiveProtocol("HW_WhereAmI");
 			AddEmitProtocol("HW_YouAre");
-			rnd = new Random(1);			// use a specific seed for testing.
+			rnd = new Random();
 		}
 
 		public override void ProcessCarrier(ICarrier carrier)

@@ -34,13 +34,13 @@ namespace HuntTheWumpus
 			: base(rsys)
 		{
 			AddReceiveProtocol("HW_YouAre", (signal) => signal.ID == id);
-			AddReceiveProtocol("HW_MoveTo");
+			AddReceiveProtocol("HW_MoveTo", (signal) => signal.FromCaveNumber == caveNumber || signal.NewCaveNumber == caveNumber);
 			AddReceiveProtocol("HW_ShootInto", (signal) => signal.CaveNumber == caveNumber);
 			emitProtocols.Add("HW_WhereAmI");
 			emitProtocols.Add("HW_Player");
 			emitProtocols.Add("Text");
 			caveNeighbors = new int[3];
-			rnd = new Random(20);			// use a specific seed for testing.
+			rnd = new Random();
 		}
 
 		public override void Initialize()
@@ -165,7 +165,7 @@ namespace HuntTheWumpus
 
 		protected void SayWhoIsNextToUs()
 		{
-			CreateCarrier("Text", (outSignal) => outSignal.Value = "You are in cave number "+caveNumber);
+			CreateCarrier("Text", (outSignal) => outSignal.Value = "\r\nYou are in cave number "+caveNumber);
 			CreateCarrier("Text", (outSignal) => outSignal.Value = "Passages lead to " + String.Join(", ", caveNeighbors.Select(cn => cn.ToString())));
 		}
 

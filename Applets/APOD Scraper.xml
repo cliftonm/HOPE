@@ -1,0 +1,68 @@
+<MycroXaml xmlns:ixm="TypeSystemExplorer.Models, TypeSystemExplorer" xmlns:def="def" xmlns:ref="ref" Name="Form">
+  <ixm:Applet>
+    <ixm:MembranesDef>
+      <ixm:Membranes>
+        <ixm:MembraneDef Name="Skin">
+          <ixm:Receptors>
+            <ixm:ReceptorDef Name="Search For" AssemblyName="SearchForReceptor.dll" Enabled="True" Location="220, 376" />
+          </ixm:Receptors>
+          <ixm:Permeabilities>
+            <ixm:PermeabilityDef Protocol="SearchFor" Direction="Out" Permeable="False" />
+          </ixm:Permeabilities>
+          <ixm:Membranes>
+            <ixm:MembraneDef Name="APOD">
+              <ixm:Receptors>
+                <ixm:ReceptorDef Name="SQLite Persistor" AssemblyName="PersistenceReceptor.dll" Enabled="True" Location="503, 511" />
+                <ixm:ReceptorDef Name="APOD" AssemblyName="APODScraperReceptor.dll" Enabled="True" Location="605, 444" />
+                <ixm:ReceptorDef Name="Thumbnail Converter" AssemblyName="ThumbnailCreatorReceptor.dll" Enabled="True" Location="581, 275" />
+                <ixm:ReceptorDef Name="Image Viewer" AssemblyName="ImageViewerReceptor.dll" Enabled="True" Location="752, 317" />
+                <ixm:ReceptorDef Name="Webpage Scraper" AssemblyName="WebPageScraperReceptor.dll" Enabled="True" Location="698, 556" />
+                <ixm:ReceptorDef Name="Interval Timer" AssemblyName="TimerReceptor.dll" Enabled="True" Location="457, 330" />
+                <ixm:ReceptorDef Name="Text Display" AssemblyName="TextDisplayReceptor.dll" Enabled="True" Location="588, 592" />
+                <ixm:ReceptorDef Name="URL" AssemblyName="UrlReceptor.dll" Enabled="True" Location="405, 443" />
+                <ixm:ReceptorDef Name="Thumbnail Viewer" AssemblyName="ThumbnailViewerReceptor.dll" Enabled="True" Location="758, 426" />
+                <ixm:ReceptorDef Name="Logger" AssemblyName="LoggingReceptor.dll" Enabled="True" Location="482, 208" />
+              </ixm:Receptors>
+              <ixm:Permeabilities>
+                <ixm:PermeabilityDef Protocol="LastEventDateTimeRecordset" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="APODRecordset" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="APODSearchResultsRecordset" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RequireTable" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="ScrapeWebpage" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="ImageFilename" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="DatabaseRecord" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="DebugMessage" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="APOD" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="HaveImageMetadata" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="ThumbnailImage" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="WebpageHtml" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="SystemShowImage" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="ViewImage" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="GetImageMetadata" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="TimerEvent" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="SearchFor" Direction="In" Permeable="True" />
+                <ixm:PermeabilityDef Protocol="IntervalTimerConfiguration" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Text" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="TextToSpeech" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="URL" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="SystemMessage" Direction="Out" Permeable="False" />
+              </ixm:Permeabilities>
+            </ixm:MembraneDef>
+          </ixm:Membranes>
+        </ixm:MembraneDef>
+      </ixm:Membranes>
+    </ixm:MembranesDef>
+    <ixm:CarriersDef>
+      <ixm:Carriers>
+        <ixm:CarrierDef Protocol="IntervalTimerConfiguration">
+          <ixm:Attributes>
+            <ixm:Attr Name="StartDateTime" Value="8:00 AM" />
+            <ixm:Attr Name="Interval" Value="86400" />
+            <ixm:Attr Name="EventName" Value="ScrapeAPOD" />
+            <ixm:Attr Name="IgnoreMissedIntervals" Value="false" />
+          </ixm:Attributes>
+        </ixm:CarrierDef>
+      </ixm:Carriers>
+    </ixm:CarriersDef>
+  </ixm:Applet>
+</MycroXaml>

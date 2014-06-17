@@ -627,6 +627,7 @@
 
     <SemanticTypeStruct DeclType="HW_MoveTo">
       <Attributes>
+        <NativeType Name="FromCaveNumber" ImplementingType="int"/>
         <NativeType Name="NewCaveNumber" ImplementingType="int"/>
       </Attributes>
     </SemanticTypeStruct>
