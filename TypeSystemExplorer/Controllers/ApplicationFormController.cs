@@ -147,6 +147,7 @@ namespace TypeSystemExplorer.Controllers
 			OutputController.IfNotNull(c => c.View.Clear());
 			SymbolTableController.IfNotNull(c => c.View.Clear());
 			InternalReset();
+			LoadXml("protocols.xml");
 			Program.Skin.RegisterReceptor("System", this);
 		}
 
@@ -489,6 +490,11 @@ namespace TypeSystemExplorer.Controllers
 			// heehee.  It works!
 			// dynamic t = Program.SemanticTypeSystem.Create("Point");
 			// t.X.Integer.Value = 5;
+		}
+
+		public void New(object sender, EventArgs args)
+		{
+			Reset(sender, args);
 		}
 
 		public void LoadReceptors(object sender, EventArgs args)

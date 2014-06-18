@@ -21,6 +21,7 @@
         <wf:Items>
           <wf:ToolStripMenuItem def:Name="mnuFile" Text="&amp;File">
             <wf:DropDownItems>
+              <!--
               <wf:ToolStripMenuItem Text="&amp;Reset STS" Click="{controller.Reset}"/>
               <wf:ToolStripSeparator/>
               <wf:ToolStripMenuItem Text="&amp;New Xml" Click="{controller.NewXml}"/>
@@ -28,7 +29,10 @@
               <wf:ToolStripMenuItem Text="&amp;Save Xml" Click="{controller.SaveXml}" ShortcutKeys="Alt+S"/>
               <wf:ToolStripMenuItem Text="Save Xml &amp;As..." Click="{controller.SaveXmlAs}"/>
               <wf:ToolStripSeparator/>
+              -->
             <!--  <wf:ToolStripMenuItem Text="&amp;Import Population" Click="{controller.Import}"/>  -->
+              <wf:ToolStripMenuItem Text="&amp;New" Click="{controller.New}"/>
+              <wf:ToolStripSeparator/>
               <wf:ToolStripMenuItem Text="&amp;Load Applet" Click="{controller.LoadReceptors}"/>
               <wf:ToolStripMenuItem Text="Sa&amp;ve Applet" Click="{controller.SaveReceptors}"/>
               <wf:ToolStripMenuItem Text="Save A&amp;pplet As" Click="{controller.SaveReceptorsAs}"/>

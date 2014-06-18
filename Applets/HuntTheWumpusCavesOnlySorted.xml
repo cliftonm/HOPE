@@ -1,0 +1,43 @@
+<MycroXaml xmlns:ixm="TypeSystemExplorer.Models, TypeSystemExplorer" xmlns:def="def" xmlns:ref="ref" Name="Form">
+  <ixm:Applet>
+    <ixm:MembranesDef>
+      <ixm:Membranes>
+        <ixm:MembraneDef Name="Skin">
+          <ixm:Receptors>
+            <ixm:ReceptorDef Name="Cave" AssemblyName="CaveReceptor.dll" Enabled="True" Location="413, 733" />
+            <ixm:ReceptorDef Name="Cave" AssemblyName="CaveReceptor.dll" Enabled="True" Location="400, 577" />
+            <ixm:ReceptorDef Name="Cave" AssemblyName="CaveReceptor.dll" Enabled="True" Location="425, 388" />
+            <ixm:ReceptorDef Name="Cave" AssemblyName="CaveReceptor.dll" Enabled="True" Location="224, 426" />
+            <ixm:ReceptorDef Name="Cave" AssemblyName="CaveReceptor.dll" Enabled="True" Location="272, 650" />
+            <ixm:ReceptorDef Name="Cave" AssemblyName="CaveReceptor.dll" Enabled="True" Location="586, 759" />
+            <ixm:ReceptorDef Name="Cave" AssemblyName="CaveReceptor.dll" Enabled="True" Location="754, 746" />
+            <ixm:ReceptorDef Name="Cave" AssemblyName="CaveReceptor.dll" Enabled="True" Location="663, 606" />
+            <ixm:ReceptorDef Name="Cave" AssemblyName="CaveReceptor.dll" Enabled="True" Location="671, 467" />
+            <ixm:ReceptorDef Name="Cave" AssemblyName="CaveReceptor.dll" Enabled="True" Location="577, 325" />
+            <ixm:ReceptorDef Name="Cave" AssemblyName="CaveReceptor.dll" Enabled="True" Location="583, 150" />
+            <ixm:ReceptorDef Name="Cave" AssemblyName="CaveReceptor.dll" Enabled="True" Location="337, 203" />
+            <ixm:ReceptorDef Name="Cave" AssemblyName="CaveReceptor.dll" Enabled="True" Location="162, 77" />
+            <ixm:ReceptorDef Name="Cave" AssemblyName="CaveReceptor.dll" Enabled="True" Location="126, 734" />
+            <ixm:ReceptorDef Name="Cave" AssemblyName="CaveReceptor.dll" Enabled="True" Location="617, 901" />
+            <ixm:ReceptorDef Name="Cave" AssemblyName="CaveReceptor.dll" Enabled="True" Location="1034, 799" />
+            <ixm:ReceptorDef Name="Cave" AssemblyName="CaveReceptor.dll" Enabled="True" Location="856, 660" />
+            <ixm:ReceptorDef Name="Cave" AssemblyName="CaveReceptor.dll" Enabled="True" Location="849, 468" />
+            <ixm:ReceptorDef Name="Cave" AssemblyName="CaveReceptor.dll" Enabled="True" Location="847, 238" />
+            <ixm:ReceptorDef Name="Cave" AssemblyName="CaveReceptor.dll" Enabled="True" Location="970, 102" />
+          </ixm:Receptors>
+          <ixm:Permeabilities>
+            <ixm:PermeabilityDef Protocol="HW_WhereAmI" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="HW_Player" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="Text" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="HW_YouAre" Direction="In" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="HW_MoveTo" Direction="In" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="HW_ShootInto" Direction="In" Permeable="False" />
+          </ixm:Permeabilities>
+        </ixm:MembraneDef>
+      </ixm:Membranes>
+    </ixm:MembranesDef>
+    <ixm:CarriersDef>
+      <ixm:Carriers />
+    </ixm:CarriersDef>
+  </ixm:Applet>
+</MycroXaml>

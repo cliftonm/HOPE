@@ -85,6 +85,11 @@ namespace HuntTheWumpus
 			form.Show();
 		}
 
+		public override void Terminate()
+		{
+			form.Close();
+		}
+
 		public override void ProcessCarrier(ICarrier carrier)
 		{
 			dynamic signal = carrier.Signal;

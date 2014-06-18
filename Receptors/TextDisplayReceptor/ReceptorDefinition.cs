@@ -16,6 +16,7 @@ namespace TextDisplayReceptor
 	{
 		public override string Name { get { return "Text Display"; } }
 		protected TextBox tb;
+		protected Form form;
 
 		public ReceptorDefinition(IReceptorSystem rsys) : base(rsys)
 		{
@@ -23,12 +24,17 @@ namespace TextDisplayReceptor
 			AddReceiveProtocol("TextToSpeech");
 		}
 
+		public override void Terminate()
+		{
+			form.Close();
+		}
+
 		public override void ProcessCarrier(ICarrier carrier)
 		{
 			// Create the textbox if it doesn't exist.
 			if (tb == null)
 			{
-				Form form = new Form();
+				form = new Form();
 				form.Text = "Text Output";
 				form.Location = new Point(100, 100);
 				form.Size = new Size(400, 400);
