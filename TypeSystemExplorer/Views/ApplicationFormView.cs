@@ -64,25 +64,27 @@ namespace TypeSystemExplorer.Views
 
 		public void SetCaption(string text)
 		{
-			if (!String.IsNullOrEmpty(text))
-			{
-				string filename = Path.GetFileNameWithoutExtension(text);
-				string path = Path.GetDirectoryName(text);
+			//if (!String.IsNullOrEmpty(text))
+			//{
+			//	string filename = Path.GetFileNameWithoutExtension(text);
+			//	string path = Path.GetDirectoryName(text);
 
-				if (String.IsNullOrEmpty(path))
-				{
-					// Use the application path if we don't have a formal path defined.
-					path = Path.GetDirectoryName(Path.GetFullPath(text));
-				}
+			//	if (String.IsNullOrEmpty(path))
+			//	{
+			//		// Use the application path if we don't have a formal path defined.
+			//		path = Path.GetDirectoryName(Path.GetFullPath(text));
+			//	}
 
-				Text = /*"Intertexti - " +*/ filename + " (" + path + ")";
-			}
-			else
-			{
-				Text = "- new"; // Intertexti - new";
-			}
+			//	Text = /*"Intertexti - " +*/ filename + " (" + path + ")";
+			//}
+			//else
+			//{
+			//	Text = "- new"; // Intertexti - new";
+			//}
 
-			WhenModelIsDirty(Model.IsDirty);
+			//WhenModelIsDirty(Model.IsDirty);
+
+			Text = text;
 		}
 
 		protected void WhenModelIsDirty(bool isDirty)

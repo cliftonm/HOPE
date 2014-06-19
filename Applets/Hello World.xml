@@ -1,0 +1,22 @@
+<MycroXaml xmlns:ixm="TypeSystemExplorer.Models, TypeSystemExplorer" xmlns:def="def" xmlns:ref="ref" Name="Form">
+  <ixm:Applet>
+    <ixm:MembranesDef>
+      <ixm:Membranes>
+        <ixm:MembraneDef Name="Skin">
+          <ixm:Receptors>
+            <ixm:ReceptorDef Name="Logger" AssemblyName="LoggingReceptor.dll" Enabled="True" Location="580, 404" />
+            <ixm:ReceptorDef Name="Heartbeat" AssemblyName="HelloWorldReceptor.dll" Enabled="True" Location="456, 327" />
+          </ixm:Receptors>
+          <ixm:Permeabilities>
+            <ixm:PermeabilityDef Protocol="SystemMessage" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="DebugMessage" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="DebugMessage" Direction="In" Permeable="False" />
+          </ixm:Permeabilities>
+        </ixm:MembraneDef>
+      </ixm:Membranes>
+    </ixm:MembranesDef>
+    <ixm:CarriersDef>
+      <ixm:Carriers />
+    </ixm:CarriersDef>
+  </ixm:Applet>
+</MycroXaml>

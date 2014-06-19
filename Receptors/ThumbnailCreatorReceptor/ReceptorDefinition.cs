@@ -53,18 +53,26 @@ namespace ThumbnailCreatorReceptor
 				{
 //					ManagedThreadPool.QueueUserWorkItem(new WaitCallback(ProcessImage), fn);
 
-					Image ret = await Task.Run<Image>(() =>
+					try
 					{
-						Bitmap bitmap = new Bitmap(fn);
-						// Reduce the size of the image.  If we don't do this, scrolling and rendering of scaled images is horrifically slow.
-						Image image = new Bitmap(bitmap, 1024, 1024 * bitmap.Height / bitmap.Width);
-						image.Tag = fn;
-						bitmap.Dispose();
+						Image ret = await Task.Run<Image>(() =>
+						{
+							Bitmap bitmap = new Bitmap(fn);
+							// Reduce the size of the image.  If we don't do this, scrolling and rendering of scaled images is horrifically slow.
+							// Image image = new Bitmap(bitmap, 1024, 1024 * bitmap.Height / bitmap.Width);
+							Image image = new Bitmap(bitmap, 320, 320 * bitmap.Height / bitmap.Width);
+							image.Tag = fn;
+							bitmap.Dispose();
 
-						return image;
-					});
+							return image;
+						});
 
-					OutputImage(fn, ret);
+						OutputImage(fn, ret);
+					}
+					catch
+					{
+						// TODO: Some exception occurred with the image, so we'll ignore it for now.
+					}
 
 					// This is fast enough we don't need to run this as a separate thread unless these files are perhaps coming from a slow network.
 					// - no, we can leverage multiple cores when we're processing a whole swarm of images 

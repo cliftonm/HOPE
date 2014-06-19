@@ -54,14 +54,21 @@ namespace PersistenceReceptor
 
 		public override void Terminate()
 		{
-			conn.Close();
-			conn.Dispose();
-
-			// As per this post:
-			// http://stackoverflow.com/questions/12532729/sqlite-keeps-the-database-locked-even-after-the-connection-is-closed
-			// GC.Collect() is required to ensure that the file handle is released NOW (not when the GC gets a round tuit.  ;)
-			GC.Collect();
-
+			try
+			{
+				conn.Close();
+				conn.Dispose();
+			}
+			catch
+			{
+			}
+			finally
+			{
+				// As per this post:
+				// http://stackoverflow.com/questions/12532729/sqlite-keeps-the-database-locked-even-after-the-connection-is-closed
+				// GC.Collect() is required to ensure that the file handle is released NOW (not when the GC gets a round tuit.  ;)
+				GC.Collect();
+			}
 		}
 
 		public override void ProcessCarrier(ICarrier carrier)

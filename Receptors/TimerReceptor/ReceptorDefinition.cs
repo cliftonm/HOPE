@@ -236,6 +236,7 @@ namespace TimerReceptor
 			protocolActionMap.Keys.ForEach(p => AddReceiveProtocol(p));
 			AddEmitProtocol("RequireTable");
 			AddEmitProtocol("DatabaseRecord");
+			AddEmitProtocol("TimerEvent");
 		}
 
 		/// <summary>

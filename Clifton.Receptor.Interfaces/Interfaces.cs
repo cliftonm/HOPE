@@ -70,10 +70,18 @@ namespace Clifton.Receptor.Interfaces
 		Out,
 	}
 
+	/// <summary>
+	/// The default construction assumes false for Permeable.
+	/// </summary>
 	public class PermeabilityConfiguration
 	{
-		public PermeabilityDirection Direction { get; set; }
 		public bool Permeable { get; set; }
+	}
+
+	public struct PermeabilityKey
+	{
+		public string Protocol { get; set; }
+		public PermeabilityDirection Direction { get; set; }
 	}
 
 	public interface IMembrane
@@ -87,7 +95,7 @@ namespace Clifton.Receptor.Interfaces
 		ISemanticTypeSystem SemanticTypeSystem { get; }
 		List<IMembrane> Membranes { get; }
 		ReadOnlyCollection<IReceptor> Receptors { get; }
-		Dictionary<string, PermeabilityConfiguration> ProtocolPermeability { get; }
+		Dictionary<PermeabilityKey, PermeabilityConfiguration> ProtocolPermeability { get; }
 
 		ICarrier CreateCarrier(IReceptorInstance from, ISemanticTypeStruct protocol, dynamic signal);
 		void CreateCarrierIfReceiver(IReceptorInstance from, ISemanticTypeStruct protocol, dynamic signal);

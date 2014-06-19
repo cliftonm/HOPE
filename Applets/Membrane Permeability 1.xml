@@ -1,0 +1,48 @@
+<MycroXaml xmlns:ixm="TypeSystemExplorer.Models, TypeSystemExplorer" xmlns:def="def" xmlns:ref="ref" Name="Form">
+  <ixm:Applet>
+    <ixm:MembranesDef>
+      <ixm:Membranes>
+        <ixm:MembraneDef Name="Skin">
+          <ixm:Receptors />
+          <ixm:Permeabilities />
+          <ixm:Membranes>
+            <ixm:MembraneDef Name="">
+              <ixm:Receptors>
+                <ixm:ReceptorDef Name="Thumbnail Converter" AssemblyName="ThumbnailCreatorReceptor.dll" Enabled="True" Location="574, 450" />
+                <ixm:ReceptorDef Name="Thumbnail Viewer" AssemblyName="ThumbnailViewerReceptor.dll" Enabled="True" Location="577, 345" />
+              </ixm:Receptors>
+              <ixm:Permeabilities>
+                <ixm:PermeabilityDef Protocol="DebugMessage" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="ThumbnailImage" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="ImageFilename" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="SystemShowImage" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="ViewImage" Direction="Out" Permeable="True" />
+                <ixm:PermeabilityDef Protocol="GetImageMetadata" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="ThumbnailImage" Direction="In" Permeable="False" />
+              </ixm:Permeabilities>
+            </ixm:MembraneDef>
+          </ixm:Membranes>
+          <ixm:Membranes>
+            <ixm:MembraneDef Name="">
+              <ixm:Receptors>
+                <ixm:ReceptorDef Name="Thumbnail Viewer" AssemblyName="ThumbnailViewerReceptor.dll" Enabled="True" Location="983, 394" />
+                <ixm:ReceptorDef Name="Thumbnail Converter" AssemblyName="ThumbnailCreatorReceptor.dll" Enabled="True" Location="799, 435" />
+                <ixm:ReceptorDef Name="Image Viewer" AssemblyName="ImageViewerReceptor.dll" Enabled="True" Location="875, 310" />
+              </ixm:Receptors>
+              <ixm:Permeabilities>
+                <ixm:PermeabilityDef Protocol="SystemShowImage" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="ViewImage" Direction="Out" Permeable="True" />
+                <ixm:PermeabilityDef Protocol="GetImageMetadata" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="ThumbnailImage" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="ViewImage" Direction="In" Permeable="True" />
+                <ixm:PermeabilityDef Protocol="DebugMessage" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="ThumbnailImage" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="ImageFilename" Direction="In" Permeable="False" />
+              </ixm:Permeabilities>
+            </ixm:MembraneDef>
+          </ixm:Membranes>
+        </ixm:MembraneDef>
+      </ixm:Membranes>
+    </ixm:MembranesDef>
+  </ixm:Applet>
+</MycroXaml>

@@ -1346,8 +1346,8 @@ namespace TypeSystemExplorer.Views
 				membrane.ProtocolPermeability.ForEach(kvp =>
 					{
 						DataRow row = dt.NewRow();
-						row[0] = kvp.Key;
-						row[1] = kvp.Value.Direction;
+						row[0] = kvp.Key.Protocol;
+						row[1] = kvp.Key.Direction;
 						row[2] = kvp.Value.Permeable;
 						dt.Rows.Add(row);
 					});
@@ -1376,8 +1376,10 @@ namespace TypeSystemExplorer.Views
 			dv.ForEach(row =>
 				{
 					string protocol = (string)row[0];
+					PermeabilityDirection pd = ((string)row[1]).ToEnum<PermeabilityDirection>();
+					PermeabilityKey pk = new PermeabilityKey() { Protocol = protocol, Direction = pd };
 					bool permeable = (bool)row[2];
-					membraneBeingConfigured.ProtocolPermeability[protocol].Permeable = permeable;
+					membraneBeingConfigured.ProtocolPermeability[pk].Permeable = permeable;
 				});
 
 			CreateReceptorConnections();
@@ -1497,11 +1499,13 @@ namespace TypeSystemExplorer.Views
 			// Does the membrane allow this receptor protocol to move out?
 			// Also, have we just come from the outer membrane, because we don't want to check it again as we
 			// recurse inner membranes.
-			if ( (m1.ProtocolPermeability.ContainsKey(prot1)) && (m1.ParentMembrane != source) )
+			PermeabilityKey pk = new PermeabilityKey() { Protocol = prot1, Direction = PermeabilityDirection.Out };
+
+			if ((m1.ProtocolPermeability.ContainsKey(pk)) && (m1.ParentMembrane != source))
 			{
 				// Yes it does, check this membrane's receptors 
 				// It must be an OUT direction, and it must be enabled.
-				if ( (m1.ProtocolPermeability[prot1].Direction == PermeabilityDirection.Out) && (m1.ProtocolPermeability[prot1].Permeable) )
+				if (m1.ProtocolPermeability[pk].Permeable)
 				{
 					// Check outer mebranes, passing ourselves as the "inner source" (m1)
 					FindConnectionsWith(r, m1.ParentMembrane, prot1, rPoint, m1);
@@ -1511,12 +1515,14 @@ namespace TypeSystemExplorer.Views
 			// Check inner membranes other than the outer membrane we are coming from.
 			m1.Membranes.Where(m => m != source).ForEach(m =>
 				{
+					PermeabilityKey pk2 = new PermeabilityKey() { Protocol = prot1, Direction = PermeabilityDirection.In };
+
 					// Does the inner membrane allow IN permeability?
-					if (m.ProtocolPermeability.ContainsKey(prot1))
+					if (m.ProtocolPermeability.ContainsKey(pk2))
 					{
 						// Yes it does, check this membrane's receptors 
 						// It must be an OUT direction, and it must be enabled.
-						if ((m.ProtocolPermeability[prot1].Direction == PermeabilityDirection.In) && (m.ProtocolPermeability[prot1].Permeable))
+						if (m.ProtocolPermeability[pk2].Permeable)
 						{
 							// Check the inner membrane.
 							FindConnectionsWith(r, m, prot1, rPoint, m1);

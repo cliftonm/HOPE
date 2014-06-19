@@ -26,7 +26,13 @@ namespace TextDisplayReceptor
 
 		public override void Terminate()
 		{
-			form.Close();
+			try
+			{
+				form.Close();
+			}
+			catch
+			{
+			}
 		}
 
 		public override void ProcessCarrier(ICarrier carrier)

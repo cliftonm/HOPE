@@ -74,9 +74,20 @@ namespace TypeSystemExplorer.Controllers
 
 		protected void FormClosingEvent(object sender, FormClosingEventArgs args)
 		{
-			InternalReset();
-			VisualizerController.View.Stop();
-			args.Cancel = false;
+			try
+			{
+				InternalReset();
+				VisualizerController.View.Stop();
+			}
+			catch (Exception ex)
+			{
+				System.Diagnostics.Debug.WriteLine(ex.Message);
+				System.Diagnostics.Debug.WriteLine(ex.StackTrace);
+			}
+			finally
+			{
+				args.Cancel = false;
+			}
 		}
 
 		protected void RegisterUserStateOperations()
@@ -115,7 +126,7 @@ namespace TypeSystemExplorer.Controllers
 			XmlEditorController.IfNull(() => NewDocument("xmlEditor.xml"));
 			XmlEditorController.View.Editor.LoadFile(filename);
 			CurrentFilename = filename;
-			SetCaption(filename);
+			// SetCaption(filename);
 
 			CreateTypes(this, EventArgs.Empty);
 			GenerateCode(this, EventArgs.Empty);
@@ -140,15 +151,26 @@ namespace TypeSystemExplorer.Controllers
 		/// </summary>
 		protected void Reset(object sender, EventArgs args)
 		{
-			// Speak("System reset.");
-			SemanticTypeTreeController.IfNotNull(c => c.View.Clear());
-			PropertyGridController.IfNotNull(c => c.View.Clear());
-			// XmlEditorController.IfNotNull(c => c.View.Clear());
-			OutputController.IfNotNull(c => c.View.Clear());
-			SymbolTableController.IfNotNull(c => c.View.Clear());
-			InternalReset();
-			LoadXml("protocols.xml");
-			Program.Skin.RegisterReceptor("System", this);
+			try
+			{
+				// Speak("System reset.");
+				SemanticTypeTreeController.IfNotNull(c => c.View.Clear());
+				PropertyGridController.IfNotNull(c => c.View.Clear());
+				// XmlEditorController.IfNotNull(c => c.View.Clear());
+				OutputController.IfNotNull(c => c.View.Clear());
+				SymbolTableController.IfNotNull(c => c.View.Clear());
+				InternalReset();
+			}
+			catch (Exception ex)
+			{
+				System.Diagnostics.Debug.WriteLine(ex.Message);
+				System.Diagnostics.Debug.WriteLine(ex.StackTrace);
+			}
+			finally
+			{
+				LoadXml("protocols.xml");
+				Program.Skin.RegisterReceptor("System", this);
+			}
 		}
 
 		protected void InternalReset()
@@ -261,7 +283,7 @@ namespace TypeSystemExplorer.Controllers
 		protected void SetCaption(string filename)
 		{
 			CurrentFilename = filename;
-			View.SetCaption(filename);
+			View.SetCaption(Path.GetFileNameWithoutExtension(filename) + " - Higher Order Programming Environment");
 		}
 
 		protected void LoadTheLayout(string layoutFilename)
@@ -636,8 +658,8 @@ namespace TypeSystemExplorer.Controllers
 			m.ProtocolPermeability.ForEach(kvp =>
 				{
 					XmlNode permeable = xdoc.CreateElement("ixm", "PermeabilityDef", "TypeSystemExplorer.Models, TypeSystemExplorer");
-					AddAttribute(permeable, "Protocol", kvp.Key);
-					AddAttribute(permeable, "Direction", kvp.Value.Direction.ToString());
+					AddAttribute(permeable, "Protocol", kvp.Key.Protocol);
+					AddAttribute(permeable, "Direction", kvp.Key.Direction.ToString());
 					AddAttribute(permeable, "Permeable", kvp.Value.Permeable.ToString());
 					permeabilities.AppendChild(permeable);
 				});
@@ -655,6 +677,7 @@ namespace TypeSystemExplorer.Controllers
 
 		public void LoadApplet(string filename)
 		{
+			Reset(null, EventArgs.Empty);
 			CurrentFilename = filename;
 			SetCaption(filename);
 			applet = MycroParser.InstantiateFromFile<Applet>(filename, null);
@@ -752,12 +775,7 @@ namespace TypeSystemExplorer.Controllers
 			// this way the permeability has been initialized via the NewReceptor event hook.
 			membraneDef.Permeabilities.ForEach(p =>
 				{
-					if (!membrane.ProtocolPermeability.ContainsKey(p.Protocol))
-					{
-						membrane.ProtocolPermeability[p.Protocol] = new PermeabilityConfiguration() { Direction = p.Direction };
-					}
-
-					membrane.ProtocolPermeability[p.Protocol].Permeable = p.Permeable;
+					membrane.ProtocolPermeability[new PermeabilityKey() { Protocol = p.Protocol, Direction = p.Direction }] = new PermeabilityConfiguration() { Permeable = p.Permeable };
 				});
 
 			// Next, load the inner membrane and receptors.

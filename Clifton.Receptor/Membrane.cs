@@ -40,7 +40,7 @@ namespace Clifton.Receptor
 		public string Name { get; set; }
 		public ISemanticTypeSystem SemanticTypeSystem { get; protected set; }
 		public List<IMembrane> Membranes { get; protected set; }
-		public Dictionary<string, PermeabilityConfiguration> ProtocolPermeability {get; protected set;}
+		public Dictionary<PermeabilityKey, PermeabilityConfiguration> ProtocolPermeability {get; protected set;}
 
 		// Return non-system receptors.
 		public ReadOnlyCollection<IReceptor> Receptors { get { return receptorSystem.Receptors.Where(r => !r.Instance.IsHidden).ToList().AsReadOnly(); } }
@@ -62,7 +62,7 @@ namespace Clifton.Receptor
 			receptorSystem.ReceptorRemoved += OnReceptorRemoved;
 
 			Membranes = new List<IMembrane>();
-			ProtocolPermeability = new Dictionary<string, PermeabilityConfiguration>();
+			ProtocolPermeability = new Dictionary<PermeabilityKey, PermeabilityConfiguration>();
 		}
 
 		/// <summary>
@@ -260,17 +260,30 @@ namespace Clifton.Receptor
 
 		/// <summary>
 		/// Updates (creating new, deleting removed) protocol permeability.
+		/// Remember, we only care if the membrane is permeable to the protocol, regardless of
+		/// the number and types of receptors on either side of the membrane.
+		/// However, the ProtocolPermeability "key" is composite (name and direction) because
+		/// emitters (and listeners) of the same protocol can live on both sides of a membrane.
 		/// </summary>
 		protected void UpdatePermeability()
 		{
+			List<PermeabilityKey> allKeys = ProtocolPermeability.Keys.ToList();
+
 			// Create new entries for new emitted protocols:
 			List<string> emitted = GetEmittedProtocols();
 
 			emitted.ForEach(p =>
 				{
-					if (!ProtocolPermeability.ContainsKey(p))
+					PermeabilityKey pk = new PermeabilityKey() {Protocol = p, Direction = PermeabilityDirection.Out};
+
+					if (!ProtocolPermeability.ContainsKey(pk))
 					{
-						ProtocolPermeability[p] = new PermeabilityConfiguration() { Direction = PermeabilityDirection.Out, Permeable = false };
+						ProtocolPermeability[pk] = new PermeabilityConfiguration();
+					}
+					else
+					{
+						// Entry is in use.
+						allKeys.Remove(pk);
 					}
 				});
 
@@ -279,24 +292,21 @@ namespace Clifton.Receptor
 
 			listening.ForEach(p=>
 				{
-					if (!ProtocolPermeability.ContainsKey(p))
+					PermeabilityKey pk = new PermeabilityKey() { Protocol = p, Direction = PermeabilityDirection.In };
+
+					if (!ProtocolPermeability.ContainsKey(pk))
 					{
-						ProtocolPermeability[p] = new PermeabilityConfiguration() { Direction = PermeabilityDirection.In, Permeable = false };
+						ProtocolPermeability[pk] = new PermeabilityConfiguration();
+					}
+					else
+					{
+						// Entry is in use.
+						allKeys.Remove(pk);
 					}
 				});
 
-			// Remove old:
-			List<string> toRemove = new List<string>();
-
-			ProtocolPermeability.Keys.ForEach(p =>
-				{
-					if (!emitted.Contains(p) && !listening.Contains(p))
-					{
-						toRemove.Add(p);
-					}
-				});
-
-			toRemove.ForEach(p => ProtocolPermeability.Remove(p));
+			// Remove entries that no longer are in use.
+			allKeys.ForEach(p => ProtocolPermeability.Remove(p));
 		}
 	}
 }

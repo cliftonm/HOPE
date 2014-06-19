@@ -8,7 +8,7 @@
   xmlns:wfui="WeifenLuo.WinFormsUI.Docking, WeifenLuo.WinFormsUI.Docking"
   xmlns:def="def"
   xmlns:ref="ref">
-  <ixv:ApplicationFormView def:Name="applicationFormView" Text="Type System Explorer" Size="800, 600" IsMdiContainer="true">
+  <ixv:ApplicationFormView def:Name="applicationFormView" Text="Higher Order Programming Environment" Size="800, 600" IsMdiContainer="true">
     <ixm:ApplicationModel def:Name="applicationModel"/>
     <ixc:ApplicationFormController def:Name="controller" View="{applicationFormView}" ApplicationModel="{applicationModel}"/>
     <ixv:Controls>

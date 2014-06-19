@@ -54,7 +54,7 @@
     </ixm:MembranesDef>
     <ixm:CarriersDef>
       <ixm:Carriers>
-        <ixm:CarrierDef Protocol="IntervalTimerConfiguration">
+        <ixm:CarrierDef Protocol="IntervalTimerConfiguration" Membrane="APOD">
           <ixm:Attributes>
             <ixm:Attr Name="StartDateTime" Value="8:00 AM" />
             <ixm:Attr Name="Interval" Value="86400" />
