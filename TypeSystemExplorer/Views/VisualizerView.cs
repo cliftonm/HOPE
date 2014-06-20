@@ -880,7 +880,9 @@ namespace TypeSystemExplorer.Views
 		protected void MouseUpEvent(object sender, MouseEventArgs args)
 		{
 			dragSurface = false;
-			Point testPoint = NegativeSurfaceOffsetAdjust(args.Location);
+			// Do not adjust this point for surface offsets, as this is the mouse location and
+			// we're comparing it to the client rectangle.
+			Point testPoint = args.Location;
 
 			if (movingReceptor)
 			{
@@ -1401,7 +1403,7 @@ namespace TypeSystemExplorer.Views
 		{
 			if ((DateTime.Now - mouseHoverStartTime).TotalMilliseconds > 500)
 			{
-				CarrierAnimationItem item = carrierAnimations.FirstOrDefault(a => a.CurrentRegion.Contains(mousePosition));
+				CarrierAnimationItem item = carrierAnimations.FirstOrDefault(a => a.CurrentRegion.Contains(NegativeSurfaceOffsetAdjust(mousePosition)));
 
 				// Mouse is hovering over a carrier.
 				if (item != null)
