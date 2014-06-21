@@ -207,6 +207,7 @@ namespace TimerReceptor
 		/// </summary>
 		protected void InsertRecord(ICarrier rowCarrier)
 		{
+			// We also need the event name on an insert.
 			rowCarrier.Signal.EventName = EventName;
 			ISemanticTypeStruct protocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct("DatabaseRecord");
 			dynamic signal = rsys.SemanticTypeSystem.Create("DatabaseRecord");

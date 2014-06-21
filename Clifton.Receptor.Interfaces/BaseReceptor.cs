@@ -59,8 +59,14 @@ namespace Clifton.Receptor.Interfaces
 			return emitProtocols;
 		}
 
+		/// <summary>
+		/// If not overridden, will invoke the action associated with the receive protocol that is qualified by the qualifier function.
+		/// </summary>
+		/// <param name="carrier"></param>
 		public virtual void ProcessCarrier(ICarrier carrier)
 		{
+			ReceiveQualifier rq = receiveProtocols.Find(rp => rp.Protocol == carrier.Protocol.DeclTypeName && rp.Qualifier(carrier.Signal));
+			rq.Action(carrier.Signal);
 		}
 
 		public virtual void BeginInit()
@@ -77,9 +83,21 @@ namespace Clifton.Receptor.Interfaces
 			ReceiveProtocolsChanged.Fire(this, EventArgs.Empty);
 		}
 
+		protected virtual void AddReceiveProtocol(string p, Action<dynamic> a)
+		{
+			receiveProtocols.Add(new ReceiveQualifier(p, a));
+			ReceiveProtocolsChanged.Fire(this, EventArgs.Empty);
+		}
+
 		protected virtual void AddReceiveProtocol(string p, Func<dynamic, bool> q)
 		{
 			receiveProtocols.Add(new ReceiveQualifier(p, q));
+			ReceiveProtocolsChanged.Fire(this, EventArgs.Empty);
+		}
+
+		protected virtual void AddReceiveProtocol(string p, Func<dynamic, bool> q, Action<dynamic> a)
+		{
+			receiveProtocols.Add(new ReceiveQualifier(p, q, a));
 			ReceiveProtocolsChanged.Fire(this, EventArgs.Empty);
 		}
 
@@ -107,6 +125,14 @@ namespace Clifton.Receptor.Interfaces
 			dynamic outsignal = rsys.SemanticTypeSystem.Create(protocol);
 			initializeSignal(outsignal);
 			rsys.CreateCarrier(this, outprotocol, outsignal);
+		}
+
+		protected void CreateCarrierIfReceiver(string protocol, Action<dynamic> initializeSignal)
+		{
+			ISemanticTypeStruct outprotocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct(protocol);
+			dynamic outsignal = rsys.SemanticTypeSystem.Create(protocol);
+			initializeSignal(outsignal);
+			rsys.CreateCarrierIfReceiver(this, outprotocol, outsignal);
 		}
 	}
 }

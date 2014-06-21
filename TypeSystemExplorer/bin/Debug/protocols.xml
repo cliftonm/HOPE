@@ -355,6 +355,7 @@
         <NativeType Name="OrderBy" ImplementingType="string"/>
         <NativeType Name="GroupBy" ImplementingType="string"/>
         <NativeType Name="Tag" ImplementingType="string"/>
+        <NativeType Name="UniqueKey" ImplementingType="string"/>            <!-- for "InsertIfMissing" to identify a non-PK UK -->
       </Attributes>
     </SemanticTypeStruct>
 
@@ -1130,6 +1131,86 @@
     
     <!-- TODO: Probably don't need HaveHunter -->
     <!-- TODO: Definitely don't need ProcessInfo -->
+    
+    <!-- RSS and NLP Protocols -->
+    
+      <!--  -->
 
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="RSSFeed"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="RSSFeed">
+      <Attributes>
+        <NativeType Name="ID" ImplementingType="int"/>
+        <NativeType Name="FeedName" ImplementingType="string"/>
+        <SemanticElement Name="URL"/>
+        <NativeType Name="Title" ImplementingType="string"/>
+        <NativeType Name="Description" ImplementingType="string"/>
+      </Attributes>
+    </SemanticTypeStruct>
+    
+    <!-- TODO: THIS SHOULD BE A GENERAL PURPOSE STRUCTURE, outside of the RSS region -->
+    
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="GetID"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="GetID">
+      <Attributes>
+        <NativeType Name="ID" ImplementingType="int"/>
+      </Attributes>
+    </SemanticTypeStruct>
+      
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="GetIDRecordset"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="GetIDRecordset">
+      <Attributes>
+        <NativeType Name="Recordset" ImplementingType="List&lt;dynamic&gt;"/>
+        <NativeType Name="Tag" ImplementingType="string"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <!-- END GETID -->
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="RSSFeedRecordset"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="RSSFeedRecordset">
+      <Attributes>
+        <NativeType Name="Recordset" ImplementingType="List&lt;dynamic&gt;"/>
+        <NativeType Name="Tag" ImplementingType="string"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="RSSFeedItem"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="RSSFeedItem">
+      <Attributes>
+        <NativeType Name="ID" ImplementingType="int"/>
+        <NativeType Name="RSSFeedID" ImplementingType="int"/>
+        <NativeType Name="Title" ImplementingType="string"/>
+        <SemanticElement Name="URL"/> <!-- the link -->
+        <NativeType Name="Description" ImplementingType="string"/>
+        <NativeType Name="Author" ImplementingType="string"/>
+        <NativeType Name="Category" ImplementingType="string"/>
+        <NativeType Name="PubDate" ImplementingType="DateTime"/>
+      </Attributes>
+    </SemanticTypeStruct>
   </Collection>
 </SemanticTypes>

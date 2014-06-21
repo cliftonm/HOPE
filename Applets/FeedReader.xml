@@ -1,0 +1,21 @@
+<MycroXaml xmlns:ixm="TypeSystemExplorer.Models, TypeSystemExplorer" xmlns:def="def" xmlns:ref="ref" Name="Form">
+  <ixm:Applet>
+    <ixm:MembranesDef>
+      <ixm:Membranes>
+        <ixm:MembraneDef Name="Skin">
+          <ixm:Receptors>
+            <ixm:ReceptorDef Name="SQLite Persistor" AssemblyName="PersistenceReceptor.dll" Enabled="True" Location="270, 295" />
+            <ixm:ReceptorDef Name="Feed Reader" AssemblyName="FeedReaderReceptor.dll" Enabled="True" Location="377, 235" />
+          </ixm:Receptors>
+          <ixm:Permeabilities>
+            <ixm:PermeabilityDef Protocol="LastEventDateTimeRecordset" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="APODRecordset" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="APODSearchResultsRecordset" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="RequireTable" Direction="In" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="DatabaseRecord" Direction="In" Permeable="False" />
+          </ixm:Permeabilities>
+        </ixm:MembraneDef>
+      </ixm:Membranes>
+    </ixm:MembranesDef>
+  </ixm:Applet>
+</MycroXaml>

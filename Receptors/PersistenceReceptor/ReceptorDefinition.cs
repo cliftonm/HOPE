@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
+using Clifton.Assertions;
 using Clifton.ExtensionMethods;
 using Clifton.Receptor.Interfaces;
 using Clifton.SemanticTypeSystem.Interfaces;
@@ -41,6 +42,7 @@ namespace PersistenceReceptor
 
 			crudMap = new Dictionary<string, Action<dynamic>>();
 			crudMap["insert"] = new Action<dynamic>((s) => Insert(s));
+			crudMap["insertifmissing"] = new Action<dynamic>((s) => InsertIfMissing(s));
 			crudMap["update"] = new Action<dynamic>((s) => Update(s));
 			crudMap["delete"] = new Action<dynamic>((s) => Delete(s));
 			crudMap["select"] = new Action<dynamic>((s) => Select(s));
@@ -155,6 +157,31 @@ namespace PersistenceReceptor
 			cmd.Dispose();
 		}
 
+		/// <summary>
+		/// Check for the existence of a row with the unique key.
+		/// If it doesn't exist, insert the entire record.
+		/// </summary>
+		protected void InsertIfMissing(dynamic signal)
+		{
+			Dictionary<string, object> cvMap = GetColumnValueMap(signal.Row);
+			StringBuilder sb = new StringBuilder("select count(*) from ");
+			sb.Append(signal.TableName);
+			sb.Append(" where ");
+			sb.Append(signal.UniqueKey);
+			sb.Append(" = ");
+			string val = cvMap[signal.UniqueKey].ToString();
+			sb.Append(val.SingleQuote());
+
+			SQLiteCommand cmd = conn.CreateCommand();
+			cmd.CommandText = sb.ToString();
+			int count = Convert.ToInt32(cmd.ExecuteScalar());
+
+			if (count == 0)
+			{
+				Insert(signal);
+			}
+		}
+
 		protected void Update(dynamic signal)
 		{
 			Dictionary<string, object> cvMap = GetColumnValueMap(signal.Row);
@@ -183,6 +210,7 @@ namespace PersistenceReceptor
 		protected void Select(dynamic signal)
 		{
 			string schema = signal.ResponseProtocol;
+			Assert.That(schema != null, "Response protocol must be provided.");			
 			StringBuilder sb = new StringBuilder("select ");
 
 			// TODO: Join these through the common interface IGetSetSemanticType
