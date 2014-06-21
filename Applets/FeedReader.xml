@@ -6,16 +6,28 @@
           <ixm:Receptors>
             <ixm:ReceptorDef Name="SQLite Persistor" AssemblyName="PersistenceReceptor.dll" Enabled="True" Location="270, 295" />
             <ixm:ReceptorDef Name="Feed Reader" AssemblyName="FeedReaderReceptor.dll" Enabled="True" Location="377, 235" />
+            <ixm:ReceptorDef Name="Feed Item List" AssemblyName="FeedItemListReceptor.dll" Enabled="True" Location="442, 131" />
+            <ixm:ReceptorDef Name="URL" AssemblyName="UrlReceptor.dll" Enabled="True" Location="525, 225" />
           </ixm:Receptors>
           <ixm:Permeabilities>
             <ixm:PermeabilityDef Protocol="LastEventDateTimeRecordset" Direction="Out" Permeable="False" />
             <ixm:PermeabilityDef Protocol="APODRecordset" Direction="Out" Permeable="False" />
             <ixm:PermeabilityDef Protocol="APODSearchResultsRecordset" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="GetIDRecordset" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="RSSFeedRecordset" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="RequireTable" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="RSSFeedItem" Direction="Out" Permeable="False" />
             <ixm:PermeabilityDef Protocol="RequireTable" Direction="In" Permeable="False" />
             <ixm:PermeabilityDef Protocol="DatabaseRecord" Direction="In" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="GetIDRecordset" Direction="In" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="RSSFeedItem" Direction="In" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="URL" Direction="In" Permeable="False" />
           </ixm:Permeabilities>
         </ixm:MembraneDef>
       </ixm:Membranes>
     </ixm:MembranesDef>
+    <ixm:CarriersDef>
+      <ixm:Carriers />
+    </ixm:CarriersDef>
   </ixm:Applet>
 </MycroXaml>

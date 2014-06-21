@@ -33,12 +33,15 @@ namespace FeedReaderReceptor
 			: base(rsys)
 		{
 			AddEmitProtocol("RequireTable");
+			AddEmitProtocol("DatabaseProtocol");
+			AddEmitProtocol("RSSFeedItemDisplay");
 
 			AddReceiveProtocol("GetIDRecordset",
 				signal =>
 				{
 					feedID = signal.Recordset[0].ID;
-					ProcessFeedItems(feed);
+					SaveFeedItemsToDatabase(feed);
+					EmitFeedItems(feed);
 				});
 		}
 
@@ -172,7 +175,7 @@ namespace FeedReaderReceptor
 			return rowCarrier;
 		}
 
-		protected void ProcessFeedItems(SyndicationFeed feed)
+		protected void SaveFeedItemsToDatabase(SyndicationFeed feed)
 		{
 			foreach (SyndicationItem item in feed.Items)
 			{
@@ -184,7 +187,24 @@ namespace FeedReaderReceptor
 					item.Summary.Text, 
 					String.Join(", ", item.Authors.Select(a=>a.Name).ToArray()), 
 					String.Join(", ", item.Categories.Select(c => c.Name).ToArray()), 
-					item.PublishDate.DateTime); 
+					item.PublishDate.LocalDateTime); 
+			}
+		}
+
+		protected void EmitFeedItems(SyndicationFeed feed)
+		{
+			foreach (SyndicationItem item in feed.Items)
+			{
+				CreateCarrierIfReceiver("RSSFeedItemDisplay", signal =>
+					{
+						signal.FeedName = FeedName;
+						signal.Title = item.Title.Text;
+						signal.URL.Value = item.Links[0].Uri.ToString();
+						signal.Description = item.Summary.Text;
+						signal.Authors = String.Join(", ", item.Authors.Select(a => a.Name).ToArray());
+						signal.Categories = String.Join(", ", item.Categories.Select(c => c.Name).ToArray());
+						signal.PubDate = item.PublishDate.LocalDateTime;
+					});
 			}
 		}
     }

@@ -188,6 +188,7 @@
     <Content Include="bin\Debug\carrier-test_table_create.xml" />
     <Content Include="bin\Debug\carrier-test_update.xml" />
     <Content Include="bin\Debug\event_seed.xml" />
+    <Content Include="bin\Debug\FeedItemList.xml" />
     <Content Include="bin\Debug\layout.xml" />
     <Content Include="bin\Debug\mainform.xml">
       <SubType>Designer</SubType>
