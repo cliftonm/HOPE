@@ -10,6 +10,22 @@ using Clifton.SemanticTypeSystem.Interfaces;
 namespace Clifton.Receptor.Interfaces
 {
 	/// <summary>
+	/// Receptors can define user configurable properties with this attribute.
+	/// Double-clicking on the receptor will bring up a simple UI for the user to configure
+	/// these properties.  The property values are persisted when serialized and restored
+	/// when deserialized.
+	/// </summary>
+	public class UserConfigurablePropertyAttribute : Attribute
+	{
+		protected string prompt;
+
+		public UserConfigurablePropertyAttribute(string prompt)
+		{
+			this.prompt = prompt;
+		}
+	}	
+
+	/// <summary>
 	/// All receptors must implement this interface in order to be dynamically loaded at runtime.
 	/// </summary>
 	public interface IReceptorInstance

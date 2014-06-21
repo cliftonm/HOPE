@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,7 +14,7 @@ namespace Clifton.Receptor.Interfaces
 	/// <summary>
 	/// Useful to derive from this receptor when not needing to implement every single property / event handler.
 	/// </summary>
-	public abstract class BaseReceptor : IReceptorInstance
+	public abstract class BaseReceptor : IReceptorInstance, ISupportInitialize
 	{
 		public event EventHandler<EventArgs> ReceiveProtocolsChanged;
 		public event EventHandler<EventArgs> EmitProtocolsChanged;
@@ -59,6 +60,14 @@ namespace Clifton.Receptor.Interfaces
 		}
 
 		public virtual void ProcessCarrier(ICarrier carrier)
+		{
+		}
+
+		public virtual void BeginInit()
+		{
+		}
+
+		public virtual void EndInit()
 		{
 		}
 
