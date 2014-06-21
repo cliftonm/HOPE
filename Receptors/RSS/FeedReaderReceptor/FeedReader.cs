@@ -26,7 +26,7 @@ namespace FeedReaderReceptor
 		[UserConfigurableProperty("Feed Name:")]
 		public string FeedName {get;set;}
 
-		protected string feedID;
+		protected int feedID;
 		protected SyndicationFeed feed;
 
 		public FeedReader(IReceptorSystem rsys)
@@ -35,7 +35,11 @@ namespace FeedReaderReceptor
 			AddEmitProtocol("RequireTable");
 
 			AddReceiveProtocol("GetIDRecordset",
-				signal => feedID = signal.Recordset[0].ID);
+				signal =>
+				{
+					feedID = signal.Recordset[0].ID;
+					ProcessFeedItems(feed);
+				});
 		}
 
 		public override void Initialize()
@@ -85,7 +89,6 @@ namespace FeedReaderReceptor
 
 			CreateMissingDatabaseFeedEntry(FeedName, FeedUrl, feed.Title.Text, feed.Description.Text);
 			GetFeedID();
-			ProcessFeedItems(feed);
 		}
 
 		protected void RequireFeedTables()
@@ -112,9 +115,20 @@ namespace FeedReaderReceptor
 				{
 					signal.TableName = "RSSFeed";
 					signal.Action = "InsertIfMissing";
-					signal.Row = CreateRow(feedName, feedUrl, title, description);
+					signal.Row = CreateFeedRow(feedName, feedUrl, title, description);
 					signal.UniqueKey = "URL";
 				});
+		}
+
+		protected void CreateMissingDatabaseFeedItemEntry(int rssFeedID, string feedItemID, string title, string url, string descr, string authors, string categories, DateTime pubDate)
+		{
+			CreateCarrierIfReceiver("DatabaseRecord", signal =>
+			{
+				signal.TableName = "RSSFeedItem";
+				signal.Action = "InsertIfMissing";
+				signal.Row = CreateFeedItemRow(rssFeedID, feedItemID, title, url, descr, authors, categories, pubDate);
+				signal.UniqueKey = "FeedItemID";
+			});
 		}
 
 		protected void GetFeedID()
@@ -128,9 +142,8 @@ namespace FeedReaderReceptor
 				});
 		}
 
-		protected ICarrier CreateRow(string feedName, string feedUrl, string title, string description)
+		protected ICarrier CreateFeedRow(string feedName, string feedUrl, string title, string description)
 		{
-			// Create the type for the updated data.
 			ISemanticTypeStruct rowProtocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct("RSSFeed");
 			dynamic rowSignal = rsys.SemanticTypeSystem.Create("RSSFeed");
 			rowSignal.FeedName = feedName;
@@ -142,10 +155,36 @@ namespace FeedReaderReceptor
 			return rowCarrier;
 		}
 
+		protected ICarrier CreateFeedItemRow(int rssFeedID, string feedItemID, string title, string url, string descr, string authors, string categories, DateTime pubDate)
+		{
+			ISemanticTypeStruct rowProtocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct("RSSFeedItem");
+			dynamic rowSignal = rsys.SemanticTypeSystem.Create("RSSFeedItem");
+			rowSignal.RSSFeedID = rssFeedID;
+			rowSignal.FeedItemID = feedItemID;
+			rowSignal.Title = title;
+			rowSignal.URL.Value = url;
+			rowSignal.Description = descr;
+			rowSignal.Authors = authors;
+			rowSignal.Categories = categories;
+			rowSignal.PubDate = pubDate;
+			ICarrier rowCarrier = rsys.CreateInternalCarrier(rowProtocol, rowSignal);
+
+			return rowCarrier;
+		}
+
 		protected void ProcessFeedItems(SyndicationFeed feed)
 		{
 			foreach (SyndicationItem item in feed.Items)
 			{
+				CreateMissingDatabaseFeedItemEntry(
+					feedID, 
+					item.Id, 
+					item.Title.Text, 
+					item.Links[0].Uri.ToString(), 
+					item.Summary.Text, 
+					String.Join(", ", item.Authors.Select(a=>a.Name).ToArray()), 
+					String.Join(", ", item.Categories.Select(c => c.Name).ToArray()), 
+					item.PublishDate.DateTime); 
 			}
 		}
     }

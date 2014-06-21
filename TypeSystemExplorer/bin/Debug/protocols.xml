@@ -1144,7 +1144,6 @@
 
     <SemanticTypeStruct DeclType="RSSFeed">
       <Attributes>
-        <NativeType Name="ID" ImplementingType="int"/>
         <NativeType Name="FeedName" ImplementingType="string"/>
         <SemanticElement Name="URL"/>
         <NativeType Name="Title" ImplementingType="string"/>
@@ -1202,13 +1201,13 @@
 
     <SemanticTypeStruct DeclType="RSSFeedItem">
       <Attributes>
-        <NativeType Name="ID" ImplementingType="int"/>
         <NativeType Name="RSSFeedID" ImplementingType="int"/>
+        <NativeType Name="FeedItemID" ImplementingType="string"/>    <!-- ID from the feed item itself -->
         <NativeType Name="Title" ImplementingType="string"/>
         <SemanticElement Name="URL"/> <!-- the link -->
         <NativeType Name="Description" ImplementingType="string"/>
-        <NativeType Name="Author" ImplementingType="string"/>
-        <NativeType Name="Category" ImplementingType="string"/>
+        <NativeType Name="Authors" ImplementingType="string"/>
+        <NativeType Name="Categories" ImplementingType="string"/>
         <NativeType Name="PubDate" ImplementingType="DateTime"/>
       </Attributes>
     </SemanticTypeStruct>
