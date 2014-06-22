@@ -71,3 +71,5 @@ MIT
 [Introductory Article]: http://www.codeproject.com/Articles/777843/HOPE-Higher-Order-Programming-Environment
 [APOD Scraper Article]:http://www.codeproject.com/Articles/781135/APOD-Website-Scraper-a-HOPE-demonstration
 [Membrane Computing]:http://en.wikipedia.org/wiki/Membrane_computing
+[Hunt the Wumpus]:http://www.codeproject.com/Articles/786118/Hunt-the-Wumpus
+
