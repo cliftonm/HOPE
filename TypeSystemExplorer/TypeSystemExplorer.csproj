@@ -167,6 +167,9 @@
     <Content Include="bin\Debug\12565.xml" />
     <Content Include="bin\Debug\94306.xml" />
     <Content Include="bin\Debug\about.xml" />
+    <Content Include="bin\Debug\alchemyConceptsTestResponse.xml" />
+    <Content Include="bin\Debug\alchemyEntityTestResponse.xml" />
+    <Content Include="bin\Debug\alchemyKeywordsTestResponse.xml" />
     <Content Include="bin\Debug\appState.xml" />
     <Content Include="bin\Debug\carrier-APODPAGE-1.xml">
       <SubType>Designer</SubType>

@@ -1230,6 +1230,96 @@
         <NativeType Name="PubDate" ImplementingType="DateTime"/>
       </Attributes>
     </SemanticTypeStruct>
+    
+    <!-- Alchemy Schema -->
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="AlchemyResult"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="AlchemyEntityType"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="AlchemyResultType"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="AlchemyEntityTypeRecord"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="AlchemyEntityTypeRecordRecordset"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="UrlRecordRecordset"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="UrlRecord"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="UrlRecord">
+      <Attributes>
+        <NativeType Name="ID" ImplelementingType="int"/>
+        <SemanticElement Name="URL"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <SemanticTypeStruct DeclType="AlchemyResult">
+      <Attributes>
+        <NativeType Name="CaptureDate" ImplementingType="DateTime"/>
+        <NativeType Name="Phrase" ImplementingType="string"/>
+        <NativeType Name="Relevance" ImplementingType="double"/>
+        <NativeType Name="UrlId" ImplementingType="int"/>
+        <NativeType Name="AlchemyEntityTypeID" ImplementingType="int"/>
+        <NativeType Name="AlchemyResultTypeID" ImplementingType="int"/>
+        <NativeType Name="Occurs" ImplementingType="int"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <SemanticTypeStruct DeclType="AlchemyEntityType">
+      <Attributes>
+        <NativeType Name="Name" ImplementingType="string"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <SemanticTypeStruct DeclType="AlchemyResultType">
+      <Attributes>
+        <NativeType Name="Name" ImplementingType="string"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <SemanticTypeStruct DeclType="AlchemyEntityTypeRecord">
+      <Attributes>
+        <NativeType Name="ID" ImplementingType="int"/>
+        <NativeType Name="Name" ImplementingType="string"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <SemanticTypeStruct DeclType="AlchemyEntityTypeRecordRecordset">
+      <Attributes>
+        <NativeType Name="Recordset" ImplementingType="List&lt;dynamic&gt;"/>
+        <NativeType Name="Tag" ImplementingType="string"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
 
   </Collection>
 </SemanticTypes>

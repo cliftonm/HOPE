@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -55,6 +56,8 @@ namespace FeedItemListReceptor
 			// Prevents mouse-over of the surface, which it becomes focused, to Z-move on top of the feed item list dialog.
 			// TODO: This causes problems with other apps, as when the entire app loses focus to some other app.
 			form.TopMost = true;
+			form.StartPosition = FormStartPosition.Manual;
+			form.Location = new Point(0, 0);
 			
 			// Create a data table here.  There's probably a better place to do this.
 			// TODO: The first two columns are suppposed to be read-only.

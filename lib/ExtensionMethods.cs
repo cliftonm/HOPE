@@ -206,6 +206,14 @@ namespace Clifton.ExtensionMethods
 			}
 		}
 
+		public static void ForEach(this DataTable dt, Action<DataRow> action)
+		{
+			foreach (DataRow dtr in dt.Rows)
+			{
+				action(dtr);
+			}
+		}
+
 		public static void ForEach(this DataView dv, Action<DataRowView> action)
 		{
 			foreach (DataRowView drv in dv)

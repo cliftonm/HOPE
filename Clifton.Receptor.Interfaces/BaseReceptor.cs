@@ -134,5 +134,34 @@ namespace Clifton.Receptor.Interfaces
 			initializeSignal(outsignal);
 			rsys.CreateCarrierIfReceiver(this, outprotocol, outsignal);
 		}
+
+		/// <summary>
+		/// This is such a common call that receptors make, that we provide a helper function
+		/// for it here in the BaseReceptor.  If you make this call, be sure to add an AddEmitProtocol("RequireTable")
+		/// to your receptor so it gets wired up to the persistence receptor.
+		/// </summary>
+		/// <param name="tableName"></param>
+		protected void RequireTable(string tableName)
+		{
+			CreateCarrierIfReceiver("RequireTable", signal =>
+				{
+					signal.TableName = tableName;
+					signal.Schema = tableName;
+				});
+		}
+
+		/// <summary>
+		/// Instantiate a carrier of the specified protocol and passing in the signal initialization action.
+		/// Often used for instantiating carriers passed as the Row parameter to the persistence receptor.
+		/// </summary>
+		protected ICarrier InstantiateCarrier(string protocol, Action<dynamic> initializeSignal)
+		{
+			ISemanticTypeStruct semStruct = rsys.SemanticTypeSystem.GetSemanticTypeStruct(protocol);
+			dynamic signal = rsys.SemanticTypeSystem.Create(protocol);
+			initializeSignal(signal);
+			ICarrier rowCarrier = rsys.CreateInternalCarrier(semStruct, signal);
+
+			return rowCarrier;
+		}
 	}
 }
