@@ -27,6 +27,8 @@ Watch the videos:
 
  - [Introduction]
  - [An APOD Website Scraper]
+ - [Membrane Computing Video]
+ - [Hunt the Wumpus Video]
 
 For Programmers
 ----
@@ -35,6 +37,7 @@ Read the articles:
 
  - [Introductory Article]
  - [APOD Scraper Article] 
+ - [Hunt the Wumpus]
 
 To Contribute
 ----
@@ -63,6 +66,8 @@ MIT
 
 [Introduction]:http://youtu.be/O1V4XSYYNxs
 [An APOD Website Scraper]:http://youtu.be/NdapAL2tt7w
+[Membrane Computing Video]:http://youtu.be/XoQSTJcrEj8
+[Hunt the Wumpus Video]:https://www.youtube.com/watch?v=llRUw9pX7bQ&feature=youtu.be
 [Introductory Article]: http://www.codeproject.com/Articles/777843/HOPE-Higher-Order-Programming-Environment
 [APOD Scraper Article]:http://www.codeproject.com/Articles/781135/APOD-Website-Scraper-a-HOPE-demonstration
 [Membrane Computing]:http://en.wikipedia.org/wiki/Membrane_computing
