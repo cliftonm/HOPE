@@ -1282,6 +1282,31 @@
       </Attributes>
     </SemanticTypeStruct>
 
+    <!-- Used by the persistence store to return the ID for the record inserted. -->
+    <!-- The caller must provide a unique key (non-primary key) field name, which is populated in UKFieldName -->
+    <!-- The persistence store populates the UKFieldValue -->
+    <!-- TODO: The implication here is that there is a unique field somewhere in the table, which will be the case in a normalized table -->
+    <!-- however, composite UK's are not supported at the moment.  This is a problem, especially for intermediate tables holding -->
+    <!-- just FK's, for example, in a many-to-many relationship -->
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="IDreturn"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="IDReturn">
+      <Attributes>
+        <NativeType Name="ID" ImplelementingType="int"/>
+        <NativeType Name="TableName" ImplementingType="string"/>
+        <NativeType Name="UKFieldName" ImplementingType="string"/>
+        <NativeType Name="UKFieldValue" ImplementingType="string"/>
+        <!-- Additional qualifier that the caller of the insert can specify to further filter the response handler. -->
+        <NativeType Name="Tag" ImplelementingType="string"/>
+      </Attributes>
+    </SemanticTypeStruct>
+    
+    <!-- END IDReturn -->
+
     <SemanticTypeStruct DeclType="AlchemyResult">
       <Attributes>
         <NativeType Name="CaptureDate" ImplementingType="DateTime"/>
