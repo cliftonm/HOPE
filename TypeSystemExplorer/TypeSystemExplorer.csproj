@@ -201,6 +201,7 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="bin\Debug\membranePermeability.xml" />
+    <Content Include="bin\Debug\NlpViewer.xml" />
     <Content Include="bin\Debug\output.xml">
       <SubType>Designer</SubType>
     </Content>

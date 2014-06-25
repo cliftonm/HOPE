@@ -127,7 +127,18 @@ namespace TypeSystemExplorer.Views
 
 		public override Type PropertyType
 		{
-			get { return _dictionary[_key].GetType(); }
+			get 
+			{ 
+				Type ret = typeof(string);
+
+				object val = _dictionary[_key];
+				if (val != null)
+				{
+					ret = _dictionary[_key].GetType();
+				}
+
+				return ret;
+			}
 		}
 
 		public override void SetValue(object component, object value)
@@ -261,7 +272,7 @@ namespace TypeSystemExplorer.Views
 	public class VisualizerView : UserControl
 	{
 		const int RenderTime = 120;
-		const int CarrierTime = 25; // 25 for 1 second delay.  50 for 2 second delay.
+		const int CarrierTime = 5; // 5 for 1/4 second delay, 25 for 1 second delay.  50 for 2 second delay.
 		const int OrbitCountMax = 50;
 		const int MetadataHeight = 15;	// the row height for metadata text.
 		const int MembraneNumbRadius = 10;

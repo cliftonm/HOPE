@@ -38,17 +38,21 @@ namespace PersistenceReceptor
 		{
 			protocolActionMap = new Dictionary<string, Action<dynamic>>();
 			protocolActionMap["RequireTable"] = new Action<dynamic>((s) => RequireTable(s));
+			protocolActionMap["RequireView"] = new Action<dynamic>((s) => RequireView(s));
+			protocolActionMap["DropView"] = new Action<dynamic>((s) => DropView(s));
 			protocolActionMap["DatabaseRecord"] = new Action<dynamic>((s) => DatabaseRecord(s));
 
 			crudMap = new Dictionary<string, Action<dynamic>>();
 			crudMap["insert"] = new Action<dynamic>((s) => Insert(s));
 			crudMap["insertifmissing"] = new Action<dynamic>((s) => InsertIfMissing(s));
+			crudMap["getid"] = new Action<dynamic>((s) => GetID(s));
 			crudMap["update"] = new Action<dynamic>((s) => Update(s));
 			crudMap["delete"] = new Action<dynamic>((s) => Delete(s));
 			crudMap["select"] = new Action<dynamic>((s) => Select(s));
 
 			protocolActionMap.Keys.ForEach(k => AddReceiveProtocol(k));
 			rsys.GetProtocolsEndingWith("Recordset").ForEach(p => AddEmitProtocol(p));
+			AddEmitProtocol("IDReturn");
 
 			CreateDBIfMissing();
 			OpenDB();
@@ -136,6 +140,25 @@ namespace PersistenceReceptor
 			}
 		}
 
+		/// <summary>
+		/// Creates a view given the supplied SQL statement and view name if the view does not exist.
+		/// Does not replace the view.  Use DropView to first drop an existing view.
+		/// </summary>
+		protected void RequireView(dynamic signal)
+		{
+			// Execute("drop view " + signal.ViewName);
+			StringBuilder sb = new StringBuilder("create view if not exists ");
+			sb.Append(signal.ViewName);
+			sb.Append(" as ");
+			sb.Append(signal.Sql);
+			Execute(sb.ToString());
+		}
+
+		protected void DropView(dynamic signal)
+		{
+			Execute("drop view " + signal.ViewName);
+		}
+
 		protected void DatabaseRecord(dynamic signal)
 		{
 			crudMap[signal.Action.ToLower()](signal);
@@ -173,14 +196,41 @@ namespace PersistenceReceptor
 			StringBuilder sb = new StringBuilder("select ID from ");
 			sb.Append(signal.TableName);
 			sb.Append(" where ");
-			sb.Append(signal.UniqueKey);
-			sb.Append(" = ");
-			string val = cvMap[signal.UniqueKey].ToString();
-			sb.Append(val.SingleQuote());
+
+			// Time to deal with composite keys.
+			string uks = signal.UniqueKey;
+			string and = String.Empty;
+			var ukitems = uks.Split(',').Select(s => s.Trim());
+
+			ukitems.ForEach(uk =>
+			{
+				sb.Append(and);
+				and = " and ";
+				sb.Append(uk);
+				sb.Append(" = ");
+				var val = cvMap[uk];
+
+				// Stoopid SQLite treats integer types and string types differently in where clauses.
+				// TODO: I suppose the value should be put into a parameter, and then I'm not seen
+				// as stoopid for being open to SQL injection attacks.  And yes, I know how to spell stupid.
+				if (val.GetType() == typeof(string))
+				{
+					string str = val.ToString();
+					str = str.Replace("'", "''");			// Any single quotes need to be replaced with double-quotes.  TODO: Wouldn't be an issue if we used parameters.
+					sb.Append(str.SingleQuote());
+				}
+				else
+				{
+					sb.Append(val);
+				}
+			});
 
 			SQLiteCommand cmd = conn.CreateCommand();
 			cmd.CommandText = sb.ToString();
-			object id = cmd.ExecuteScalar();
+			object id = null;
+
+			// TODO: Why doesn't this return DBNull.Value?
+			id = cmd.ExecuteScalar();
 
 			if (id == null)
 			{
@@ -190,6 +240,42 @@ namespace PersistenceReceptor
 			{
 				EmitID(Convert.ToInt32(id), signal.TableName, signal.Tag);
 			}
+		}
+
+		protected void GetID(dynamic signal)
+		{
+			StringBuilder sb = new StringBuilder("select ID from ");
+			sb.Append(signal.TableName);
+			sb.Append(" where ");
+			sb.Append(signal.UniqueKey);
+			sb.Append(" = ");
+			string ukValue = signal.UniqueKeyValue;
+			int outVal;
+
+			// TODO: more kludges.  If the value is strictly a number, then don't surround with quotes.
+			// Read the comment regarding type comparison in InsertIfMissing above.
+			if (Int32.TryParse(ukValue, out outVal))
+			{
+				sb.Append(ukValue);
+			}
+			else
+			{
+				sb.Append(ukValue.SingleQuote());
+			}
+
+			SQLiteCommand cmd = conn.CreateCommand();
+			cmd.CommandText = sb.ToString();
+
+			// TODO: Why doesn't this return DBNull.Value?
+			object id = cmd.ExecuteScalar();
+
+			if (id == null)
+			{
+				// TODO: Oh boy, this is really kludgy.  We should be able to signal "no records found."
+				id = -1;
+			}
+
+			EmitID(Convert.ToInt32(id), signal.TableName, signal.Tag);
 		}
 
 		protected void Update(dynamic signal)
@@ -222,23 +308,25 @@ namespace PersistenceReceptor
 			string schema = signal.ResponseProtocol;
 			Assert.That(schema != null, "Response protocol must be provided.");			
 			StringBuilder sb = new StringBuilder("select ");
+			List<IGetSetSemanticType> types = rsys.SemanticTypeSystem.GetSemanticTypeStruct(schema).AllTypes;
+
+			// A view could be queried using the table name field, but this makes a clear distinction that we will probably use 
+			// later when we incorporate more if Interacx into the persistence receptor.
+			string tableOrViewName = (signal.TableName != null ? signal.TableName : signal.ViewName);
 
 			// TODO: Join these through the common interface IGetSetSemanticType
 
-			// List<INativeType> ntypes = rsys.SemanticTypeSystem.GetSemanticTypeStruct(schema).NativeTypes;
-			// List<ISemanticElement> stypes = rsys.SemanticTypeSystem.GetSemanticTypeStruct(schema).SemanticElements;
-			// sb.Append(String.Join(", ", (from c in ntypes select c.Name).Concat(from c in stypes select c.Element.Struct.DeclTypeName).ToArray()));
-
-			List<IGetSetSemanticType> types = rsys.SemanticTypeSystem.GetSemanticTypeStruct(schema).AllTypes;
 			sb.Append(String.Join(", ", (from c in types select c.Name).ToArray()));
-
 			sb.Append(" from " + signal.TableName);
-			if (signal.Where != null) sb.Append(" where " + signal.Where);
+
+			string where = signal.Where;
+			where = where.Replace("'", "''");			// TODO: Use parameters?
+			if (signal.Where != null) sb.Append(" where " + where);
 			// support for group by is sort of pointless since we're not supporting any mechanism for aggregate functions.
 			if (signal.GroupBy != null) sb.Append(" group by " + signal.GroupBy);
 			if (signal.OrderBy != null) sb.Append(" order by " + signal.OrderBy);
 
-            SQLiteCommand cmd = conn.CreateCommand();
+			SQLiteCommand cmd = conn.CreateCommand();
 			cmd.CommandText = sb.ToString();
             SQLiteDataReader reader = cmd.ExecuteReader();
 

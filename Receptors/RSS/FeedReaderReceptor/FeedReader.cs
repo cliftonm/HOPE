@@ -36,9 +36,10 @@ namespace FeedReaderReceptor
 			AddEmitProtocol("RequireTable");
 			AddEmitProtocol("DatabaseProtocol");
 			AddEmitProtocol("RSSFeedItemDisplay");
+			AddEmitProtocol("URL");
 
 			AddReceiveProtocol("IDReturn",
-				signal => signal.TableName == "RSSFeed",
+				signal => signal.TableName == "RSSFeed" && signal.Tag == "FeedReader",
 				signal =>
 				{
 					feedID = signal.ID;
@@ -48,7 +49,7 @@ namespace FeedReaderReceptor
 			
 			// For testing.
 			AddReceiveProtocol("IDReturn",
-				signal => signal.TableName == "RSSFeedItem",
+				signal => signal.TableName == "RSSFeedItem" && signal.Tag == "FeedReader",
 				signal =>
 				{
 					feedItemID = signal.ID;
@@ -129,6 +130,7 @@ namespace FeedReaderReceptor
 					signal.Action = "InsertIfMissing";
 					signal.Row = CreateFeedRow(feedName, feedUrl, title, description);
 					signal.UniqueKey = "URL";
+					signal.Tag = "FeedReader";
 				});
 		}
 
@@ -140,6 +142,7 @@ namespace FeedReaderReceptor
 				signal.Action = "InsertIfMissing";
 				signal.Row = CreateFeedItemRow(rssFeedID, feedItemID, title, url, descr, authors, categories, pubDate);
 				signal.UniqueKey = "FeedItemID";
+				signal.Tag = "FeedReader";
 			});
 		}
 
@@ -203,6 +206,9 @@ namespace FeedReaderReceptor
 						signal.Categories = String.Join(", ", item.Categories.Select(c => c.Name).ToArray());
 						signal.PubDate = item.PublishDate.LocalDateTime;
 					});
+
+				// Anyone interested directly in the URL (like the NLP) can have a go at it right now.
+				CreateCarrierIfReceiver("URL", signal => signal.Value = item.Links[0].Uri.ToString());
 			}
 		}
     }

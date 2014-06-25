@@ -193,8 +193,8 @@ namespace Clifton.Receptor
 			});
 
 			// Let the receptor instance perform additional initialization, such as creating carriers.
-			newReceptors.ForEach(r => r.Instance.Initialize());
-
+			// We do this only for enabled receptors.
+			newReceptors.Where(r=>r.Enabled).ForEach(r => r.Instance.Initialize());
 
 			// Any queued carriers are now checked to determine whether receptors now exist to process their protocols.
 			ProcessQueuedCarriers();
@@ -436,11 +436,6 @@ namespace Clifton.Receptor
 		/// </summary>
 		protected List<IReceptor> GetTargetReceptorsFor(IReceptor from, ICarrier carrier)
 		{
-			//if (carrier.Protocol.DeclTypeName == "IDReturn")
-			//{
-			//	System.Diagnostics.Debugger.Break();
-			//}
-
 			List<IReceptor> targets;
 			ISemanticTypeStruct protocol = carrier.Protocol;
 
@@ -455,6 +450,9 @@ namespace Clifton.Receptor
 
 			// Will have a count of 0 if the receptor is the system receptor, ie, carrier animations or other protocols.
 			// TODO: This seems kludgy, is there a better way of working with this?
+			// Also, if the emitting receptor doesn't declare its protocol, this count will be 0, leading to potentially strange results.
+			// For example, comment out the persistence receptors "IDReturn" and run the feed reader example.  You'll see that TWO items
+			// are returned as matching "RSSFeed" table name and for reasons unknown at the moment, protocolReceptorMap has two entries that qualify.
 			if (filteredTargets.Count == 0)
 			{
 				// When the try fails, it sets targets to null.
@@ -465,12 +463,28 @@ namespace Clifton.Receptor
 			}
 
 			// Lastly, filter the list by qualified receptors:
-			filteredTargets = filteredTargets.Where(t => t.Instance.GetReceiveProtocols().Any(rp => (rp.Protocol == protocol.DeclTypeName) && rp.Qualifier(carrier.Signal))).ToList();
+			List<IReceptor> newTargets = new List<IReceptor>();
+
+			filteredTargets.ForEach(t =>
+				{
+					// Get the list of receive actions and filters for the specific protocol.
+					var receiveList = t.Instance.GetReceiveProtocols().Where(rp => rp.Protocol == protocol.DeclTypeName);
+					receiveList.ForEach(r =>
+						{
+							// If qualified, add to the final target list.
+							if (r.Qualifier(carrier.Signal))
+							{
+								newTargets.Add(t);
+							}
+						});
+				});
+
+			// filteredTargets = filteredTargets.Where(t => t.Instance.GetReceiveProtocols().Any(rp => (rp.Protocol == protocol.DeclTypeName) && rp.Qualifier(carrier.Signal))).ToList();
 
 			// Get the targets of the single receive protocol that matches the DeclTypeName and whose qualifier returns true.
 			// filteredTargets = filteredTargets.Where(t => t.Instance.GetReceiveProtocols().Single(rp => rp.Protocol == protocol.DeclTypeName).Qualifier(carrier.Signal)).ToList();
 
-			return filteredTargets;
+			return newTargets;
 		}
 
 		/// <summary>

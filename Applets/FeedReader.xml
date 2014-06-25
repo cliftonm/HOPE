@@ -5,7 +5,7 @@
         <ixm:MembraneDef Name="Skin">
           <ixm:Receptors>
             <ixm:ReceptorDef Name="SQLite Persistor" AssemblyName="PersistenceReceptor.dll" Enabled="True" Location="270, 295" />
-            <ixm:ReceptorDef Name="Feed Reader" AssemblyName="FeedReaderReceptor.dll" Enabled="True" Location="377, 235" />
+            <ixm:ReceptorDef Name="Feed Reader" AssemblyName="FeedReaderReceptor.dll" Enabled="False" Location="377, 235" />
             <ixm:ReceptorDef Name="Feed Item List" AssemblyName="FeedItemListReceptor.dll" Enabled="True" Location="442, 131" />
             <ixm:ReceptorDef Name="URL" AssemblyName="UrlReceptor.dll" Enabled="False" Location="525, 225" />
             <ixm:ReceptorDef Name="Alchemy" AssemblyName="AlchemyReceptor.dll" Enabled="True" Location="368, 400" />

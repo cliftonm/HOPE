@@ -12,6 +12,36 @@ using Clifton.SemanticTypeSystem.Interfaces;
 namespace Clifton.Receptor.Interfaces
 {
 	/// <summary>
+	/// Acts like a semaphore.  Decrements a counter and when the count reaches zero, executes the action.
+	/// Used to synchronize multiple responses such that, only when all the responses are received, will the 
+	/// next step in a workflow be executed.
+	/// </summary>
+	public class Gate
+	{
+		public int Count { get; set; }
+		public Action NextStep { get; set; }
+
+		public void Decrement()
+		{
+			if (--Count == 0)
+			{
+				NextStep();
+			}
+		}
+	}
+
+	public class CompositeGate
+	{
+		public Action NextStep { get; set; }
+		public Dictionary<string, Gate> Gates;
+
+		public CompositeGate()
+		{
+			Gates = new Dictionary<string, Gate>();
+		}
+	}
+
+	/// <summary>
 	/// Useful to derive from this receptor when not needing to implement every single property / event handler.
 	/// </summary>
 	public abstract class BaseReceptor : IReceptorInstance, ISupportInitialize
@@ -25,6 +55,8 @@ namespace Clifton.Receptor.Interfaces
 
 		protected List<ReceiveQualifier> receiveProtocols;
 		protected List<string> emitProtocols;
+		protected Dictionary<string, Gate> gates;
+		protected Dictionary<string, CompositeGate> compositeGates;
 
 		public virtual IReceptorSystem ReceptorSystem
 		{
@@ -39,6 +71,8 @@ namespace Clifton.Receptor.Interfaces
 			this.rsys = rsys;
 			receiveProtocols = new List<ReceiveQualifier>();
 			emitProtocols = new List<string>();
+			gates = new Dictionary<string, Gate>();
+			compositeGates = new Dictionary<string, CompositeGate>();
 		}
 
 		public virtual void Initialize()
@@ -75,6 +109,53 @@ namespace Clifton.Receptor.Interfaces
 
 		public virtual void EndInit()
 		{
+		}
+
+		/// <summary>
+		/// Register a single gate.  This will trigger the next step action when the count for this gate reaches 0.
+		/// </summary>
+		public void RegisterGate(string key, int count, Action nextStep)
+		{
+			gates[key] = new Gate() { Count = count, NextStep = nextStep };
+		}
+
+		/// <summary>
+		/// Decrement a single gate.  This will trigger the next step action when the count for this gate reaches 0.
+		/// </summary>
+		public void DecrementGate(string key)
+		{
+			gates[key].Decrement();
+		}
+
+		/// <summary>
+		/// Registers a composite gate.  When all the gates have decremented to 0, the composite gate action is performed.
+		/// When any gate reaches 0, its specific action is performed first.
+		/// </summary>
+		public void RegisterCompositeGate(string key, Action nextStep)
+		{
+			compositeGates[key] = new CompositeGate() { NextStep = nextStep };
+		}
+
+		/// <summary>
+		/// Register a specific gate that is a member of the composite gate.
+		/// </summary>
+		public void RegisterCompositeGateGate(string key, string gateKey, int count, Action nextStep)
+		{
+			compositeGates[key].Gates[gateKey] = new Gate() { Count = count, NextStep = nextStep };
+		}
+
+		/// <summary>
+		/// Decrements the specified gate.  When all gates have decremented to 0, the composite action is also executed.
+		/// </summary>
+		public void DecrementCompositeGate(string key, string gateKey)
+		{
+			CompositeGate cg = compositeGates[key];
+			cg.Gates[gateKey].Decrement();
+
+			if (cg.Gates.Values.All(g => g.Count == 0))
+			{
+				cg.NextStep();
+			}
 		}
 
 		protected virtual void AddReceiveProtocol(string p)
@@ -162,6 +243,13 @@ namespace Clifton.Receptor.Interfaces
 			ICarrier rowCarrier = rsys.CreateInternalCarrier(semStruct, signal);
 
 			return rowCarrier;
+		}
+
+		/// <summary>
+		/// A helper method for no action.
+		/// </summary>
+		protected void NullAction()
+		{
 		}
 	}
 }

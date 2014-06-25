@@ -349,6 +349,7 @@
       <Attributes>
         <NativeType Name="ResponseProtocol" ImplementingType="string"/>
         <NativeType Name="TableName" ImplementingType="string"/>
+        <NativeType Name="ViewName" ImplementingType="string"/>
         <NativeType Name="Action" ImplementingType="string"/>                <!-- insert, update, delete, select -->
         <NativeType Name="Row" ImplementingType="ICarrier"/>                 <!-- the carrier with the actual row data -->
         <NativeType Name="Where" ImplementingType="string"/>
@@ -356,6 +357,7 @@
         <NativeType Name="GroupBy" ImplementingType="string"/>
         <NativeType Name="Tag" ImplementingType="string"/>
         <NativeType Name="UniqueKey" ImplementingType="string"/>            <!-- for "InsertIfMissing" to identify a non-PK UK -->
+        <NativeType Name="UniqueKeyValue" ImplementingType="string"/>       <!-- for "GetID" based on a single field UK value -->
       </Attributes>
     </SemanticTypeStruct>
 
@@ -367,10 +369,23 @@
       </AttributeValues>
     </SemanticTypeDecl>
 
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="RequireView"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
     <SemanticTypeStruct DeclType="RequireTable">
       <Attributes>
         <NativeType Name="TableName" ImplementingType="string"/>
         <NativeType Name="Schema" ImplementingType="string"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <SemanticTypeStruct DeclType="RequireView">
+      <Attributes>
+        <NativeType Name="ViewName" ImplementingType="string"/>
+        <NativeType Name="Sql" ImplementingType="string"/>
       </Attributes>
     </SemanticTypeStruct>
 
@@ -1212,6 +1227,12 @@
 
     <SemanticTypeDecl OfType="Noun">
       <AttributeValues>
+        <Attribute Name="Name" Value="AlchemyPhrase"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
         <Attribute Name="Name" Value="AlchemyEntityType"/>
       </AttributeValues>
     </SemanticTypeDecl>
@@ -1227,12 +1248,18 @@
     <SemanticTypeStruct DeclType="AlchemyResult">
       <Attributes>
         <NativeType Name="CaptureDate" ImplementingType="DateTime"/>
-        <NativeType Name="Phrase" ImplementingType="string"/>
+        <NativeType Name="PhraseID" ImplementingType="int"/>
         <NativeType Name="Relevance" ImplementingType="double"/>
-        <NativeType Name="UrlId" ImplementingType="int"/>
+        <NativeType Name="UrlID" ImplementingType="int"/>
         <NativeType Name="AlchemyEntityTypeID" ImplementingType="int"/>
         <NativeType Name="AlchemyResultTypeID" ImplementingType="int"/>
         <NativeType Name="Occurs" ImplementingType="int"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <SemanticTypeStruct DeclType="AlchemyPhrase">
+      <Attributes>
+        <NativeType Name="Name" ImplementingType="string"/>
       </Attributes>
     </SemanticTypeStruct>
 
@@ -1264,7 +1291,34 @@
       </Attributes>
     </SemanticTypeStruct>
     
-    <!-- END IDReturn -->    
+    <!-- END IDReturn -->
 
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="AlchemyPhrases"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="AlchemyPhrases">
+      <Attributes>
+        <NativeType Name="PhraseID" ImplementingType="int"/>
+        <NativeType Name="Name" ImplementingType="string"/>
+        <NativeType Name="Count" ImplementingType="int"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="AlchemyPhrasesRecordset"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="AlchemyPhrasesRecordset">
+      <Attributes>
+        <NativeType Name="Recordset" ImplementingType="List&lt;dynamic&gt;"/>
+        <NativeType Name="Tag" ImplementingType="string"/>
+      </Attributes>
+    </SemanticTypeStruct>
+    
   </Collection>
 </SemanticTypes>
