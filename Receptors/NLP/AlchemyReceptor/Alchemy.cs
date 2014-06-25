@@ -22,6 +22,9 @@ namespace AlchemyReceptor
 		protected AlchemyAPI.AlchemyAPI alchemyObj;
 		protected DataSet dsEntities;
 
+		protected Dictionary<string, int> resultTypeIDMap;
+		protected Dictionary<string, int> entityTypeIDMap;
+
 		public Alchemy(IReceptorSystem rsys)
 			: base(rsys)
 		{
@@ -32,13 +35,8 @@ namespace AlchemyReceptor
 				// cast is required to resolve Func vs. Action in parameter list.
 				(Action<dynamic>)(signal => ParseUrl(signal)));
 
-			AddReceiveProtocol("AlchemyEntityTypeRecordRecordset",
-				(Action<dynamic>)(signal =>
-					{
-						Dictionary<string, int> entityIDMap = LoadEntityTypes(signal);
-						// TODO: What we really need is to be able to specify continuations after responding to a signal!
-						PersistEntities(entityIDMap, dsEntities);
-					}));
+			AddReceiveProtocol("IDReturn", s => s.TableName == "AlchemyEntityType", s => entityTypeIDMap[s.Tag] = s.ID);
+			AddReceiveProtocol("IDReturn", s => s.TableName == "AlchemyResultType", s => resultTypeIDMap[s.Tag] = s.ID);
 		}
 
 		public override void Initialize()
@@ -57,20 +55,6 @@ namespace AlchemyReceptor
 			RequireTable("AlchemyResultType");
 		}
 
-		protected void PopulateResultTypesIfMissing()
-		{
-			(new string[] { "Keyword", "Entity", "Concept" }).ForEach(t =>
-			{
-				CreateCarrierIfReceiver("DatabaseRecord", signal =>
-				{
-					signal.TableName = "AlchemyResultType";
-					signal.Action = "InsertIfMissing";
-					signal.Row = InstantiateCarrier("AlchemyResultType", rowSignal => rowSignal.Name = t);
-					signal.UniqueKey = "Name";
-				});
-			});
-		}
-
 		/// <summary>
 		/// Calls the AlchemyAPI to parse the URL.  The results are 
 		/// emitted to an NLP Viewer receptor and to the database for
@@ -83,25 +67,26 @@ namespace AlchemyReceptor
 			string url = signal.Value;
 
 			ParseEntities(url);
-
 			ParseKeywords(url);
 
 			// Extract to function
 			DataSet ret = GetConcepts(url);
 		}
 
+		/// <summary>
+		/// Populates the unique entity types and then associates the entities for this URL with their types.
+		/// </summary>
+		/// <param name="url"></param>
 		protected void ParseEntities(string url)
 		{
-			DataSet ret;
-
-			ret = GetEntities(url);
-			PersistUniqueTypes(ret.Tables["entity"]);
-			GetAllEntityTypes();
+			DataSet ret = GetEntities(url);
+			PersistUniqueEntityTypes(ret.Tables["entity"]);
 		}
 
 		protected void ParseKeywords(string url)
 		{
 			DataSet ret = GetKeywords(url);
+			PersistUniqueKeywords(ret.Tables["keyword"]);
 		}
 
 		protected void InitializeAlchemy()
@@ -143,11 +128,29 @@ namespace AlchemyReceptor
 			return ds;
 		}
 
+		protected void PopulateResultTypesIfMissing()
+		{
+			resultTypeIDMap = new Dictionary<string, int>();
+
+			(new string[] { "Keyword", "Entity", "Concept" }).ForEach(t =>
+			{
+				CreateCarrierIfReceiver("DatabaseRecord", signal =>
+				{
+					signal.TableName = "AlchemyResultType";
+					signal.Action = "InsertIfMissing";
+					signal.Row = InstantiateCarrier("AlchemyResultType", rowSignal => rowSignal.Name = t);
+					signal.UniqueKey = "Name";
+					signal.Tag = t;
+				});
+			});
+		}
+
 		/// <summary>
 		///  Gather all the entity types and create new entries if the entity type does not exist in the database.
 		/// </summary>
-		protected void PersistUniqueTypes(DataTable dtEntity)
+		protected void PersistUniqueEntityTypes(DataTable dtEntity)
 		{
+			entityTypeIDMap = new Dictionary<string, int>();
 			List<string> typeNames = new List<string>();
 			dtEntity.ForEach(row => typeNames.Add(row["type"].ToString()));
 			typeNames.Distinct().ForEach(t =>
@@ -158,30 +161,13 @@ namespace AlchemyReceptor
 						signal.Action = "InsertIfMissing";
 						signal.Row = InstantiateCarrier("AlchemyEntityType", rowSignal => rowSignal.Name = t);
 						signal.UniqueKey = "Name";
+						signal.Tag = t;
 					});
 				});
 		}
 
-		protected void GetAllEntityTypes()
+		protected void PersistUniqueKeywords(DataTable dtKeyword)
 		{
-			CreateCarrierIfReceiver("DatabaseRecord", signal =>
-			{
-				signal.TableName = "AlchemyEntityType";
-				signal.ResponseProtocol = "AlchemyEntityTypeRecord";		// becomes AlchemyEntityTypeRecordRecordset
-				signal.Action = "select";
-			});
-		}
-
-		protected Dictionary<string, int> LoadEntityTypes(dynamic signal)
-		{
-			Dictionary<string, int> entityTypeIDMap = new Dictionary<string, int>();
-
-			foreach (dynamic r in signal.Recordset)
-			{
-				entityTypeIDMap[r.Name] = r.ID;
-			}
-
-			return entityTypeIDMap;
 		}
 
 		protected void PersistEntities(Dictionary<string, int> entityTypeIDMap, DataSet dsEntities)

@@ -154,6 +154,12 @@ namespace PersistenceReceptor
 			(from c in cvMap where c.Value != null select c).ForEach(kvp => cmd.Parameters.Add(new SQLiteParameter("@" + kvp.Key, kvp.Value)));
 			cmd.CommandText = sb.ToString();
 			cmd.ExecuteNonQuery();
+
+			cmd.CommandText = "SELECT last_insert_rowid()";
+			int id = Convert.ToInt32(cmd.ExecuteScalar());
+
+			EmitID(id, signal.TableName, signal.Tag);
+ 
 			cmd.Dispose();
 		}
 
@@ -164,7 +170,7 @@ namespace PersistenceReceptor
 		protected void InsertIfMissing(dynamic signal)
 		{
 			Dictionary<string, object> cvMap = GetColumnValueMap(signal.Row);
-			StringBuilder sb = new StringBuilder("select count(*) from ");
+			StringBuilder sb = new StringBuilder("select ID from ");
 			sb.Append(signal.TableName);
 			sb.Append(" where ");
 			sb.Append(signal.UniqueKey);
@@ -174,11 +180,15 @@ namespace PersistenceReceptor
 
 			SQLiteCommand cmd = conn.CreateCommand();
 			cmd.CommandText = sb.ToString();
-			int count = Convert.ToInt32(cmd.ExecuteScalar());
+			object id = cmd.ExecuteScalar();
 
-			if (count == 0)
+			if (id == null)
 			{
 				Insert(signal);
+			}
+			else
+			{
+				EmitID(Convert.ToInt32(id), signal.TableName, signal.Tag);
 			}
 		}
 
@@ -302,6 +312,17 @@ namespace PersistenceReceptor
 			cmd.CommandText = sql;
 			cmd.ExecuteNonQuery();
 			cmd.Dispose();
+		}
+
+		protected void EmitID(int id, string tableName, string tag)
+		{
+			// Respond with the ID value.
+			CreateCarrier("IDReturn", idSignal =>
+			{
+				idSignal.ID = id;
+				idSignal.TableName = tableName;
+				idSignal.Tag = tag;
+			});
 		}
 	}
 }

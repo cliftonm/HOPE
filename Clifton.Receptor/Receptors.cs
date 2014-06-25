@@ -436,6 +436,11 @@ namespace Clifton.Receptor
 		/// </summary>
 		protected List<IReceptor> GetTargetReceptorsFor(IReceptor from, ICarrier carrier)
 		{
+			//if (carrier.Protocol.DeclTypeName == "IDReturn")
+			//{
+			//	System.Diagnostics.Debugger.Break();
+			//}
+
 			List<IReceptor> targets;
 			ISemanticTypeStruct protocol = carrier.Protocol;
 
@@ -446,7 +451,7 @@ namespace Clifton.Receptor
 			}
 
 			// Only enabled receptors.
-			List<IReceptor> filteredTargets = targets.Where(r => r.Enabled && r.Instance.GetReceiveProtocols().Select(rq=>rq.Protocol).Contains(protocol.DeclTypeName)).ToList();
+			List<IReceptor> filteredTargets = targets.Where(r => r.Enabled && r.Instance.GetReceiveProtocols().Select(rq => rq.Protocol).Contains(protocol.DeclTypeName)).ToList();
 
 			// Will have a count of 0 if the receptor is the system receptor, ie, carrier animations or other protocols.
 			// TODO: This seems kludgy, is there a better way of working with this?
@@ -460,7 +465,10 @@ namespace Clifton.Receptor
 			}
 
 			// Lastly, filter the list by qualified receptors:
-			filteredTargets = filteredTargets.Where(t => t.Instance.GetReceiveProtocols().Single(rp => rp.Protocol == protocol.DeclTypeName).Qualifier(carrier.Signal)).ToList();
+			filteredTargets = filteredTargets.Where(t => t.Instance.GetReceiveProtocols().Any(rp => (rp.Protocol == protocol.DeclTypeName) && rp.Qualifier(carrier.Signal))).ToList();
+
+			// Get the targets of the single receive protocol that matches the DeclTypeName and whose qualifier returns true.
+			// filteredTargets = filteredTargets.Where(t => t.Instance.GetReceiveProtocols().Single(rp => rp.Protocol == protocol.DeclTypeName).Qualifier(carrier.Signal)).ToList();
 
 			return filteredTargets;
 		}

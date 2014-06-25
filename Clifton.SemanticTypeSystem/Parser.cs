@@ -22,17 +22,19 @@ namespace Clifton.SemanticTypeSystem
 						   select new SemanticTypeStruct()
 						   {
 							   DeclTypeName = st.Attribute("DeclType").Value,
-							   NativeTypes = st.Elements("Attributes").IfNotNullReturn(t => from nativeType in t.Elements("NativeType")
-																							select new NativeType()
-																							{
-																								Name = nativeType.Attribute("Name").Value,
-																								ImplementingType = nativeType.Attribute("ImplementingType").Value,
-																							}).ToList<INativeType>(),
-							   SemanticElements = st.Elements("Attributes").IfNotNullReturn(t => from semanticType in t.Elements("SemanticElement")
-																								 select new SemanticElement()
-																								 {
-																									 Name = semanticType.Attribute("Name").Value,
-																								 }).ToList<ISemanticElement>(),
+							   NativeTypes = st.Elements("Attributes").IfNotNullReturn(t => 
+								   from nativeType in t.Elements("NativeType")
+										select new NativeType()
+										{
+											Name = nativeType.Attribute("Name").Value,
+											ImplementingType = nativeType.Attribute("ImplementingType").Value,
+										}).ToList<INativeType>(),
+							   SemanticElements = st.Elements("Attributes").IfNotNullReturn(t => 
+								   from semanticType in t.Elements("SemanticElement")
+										select new SemanticElement()
+										{
+											Name = semanticType.Attribute("Name").Value,
+										}).ToList<ISemanticElement>(),
 						   }).ToList();
 
 			return structs;

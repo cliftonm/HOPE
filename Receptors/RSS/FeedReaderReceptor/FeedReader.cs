@@ -27,6 +27,7 @@ namespace FeedReaderReceptor
 		public string FeedName {get;set;}
 
 		protected int feedID;
+		protected int feedItemID;			// for testing
 		protected SyndicationFeed feed;
 
 		public FeedReader(IReceptorSystem rsys)
@@ -36,12 +37,21 @@ namespace FeedReaderReceptor
 			AddEmitProtocol("DatabaseProtocol");
 			AddEmitProtocol("RSSFeedItemDisplay");
 
-			AddReceiveProtocol("GetIDRecordset",
+			AddReceiveProtocol("IDReturn",
+				signal => signal.TableName == "RSSFeed",
 				signal =>
 				{
-					feedID = signal.Recordset[0].ID;
+					feedID = signal.ID;
 					SaveFeedItemsToDatabase(feed);
 					EmitFeedItems(feed);
+				});
+			
+			// For testing.
+			AddReceiveProtocol("IDReturn",
+				signal => signal.TableName == "RSSFeedItem",
+				signal =>
+				{
+					feedItemID = signal.ID;
 				});
 		}
 
@@ -91,7 +101,6 @@ namespace FeedReaderReceptor
 			// TODO: Once the TTL is determined, the feed reader will add an event to the timer to remind itself to update the feed when the TTL expires.
 
 			CreateMissingDatabaseFeedEntry(FeedName, FeedUrl, feed.Title.Text, feed.Description.Text);
-			GetFeedID();
 		}
 
 		protected void RequireFeedTables()
@@ -132,17 +141,6 @@ namespace FeedReaderReceptor
 				signal.Row = CreateFeedItemRow(rssFeedID, feedItemID, title, url, descr, authors, categories, pubDate);
 				signal.UniqueKey = "FeedItemID";
 			});
-		}
-
-		protected void GetFeedID()
-		{
-			CreateCarrierIfReceiver("DatabaseRecord", signal =>
-				{
-					signal.TableName = "RSSFeed";
-					signal.Where = "FeedName = " + FeedName.SingleQuote();
-					signal.ResponseProtocol = "GetID";
-					signal.Action = "select";
-				});
 		}
 
 		protected ICarrier CreateFeedRow(string feedName, string feedUrl, string title, string description)
