@@ -1,0 +1,1153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" media="screen" href="/~d/styles/rss2full.xsl"?>
+<?xml-stylesheet type="text/css" media="screen" href="http://feeds.arstechnica.com/~d/styles/itemcontent.css"?>
+<rss xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:wfw="http://wellformedweb.org/CommentAPI/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:sy="http://purl.org/rss/1.0/modules/syndication/" xmlns:slash="http://purl.org/rss/1.0/modules/slash/" xmlns:feedburner="http://rssnamespace.org/feedburner/ext/1.0" version="2.0">
+  <channel>
+    <title>Ars Technica</title>
+    <link>http://arstechnica.com</link>
+    <description>The Art of Technology</description>
+    <lastBuildDate>Sat, 21 Jun 2014 13:35:40 +0000</lastBuildDate>
+    <language>en-US</language>
+    <sy:updatePeriod>hourly</sy:updatePeriod>
+    <sy:updateFrequency>1</sy:updateFrequency>
+    <generator>http://wordpress.org/?v=3.9.1</generator>
+    <atom10:link xmlns:atom10="http://www.w3.org/2005/Atom" rel="self" type="application/rss+xml" href="http://feeds.arstechnica.com/arstechnica/index" />
+    <feedburner:info uri="arstechnica/index" />
+    <atom10:link xmlns:atom10="http://www.w3.org/2005/Atom" rel="hub" href="http://pubsubhubbub.appspot.com/" />
+    <item>
+      <title>Online identity companies to cash in on porn panic</title>
+      <link>http://feeds.arstechnica.com/~r/arstechnica/index/~3/BPPJv-Yxx5E/</link>
+      <comments>http://arstechnica.com/business/2014/06/online-identity-companies-to-cash-in-on-porn-panic/#comments</comments>
+      <pubDate>Sat, 21 Jun 2014 13:35:40 +0000</pubDate>
+      <dc:creator><![CDATA[WIRED UK]]></dc:creator>
+      <category><![CDATA[Ministry of Innovation]]></category>
+      <category><![CDATA[identity]]></category>
+      <category><![CDATA[pornography]]></category>
+      <category><![CDATA[uk]]></category>
+      <guid isPermaLink="false">http://arstechnica.com/?p=491799</guid>
+      <description><![CDATA["Think of the children" worries make for a business opportunity.]]></description>
+      <content:encoded><![CDATA[<div id="rss-wrap">
+<div>
+      <img src="http://cdn.arstechnica.net/wp-content/uploads/2014/06/keyboard1.jpg"><div class="caption" style="font-size:0.8em">
+	
+			<div class="caption-credit">
+							Shuttershock/WiredUK				</div>
+	  </div>
+  </div>
+ <p>An identity authentication company is suggesting the UK online pornography industry adopt its technology when regulation is inevitably brought in.</p>
+<p>Peer-to-peer sites already use <a href="https://veridu.com/">Veridu's</a> technology to rate people as trustworthy or not. It works by asking an individual to setup a profile using social media logins, in much the same way an app would ask you to sign up with your Twitter or Facebook details. The more logins the individual provides to Veridu, the richer and more reliable its verification will be. The system will then ask if you recognize friends in your social network, look for friendship links mirrored across multiple social networks including LinkedIn, and compare age groups in your network. For the new age verification model, it could also include Paypal details (more helpful if the user has signed up with a credit card) and other details from telecommunications providers.</p>
+<p>Veridu promises it is not storing the data it analyses, nor using it for any purpose other than to deliver a token at the end of the process that the user can then take away and show to adult content sites—all it will say is whether that person has been verified as over 18, and how robust that conclusion is on a specific scale.</p>
+</div><p><a href="http://arstechnica.com/business/2014/06/online-identity-companies-to-cash-in-on-porn-panic/#p3">Read 35 remaining paragraphs</a> | <a href="http://arstechnica.com/business/2014/06/online-identity-companies-to-cash-in-on-porn-panic/?comments=1">Comments</a></p><div class="feedflare">
+<a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=BPPJv-Yxx5E:qiSGS6YHbTA:V_sGLiPBpWU"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=BPPJv-Yxx5E:qiSGS6YHbTA:V_sGLiPBpWU" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=BPPJv-Yxx5E:qiSGS6YHbTA:F7zBnMyn0Lo"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=BPPJv-Yxx5E:qiSGS6YHbTA:F7zBnMyn0Lo" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=BPPJv-Yxx5E:qiSGS6YHbTA:qj6IDK7rITs"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=qj6IDK7rITs" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=BPPJv-Yxx5E:qiSGS6YHbTA:yIl2AUoC8zA"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=yIl2AUoC8zA" border="0"></img></a>
+</div><img src="http://feeds.feedburner.com/~r/arstechnica/index/~4/BPPJv-Yxx5E" height="1" width="1"/>]]></content:encoded>
+      <wfw:commentRss>http://arstechnica.com/business/2014/06/online-identity-companies-to-cash-in-on-porn-panic/feed/</wfw:commentRss>
+      <slash:comments>0</slash:comments>
+      <feedburner:origLink>http://arstechnica.com/business/2014/06/online-identity-companies-to-cash-in-on-porn-panic/</feedburner:origLink>
+    </item>
+    <item>
+      <title>Report: Samsung to crank out yet another watch, this time with Android Wear</title>
+      <link>http://feeds.arstechnica.com/~r/arstechnica/index/~3/AFgevOdRw5w/</link>
+      <comments>http://arstechnica.com/gadgets/2014/06/report-samsung-to-crank-out-yet-another-watch-this-time-with-android-wear/#comments</comments>
+      <pubDate>Sat, 21 Jun 2014 04:06:19 +0000</pubDate>
+      <dc:creator><![CDATA[Andrew Cunningham]]></dc:creator>
+      <category><![CDATA[Gear & Gadgets]]></category>
+      <category><![CDATA[Android Wear]]></category>
+      <category><![CDATA[Samsung]]></category>
+      <guid isPermaLink="false">http://arstechnica.com/?p=491971</guid>
+      <description><![CDATA[New wearable could make its debut at Google I/O next week.]]></description>
+      <content:encoded><![CDATA[<div id="rss-wrap">
+<div>
+      <img src="http://cdn.arstechnica.net/wp-content/uploads/2014/06/IMG_2551-640x426.jpg"><div class="caption" style="font-size:0.8em">
+			<div class="caption-text">The Tizen-based Gear 2 and Gear Fit could soon get an Android Wear-based cousin.</div>
+	
+			<div class="caption-credit">
+							Sam Machkovech				</div>
+	  </div>
+  </div>
+ <p>We already know that <a href="http://arstechnica.com/gadgets/2014/03/in-depth-with-android-wear-googles-quantum-leap-of-a-smartwatch-os/">Android Wear</a>, Google's upcoming smartwatch platform, is going to have a <a href="http://arstechnica.com/gadgets/2014/05/google-io-schedule-mentions-android-wear-and-camera-api-disses-google/">big presence at the upcoming Google I/O developer conference</a>. Both <a href="http://arstechnica.com/gadgets/2014/03/moto-360-may-have-always-on-oled-screen-and-sapphire-glass/">Motorola</a> and <a href="http://arstechnica.com/gadgets/2014/04/lg-claims-its-android-wear-smartwatch-has-an-always-on-display/">LG</a> are planning to announce Android Wear watches at some point in the near-future, and the conference seems like an ideal place to do it. A new <a href="http://www.cnet.com/news/samsung-to-launch-android-wear-smartwatch-at-google-io/">report from CNet</a> says that Samsung is also looking to get in on the fun, and that it plans to announce and Android Wear-based watch next week as well. This would be Samsung's third major smartwatch launch in less than a year, following the Galaxy Gear in September of 2013 and the Tizen-based <a href="http://arstechnica.com/gadgets/2014/02/samsung-replaces-the-galaxy-gear-with-a-pair-of-tizen-powered-smartwatches/">Gear 2 and Gear Fit watches</a> back in February.</p>
+<p>CNet's sources say that Samsung is testing versions of the watch that use the company's own Exynos chips (as all of the current Gear watches do), and another version using Qualcomm's chips. The report doesn't say which version of the watch will ultimately be announced and released.</p>
+<p>If you think Samsung might be worried about an Android Wear watch cannibalizing sales of the Gear and Gear Fit watches, you haven't considered Samsung's spaghetti-wall approach to product development. The company is more than content to iterate constantly and quickly, waiting just a few months between releases in an effort to find a sales success. Samsung theoretically stands to benefit if it can succeed with its own OS (Tizen, developed together with Intel and others) rather than one controlled by Google, but ultimately whatever software sells more units is the one that the company will choose to go with.</p>
+</div><p><a href="http://arstechnica.com/gadgets/2014/06/report-samsung-to-crank-out-yet-another-watch-this-time-with-android-wear/#p3">Read 1 remaining paragraphs</a> | <a href="http://arstechnica.com/gadgets/2014/06/report-samsung-to-crank-out-yet-another-watch-this-time-with-android-wear/?comments=1">Comments</a></p><div class="feedflare">
+<a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=AFgevOdRw5w:VFBrGVWEqQ4:V_sGLiPBpWU"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=AFgevOdRw5w:VFBrGVWEqQ4:V_sGLiPBpWU" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=AFgevOdRw5w:VFBrGVWEqQ4:F7zBnMyn0Lo"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=AFgevOdRw5w:VFBrGVWEqQ4:F7zBnMyn0Lo" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=AFgevOdRw5w:VFBrGVWEqQ4:qj6IDK7rITs"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=qj6IDK7rITs" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=AFgevOdRw5w:VFBrGVWEqQ4:yIl2AUoC8zA"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=yIl2AUoC8zA" border="0"></img></a>
+</div><img src="http://feeds.feedburner.com/~r/arstechnica/index/~4/AFgevOdRw5w" height="1" width="1"/>]]></content:encoded>
+      <wfw:commentRss>http://arstechnica.com/gadgets/2014/06/report-samsung-to-crank-out-yet-another-watch-this-time-with-android-wear/feed/</wfw:commentRss>
+      <slash:comments>0</slash:comments>
+      <feedburner:origLink>http://arstechnica.com/gadgets/2014/06/report-samsung-to-crank-out-yet-another-watch-this-time-with-android-wear/</feedburner:origLink>
+    </item>
+    <item>
+      <title>Google unveils independent “fork” of OpenSSL called “BoringSSL”</title>
+      <link>http://feeds.arstechnica.com/~r/arstechnica/index/~3/qR0cFX4RIXY/</link>
+      <comments>http://arstechnica.com/security/2014/06/google-unveils-independent-fork-of-openssl-called-boringssl/#comments</comments>
+      <pubDate>Fri, 20 Jun 2014 23:49:07 +0000</pubDate>
+      <dc:creator><![CDATA[Dan Goodin]]></dc:creator>
+      <category><![CDATA[Risk Assessment]]></category>
+      <category><![CDATA[Technology Lab]]></category>
+      <category><![CDATA[boringssl]]></category>
+      <category><![CDATA[fork]]></category>
+      <category><![CDATA[google]]></category>
+      <category><![CDATA[libressl]]></category>
+      <category><![CDATA[openssl]]></category>
+      <category><![CDATA[secure sockets layer]]></category>
+      <category><![CDATA[ssl]]></category>
+      <category><![CDATA[tls]]></category>
+      <category><![CDATA[transport layer security]]></category>
+      <guid isPermaLink="false">http://arstechnica.com/?p=491905</guid>
+      <description><![CDATA[Stripped down package means there will be three independent versions of OpenSSL.]]></description>
+      <content:encoded><![CDATA[<div id="rss-wrap">
+<div>
+      <img src="http://cdn.arstechnica.net/wp-content/uploads/2014/06/forks-640x480.jpg"><div class="caption" style="font-size:0.8em">
+	
+			<div class="caption-credit">
+							<a rel="nofollow" href="https://secure.flickr.com/photos/dvs/71316775/">dvs</a>
+				</div>
+	  </div>
+  </div>
+ <p>Google is releasing its own independently developed "fork" of OpenSSL, the widely used cryptography library that came to international attention following the Heartbleed vulnerability that threatened hundreds of thousands of websites with catastrophic attacks.</p>
+<p>The unveiling of <a href="https://boringssl.googlesource.com/boringssl/">BoringSSL</a>, as the Google fork has been dubbed, means there will be three separate versions of OpenSSL, which is best known for implementing the secure socket layer and transport layer security protocols on <a href="http://news.netcraft.com/archives/2014/04/08/half-a-million-widely-trusted-websites-vulnerable-to-heartbleed-bug.html">an estimated 500,000 websites</a>. Developers of the OpenBSD operating system <a href="http://arstechnica.com/information-technology/2014/04/openssl-code-beyond-repair-claims-creator-of-libressl-fork/">took the wraps off LibreSSL</a> a few weeks after the surfacing of Heartbleed. Google is taking pains to ensure BoringSSL won't unnecessarily compete or interfere with either of those independent projects. Among other things, the company will continue to back the Core Infrastructure Initiative, which is <a href="http://arstechnica.com/information-technology/2014/04/tech-giants-chastened-by-heartbleed-finally-agree-to-fund-openssl/">providing $100,000 in funding to OpenSSL developers</a> so they can refurbish their badly aging code base.</p>
+<p>"But we’ll also be more able to import changes from LibreSSL and they are welcome to take changes from us," Adam Langley, a widely respected cryptography engineer and Google employee, wrote in a <a href="https://www.imperialviolet.org/">blog post introducing BoringSSL</a>. "We have already relicensed some of our prior contributions to OpenSSL under an ISC license at their request and completely new code that we write will also be so licensed."</p>
+</div><p><a href="http://arstechnica.com/security/2014/06/google-unveils-independent-fork-of-openssl-called-boringssl/#p3">Read 6 remaining paragraphs</a> | <a href="http://arstechnica.com/security/2014/06/google-unveils-independent-fork-of-openssl-called-boringssl/?comments=1">Comments</a></p><div class="feedflare">
+<a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=qR0cFX4RIXY:TVpGEy2Bzl0:V_sGLiPBpWU"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=qR0cFX4RIXY:TVpGEy2Bzl0:V_sGLiPBpWU" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=qR0cFX4RIXY:TVpGEy2Bzl0:F7zBnMyn0Lo"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=qR0cFX4RIXY:TVpGEy2Bzl0:F7zBnMyn0Lo" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=qR0cFX4RIXY:TVpGEy2Bzl0:qj6IDK7rITs"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=qj6IDK7rITs" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=qR0cFX4RIXY:TVpGEy2Bzl0:yIl2AUoC8zA"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=yIl2AUoC8zA" border="0"></img></a>
+</div><img src="http://feeds.feedburner.com/~r/arstechnica/index/~4/qR0cFX4RIXY" height="1" width="1"/>]]></content:encoded>
+      <wfw:commentRss>http://arstechnica.com/security/2014/06/google-unveils-independent-fork-of-openssl-called-boringssl/feed/</wfw:commentRss>
+      <slash:comments>0</slash:comments>
+      <feedburner:origLink>http://arstechnica.com/security/2014/06/google-unveils-independent-fork-of-openssl-called-boringssl/</feedburner:origLink>
+    </item>
+    <item>
+      <title>Verizon interested in buying Dish Network’s spectrum, report says</title>
+      <link>http://feeds.arstechnica.com/~r/arstechnica/index/~3/cFbWHkQJA74/</link>
+      <comments>http://arstechnica.com/business/2014/06/verizon-interested-in-buying-dish-networks-spectrum-report-says/#comments</comments>
+      <pubDate>Fri, 20 Jun 2014 21:26:52 +0000</pubDate>
+      <dc:creator><![CDATA[Megan Geuss]]></dc:creator>
+      <category><![CDATA[Ministry of Innovation]]></category>
+      <category><![CDATA[DISH]]></category>
+      <category><![CDATA[Sprint]]></category>
+      <category><![CDATA[t-mobile]]></category>
+      <category><![CDATA[verizon]]></category>
+      <guid isPermaLink="false">http://arstechnica.com/?p=491825</guid>
+      <description><![CDATA[The <em>New York Post</em> cites a banker with knowledge of the matter.]]></description>
+      <content:encoded><![CDATA[<div id="rss-wrap"> <p>Late Thursday night, the <a href="http://nypost.com/2014/06/19/verizon-wireless-eyeing-dish-network-spectrum/"><em>New York Post</em> reported</a> that Verizon Wireless is keen to buy Dish Network's spectrum to add to Verizon's wireless infrastructure. According to a banker with “direct knowledge” of the matter, a “top Verizon executive told a group of insiders” that the company is thinking about bidding for the satellite-TV company's spectrum.</p>
+<p>A second source “close to the two companies,” said that there had been early and informal talks of a deal. Verizon flatly denied <a href="http://www.reuters.com/article/2014/06/20/us-dish-network-spectrum-idUSKBN0EV1OG20140620?feedType=RSS&amp;feedName=technologyNews">that it was interested</a> in making a deal with Dish just a month ago.</p>
+<p>The wireless industry is experiencing a bit of an upheaval at the moment. The FCC is <a href="http://arstechnica.com/business/2014/04/fccs-rules-for-spectrum-auction-may-level-playing-field-for-small-carriers/">preparing to auction off</a> key blocks of spectrum in 2015 and has recently said that it would write the rules of that auction to <a href="http://arstechnica.com/business/2014/04/att-hates-plan-to-help-small-carriers-threatens-protest-of-fcc-auction/">help smaller carriers gain spectrum</a>. If this is the case, buying spectrum from a private company may be Verizon's best shot at increasing its spectrum holdings. “Plus, much of Dish’s spectrum is complementary to spectrum Verizon presently owns,” the <em>New York Post</em> wrote.</p>
+</div><p><a href="http://arstechnica.com/business/2014/06/verizon-interested-in-buying-dish-networks-spectrum-report-says/#p3">Read 2 remaining paragraphs</a> | <a href="http://arstechnica.com/business/2014/06/verizon-interested-in-buying-dish-networks-spectrum-report-says/?comments=1">Comments</a></p><div class="feedflare">
+<a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=cFbWHkQJA74:cPiFeiNbTRk:V_sGLiPBpWU"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=cFbWHkQJA74:cPiFeiNbTRk:V_sGLiPBpWU" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=cFbWHkQJA74:cPiFeiNbTRk:F7zBnMyn0Lo"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=cFbWHkQJA74:cPiFeiNbTRk:F7zBnMyn0Lo" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=cFbWHkQJA74:cPiFeiNbTRk:qj6IDK7rITs"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=qj6IDK7rITs" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=cFbWHkQJA74:cPiFeiNbTRk:yIl2AUoC8zA"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=yIl2AUoC8zA" border="0"></img></a>
+</div><img src="http://feeds.feedburner.com/~r/arstechnica/index/~4/cFbWHkQJA74" height="1" width="1"/>]]></content:encoded>
+      <wfw:commentRss>http://arstechnica.com/business/2014/06/verizon-interested-in-buying-dish-networks-spectrum-report-says/feed/</wfw:commentRss>
+      <slash:comments>0</slash:comments>
+      <feedburner:origLink>http://arstechnica.com/business/2014/06/verizon-interested-in-buying-dish-networks-spectrum-report-says/</feedburner:origLink>
+    </item>
+    <item>
+      <title>PSA: EA offers free 48-hour trial of Titanfall on PC</title>
+      <link>http://feeds.arstechnica.com/~r/arstechnica/index/~3/iSdTY0m_z00/</link>
+      <comments>http://arstechnica.com/gaming/2014/06/psa-ea-offers-free-48-hour-trial-of-titanfall-on-pc/#comments</comments>
+      <pubDate>Fri, 20 Jun 2014 20:44:09 +0000</pubDate>
+      <dc:creator><![CDATA[Kyle Orland]]></dc:creator>
+      <category><![CDATA[Opposable Thumbs]]></category>
+      <category><![CDATA[demo]]></category>
+      <category><![CDATA[EA]]></category>
+      <category><![CDATA[game time]]></category>
+      <category><![CDATA[Origin]]></category>
+      <category><![CDATA[titanfall]]></category>
+      <guid isPermaLink="false">http://arstechnica.com/?p=491747</guid>
+      <description><![CDATA[Play the full version on your schedule, and keep your progress if you decide to buy.]]></description>
+      <content:encoded><![CDATA[<div id="rss-wrap">
+<div>
+      <img src="http://cdn.arstechnica.net/wp-content/uploads/2014/03/titanfalllaunch1-640x347.png">
+</div>
+ <p>Five or ten years ago, searching out free, content-limited demo versions of games that were distributed via disc or download was one of the best ways to get a quick feel for a wide variety of titles. In today's world of free-to-play games, $1 mobile downloads, and <a href="http://arstechnica.com/gaming/2014/06/psa-steams-annual-summer-sale-now-live/">90-percent-off Steam sales</a>, though, that traditional idea of a game demo is beginning to look a bit long in the tooth. The new Origin Game Time demo program that EA is <a href="https://www.origin.com/en-us/news/play-titanfall-free-game-time">launching with <i>Titanfall</i> this weekend</a> is an interesting update of the concept that we hope will have some legs.</p>
+<p>Starting this weekend, players will be able to download the full version of <i>Titanfall</i> and play it as much as they want for a 48-hour period. The clock starts when you load the game for the first time and runs whether you're playing or not, so you might want to forgo sleep if you want to really get the most out of the free opportunity. It's like the Free Weekend trials Valve <a href="http://www.pcgamer.com/tag/steam-free-weekend/">periodically offers on Steam</a>, except you get to choose the 48 hour free-play period rather than playing on the platform's schedule.</p>
+<p>If you decide to purchase the game after the trial, you get to keep all the progress and experience points you accumulated during your free time. That removes one of the major frustrations with bingeing on most game demos or betas: the prospect of having to start over again with the "real" game when you're done.</p>
+</div><p><a href="http://arstechnica.com/gaming/2014/06/psa-ea-offers-free-48-hour-trial-of-titanfall-on-pc/#p3">Read 1 remaining paragraphs</a> | <a href="http://arstechnica.com/gaming/2014/06/psa-ea-offers-free-48-hour-trial-of-titanfall-on-pc/?comments=1">Comments</a></p><div class="feedflare">
+<a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=iSdTY0m_z00:l5kyhfpMrTE:V_sGLiPBpWU"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=iSdTY0m_z00:l5kyhfpMrTE:V_sGLiPBpWU" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=iSdTY0m_z00:l5kyhfpMrTE:F7zBnMyn0Lo"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=iSdTY0m_z00:l5kyhfpMrTE:F7zBnMyn0Lo" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=iSdTY0m_z00:l5kyhfpMrTE:qj6IDK7rITs"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=qj6IDK7rITs" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=iSdTY0m_z00:l5kyhfpMrTE:yIl2AUoC8zA"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=yIl2AUoC8zA" border="0"></img></a>
+</div><img src="http://feeds.feedburner.com/~r/arstechnica/index/~4/iSdTY0m_z00" height="1" width="1"/>]]></content:encoded>
+      <wfw:commentRss>http://arstechnica.com/gaming/2014/06/psa-ea-offers-free-48-hour-trial-of-titanfall-on-pc/feed/</wfw:commentRss>
+      <slash:comments>0</slash:comments>
+      <feedburner:origLink>http://arstechnica.com/gaming/2014/06/psa-ea-offers-free-48-hour-trial-of-titanfall-on-pc/</feedburner:origLink>
+    </item>
+    <item>
+      <title>New open-source router firmware opens your Wi-Fi network to strangers</title>
+      <link>http://feeds.arstechnica.com/~r/arstechnica/index/~3/A0m5iDShwTg/</link>
+      <comments>http://arstechnica.com/tech-policy/2014/06/new-router-firmware-safely-opens-your-wi-fi-network-to-strangers/#comments</comments>
+      <pubDate>Fri, 20 Jun 2014 20:27:01 +0000</pubDate>
+      <dc:creator><![CDATA[Joe Silver]]></dc:creator>
+      <category><![CDATA[Law & Disorder]]></category>
+      <category><![CDATA[firmware]]></category>
+      <category><![CDATA[router]]></category>
+      <category><![CDATA[WiFi]]></category>
+      <guid isPermaLink="false">http://arstechnica.com/?p=491615</guid>
+      <description><![CDATA[EFF says open Wi-Fi tool promotes efficiency, neighborliness, and privacy.]]></description>
+      <content:encoded><![CDATA[<div id="rss-wrap">
+<div>
+      <img src="http://cdn.arstechnica.net/wp-content/uploads/2011/05/sad-broadband-router-ars.jpg">
+</div>
+ <p>We’ve often heard security folks explain their belief that one of the best ways to protect Web privacy and security on one's home turf is to lock down one's private Wi-Fi network with a strong password. But a coalition of advocacy organizations is calling such conventional wisdom into question.</p>
+<p>Members of the “Open Wireless Movement,” including the Electronic Frontier Foundation (EFF), Free Press, Mozilla, and Fight for the Future are advocating that we open up our Wi-Fi private networks (or at least a small slice of our available bandwidth) to strangers. They claim that such a random act of kindness can actually make us safer online while simultaneously facilitating a better allocation of finite broadband resources.</p>
+<p>The <a href="https://openwireless.org/">OpenWireless.org</a> website explains the group’s initiative. “We are aiming to build technologies that would make it easy for Internet subscribers to portion off their wireless networks for guests and the public while maintaining security, protecting privacy, and preserving quality of access," its mission statement reads. "And we are working to debunk myths (and confront truths) about open wireless while creating technologies and legal precedent to ensure it is safe, private, and legal to open your network.”</p>
+</div><p><a href="http://arstechnica.com/tech-policy/2014/06/new-router-firmware-safely-opens-your-wi-fi-network-to-strangers/#p3">Read 8 remaining paragraphs</a> | <a href="http://arstechnica.com/tech-policy/2014/06/new-router-firmware-safely-opens-your-wi-fi-network-to-strangers/?comments=1">Comments</a></p><div class="feedflare">
+<a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=A0m5iDShwTg:r12-LwOXg3I:V_sGLiPBpWU"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=A0m5iDShwTg:r12-LwOXg3I:V_sGLiPBpWU" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=A0m5iDShwTg:r12-LwOXg3I:F7zBnMyn0Lo"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=A0m5iDShwTg:r12-LwOXg3I:F7zBnMyn0Lo" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=A0m5iDShwTg:r12-LwOXg3I:qj6IDK7rITs"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=qj6IDK7rITs" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=A0m5iDShwTg:r12-LwOXg3I:yIl2AUoC8zA"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=yIl2AUoC8zA" border="0"></img></a>
+</div><img src="http://feeds.feedburner.com/~r/arstechnica/index/~4/A0m5iDShwTg" height="1" width="1"/>]]></content:encoded>
+      <wfw:commentRss>http://arstechnica.com/tech-policy/2014/06/new-router-firmware-safely-opens-your-wi-fi-network-to-strangers/feed/</wfw:commentRss>
+      <slash:comments>0</slash:comments>
+      <feedburner:origLink>http://arstechnica.com/tech-policy/2014/06/new-router-firmware-safely-opens-your-wi-fi-network-to-strangers/</feedburner:origLink>
+    </item>
+    <item>
+      <title>Illinois university offering sports scholarships… for League of Legends players</title>
+      <link>http://feeds.arstechnica.com/~r/arstechnica/index/~3/972H_18wXRM/</link>
+      <comments>http://arstechnica.com/gaming/2014/06/illinois-university-offering-sports-scholarships-for-league-of-legends-players/#comments</comments>
+      <pubDate>Fri, 20 Jun 2014 19:03:04 +0000</pubDate>
+      <dc:creator><![CDATA[Peter Bright]]></dc:creator>
+      <category><![CDATA[Opposable Thumbs]]></category>
+      <category><![CDATA[dota 2]]></category>
+      <category><![CDATA[League of Legends]]></category>
+      <category><![CDATA[moba]]></category>
+      <guid isPermaLink="false">http://arstechnica.com/?p=491595</guid>
+      <description><![CDATA[Up to 50 percent off board and tuition for accomplished gamers.]]></description>
+      <content:encoded><![CDATA[<div id="rss-wrap"> <p>As a Brit, I find American college sports and athletics scholarships thoroughly baffling, but Robert Morris University Illinois is starting a scholarship program that I can almost get behind: <a href="http://www.joystiq.com/2014/06/19/illinois-college-offering-scholarships-to-league-of-legends-play/">Joystiq reports</a> that the college is offering scholarships for e-sports players. <em>League of Legends</em> players can be awarded scholarships worth up to 50 percent of tuition and 50 percent of room and board.</p>
+<p>The university is <a href="http://www.rmueagles.com/article/907.php">looking</a> for applicants who participate in the <em>League of Legends</em> High School Starleague, with a view to building a <em>League</em> team to play in the <a href="http://www.cstarleague.com/lol/news">Collegiate Star League</a> (a separate competition to <em>League of Legends </em>developer Riot's own <a href="http://competitive.na.leagueoflegends.com/collegiate-program">collegiate program</a>). The 2014 season starts in September and will feature teams from 103 different institutions.</p>
+<p>Of course, if you really want a career in e-sports, it's worth ignoring <em>League of Legends</em> and aiming straight at the big time: <em><a href="http://arstechnica.com/gaming/2013/07/review-dota-2-is-a-colossal-time-sink-that-you-should-play/">Dota 2</a></em>. In addition to being the greatest game of all time, next month's Valve-sponsored tournament, <a href="http://www.dota2.com/international/announcement/">The International</a>, offers the biggest prize pool in all of e-sports, currently sitting at <a href="http://www.dota2.com/international/compendium/">$9.7 million and counting</a>. The winning team of five is expected to take home almost $5 million.</p>
+</div><p><a href="http://arstechnica.com/gaming/2014/06/illinois-university-offering-sports-scholarships-for-league-of-legends-players/">Read on Ars Technica</a> | <a href="http://arstechnica.com/gaming/2014/06/illinois-university-offering-sports-scholarships-for-league-of-legends-players/?comments=1">Comments</a></p><div class="feedflare">
+<a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=972H_18wXRM:St_xhA4q5-g:V_sGLiPBpWU"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=972H_18wXRM:St_xhA4q5-g:V_sGLiPBpWU" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=972H_18wXRM:St_xhA4q5-g:F7zBnMyn0Lo"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=972H_18wXRM:St_xhA4q5-g:F7zBnMyn0Lo" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=972H_18wXRM:St_xhA4q5-g:qj6IDK7rITs"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=qj6IDK7rITs" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=972H_18wXRM:St_xhA4q5-g:yIl2AUoC8zA"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=yIl2AUoC8zA" border="0"></img></a>
+</div><img src="http://feeds.feedburner.com/~r/arstechnica/index/~4/972H_18wXRM" height="1" width="1"/>]]></content:encoded>
+      <wfw:commentRss>http://arstechnica.com/gaming/2014/06/illinois-university-offering-sports-scholarships-for-league-of-legends-players/feed/</wfw:commentRss>
+      <slash:comments>0</slash:comments>
+      <feedburner:origLink>http://arstechnica.com/gaming/2014/06/illinois-university-offering-sports-scholarships-for-league-of-legends-players/</feedburner:origLink>
+    </item>
+    <item>
+      <title>SpaceX plans to launch a six-pack of communication satellites tonight</title>
+      <link>http://feeds.arstechnica.com/~r/arstechnica/index/~3/PBDUMEV7CtY/</link>
+      <comments>http://arstechnica.com/science/2014/06/spacex-plans-to-launch-a-six-pack-of-communication-satellites-tonight/#comments</comments>
+      <pubDate>Fri, 20 Jun 2014 18:15:23 +0000</pubDate>
+      <dc:creator><![CDATA[John Timmer]]></dc:creator>
+      <category><![CDATA[Scientific Method]]></category>
+      <category><![CDATA[Commercial space]]></category>
+      <category><![CDATA[falcon 9]]></category>
+      <category><![CDATA[launch]]></category>
+      <category><![CDATA[spacex]]></category>
+      <guid isPermaLink="false">http://arstechnica.com/?p=491521</guid>
+      <description><![CDATA[Weather permitting, launch will be livestreamed at 6pm US Eastern.]]></description>
+      <content:encoded><![CDATA[<div id="rss-wrap"> <p>SpaceX mostly grabs attention for its resupply flights to the International Space Station and for its plans to <a href="http://arstechnica.com/science/2014/05/spacex-shows-off-dragon-v2-its-brand-new-manned-space-capsule/">carry humans to orbit</a> some day soon. But the reason NASA is interested in the company is because it provides a cheap ride to space. And, for that reason, SpaceX has also attracted the interest of commercial satellite providers.</p>
+<p>Today, SpaceX hopes to send to orbit some commercial communication satellites from Orbcomm. The hardware, called OG2, will eventually form a 17-satellite mesh that provides constant global coverage. The hardware is compact and light enough that SpaceX's Falcon 9 will be able to carry six to orbit in a single launch.</p>
+<p>Right now, weather conditions suggest there's better than even odds that the launch will have to be scrubbed. Should it go ahead, the scheduled departure time is just after 6pm, US Eastern time. SpaceX is <a href="http://www.spacex.com/webcast/">livestreaming the launch</a> for those who would like to tune in.</p>
+</div><p><a href="http://arstechnica.com/science/2014/06/spacex-plans-to-launch-a-six-pack-of-communication-satellites-tonight/#p3">Read 1 remaining paragraphs</a> | <a href="http://arstechnica.com/science/2014/06/spacex-plans-to-launch-a-six-pack-of-communication-satellites-tonight/?comments=1">Comments</a></p><div class="feedflare">
+<a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=PBDUMEV7CtY:Qa5enyK3Bng:V_sGLiPBpWU"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=PBDUMEV7CtY:Qa5enyK3Bng:V_sGLiPBpWU" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=PBDUMEV7CtY:Qa5enyK3Bng:F7zBnMyn0Lo"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=PBDUMEV7CtY:Qa5enyK3Bng:F7zBnMyn0Lo" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=PBDUMEV7CtY:Qa5enyK3Bng:qj6IDK7rITs"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=qj6IDK7rITs" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=PBDUMEV7CtY:Qa5enyK3Bng:yIl2AUoC8zA"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=yIl2AUoC8zA" border="0"></img></a>
+</div><img src="http://feeds.feedburner.com/~r/arstechnica/index/~4/PBDUMEV7CtY" height="1" width="1"/>]]></content:encoded>
+      <wfw:commentRss>http://arstechnica.com/science/2014/06/spacex-plans-to-launch-a-six-pack-of-communication-satellites-tonight/feed/</wfw:commentRss>
+      <slash:comments>0</slash:comments>
+      <feedburner:origLink>http://arstechnica.com/science/2014/06/spacex-plans-to-launch-a-six-pack-of-communication-satellites-tonight/</feedburner:origLink>
+    </item>
+    <item>
+      <title>Digital security company Gemalto loses patent fight against Android</title>
+      <link>http://feeds.arstechnica.com/~r/arstechnica/index/~3/XN0R-Ktq3UA/</link>
+      <comments>http://arstechnica.com/tech-policy/2014/06/digital-security-company-gemalto-loses-patent-fight-against-android/#comments</comments>
+      <pubDate>Fri, 20 Jun 2014 18:07:23 +0000</pubDate>
+      <dc:creator><![CDATA[Joe Mullin]]></dc:creator>
+      <category><![CDATA[Law & Disorder]]></category>
+      <category><![CDATA[android]]></category>
+      <category><![CDATA[patents]]></category>
+      <guid isPermaLink="false">http://arstechnica.com/?p=491375</guid>
+      <description><![CDATA[France-based Gemalto hoped for a licensing cash cow: tens of millions of euros.]]></description>
+      <content:encoded><![CDATA[<div id="rss-wrap">
+<div>
+      <img src="http://cdn.arstechnica.net/wp-content/uploads/2014/06/gemalto-education-640x496.jpg"><div class="caption" style="font-size:0.8em">
+			<div class="caption-text">What's pouring out of that smartphone? Not €50 million worth of patent royalties. </div>
+	
+			<div class="caption-credit">
+							<a rel="nofollow" href="http://blog.gemalto.com/wp-content/uploads/2012/03/Education-education-education-education.jpg">Gemalto</a>
+				</div>
+	  </div>
+  </div>
+ <p>Google and its handset-making partners have defeated a major patent-holding company that threatened to weigh Android phones down with even more royalty payments. A panel of three judges on the nation's top patent court have ruled that Android phones don't infringe on three patents owned by French digital security firm Gemalto.</p>
+<p>Yesterday's <a href="http://www.cafc.uscourts.gov/images/stories/opinions-orders/13-1397.Opinion.6-17-2014.1.PDF">ruling</a> (PDF) puts an end to a legal battle that Gemalto kicked off in 2010 when it <a href="http://www.mckoolsmith.com/news-pressreleases-119.html">sued Google, Samsung, HTC, and Motorola</a> in the Eastern District of Texas. Gemalto said Android phones had memory-utilization features that it had developed first at its research center in Austin.</p>
+<p>Gemalto's invention was a way to allow low-power devices to run "high-level programming languages, such as Java," according to the ruling from the US Court of Appeals for the Federal Circuit. It accused the defendant companies of infringing three of its patents, numbered <a href="https://www.google.com/patents/US6308317">6,308,317</a>, <a href="https://www.google.com/patents/US7117485">7,117,485</a>, and <a href="https://www.google.com/patents/US7818727">7,818,727</a>.</p>
+</div><p><a href="http://arstechnica.com/tech-policy/2014/06/digital-security-company-gemalto-loses-patent-fight-against-android/#p3">Read 8 remaining paragraphs</a> | <a href="http://arstechnica.com/tech-policy/2014/06/digital-security-company-gemalto-loses-patent-fight-against-android/?comments=1">Comments</a></p><div class="feedflare">
+<a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=XN0R-Ktq3UA:IVxNtwcWe-c:V_sGLiPBpWU"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=XN0R-Ktq3UA:IVxNtwcWe-c:V_sGLiPBpWU" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=XN0R-Ktq3UA:IVxNtwcWe-c:F7zBnMyn0Lo"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=XN0R-Ktq3UA:IVxNtwcWe-c:F7zBnMyn0Lo" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=XN0R-Ktq3UA:IVxNtwcWe-c:qj6IDK7rITs"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=qj6IDK7rITs" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=XN0R-Ktq3UA:IVxNtwcWe-c:yIl2AUoC8zA"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=yIl2AUoC8zA" border="0"></img></a>
+</div><img src="http://feeds.feedburner.com/~r/arstechnica/index/~4/XN0R-Ktq3UA" height="1" width="1"/>]]></content:encoded>
+      <wfw:commentRss>http://arstechnica.com/tech-policy/2014/06/digital-security-company-gemalto-loses-patent-fight-against-android/feed/</wfw:commentRss>
+      <slash:comments>0</slash:comments>
+      <feedburner:origLink>http://arstechnica.com/tech-policy/2014/06/digital-security-company-gemalto-loses-patent-fight-against-android/</feedburner:origLink>
+    </item>
+    <item>
+      <title>Renewable energy capacity up by 8.3 percent in 2013</title>
+      <link>http://feeds.arstechnica.com/~r/arstechnica/index/~3/p7sI0DYAKhQ/</link>
+      <comments>http://arstechnica.com/science/2014/06/renewable-energy-capacity-up-by-8-3-percent-in-2013/#comments</comments>
+      <pubDate>Fri, 20 Jun 2014 17:48:08 +0000</pubDate>
+      <dc:creator><![CDATA[John Timmer]]></dc:creator>
+      <category><![CDATA[Scientific Method]]></category>
+      <category><![CDATA[Energy]]></category>
+      <category><![CDATA[green]]></category>
+      <category><![CDATA[photovoltaic]]></category>
+      <category><![CDATA[renewable energy]]></category>
+      <category><![CDATA[Wind]]></category>
+      <guid isPermaLink="false">http://arstechnica.com/?p=491499</guid>
+      <description><![CDATA[China now tops in wind, second place in photovoltaics.]]></description>
+      <content:encoded><![CDATA[<div id="rss-wrap">
+<div>
+      <img src="http://cdn.arstechnica.net/wp-content/uploads/2014/06/renewable_energy-640x204.jpg"><div class="caption" style="font-size:0.8em">
+	
+			<div class="caption-credit">
+							<a rel="nofollow" href="http://emp.lbl.gov">Lawrence Berkeley Lab</a>
+				</div>
+	  </div>
+  </div>
+ <p>Recently, the Renewable Energy Policy Network released Renewables 2014, a report that tracked the growth of the sector in 2013. The report is prepared by a mix of academics, government officials, members of NGOs, and industry groups; given the latter, there's almost certainly an element of cheerleading in the analysis. But on some level, the numbers speak for themselves: by the end of 2013, renewables accounted for over 20 percent of the global electricity production, with wind and photovoltaics having reached 3.6 percent of the total.</p>
+<p>Globally, renewables accounted for over half the new generating capacity installed last year. The total cumulative capacity reached 1.56 terawatts, which is up by over eight percent in the last year. Hydropower provided roughly one terawatt of that, and it grew by roughly 12 percent in the last year. In contrast, all the other sources of renewables grew at a collective 17 percent. Wind grew by 12 percent, while photovoltaic capacity went up by 27 percent. That represents the first time that solar power has outpaced wind.</p>
+<p>The rise continues at a torrid pace for solar growth; the average increase over the last five years is more than 50 percent. Perhaps more impressively, however, 2013's growth came despite a drop of 22 percent in total investments. In other words, the price of photovoltaics came down so much that end users were able to get much more capacity for significantly less money.</p>
+</div><p><a href="http://arstechnica.com/science/2014/06/renewable-energy-capacity-up-by-8-3-percent-in-2013/#p3">Read 3 remaining paragraphs</a> | <a href="http://arstechnica.com/science/2014/06/renewable-energy-capacity-up-by-8-3-percent-in-2013/?comments=1">Comments</a></p><div class="feedflare">
+<a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=p7sI0DYAKhQ:ASVpsrA1JM4:V_sGLiPBpWU"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=p7sI0DYAKhQ:ASVpsrA1JM4:V_sGLiPBpWU" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=p7sI0DYAKhQ:ASVpsrA1JM4:F7zBnMyn0Lo"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=p7sI0DYAKhQ:ASVpsrA1JM4:F7zBnMyn0Lo" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=p7sI0DYAKhQ:ASVpsrA1JM4:qj6IDK7rITs"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=qj6IDK7rITs" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=p7sI0DYAKhQ:ASVpsrA1JM4:yIl2AUoC8zA"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=yIl2AUoC8zA" border="0"></img></a>
+</div><img src="http://feeds.feedburner.com/~r/arstechnica/index/~4/p7sI0DYAKhQ" height="1" width="1"/>]]></content:encoded>
+      <wfw:commentRss>http://arstechnica.com/science/2014/06/renewable-energy-capacity-up-by-8-3-percent-in-2013/feed/</wfw:commentRss>
+      <slash:comments>0</slash:comments>
+      <feedburner:origLink>http://arstechnica.com/science/2014/06/renewable-energy-capacity-up-by-8-3-percent-in-2013/</feedburner:origLink>
+    </item>
+    <item>
+      <title>Amid controversy, Ubisoft denies downgrading graphics on PC Watch Dogs</title>
+      <link>http://feeds.arstechnica.com/~r/arstechnica/index/~3/N0p0YzzJ29Y/</link>
+      <comments>http://arstechnica.com/gaming/2014/06/amid-controversy-ubisoft-denies-downgrading-graphics-on-pc-watch-dogs/#comments</comments>
+      <pubDate>Fri, 20 Jun 2014 17:32:45 +0000</pubDate>
+      <dc:creator><![CDATA[Kyle Orland]]></dc:creator>
+      <category><![CDATA[Opposable Thumbs]]></category>
+      <category><![CDATA[mod]]></category>
+      <category><![CDATA[pc]]></category>
+      <category><![CDATA[Ubisoft]]></category>
+      <category><![CDATA[watch dogs]]></category>
+      <guid isPermaLink="false">http://arstechnica.com/?p=491475</guid>
+      <description><![CDATA[Statement follows release of mod that unlocks graphical effects hidden in shipped code.]]></description>
+      <content:encoded><![CDATA[<div id="rss-wrap">
+<div>
+      <img src="http://cdn.arstechnica.net/wp-content/uploads/2014/06/watchmod-640x320.png"><div class="caption" style="font-size:0.8em">
+			<div class="caption-text">A shot from the modded version of <i>Watch Dogs</i> shows the impact of "unlocked" effects like fog and variable depth of field.</div>
+	
+	  </div>
+  </div>
+ <p>It's been an interesting week for PC players dedicated to getting the best graphical experience from their copy of Ubisoft's <i>Watch Dogs</i>. That's because of a modder going by handle TheWorse at the Guru3D forums, who late last week <a href="http://forums.guru3d.com/showthread.php?t=390114">released a beta version of a mod</a> that enabled many high-end graphical effects that were not available in the shipped version of the game.</p>
+<p>Normally this wouldn't be a huge deal—similar graphical effects mods for games like <i>Grand Theft Auto IV</i> and <i>Skyrim</i> are incredibly popular among PC gamers with high-end rigs. What made the <i>Watch Dogs</i> mod interesting is that many of its "new" graphical effects were <a href="http://www.neogaf.com/forum/showthread.php?t=838538">apparently already in the game's shipped code</a> and were simply disabled for players who didn't tinker with the game files. Graphical features like fog, <a href="http://udn.epicgames.com/Three/BokehDepthOfField.html">bokeh depth of field</a>, and bloom lighting effects were apparently written into the PC version of the game, only to be removed before it shipped. What's more, re-enabling them though the mod doesn't seem to make the game crash.</p>
+<p>Much has already been made about how the final shipped version of <i>Watch Dogs</i> <a href="http://www.cinemablend.com/games/Watch-Dogs-PC-Ultra-Graphics-E3-2012-Graphics-64266.html">looks considerably worse</a> than the version shown in presentations at the last two E3 shows. Those comparisons took on new weight when modders found references in the PC code to settings and animations explicitly meant for "E3" mode. Some have suggested that Ubisoft purposely scaled back the performance of the PC version of the game so it wouldn't outclass the console versions too handily. <a href="http://www.gamespot.com/forums/pc-mac-discussion-1000004/ubisoft-hate-for-the-pc-gaming-community-watch-dog-31365985/">One comment</a> unearthed from the code lends some credence to this idea, by derisively suggesting that a color setting "is PC only, who cares."</p>
+</div><p><a href="http://arstechnica.com/gaming/2014/06/amid-controversy-ubisoft-denies-downgrading-graphics-on-pc-watch-dogs/#p3">Read 4 remaining paragraphs</a> | <a href="http://arstechnica.com/gaming/2014/06/amid-controversy-ubisoft-denies-downgrading-graphics-on-pc-watch-dogs/?comments=1">Comments</a></p><div class="feedflare">
+<a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=N0p0YzzJ29Y:eDqIpse4hU4:V_sGLiPBpWU"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=N0p0YzzJ29Y:eDqIpse4hU4:V_sGLiPBpWU" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=N0p0YzzJ29Y:eDqIpse4hU4:F7zBnMyn0Lo"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=N0p0YzzJ29Y:eDqIpse4hU4:F7zBnMyn0Lo" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=N0p0YzzJ29Y:eDqIpse4hU4:qj6IDK7rITs"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=qj6IDK7rITs" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=N0p0YzzJ29Y:eDqIpse4hU4:yIl2AUoC8zA"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=yIl2AUoC8zA" border="0"></img></a>
+</div><img src="http://feeds.feedburner.com/~r/arstechnica/index/~4/N0p0YzzJ29Y" height="1" width="1"/>]]></content:encoded>
+      <wfw:commentRss>http://arstechnica.com/gaming/2014/06/amid-controversy-ubisoft-denies-downgrading-graphics-on-pc-watch-dogs/feed/</wfw:commentRss>
+      <slash:comments>0</slash:comments>
+      <feedburner:origLink>http://arstechnica.com/gaming/2014/06/amid-controversy-ubisoft-denies-downgrading-graphics-on-pc-watch-dogs/</feedburner:origLink>
+    </item>
+    <item>
+      <title>Reports: “iWatch” aims for October launch, has 2.5” curved touchscreen</title>
+      <link>http://feeds.arstechnica.com/~r/arstechnica/index/~3/cXk9xBTZOp0/</link>
+      <comments>http://arstechnica.com/apple/2014/06/multiple-reports-say-iwatch-production-begins-soon-october-launch-likely/#comments</comments>
+      <pubDate>Fri, 20 Jun 2014 17:07:36 +0000</pubDate>
+      <dc:creator><![CDATA[Andrew Cunningham]]></dc:creator>
+      <category><![CDATA[Gear & Gadgets]]></category>
+      <category><![CDATA[Infinite Loop]]></category>
+      <category><![CDATA[apple]]></category>
+      <category><![CDATA[iWatch]]></category>
+      <guid isPermaLink="false">http://arstechnica.com/?p=491331</guid>
+      <description><![CDATA[Device said to include multiple fitness sensors, could come in several sizes.]]></description>
+      <content:encoded><![CDATA[<div id="rss-wrap">
+<div>
+      <img src="http://cdn.arstechnica.net/wp-content/uploads/2013/12/5673732040_cc3f9b8a7e_o-640x640.jpg"><div class="caption" style="font-size:0.8em">
+			<div class="caption-text">A sixth-generation iPod Nano embedded in a watch band.</div>
+	
+			<div class="caption-credit">
+							<a rel="nofollow" href="http://www.flickr.com/photos/sfslim/5673732040/">Aaron Muszalski</a>
+				</div>
+	  </div>
+  </div>
+ <p>Rumors and tips from anonymous sources are beginning to pile up as the suspected launch date for Apple's long-rumored wearable draws nearer. This week we've heard two separate reports sourced from people "familiar with the matter" who claim to know when the iWatch will launch, and a little more about what it will do and look like.</p>
+<p>Reuters <a href="http://www.reuters.com/article/2014/06/19/us-apple-smartwatch-idUSKBN0EU2AU20140619">said yesterday</a> that the fabled "iWatch" will have a curved 2.5-inch touchscreen that is "slightly rectangular" and that it will feature wireless charging technology rather than using a Lightning or USB port. The <em>Wall Street Journal</em> <a href="http://online.wsj.com/articles/apple-plans-multiple-designs-for-smartwatch-1403245062?mod=WSJ_hp_LEFTTopStories">reported today</a> that it would also have "more than 10 sensors" to track health and fitness data, which it would feed into the <a href="http://arstechnica.com/apple/2014/06/apple-announces-ios-8-at-wwdc/">Health app</a> that will ship with iOS 8 in the fall. The <em>Journal</em>'s<em> </em>report also says that the device "will likely come in multiple screen sizes," though the anonymous source wasn't more specific than that.</p>
+<p>Both reports claim that Taiwanese manufacturer Quanta Computer will be building most of the watches for Apple, though they can't agree on exactly when production will begin. The <em>Journal</em> claims that "trial runs" will begin next month and that the design had not yet been finalized, while Reuters says "mass production" will begin in July. Both agree that Apple's expected launch window is somewhere in October, as <a href="http://arstechnica.com/apple/2014/06/recode-apple-will-introduce-new-health-focused-wearable-in-october/">reported by Re/code earlier this month</a>. The <em>Journal</em> says that Apple is planning to ship between 10 and 15 million units before the end of 2014, and Reuters' source claims this will increase to 50 million by the end of the first year of availability.</p>
+</div><p><a href="http://arstechnica.com/apple/2014/06/multiple-reports-say-iwatch-production-begins-soon-october-launch-likely/#p3">Read 1 remaining paragraphs</a> | <a href="http://arstechnica.com/apple/2014/06/multiple-reports-say-iwatch-production-begins-soon-october-launch-likely/?comments=1">Comments</a></p><div class="feedflare">
+<a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=cXk9xBTZOp0:soM2YzaAHew:V_sGLiPBpWU"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=cXk9xBTZOp0:soM2YzaAHew:V_sGLiPBpWU" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=cXk9xBTZOp0:soM2YzaAHew:F7zBnMyn0Lo"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=cXk9xBTZOp0:soM2YzaAHew:F7zBnMyn0Lo" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=cXk9xBTZOp0:soM2YzaAHew:qj6IDK7rITs"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=qj6IDK7rITs" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=cXk9xBTZOp0:soM2YzaAHew:yIl2AUoC8zA"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=yIl2AUoC8zA" border="0"></img></a>
+</div><img src="http://feeds.feedburner.com/~r/arstechnica/index/~4/cXk9xBTZOp0" height="1" width="1"/>]]></content:encoded>
+      <wfw:commentRss>http://arstechnica.com/apple/2014/06/multiple-reports-say-iwatch-production-begins-soon-october-launch-likely/feed/</wfw:commentRss>
+      <slash:comments>0</slash:comments>
+      <feedburner:origLink>http://arstechnica.com/apple/2014/06/multiple-reports-say-iwatch-production-begins-soon-october-launch-likely/</feedburner:origLink>
+    </item>
+    <item>
+      <title>With a $649 price tag, Amazon’s new phone is playing with fire</title>
+      <link>http://feeds.arstechnica.com/~r/arstechnica/index/~3/Wd52tg7n0EE/</link>
+      <comments>http://arstechnica.com/gadgets/2014/06/with-a-200-price-tag-amazons-new-phone-is-playing-with-fire/#comments</comments>
+      <pubDate>Fri, 20 Jun 2014 16:58:24 +0000</pubDate>
+      <dc:creator><![CDATA[Ron Amadeo]]></dc:creator>
+      <category><![CDATA[Gear & Gadgets]]></category>
+      <category><![CDATA[Amazon]]></category>
+      <category><![CDATA[fire phone]]></category>
+      <guid isPermaLink="false">http://arstechnica.com/?p=490367</guid>
+      <description><![CDATA[When it came to the success of past Amazon devices, price was everything.]]></description>
+      <content:encoded><![CDATA[<div id="rss-wrap">
+<div>
+      <img src="http://cdn.arstechnica.net/wp-content/uploads/2014/06/IMG_2647-640x426.jpg"><div class="caption" style="font-size:0.8em">
+	
+			<div class="caption-credit">
+							Sam Machkovech				</div>
+	  </div>
+  </div>
+ <p>Amazon's original Kindle Fire went a long way toward popularizing the 7-inch tablet form factor—and perhaps small tablets in general. The reason was simple. At a time when companies like Samsung were selling 7-inch tablets for $600, Amazon captured a big chunk of the market with its $200 device. The Kindle Fire sold at or close to cost; the company instead profited from the promotion of Amazon services.</p>
+<p>Kindle Fire devices weren't perfect. They ran Android but didn't have access to Google Play, which meant most of the best Android products (like Google Maps, Gmail, YouTube, and Google Now) were off limits to the Kindle Fire. Third-party apps were a problem, too. Fire devices ran outdated versions of Android and didn't have access to Google's APIs, namely Play Games, the Google Maps API, Google's Location APIs, and in-app purchasing. Many third-party apps simply didn't work on Amazon's platform. And with no Play Store, Fire users relied on developers putting in the effort to work around Google's APIs and upload their apps to a second, smaller store, the Amazon App Store. In the end, users often got one or two versions of the app, but updates didn't always follow. Finding the apps you want became an oft-cited problem among Fire owners.</p>
+<p> None of this really mattered, though. Despite these frustrations, at one point (according to <a href="http://www.comscoredatamine.com/2012/04/tablet-competition-heats-up-kindle-fire-captures-more-than-half-of-u-s-android-tablet-market/">ComScore</a>) Amazon was selling half of all Android tablets. Kindle Fire devices were comparatively dirt cheap, and when you save someone a few hundred dollars, it's easy to overlook a few shortcomings. Amazon discovered a winning formula of simpler but still well-made devices that aimed for a super-low price point. And the company was in the perfect position to try such a tactic, as profit margins could be thin because Amazon would make up any losses through its ecosystem.</p>
+</div><p><a href="http://arstechnica.com/gadgets/2014/06/with-a-200-price-tag-amazons-new-phone-is-playing-with-fire/#p3">Read 6 remaining paragraphs</a> | <a href="http://arstechnica.com/gadgets/2014/06/with-a-200-price-tag-amazons-new-phone-is-playing-with-fire/?comments=1">Comments</a></p><div class="feedflare">
+<a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=Wd52tg7n0EE:64JtsXmTdOA:V_sGLiPBpWU"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=Wd52tg7n0EE:64JtsXmTdOA:V_sGLiPBpWU" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=Wd52tg7n0EE:64JtsXmTdOA:F7zBnMyn0Lo"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=Wd52tg7n0EE:64JtsXmTdOA:F7zBnMyn0Lo" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=Wd52tg7n0EE:64JtsXmTdOA:qj6IDK7rITs"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=qj6IDK7rITs" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=Wd52tg7n0EE:64JtsXmTdOA:yIl2AUoC8zA"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=yIl2AUoC8zA" border="0"></img></a>
+</div><img src="http://feeds.feedburner.com/~r/arstechnica/index/~4/Wd52tg7n0EE" height="1" width="1"/>]]></content:encoded>
+      <wfw:commentRss>http://arstechnica.com/gadgets/2014/06/with-a-200-price-tag-amazons-new-phone-is-playing-with-fire/feed/</wfw:commentRss>
+      <slash:comments>0</slash:comments>
+      <feedburner:origLink>http://arstechnica.com/gadgets/2014/06/with-a-200-price-tag-amazons-new-phone-is-playing-with-fire/</feedburner:origLink>
+    </item>
+    <item>
+      <title>Legal experts: Cops lying about cell tracking “is a stupid thing to do”</title>
+      <link>http://feeds.arstechnica.com/~r/arstechnica/index/~3/vAY0PgEAjAE/</link>
+      <comments>http://arstechnica.com/tech-policy/2014/06/legal-experts-cops-lying-about-cell-tracking-is-a-stupid-thing-to-do/#comments</comments>
+      <pubDate>Fri, 20 Jun 2014 16:38:08 +0000</pubDate>
+      <dc:creator><![CDATA[Cyrus Farivar]]></dc:creator>
+      <category><![CDATA[Law & Disorder]]></category>
+      <category><![CDATA[ACLU]]></category>
+      <category><![CDATA[Florida]]></category>
+      <category><![CDATA[stingray]]></category>
+      <guid isPermaLink="false">http://arstechnica.com/?p=491357</guid>
+      <description><![CDATA[Deception in legal filings could lead to bad consequences for police, attorneys.]]></description>
+      <content:encoded><![CDATA[<div id="rss-wrap">
+<div>
+      <img src="http://cdn.arstechnica.net/wp-content/uploads/2014/06/celltower1-640x426.jpg"><div class="caption" style="font-size:0.8em">
+	
+			<div class="caption-credit">
+							<a rel="nofollow" href="https://www.flickr.com/photos/stirwise/3307624362/sizes/l">Kerry Lannert</a>
+				</div>
+	  </div>
+  </div>
+ <p>Legal experts—including a former US magistrate judge—are dismayed and appalled at the stingray-related e-mails published late Thursday evening by the American Civil Liberties Union.</p>
+<p>As we reported last night, the <a href="http://arstechnica.com/tech-policy/2014/06/cops-hid-use-of-phone-tracking-tech-in-court-documents-at-feds-request/">2009 e-mail exchange</a> between police departments in Sarasota, Florida and North Port, Florida, shows that local law enforcement had concealed the use of cell phone-tracking devices, known as "stingrays," in court documents. This deception could lead to punishment for law enforcement officers or perhaps even their lawyers, the legal scholars said.</p>
+<p>Specifically, one e-mail from Sarasota police to North Port police states, “In reports or depositions we simply refer to the assistance as ‘received information from a confidential source regarding the location of the suspect.’ To date this has not been challenged…”</p>
+</div><p><a href="http://arstechnica.com/tech-policy/2014/06/legal-experts-cops-lying-about-cell-tracking-is-a-stupid-thing-to-do/#p3">Read 13 remaining paragraphs</a> | <a href="http://arstechnica.com/tech-policy/2014/06/legal-experts-cops-lying-about-cell-tracking-is-a-stupid-thing-to-do/?comments=1">Comments</a></p><div class="feedflare">
+<a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=vAY0PgEAjAE:VUJ7i8CMShw:V_sGLiPBpWU"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=vAY0PgEAjAE:VUJ7i8CMShw:V_sGLiPBpWU" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=vAY0PgEAjAE:VUJ7i8CMShw:F7zBnMyn0Lo"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=vAY0PgEAjAE:VUJ7i8CMShw:F7zBnMyn0Lo" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=vAY0PgEAjAE:VUJ7i8CMShw:qj6IDK7rITs"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=qj6IDK7rITs" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=vAY0PgEAjAE:VUJ7i8CMShw:yIl2AUoC8zA"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=yIl2AUoC8zA" border="0"></img></a>
+</div><img src="http://feeds.feedburner.com/~r/arstechnica/index/~4/vAY0PgEAjAE" height="1" width="1"/>]]></content:encoded>
+      <wfw:commentRss>http://arstechnica.com/tech-policy/2014/06/legal-experts-cops-lying-about-cell-tracking-is-a-stupid-thing-to-do/feed/</wfw:commentRss>
+      <slash:comments>0</slash:comments>
+      <feedburner:origLink>http://arstechnica.com/tech-policy/2014/06/legal-experts-cops-lying-about-cell-tracking-is-a-stupid-thing-to-do/</feedburner:origLink>
+    </item>
+    <item>
+      <title>German publishers want an 11 percent cut of Google News</title>
+      <link>http://feeds.arstechnica.com/~r/arstechnica/index/~3/lafRl_wVThk/</link>
+      <comments>http://arstechnica.com/tech-policy/2014/06/german-publishers-want-an-11-percent-cut-of-google-news/#comments</comments>
+      <pubDate>Fri, 20 Jun 2014 16:12:52 +0000</pubDate>
+      <dc:creator><![CDATA[Joe Mullin]]></dc:creator>
+      <category><![CDATA[Law & Disorder]]></category>
+      <guid isPermaLink="false">http://arstechnica.com/?p=491339</guid>
+      <description><![CDATA[Street View, copyright, a "right to be forgotten"—Europe and Google have issues.]]></description>
+      <content:encoded><![CDATA[<div id="rss-wrap"> <p>Several of Germany's largest newspaper and magazine publishers have instituted legal proceedings against Google, Microsoft, and Yahoo. They're seeking an order that would make the search engines pay them an 11 percent portion of their "gross sales, including foreign sales” that come “directly and indirectly from making excerpts from online newspapers and magazines public." That's according to new media pundit Jeff Jarvis, who published a <a href="http://buzzmachine.com/2014/06/20/german-war-link/">blog post</a> this morning calling the demands "as absurd as they are cynical and dangerous" and part of a German "war on the link."</p>
+<p>The move appears to be an attempt to achieve in courts what the publishers were not able to get last year through the <a href="http://arstechnica.com/tech-policy/2013/03/germany-wants-google-to-pay-for-news-citations-passes-re-printing-bill/">German legislative process</a>.</p>
+<p>The German companies that instigated the arbitration against Google include Axel Springer, Burda, WAZ, the Müncher Merkur. Other major publishers have chosen not to participate, including Spiegel Online, <a href="http://www.handelsblatt.com/">Handelsblatt</a>, Sueddeutsche.de, Stern.de and Focus.</p>
+</div><p><a href="http://arstechnica.com/tech-policy/2014/06/german-publishers-want-an-11-percent-cut-of-google-news/#p3">Read 3 remaining paragraphs</a> | <a href="http://arstechnica.com/tech-policy/2014/06/german-publishers-want-an-11-percent-cut-of-google-news/?comments=1">Comments</a></p><div class="feedflare">
+<a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=lafRl_wVThk:-3ZRgedCPBA:V_sGLiPBpWU"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=lafRl_wVThk:-3ZRgedCPBA:V_sGLiPBpWU" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=lafRl_wVThk:-3ZRgedCPBA:F7zBnMyn0Lo"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=lafRl_wVThk:-3ZRgedCPBA:F7zBnMyn0Lo" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=lafRl_wVThk:-3ZRgedCPBA:qj6IDK7rITs"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=qj6IDK7rITs" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=lafRl_wVThk:-3ZRgedCPBA:yIl2AUoC8zA"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=yIl2AUoC8zA" border="0"></img></a>
+</div><img src="http://feeds.feedburner.com/~r/arstechnica/index/~4/lafRl_wVThk" height="1" width="1"/>]]></content:encoded>
+      <wfw:commentRss>http://arstechnica.com/tech-policy/2014/06/german-publishers-want-an-11-percent-cut-of-google-news/feed/</wfw:commentRss>
+      <slash:comments>0</slash:comments>
+      <feedburner:origLink>http://arstechnica.com/tech-policy/2014/06/german-publishers-want-an-11-percent-cut-of-google-news/</feedburner:origLink>
+    </item>
+    <item>
+      <title>Microsoft accidentally confirms existence of the mysterious Surface Mini</title>
+      <link>http://feeds.arstechnica.com/~r/arstechnica/index/~3/Uu32t6sEyTw/</link>
+      <comments>http://arstechnica.com/gadgets/2014/06/microsoft-accidentally-confirms-existence-of-the-mysterious-surface-mini/#comments</comments>
+      <pubDate>Fri, 20 Jun 2014 16:02:03 +0000</pubDate>
+      <dc:creator><![CDATA[Peter Bright]]></dc:creator>
+      <category><![CDATA[Gear & Gadgets]]></category>
+      <category><![CDATA[Technology Lab]]></category>
+      <category><![CDATA[microsoft]]></category>
+      <category><![CDATA[surface mini]]></category>
+      <category><![CDATA[Surface Pro 3]]></category>
+      <category><![CDATA[tablets]]></category>
+      <guid isPermaLink="false">http://arstechnica.com/?p=491353</guid>
+      <description><![CDATA[User Guide suffers search and replace errors.]]></description>
+      <content:encoded><![CDATA[<div id="rss-wrap">
+<div>
+      <img src="http://cdn.arstechnica.net/wp-content/uploads/2014/06/whoops-surface-mini1-640x186.png">
+</div>
+ <p>Surface Pro 3, <a href="http://arstechnica.com/gadgets/2014/06/surface-pro-3-available-today-dock-and-processor-options-in-august/">available to buy today</a>, wasn't the hardware we initially expected Microsoft to announce. What we expected was the <a href="http://arstechnica.com/gadgets/2014/05/the-mysterious-disappearance-of-the-8-inch-surface-mini/">Surface Mini</a>, an 8-inch, pen-equipped ARM device that was mysteriously cancelled or delayed at the last minute.</p>
+<p>Microsoft appears to have accidentally confirmed that the Surface Mini was indeed planned and all but ready for release with the release of its User Guide for the Surface Pro 3. <a href="http://download.microsoft.com/download/F/0/D/F0D07CB4-EE57-472E-AB46-CE0D9B3463D7/Surface-Pro-3-User-Guide-English.pdf">The PDF</a> is meant to introduce users to all the features that Surface Pro 3 has to offer... but in a handful of places it says not "Surface Pro 3" but "Surface Mini." Search and replace apparently missed a few. The oversight was first spotted by <a href="https://twitter.com/thurrott/status/479980496877670400">Paul Thurrott</a>.</p>
+<p>The references in the document confirm that not only does the Surface Mini exist, but also that it will include pen support, as expected.</p>
+</div><p><a href="http://arstechnica.com/gadgets/2014/06/microsoft-accidentally-confirms-existence-of-the-mysterious-surface-mini/">Read on Ars Technica</a> | <a href="http://arstechnica.com/gadgets/2014/06/microsoft-accidentally-confirms-existence-of-the-mysterious-surface-mini/?comments=1">Comments</a></p><div class="feedflare">
+<a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=Uu32t6sEyTw:AD1yBBCvAxU:V_sGLiPBpWU"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=Uu32t6sEyTw:AD1yBBCvAxU:V_sGLiPBpWU" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=Uu32t6sEyTw:AD1yBBCvAxU:F7zBnMyn0Lo"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=Uu32t6sEyTw:AD1yBBCvAxU:F7zBnMyn0Lo" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=Uu32t6sEyTw:AD1yBBCvAxU:qj6IDK7rITs"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=qj6IDK7rITs" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=Uu32t6sEyTw:AD1yBBCvAxU:yIl2AUoC8zA"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=yIl2AUoC8zA" border="0"></img></a>
+</div><img src="http://feeds.feedburner.com/~r/arstechnica/index/~4/Uu32t6sEyTw" height="1" width="1"/>]]></content:encoded>
+      <wfw:commentRss>http://arstechnica.com/gadgets/2014/06/microsoft-accidentally-confirms-existence-of-the-mysterious-surface-mini/feed/</wfw:commentRss>
+      <slash:comments>0</slash:comments>
+      <feedburner:origLink>http://arstechnica.com/gadgets/2014/06/microsoft-accidentally-confirms-existence-of-the-mysterious-surface-mini/</feedburner:origLink>
+    </item>
+    <item>
+      <title>Surface Pro 3 available today, dock and processor options in August</title>
+      <link>http://feeds.arstechnica.com/~r/arstechnica/index/~3/RmoyB1TgfBc/</link>
+      <comments>http://arstechnica.com/gadgets/2014/06/surface-pro-3-available-today-dock-and-processor-options-in-august/#comments</comments>
+      <pubDate>Fri, 20 Jun 2014 15:22:14 +0000</pubDate>
+      <dc:creator><![CDATA[Peter Bright]]></dc:creator>
+      <category><![CDATA[Gear & Gadgets]]></category>
+      <category><![CDATA[Technology Lab]]></category>
+      <category><![CDATA[microsoft]]></category>
+      <category><![CDATA[Surface Pro 3]]></category>
+      <guid isPermaLink="false">http://arstechnica.com/?p=491335</guid>
+      <description><![CDATA[US and Canada retail availability at both Microsoft and third-party stores.]]></description>
+      <content:encoded><![CDATA[<div id="rss-wrap"> <p>After a couple of weeks of preorders, Microsoft's <a href="http://arstechnica.com/gadgets/2014/05/surface-pro-3-review-is-the-third-time-the-charm/">Surface Pro 3</a> goes on sale today. The company is selling the tablet PC online, at its own Microsoft Stores, and through a number of third-party outlets including Best Buy, Staples, and Tiger Direct.</p>
+<p>When we looked at the Surface Pro 3 ourselves, we liked the build quality, beautiful screen, and engineering that had gone into making a full PC that's thinner than a first generation iPad. We're not sure we'd agree with Microsoft's calling it "the tablet that can replace your laptop," but for desk-bound workers looking for a highly portable PC, it could very well fit the bill.</p>
+<p>At the moment, the shipping Surface Pro 3s include the Core i5 processor. We now have dates for when the i3 and i7 processor options will become available: August 1st, in both the US and Canada.</p>
+</div><p><a href="http://arstechnica.com/gadgets/2014/06/surface-pro-3-available-today-dock-and-processor-options-in-august/#p3">Read 2 remaining paragraphs</a> | <a href="http://arstechnica.com/gadgets/2014/06/surface-pro-3-available-today-dock-and-processor-options-in-august/?comments=1">Comments</a></p><div class="feedflare">
+<a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=RmoyB1TgfBc:Y1NIx8-p9GY:V_sGLiPBpWU"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=RmoyB1TgfBc:Y1NIx8-p9GY:V_sGLiPBpWU" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=RmoyB1TgfBc:Y1NIx8-p9GY:F7zBnMyn0Lo"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=RmoyB1TgfBc:Y1NIx8-p9GY:F7zBnMyn0Lo" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=RmoyB1TgfBc:Y1NIx8-p9GY:qj6IDK7rITs"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=qj6IDK7rITs" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=RmoyB1TgfBc:Y1NIx8-p9GY:yIl2AUoC8zA"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=yIl2AUoC8zA" border="0"></img></a>
+</div><img src="http://feeds.feedburner.com/~r/arstechnica/index/~4/RmoyB1TgfBc" height="1" width="1"/>]]></content:encoded>
+      <wfw:commentRss>http://arstechnica.com/gadgets/2014/06/surface-pro-3-available-today-dock-and-processor-options-in-august/feed/</wfw:commentRss>
+      <slash:comments>0</slash:comments>
+      <feedburner:origLink>http://arstechnica.com/gadgets/2014/06/surface-pro-3-available-today-dock-and-processor-options-in-august/</feedburner:origLink>
+    </item>
+    <item>
+      <title>House votes 293-123 to cut funding for NSA spying on Americans</title>
+      <link>http://feeds.arstechnica.com/~r/arstechnica/index/~3/Z8D6b3cUeI0/</link>
+      <comments>http://arstechnica.com/tech-policy/2014/06/house-votes-293-123-to-cut-funding-for-nsa-spying-on-americans-building-backdoors/#comments</comments>
+      <pubDate>Fri, 20 Jun 2014 06:25:28 +0000</pubDate>
+      <dc:creator><![CDATA[Megan Geuss]]></dc:creator>
+      <category><![CDATA[Law & Disorder]]></category>
+      <category><![CDATA[House of Representatives]]></category>
+      <category><![CDATA[law]]></category>
+      <category><![CDATA[NSA]]></category>
+      <category><![CDATA[spying]]></category>
+      <guid isPermaLink="false">http://arstechnica.com/?p=491289</guid>
+      <description><![CDATA[The amendment would also stop "backdoors" from being built into tech products. ]]></description>
+      <content:encoded><![CDATA[<div id="rss-wrap"> <p>In a surprising vote late Thursday night, a strong majority of the House of Representatives <a href="http://clerk.house.gov/evs/2014/roll327.xml">voted</a> to cut funding to NSA operations that involve warrantless spying on Americans or involve putting hardware or software "backdoors" into various products. <a href="http://repcloakroom.house.gov/uploadedfiles/massie.pdf">The amendment</a> to a defense appropriations bill, offered by Reps. James Sensenbrenner (R-WI), Zoe Lofgren (D-CA), and Thomas Massie (R-KY), passed 293 to 123.</p>
+<p>The amendment specifies that, with a few exceptions, “none of the funds made available by this Act may be used by an officer or employee of the United States to query a collection of foreign intelligence information acquired under section 702 of the Foreign Intelligence Surveillance Act of 1978 (50 U.S.C. 1881a) using a United States person as an identifier.”</p>
+<p>In addition, “none of the funds made available by this Act may be used by the National Security Agency or the Central Intelligence Agency to mandate or request that a person...alter its product or service to permit the electronic surveillance...of any user of said product or service for said agencies.” Since Edward Snowden began leaking documents about the NSA's tactics in June of last year, security experts <a href="http://arstechnica.com/security/2013/09/new-york-times-provides-new-details-about-nsa-backdoor-in-crypto-spec/">have worried</a> about reports of <a href="http://arstechnica.com/security/2013/09/stop-using-nsa-influence-code-in-our-product-rsa-tells-customers/">intentional weaknesses</a> left in <a href="http://arstechnica.com/tech-policy/2013/09/long-shot-bill-forbidding-nsa-backdoors-in-encryption-has-some-renewed-attention/">widely used cryptography specifications</a>.</p>
+</div><p><a href="http://arstechnica.com/tech-policy/2014/06/house-votes-293-123-to-cut-funding-for-nsa-spying-on-americans-building-backdoors/#p3">Read 2 remaining paragraphs</a> | <a href="http://arstechnica.com/tech-policy/2014/06/house-votes-293-123-to-cut-funding-for-nsa-spying-on-americans-building-backdoors/?comments=1">Comments</a></p><div class="feedflare">
+<a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=Z8D6b3cUeI0:ToKnYsveA4w:V_sGLiPBpWU"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=Z8D6b3cUeI0:ToKnYsveA4w:V_sGLiPBpWU" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=Z8D6b3cUeI0:ToKnYsveA4w:F7zBnMyn0Lo"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=Z8D6b3cUeI0:ToKnYsveA4w:F7zBnMyn0Lo" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=Z8D6b3cUeI0:ToKnYsveA4w:qj6IDK7rITs"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=qj6IDK7rITs" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=Z8D6b3cUeI0:ToKnYsveA4w:yIl2AUoC8zA"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=yIl2AUoC8zA" border="0"></img></a>
+</div><img src="http://feeds.feedburner.com/~r/arstechnica/index/~4/Z8D6b3cUeI0" height="1" width="1"/>]]></content:encoded>
+      <wfw:commentRss>http://arstechnica.com/tech-policy/2014/06/house-votes-293-123-to-cut-funding-for-nsa-spying-on-americans-building-backdoors/feed/</wfw:commentRss>
+      <slash:comments>0</slash:comments>
+      <feedburner:origLink>http://arstechnica.com/tech-policy/2014/06/house-votes-293-123-to-cut-funding-for-nsa-spying-on-americans-building-backdoors/</feedburner:origLink>
+    </item>
+    <item>
+      <title>Cops hid use of phone tracking tech in court documents at feds’ request</title>
+      <link>http://feeds.arstechnica.com/~r/arstechnica/index/~3/OHKetkpXi4A/</link>
+      <comments>http://arstechnica.com/tech-policy/2014/06/cops-hid-use-of-phone-tracking-tech-in-court-documents-at-feds-request/#comments</comments>
+      <pubDate>Fri, 20 Jun 2014 04:01:52 +0000</pubDate>
+      <dc:creator><![CDATA[Megan Geuss]]></dc:creator>
+      <category><![CDATA[Law & Disorder]]></category>
+      <category><![CDATA[ACLU]]></category>
+      <category><![CDATA[stingray]]></category>
+      <guid isPermaLink="false">http://arstechnica.com/?p=491259</guid>
+      <description><![CDATA[ACLU uncovers e-mails regarding Stingray devices borrowed from US Marshals Service.]]></description>
+      <content:encoded><![CDATA[<div id="rss-wrap">
+<div>
+      <img src="http://cdn.arstechnica.net/wp-content/uploads/2014/06/aclu.stingray-640x490.jpg"><div class="caption" style="font-size:0.8em">
+			<div class="caption-text">The 15 states in which the ACLU knows that police use cell phone tracking devices.</div>
+	
+			<div class="caption-credit">
+							<a rel="nofollow" href="https://www.aclu.org/maps/stingray-tracking-devices-whos-got-them">ACLU</a>
+				</div>
+	  </div>
+  </div>
+ <p>On Thursday evening, the <a href="https://www.aclu.org/blog/national-security-technology-and-liberty/internal-police-emails-show-efforts-hide-use-cell">ACLU published</a> a 2009 <a href="//cdn.arstechnica.net/wp-content/uploads/2014/06/ACLU-Florida-Stingray-Police-Emails.pdf">e-mail exchange</a> (PDF) between police departments in Sarasota, Florida, and North Port, Florida, indicating that local law enforcement had concealed the use of cell phone-tracking Stingray devices in court documents. Stingray is a trademark, but it has come to generally mean <a href="http://arstechnica.com/tech-policy/2013/09/meet-the-machines-that-steal-your-phones-data/">devices that can be used to track phones</a> or even intercept calls and text messages.</p>
+<p>Although the Sarasota Police Department and the North Point Police Department did not own Stingray devices, the two departments had borrowed the cell phone trackers from the US Marshals Service (USMS), which requested that they hide the use of the Stingrays from judges and defendants. The issue was discussed in the e-mails when the Sarasota Police Department realized that a North Point detective had been too explicit in a probable cause affidavit (PCA), specifically detailing “the investigative means used to locate the suspect.” The Sarasota Police asked that the North Point Police seal the old affidavit and submit a new, more vague one.</p>
+<p>The e-mail continues:</p>
+</div><p><a href="http://arstechnica.com/tech-policy/2014/06/cops-hid-use-of-phone-tracking-tech-in-court-documents-at-feds-request/#p3">Read 4 remaining paragraphs</a> | <a href="http://arstechnica.com/tech-policy/2014/06/cops-hid-use-of-phone-tracking-tech-in-court-documents-at-feds-request/?comments=1">Comments</a></p><div class="feedflare">
+<a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=OHKetkpXi4A:5kGRWDyI71Y:V_sGLiPBpWU"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=OHKetkpXi4A:5kGRWDyI71Y:V_sGLiPBpWU" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=OHKetkpXi4A:5kGRWDyI71Y:F7zBnMyn0Lo"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=OHKetkpXi4A:5kGRWDyI71Y:F7zBnMyn0Lo" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=OHKetkpXi4A:5kGRWDyI71Y:qj6IDK7rITs"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=qj6IDK7rITs" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=OHKetkpXi4A:5kGRWDyI71Y:yIl2AUoC8zA"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=yIl2AUoC8zA" border="0"></img></a>
+</div><img src="http://feeds.feedburner.com/~r/arstechnica/index/~4/OHKetkpXi4A" height="1" width="1"/>]]></content:encoded>
+      <wfw:commentRss>http://arstechnica.com/tech-policy/2014/06/cops-hid-use-of-phone-tracking-tech-in-court-documents-at-feds-request/feed/</wfw:commentRss>
+      <slash:comments>0</slash:comments>
+      <feedburner:origLink>http://arstechnica.com/tech-policy/2014/06/cops-hid-use-of-phone-tracking-tech-in-court-documents-at-feds-request/</feedburner:origLink>
+    </item>
+    <item>
+      <title>Should tech workers settle “no-poach” case for $324M? Judge has real doubts</title>
+      <link>http://feeds.arstechnica.com/~r/arstechnica/index/~3/cjvvw2A_KME/</link>
+      <comments>http://arstechnica.com/tech-policy/2014/06/should-tech-workers-settle-no-poach-case-for-324m-judge-has-real-doubts/#comments</comments>
+      <pubDate>Fri, 20 Jun 2014 03:12:38 +0000</pubDate>
+      <dc:creator><![CDATA[Joe Mullin]]></dc:creator>
+      <category><![CDATA[Infinite Loop]]></category>
+      <category><![CDATA[Law & Disorder]]></category>
+      <guid isPermaLink="false">http://arstechnica.com/?p=491223</guid>
+      <description><![CDATA[One plaintiff says the deal isn't fair to workers, and the judge is listening.]]></description>
+      <content:encoded><![CDATA[<div id="rss-wrap"> <p>A group of big tech companies, including Apple, Google, Adobe, and Intel, recently settled a lawsuit over their "no poach" agreement for $324 million. The CEOs of those companies had agreed not to do "cold call" recruiting of each others' engineers until they were busted by the Department of Justice, which saw the deal as an antitrust violation.</p>
+<p>The government action was followed up by a class-action lawsuit from the affected workers, who claimed the deal suppressed their wages. That lawsuit <a href="http://arstechnica.com/tech-policy/2014/04/apple-google-will-pay-64000-engineers-to-avoid-trial-on-no-poach-deal/">settled in April</a>, just before a trial that could have been embarrassing for the tech companies.</p>
+<p>One of the lead plaintiffs, a former Adobe employee named Michael Devine, has <a href="http://arstechnica.com/tech-policy/2014/05/programmer-at-heart-of-tech-workers-class-action-case-wants-to-block-324m-deal/">vocally dissented</a> from the deal. Devine claims the deal is convenient for the lawyers, but an injustice to the workers, who won't get even one percent of their salaries for the period in question.</p>
+</div><p><a href="http://arstechnica.com/tech-policy/2014/06/should-tech-workers-settle-no-poach-case-for-324m-judge-has-real-doubts/#p3">Read 9 remaining paragraphs</a> | <a href="http://arstechnica.com/tech-policy/2014/06/should-tech-workers-settle-no-poach-case-for-324m-judge-has-real-doubts/?comments=1">Comments</a></p><div class="feedflare">
+<a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=cjvvw2A_KME:TmVadSSHklY:V_sGLiPBpWU"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=cjvvw2A_KME:TmVadSSHklY:V_sGLiPBpWU" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=cjvvw2A_KME:TmVadSSHklY:F7zBnMyn0Lo"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=cjvvw2A_KME:TmVadSSHklY:F7zBnMyn0Lo" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=cjvvw2A_KME:TmVadSSHklY:qj6IDK7rITs"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=qj6IDK7rITs" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=cjvvw2A_KME:TmVadSSHklY:yIl2AUoC8zA"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=yIl2AUoC8zA" border="0"></img></a>
+</div><img src="http://feeds.feedburner.com/~r/arstechnica/index/~4/cjvvw2A_KME" height="1" width="1"/>]]></content:encoded>
+      <wfw:commentRss>http://arstechnica.com/tech-policy/2014/06/should-tech-workers-settle-no-poach-case-for-324m-judge-has-real-doubts/feed/</wfw:commentRss>
+      <slash:comments>0</slash:comments>
+      <feedburner:origLink>http://arstechnica.com/tech-policy/2014/06/should-tech-workers-settle-no-poach-case-for-324m-judge-has-real-doubts/</feedburner:origLink>
+    </item>
+    <item>
+      <title>A few weeks in deep space with the Elite: Dangerous premium beta</title>
+      <link>http://feeds.arstechnica.com/~r/arstechnica/index/~3/YiPJb6Bxwdw/</link>
+      <comments>http://arstechnica.com/gaming/2014/06/a-few-weeks-in-deep-space-with-the-elite-dangerous-premium-beta/#comments</comments>
+      <pubDate>Fri, 20 Jun 2014 01:00:45 +0000</pubDate>
+      <dc:creator><![CDATA[Lee Hutchinson]]></dc:creator>
+      <category><![CDATA[Features]]></category>
+      <category><![CDATA[Opposable Thumbs]]></category>
+      <category><![CDATA[david braben]]></category>
+      <category><![CDATA[Elite]]></category>
+      <category><![CDATA[elite dangerous]]></category>
+      <category><![CDATA[Frontier Developments]]></category>
+      <category><![CDATA[space]]></category>
+      <category><![CDATA[space combat simulator]]></category>
+      <category><![CDATA[space flight simulator]]></category>
+      <guid isPermaLink="false">http://arstechnica.com/?p=476015</guid>
+      <description><![CDATA[We fought, we traded, we braved witch space—and we’re excited about what’s to come.]]></description>
+      <content:encoded><![CDATA[<div id="rss-wrap">
+<div>
+      <img src="http://cdn.arstechnica.net/wp-content/uploads/2014/06/Screenshot_0008-640x360.jpg"><div class="caption" style="font-size:0.8em">
+			<div class="caption-text">Approaching Freeport, the lone spot of civilization in the anarchy of system LP 98-132.</div>
+	
+	  </div>
+  </div>
+ <p><br>
+We wrote about <a href="http://arstechnica.com/gaming/2014/05/clash-of-the-space-titans-star-citizen-delayed-elite-dangerous-on-track/">the upcoming semi-private alpha and beta releases</a> of both Chris Roberts’ <em>Star Citizen</em> and David Braben’s <em>Elite: Dangerous</em> a couple of weeks ago. <em>Star Citizen’s</em> dogfighting module missed its scheduled release by a few days but became available on <a href="https://robertsspaceindustries.com/comm-link/transmission/13909-Arena-Commander-Launched">June 4</a>, while <em>Elite: Dangerous’</em> premium beta opened up right on time on May 30, flooding what was previously a small alpha test with about 10,000 new players. Though the current version of the game is only a fraction of what <em>Elite: Dangerous</em> hopes to be at release, what’s playable today was more than enough to keep me totally engrossed for days.</p>
+<p>Participants in the <em>E:D</em> premium beta are playing essentially the same game that alpha testers had their hands on since mid-May. There are a number of single-player combat scenarios that players can use to familiarize themselves with the game’s ship controls, and then a multiplayer area consists of five star systems where the "real" part of the premium beta takes place. Players can fly around and between the five systems, trading goods and shooting NPCs—or each other.</p>
+<a href="http://link.brightcove.com/services/player/bcpid2196096102001?bckey=AQ~~,AAAAlDCBGhk~,VcmqiTAuekrwPweJ20LLt7jwm8LxmhCE&amp;bctid=3606294675001">Video: a musical interlude with the <em>Elite: Dangerous</em> premium beta. Soundtrack is "</a><a href="http://freemusicarchive.org/music/Lee_Rosevere/Music_for_Malls/Lee_Rosevere_-_Music_For_Malls_-_06_-_Arrival">Arrival</a>," by Lee Rosevere. (video link)
+<h2>Greetings, Commander Jameson</h2>
+<p>1984’s original <em>Elite</em> saw players taking on the role of the faceless "Commander Jameson" (though the name could be changed in some versions), docked in orbit around the planet Lave with nothing to your name but a new Cobra Mk. III spacecraft and 100 credits. Although the eventual release of <em>Elite: Dangerous</em> will include a variety of starting ships and positions, the current premium beta version of the game takes a page from the original. Players all start out in the same, small one-man Sidewinder fighter, which can carry a tiny amount of cargo. You get 1,000 credits to start trading and a single laser to start blasting.</p>
+</div><p><a href="http://arstechnica.com/gaming/2014/06/a-few-weeks-in-deep-space-with-the-elite-dangerous-premium-beta/#p3">Read 34 remaining paragraphs</a> | <a href="http://arstechnica.com/gaming/2014/06/a-few-weeks-in-deep-space-with-the-elite-dangerous-premium-beta/?comments=1">Comments</a></p><div class="feedflare">
+<a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=YiPJb6Bxwdw:nDpAi1xbMtY:V_sGLiPBpWU"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=YiPJb6Bxwdw:nDpAi1xbMtY:V_sGLiPBpWU" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=YiPJb6Bxwdw:nDpAi1xbMtY:F7zBnMyn0Lo"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=YiPJb6Bxwdw:nDpAi1xbMtY:F7zBnMyn0Lo" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=YiPJb6Bxwdw:nDpAi1xbMtY:qj6IDK7rITs"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=qj6IDK7rITs" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=YiPJb6Bxwdw:nDpAi1xbMtY:yIl2AUoC8zA"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=yIl2AUoC8zA" border="0"></img></a>
+</div><img src="http://feeds.feedburner.com/~r/arstechnica/index/~4/YiPJb6Bxwdw" height="1" width="1"/>]]></content:encoded>
+      <wfw:commentRss>http://arstechnica.com/gaming/2014/06/a-few-weeks-in-deep-space-with-the-elite-dangerous-premium-beta/feed/</wfw:commentRss>
+      <slash:comments>0</slash:comments>
+      <feedburner:origLink>http://arstechnica.com/gaming/2014/06/a-few-weeks-in-deep-space-with-the-elite-dangerous-premium-beta/</feedburner:origLink>
+    </item>
+    <item>
+      <title>At least 32,000 servers broadcast admin passwords in the clear, advisory warns</title>
+      <link>http://feeds.arstechnica.com/~r/arstechnica/index/~3/0OkNTNZK9-s/</link>
+      <comments>http://arstechnica.com/security/2014/06/at-least-32000-servers-broadcast-admin-passwords-in-the-clear-advisory-warns/#comments</comments>
+      <pubDate>Fri, 20 Jun 2014 00:06:53 +0000</pubDate>
+      <dc:creator><![CDATA[Dan Goodin]]></dc:creator>
+      <category><![CDATA[Risk Assessment]]></category>
+      <category><![CDATA[Technology Lab]]></category>
+      <category><![CDATA[bmc]]></category>
+      <category><![CDATA[ipmi]]></category>
+      <category><![CDATA[passwords]]></category>
+      <category><![CDATA[servers]]></category>
+      <guid isPermaLink="false">http://arstechnica.com/?p=491187</guid>
+      <description><![CDATA[Exploiting bug in Supermicro hardware is as easy as connecting to port 49152.]]></description>
+      <content:encoded><![CDATA[<div id="rss-wrap"> <p>An alarming number of servers containing motherboards manufactured by Supermicro continue to expose administrator passwords despite the release of an update that patches the critical vulnerability, an <a href="http://blog.cari.net/carisirt-yet-another-bmc-vulnerability-and-some-added-extras/">advisory published Thursday</a> warned.</p>
+<p>The threat resides in the baseboard management controller (BMC), a motherboard component that allows administrators to monitor the physical status of large fleets of servers, including their temperatures, disk and memory performance, and fan speeds. Unpatched BMCs in Supermicro motherboards contain a binary file that stores remote login passwords in clear text. Vulnerable systems can be detected by performing an Internet scan on port 49152. A recent query on the Shodan search engine indicated there are 31,964 machines still vulnerable, a number that may not include many virtual machines used in shared hosting environments.</p>
+<p>"This means at the point of this writing, there are 31,964 systems that have their passwords available on the open market," wrote Zachary Wikholm, a senior security engineer with the CARInet Security Incident Response Team. "It gets a bit scarier when you review some of the password statistics. Out of those passwords, 3,296 are the default combination. Since I'm not comfortable providing too much password information, I will just say that there exists a subset of this data that either contains or just was 'password.'"</p>
+</div><p><a href="http://arstechnica.com/security/2014/06/at-least-32000-servers-broadcast-admin-passwords-in-the-clear-advisory-warns/#p3">Read 5 remaining paragraphs</a> | <a href="http://arstechnica.com/security/2014/06/at-least-32000-servers-broadcast-admin-passwords-in-the-clear-advisory-warns/?comments=1">Comments</a></p><div class="feedflare">
+<a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=0OkNTNZK9-s:wLTMEXZ_1eE:V_sGLiPBpWU"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=0OkNTNZK9-s:wLTMEXZ_1eE:V_sGLiPBpWU" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=0OkNTNZK9-s:wLTMEXZ_1eE:F7zBnMyn0Lo"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=0OkNTNZK9-s:wLTMEXZ_1eE:F7zBnMyn0Lo" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=0OkNTNZK9-s:wLTMEXZ_1eE:qj6IDK7rITs"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=qj6IDK7rITs" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=0OkNTNZK9-s:wLTMEXZ_1eE:yIl2AUoC8zA"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=yIl2AUoC8zA" border="0"></img></a>
+</div><img src="http://feeds.feedburner.com/~r/arstechnica/index/~4/0OkNTNZK9-s" height="1" width="1"/>]]></content:encoded>
+      <wfw:commentRss>http://arstechnica.com/security/2014/06/at-least-32000-servers-broadcast-admin-passwords-in-the-clear-advisory-warns/feed/</wfw:commentRss>
+      <slash:comments>0</slash:comments>
+      <feedburner:origLink>http://arstechnica.com/security/2014/06/at-least-32000-servers-broadcast-admin-passwords-in-the-clear-advisory-warns/</feedburner:origLink>
+    </item>
+    <item>
+      <title>After 47 years in print, Computerworld finally goes digital-only</title>
+      <link>http://feeds.arstechnica.com/~r/arstechnica/index/~3/Dnhjv9D7m1k/</link>
+      <comments>http://arstechnica.com/business/2014/06/after-47-years-in-print-computerworld-finally-goes-digital-only/#comments</comments>
+      <pubDate>Thu, 19 Jun 2014 22:55:24 +0000</pubDate>
+      <dc:creator><![CDATA[Cyrus Farivar]]></dc:creator>
+      <category><![CDATA[Ministry of Innovation]]></category>
+      <category><![CDATA[computerworld]]></category>
+      <category><![CDATA[scot finnie]]></category>
+      <guid isPermaLink="false">http://arstechnica.com/?p=491153</guid>
+      <description><![CDATA["Trains, after all, were once powered by coal and steam," editor-in-chief notes.]]></description>
+      <content:encoded><![CDATA[<div id="rss-wrap">
+<div>
+      <img src="http://cdn.arstechnica.net/wp-content/uploads/2014/06/472964990_730ddee165_b-640x425.jpg"><div class="caption" style="font-size:0.8em">
+	
+			<div class="caption-credit">
+							<a rel="nofollow" href="https://secure.flickr.com/photos/theseanster93/472964990">Sean Winters</a>
+				</div>
+	  </div>
+  </div>
+ <p>Next Monday, the last print issue of <em>Computerworld</em> will roll off the presses after 47 years in print.</p>
+<p>In some ways, <em>Computerworld</em> is the spiritual ancestor to Ars Technica. It proudly declared itself as the “<a href="http://www.technologizer.com/2014/06/19/after-forty-seven-years-computerworld-is-a-print-publication-no-more/">first newspaper for the full computer community</a>,” gearing itself toward IT decision makers.</p>
+<p>While the print version may be going away, its editor-in-chief, Scot Finnie, says that its online version will not.</p>
+</div><p><a href="http://arstechnica.com/business/2014/06/after-47-years-in-print-computerworld-finally-goes-digital-only/#p3">Read 4 remaining paragraphs</a> | <a href="http://arstechnica.com/business/2014/06/after-47-years-in-print-computerworld-finally-goes-digital-only/?comments=1">Comments</a></p><div class="feedflare">
+<a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=Dnhjv9D7m1k:QUtn1AdS69k:V_sGLiPBpWU"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=Dnhjv9D7m1k:QUtn1AdS69k:V_sGLiPBpWU" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=Dnhjv9D7m1k:QUtn1AdS69k:F7zBnMyn0Lo"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=Dnhjv9D7m1k:QUtn1AdS69k:F7zBnMyn0Lo" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=Dnhjv9D7m1k:QUtn1AdS69k:qj6IDK7rITs"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=qj6IDK7rITs" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=Dnhjv9D7m1k:QUtn1AdS69k:yIl2AUoC8zA"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=yIl2AUoC8zA" border="0"></img></a>
+</div><img src="http://feeds.feedburner.com/~r/arstechnica/index/~4/Dnhjv9D7m1k" height="1" width="1"/>]]></content:encoded>
+      <wfw:commentRss>http://arstechnica.com/business/2014/06/after-47-years-in-print-computerworld-finally-goes-digital-only/feed/</wfw:commentRss>
+      <slash:comments>0</slash:comments>
+      <feedburner:origLink>http://arstechnica.com/business/2014/06/after-47-years-in-print-computerworld-finally-goes-digital-only/</feedburner:origLink>
+    </item>
+    <item>
+      <title>Android 4.4.4 is rolling out to devices; contains OpenSSL fix</title>
+      <link>http://feeds.arstechnica.com/~r/arstechnica/index/~3/rMSXTBPBcjU/</link>
+      <comments>http://arstechnica.com/gadgets/2014/06/android-4-4-4-is-rolling-out-to-devices-contains-openssl-fix/#comments</comments>
+      <pubDate>Thu, 19 Jun 2014 22:29:28 +0000</pubDate>
+      <dc:creator><![CDATA[Ron Amadeo]]></dc:creator>
+      <category><![CDATA[Gear & Gadgets]]></category>
+      <category><![CDATA[Risk Assessment]]></category>
+      <category><![CDATA[google]]></category>
+      <category><![CDATA[heartbleed]]></category>
+      <guid isPermaLink="false">http://arstechnica.com/?p=491135</guid>
+      <description><![CDATA[Official change log lists "security fixes;" Googler says it is OpenSSL related.]]></description>
+      <content:encoded><![CDATA[<div id="rss-wrap"> <p>Google has a surprise for us today in the form of a new (minor) version of Android. Android 4.4.4 is rolling out to Nexus devices and is available for download on the <a href="https://developers.google.com/android/nexus/images">Nexus Factory Image page</a>. A changelog available over at <a href="https://community.sprint.com/baw/message/806726">Sprint</a> lists nothing other than "security fixes."</p>
+<p>Sascha Prüter, an Android Engineering Program Manager, <a href="https://plus.google.com/u/0/105162099385231511005/posts/7CZi4658QZe">posted on Google+</a> that the update is "Primarily addressing CVE-2014-0224," which is a <a href="http://arstechnica.com/security/2014/06/still-reeling-from-heartbleed-openssl-suffers-from-crypto-bypass-flaw/">flaw discovered in OpenSSL</a> after Heartbleed was widely publicized. Prüter says the update addresses "some other (not quite as severe) security issues" and that an AOSP code drop should happen in "the next 48h."</p>
+<p>4.4.4 comes hot on <a href="http://arstechnica.com/gadgets/2014/06/google-releases-android-4-4-3-to-nexus-devices/">the heels of 4.4.3</a>, which came out earlier this month.</p>
+</div><p><a href="http://arstechnica.com/gadgets/2014/06/android-4-4-4-is-rolling-out-to-devices-contains-openssl-fix/">Read on Ars Technica</a> | <a href="http://arstechnica.com/gadgets/2014/06/android-4-4-4-is-rolling-out-to-devices-contains-openssl-fix/?comments=1">Comments</a></p><div class="feedflare">
+<a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=rMSXTBPBcjU:J0GVMGwMXQk:V_sGLiPBpWU"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=rMSXTBPBcjU:J0GVMGwMXQk:V_sGLiPBpWU" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=rMSXTBPBcjU:J0GVMGwMXQk:F7zBnMyn0Lo"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=rMSXTBPBcjU:J0GVMGwMXQk:F7zBnMyn0Lo" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=rMSXTBPBcjU:J0GVMGwMXQk:qj6IDK7rITs"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=qj6IDK7rITs" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=rMSXTBPBcjU:J0GVMGwMXQk:yIl2AUoC8zA"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=yIl2AUoC8zA" border="0"></img></a>
+</div><img src="http://feeds.feedburner.com/~r/arstechnica/index/~4/rMSXTBPBcjU" height="1" width="1"/>]]></content:encoded>
+      <wfw:commentRss>http://arstechnica.com/gadgets/2014/06/android-4-4-4-is-rolling-out-to-devices-contains-openssl-fix/feed/</wfw:commentRss>
+      <slash:comments>0</slash:comments>
+      <feedburner:origLink>http://arstechnica.com/gadgets/2014/06/android-4-4-4-is-rolling-out-to-devices-contains-openssl-fix/</feedburner:origLink>
+    </item>
+    <item>
+      <title>Thursday Dealmaster has a curved 55” Samsung 4K 3D Smart TV for $2,429</title>
+      <link>http://feeds.arstechnica.com/~r/arstechnica/index/~3/tER-6gmrQRI/</link>
+      <comments>http://arstechnica.com/gadgets/2014/06/thursday-dealmaster-has-a-curved-55-samsung-4k-3d-smart-tv-for-2429/#comments</comments>
+      <pubDate>Thu, 19 Jun 2014 22:15:12 +0000</pubDate>
+      <dc:creator><![CDATA[Ars Staff]]></dc:creator>
+      <category><![CDATA[Gear & Gadgets]]></category>
+      <category><![CDATA[dealmaster]]></category>
+      <guid isPermaLink="false">http://arstechnica.com/?p=491091</guid>
+      <description><![CDATA[Samsung's TV hits every feature checkbox and is over $1500 off the MSRP.]]></description>
+      <content:encoded><![CDATA[<div id="rss-wrap"> <p>Greetings, Arsians! Our partners at <a href="http://logicbuy.com">LogicBuy</a> are back with even more deals for this week. The top deal for today checks all the high-end TV boxes—it's a curved 55-inch Samsung 4K 3D Smart TV for $2,429. Just look at that feature list—whatever you want this TV to do,<em> it can do that thing</em>. Plus, with an MSRP of $3,999.99, you're getting over $1,500 off the regular price.</p>
+<p><b>Featured deal</b></p>
+<ul class="spaced">
+<li>
+<a href="http://zdbb.net/u/2ap" target="_blank"><b>Price Drop: </b>Samsung UN55HU9000 Curved 55" 4K Ultra HD 120Hz 3D Smart LED HDTV for <b>$2,429</b> with free shipping</a> (list price $3,999.99)</li>
+</ul>
+<div class="image right full"><img src="http://cdn.arstechnica.net/wp-content/uploads/2014/06/620x250-samsung-un55hu9000-hdtv-tres.jpg"></div>
+<p><b>HDTV and home theater</b></p>
+</div><p><a href="http://arstechnica.com/gadgets/2014/06/thursday-dealmaster-has-a-curved-55-samsung-4k-3d-smart-tv-for-2429/#p3">Read 4 remaining paragraphs</a> | <a href="http://arstechnica.com/gadgets/2014/06/thursday-dealmaster-has-a-curved-55-samsung-4k-3d-smart-tv-for-2429/?comments=1">Comments</a></p><div class="feedflare">
+<a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=tER-6gmrQRI:cDZw71B5gAQ:V_sGLiPBpWU"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=tER-6gmrQRI:cDZw71B5gAQ:V_sGLiPBpWU" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=tER-6gmrQRI:cDZw71B5gAQ:F7zBnMyn0Lo"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=tER-6gmrQRI:cDZw71B5gAQ:F7zBnMyn0Lo" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=tER-6gmrQRI:cDZw71B5gAQ:qj6IDK7rITs"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=qj6IDK7rITs" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=tER-6gmrQRI:cDZw71B5gAQ:yIl2AUoC8zA"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=yIl2AUoC8zA" border="0"></img></a>
+</div><img src="http://feeds.feedburner.com/~r/arstechnica/index/~4/tER-6gmrQRI" height="1" width="1"/>]]></content:encoded>
+      <wfw:commentRss>http://arstechnica.com/gadgets/2014/06/thursday-dealmaster-has-a-curved-55-samsung-4k-3d-smart-tv-for-2429/feed/</wfw:commentRss>
+      <slash:comments>0</slash:comments>
+      <feedburner:origLink>http://arstechnica.com/gadgets/2014/06/thursday-dealmaster-has-a-curved-55-samsung-4k-3d-smart-tv-for-2429/</feedburner:origLink>
+    </item>
+    <item>
+      <title>Observations reveal how a supermassive black hole went into hiding</title>
+      <link>http://feeds.arstechnica.com/~r/arstechnica/index/~3/N1WVajfifp8/</link>
+      <comments>http://arstechnica.com/science/2014/06/observations-reveal-how-a-supermassive-black-hole-went-into-hiding/#comments</comments>
+      <pubDate>Thu, 19 Jun 2014 22:05:44 +0000</pubDate>
+      <dc:creator><![CDATA[John Timmer]]></dc:creator>
+      <category><![CDATA[Scientific Method]]></category>
+      <category><![CDATA[astronomy]]></category>
+      <category><![CDATA[astrophysics]]></category>
+      <category><![CDATA[black hole]]></category>
+      <guid isPermaLink="false">http://arstechnica.com/?p=491095</guid>
+      <description><![CDATA[A fast-moving cloud of gas is escaping from a supermassive black hole.]]></description>
+      <content:encoded><![CDATA[<div id="rss-wrap">
+<div>
+      <img src="http://cdn.arstechnica.net/wp-content/uploads/2014/06/kaastra2HR-640x640.jpg"><div class="caption" style="font-size:0.8em">
+			<div class="caption-text">NGC 5548, which harbors an active supermassive black hole.</div>
+	
+			<div class="caption-credit">
+							Dr. Misty Bentz				</div>
+	  </div>
+  </div>
+ <p>Now you see it, now you don't. In 2002, observations from the Chandra X-ray observatory showed about what you'd expect for a nearby galaxy with an active supermassive black hole at its center: intense emissions in the UV and X-ray regions of the spectrum. By 2003, however, follow-up observations showed that emissions of energetic photons had dropped off precipitously. This odd disappearance led scientists to organize a massive campaign of follow-up observations, the results of which were released by <em>Science</em> today.</p>
+<p>The new observations suggest that a large cloud of gas has walled off the black hole from Earth's line of sight to the galaxy. But the cloud is moving so fast and has persisted so long that it must be drawing material away from the environment around the black hole.</p>
+<p>The galaxy in question, NGC 5548, belongs to a class of objects called Seyfert galaxies. These have active black holes that are feeding on gas, creating a highly energetic accretion disk. These galaxies don't emit as much radiation as a quasar (the brightest objects in the Universe), but they have the advantage of being found much closer to Earth than quasars, making them more amenable to study.</p>
+</div><p><a href="http://arstechnica.com/science/2014/06/observations-reveal-how-a-supermassive-black-hole-went-into-hiding/#p3">Read 7 remaining paragraphs</a> | <a href="http://arstechnica.com/science/2014/06/observations-reveal-how-a-supermassive-black-hole-went-into-hiding/?comments=1">Comments</a></p><div class="feedflare">
+<a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=N1WVajfifp8:mexQxWANxuQ:V_sGLiPBpWU"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=N1WVajfifp8:mexQxWANxuQ:V_sGLiPBpWU" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=N1WVajfifp8:mexQxWANxuQ:F7zBnMyn0Lo"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=N1WVajfifp8:mexQxWANxuQ:F7zBnMyn0Lo" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=N1WVajfifp8:mexQxWANxuQ:qj6IDK7rITs"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=qj6IDK7rITs" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=N1WVajfifp8:mexQxWANxuQ:yIl2AUoC8zA"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=yIl2AUoC8zA" border="0"></img></a>
+</div><img src="http://feeds.feedburner.com/~r/arstechnica/index/~4/N1WVajfifp8" height="1" width="1"/>]]></content:encoded>
+      <wfw:commentRss>http://arstechnica.com/science/2014/06/observations-reveal-how-a-supermassive-black-hole-went-into-hiding/feed/</wfw:commentRss>
+      <slash:comments>0</slash:comments>
+      <feedburner:origLink>http://arstechnica.com/science/2014/06/observations-reveal-how-a-supermassive-black-hole-went-into-hiding/</feedburner:origLink>
+    </item>
+    <item>
+      <title>Flying RoboCop is a “riot control” octocopter with guns and lasers</title>
+      <link>http://feeds.arstechnica.com/~r/arstechnica/index/~3/hjDETx0XWPQ/</link>
+      <comments>http://arstechnica.com/tech-policy/2014/06/flying-robocop-is-a-riot-control-octocopter-with-guns-and-lasers/#comments</comments>
+      <pubDate>Thu, 19 Jun 2014 19:34:18 +0000</pubDate>
+      <dc:creator><![CDATA[Sean Gallagher]]></dc:creator>
+      <category><![CDATA[Law & Disorder]]></category>
+      <category><![CDATA[Technology Lab]]></category>
+      <category><![CDATA[drones]]></category>
+      <guid isPermaLink="false">http://arstechnica.com/?p=491001</guid>
+      <description><![CDATA[S. African firm's Skunk drone can fire 80 pepper-spray bullets per second.]]></description>
+      <content:encoded><![CDATA[<div id="rss-wrap">
+<div>
+      <img src="http://cdn.arstechnica.net/wp-content/uploads/2014/06/airskunk-640x480.jpg"><div class="caption" style="font-size:0.8em">
+	
+			<div class="caption-credit">
+							<a rel="nofollow" href="http://www.desert-wolf.com">Desert Wolf</a>
+				</div>
+	  </div>
+  </div>
+ <p>Meet <a href="http://www.desert-wolf.com/dw/products/unmanned-aerial-systems/skunk-riot-control-copter.html">the Skunk</a>, a heavy-duty, semi-autonomous octocopter drone that can unleash pepper spray, plastic bullets, paintballs, strobe lights and "blinding" lasers, as well as a cacophony of audio in its mission to persuade unruly mobs to disperse. Unveiled at the IFSEC International trade show in London this week, the Skunk is now for sale—and its manufacturer says the orders have begun to roll in.</p>
+<p>Armed with four hopper-fed pneumatic "markers"—high-pressure carbon-fiber airguns capable of pumping out up to 20 paintballs, pepper-spray capsules, or similarly sized projectiles per second—the Skunk has a potential combined rate of fire of 80 projectiles per second. The Skunk can carry up to 4,000 projectiles in varying mixes. According to marketing materials by the unmanned aircraft's manufacturer, South Africa-based Desert Wolf, the highest rate of fire "will only be used in an extreme 'Life threatening situation.'"</p>
+<p>The Skunk is also equipped with FLIR thermal infrared and HD color cameras to capture the identity of those in a crowd to be controlled. Through its link back to the operator, the aircraft can broadcast audio warnings and instructions to the crowd... such as, possibly, "<a href="https://www.youtube.com/watch?v=6MrmUBrT2p4">You now have 20 seconds to comply</a>."</p>
+</div><p><a href="http://arstechnica.com/tech-policy/2014/06/flying-robocop-is-a-riot-control-octocopter-with-guns-and-lasers/#p3">Read 2 remaining paragraphs</a> | <a href="http://arstechnica.com/tech-policy/2014/06/flying-robocop-is-a-riot-control-octocopter-with-guns-and-lasers/?comments=1">Comments</a></p><div class="feedflare">
+<a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=hjDETx0XWPQ:lUS_BpFVqTI:V_sGLiPBpWU"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=hjDETx0XWPQ:lUS_BpFVqTI:V_sGLiPBpWU" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=hjDETx0XWPQ:lUS_BpFVqTI:F7zBnMyn0Lo"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=hjDETx0XWPQ:lUS_BpFVqTI:F7zBnMyn0Lo" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=hjDETx0XWPQ:lUS_BpFVqTI:qj6IDK7rITs"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=qj6IDK7rITs" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=hjDETx0XWPQ:lUS_BpFVqTI:yIl2AUoC8zA"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=yIl2AUoC8zA" border="0"></img></a>
+</div><img src="http://feeds.feedburner.com/~r/arstechnica/index/~4/hjDETx0XWPQ" height="1" width="1"/>]]></content:encoded>
+      <wfw:commentRss>http://arstechnica.com/tech-policy/2014/06/flying-robocop-is-a-riot-control-octocopter-with-guns-and-lasers/feed/</wfw:commentRss>
+      <slash:comments>0</slash:comments>
+      <feedburner:origLink>http://arstechnica.com/tech-policy/2014/06/flying-robocop-is-a-riot-control-octocopter-with-guns-and-lasers/</feedburner:origLink>
+    </item>
+    <item>
+      <title>Following TrueCrypt’s bombshell advisory, developer says fork is “impossible”</title>
+      <link>http://feeds.arstechnica.com/~r/arstechnica/index/~3/pQCXvb8urpk/</link>
+      <comments>http://arstechnica.com/security/2014/06/following-truecrypts-bombshell-advisory-developer-says-fork-is-impossible/#comments</comments>
+      <pubDate>Thu, 19 Jun 2014 19:08:28 +0000</pubDate>
+      <dc:creator><![CDATA[Dan Goodin]]></dc:creator>
+      <category><![CDATA[Law & Disorder]]></category>
+      <category><![CDATA[Risk Assessment]]></category>
+      <category><![CDATA[Technology Lab]]></category>
+      <category><![CDATA[cryptograpy]]></category>
+      <category><![CDATA[encryption]]></category>
+      <category><![CDATA[surveillance]]></category>
+      <category><![CDATA[TrueCrypt]]></category>
+      <guid isPermaLink="false">http://arstechnica.com/?p=491017</guid>
+      <description><![CDATA[TrueCrypt developer withholds permission, suggests "starting from scratch." ]]></description>
+      <content:encoded><![CDATA[<div id="rss-wrap"> <p>One of the developers of the TrueCrypt encryption program said it's unlikely that fans will receive permission to start an independent "fork" that borrows from the current source code, a refusal that further clouds the future of the highly regarded application.</p>
+<p>The reluctance surfaced in an e-mail published three weeks after TrueCrypt developers' bombshell advisory that users should <a href="http://arstechnica.com/security/2014/05/truecrypt-is-not-secure-official-sourceforge-page-abruptly-warns/">stop using the cross-platform whole disk encryption program</a>. TrueCrypt has been held up by a variety of privacy advocates—former National Security Agency contractor Edward Snowden among them—as a reliable means to protect individual files or entire hard drive contents from the prying eyes of government agencies and criminal hackers. In the days immediately following last month's TrueCrypt retirement, Johns Hopkins University professor Matt Green asked one of the secretive developers if it would be OK for other software engineers to use the existing source code to start an independent version. The developer responded:</p>
+<blockquote>
+<p>I am sorry, but I think what you're asking for here is impossible. I don't feel that forking truecrypt would be a good idea, a complete rewrite was something we wanted to do for a while. I believe that starting from scratch wouldn't require much more work than actually learning and understanding all of truecrypt's current codebase.</p>
+<p>I have no problem with the source code being used as reference.</p>
+</blockquote>
+<p>The denial came in response to an e-mail in which Green said he suspected a TrueCrypt fork was inevitable, given the groundswell of interest in the program. Language in the TrueCrypt license raises the possibility that such independent projects will put developers at risk of violating contractual terms. Without the blessing of TrueCrypt developers, users may be forced to abandon the considerable amount of work already put into TrueCrypt. In his e-mail to the TrueCrypt developer, Green wrote:</p>
+</div><p><a href="http://arstechnica.com/security/2014/06/following-truecrypts-bombshell-advisory-developer-says-fork-is-impossible/#p3">Read 1 remaining paragraphs</a> | <a href="http://arstechnica.com/security/2014/06/following-truecrypts-bombshell-advisory-developer-says-fork-is-impossible/?comments=1">Comments</a></p><div class="feedflare">
+<a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=pQCXvb8urpk:XMlm6cDzLvM:V_sGLiPBpWU"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=pQCXvb8urpk:XMlm6cDzLvM:V_sGLiPBpWU" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=pQCXvb8urpk:XMlm6cDzLvM:F7zBnMyn0Lo"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=pQCXvb8urpk:XMlm6cDzLvM:F7zBnMyn0Lo" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=pQCXvb8urpk:XMlm6cDzLvM:qj6IDK7rITs"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=qj6IDK7rITs" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=pQCXvb8urpk:XMlm6cDzLvM:yIl2AUoC8zA"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=yIl2AUoC8zA" border="0"></img></a>
+</div><img src="http://feeds.feedburner.com/~r/arstechnica/index/~4/pQCXvb8urpk" height="1" width="1"/>]]></content:encoded>
+      <wfw:commentRss>http://arstechnica.com/security/2014/06/following-truecrypts-bombshell-advisory-developer-says-fork-is-impossible/feed/</wfw:commentRss>
+      <slash:comments>0</slash:comments>
+      <feedburner:origLink>http://arstechnica.com/security/2014/06/following-truecrypts-bombshell-advisory-developer-says-fork-is-impossible/</feedburner:origLink>
+    </item>
+    <item>
+      <title>PSA: Steam’s annual summer sale now live</title>
+      <link>http://feeds.arstechnica.com/~r/arstechnica/index/~3/hFgI-2Wfvek/</link>
+      <comments>http://arstechnica.com/gaming/2014/06/psa-steams-annual-summer-sale-now-live/#comments</comments>
+      <pubDate>Thu, 19 Jun 2014 18:02:59 +0000</pubDate>
+      <dc:creator><![CDATA[Sam Machkovech]]></dc:creator>
+      <category><![CDATA[Opposable Thumbs]]></category>
+      <category><![CDATA[don't starve]]></category>
+      <category><![CDATA[dota 2]]></category>
+      <category><![CDATA[Steam]]></category>
+      <category><![CDATA[steam sale]]></category>
+      <category><![CDATA[Team Fortress 2]]></category>
+      <category><![CDATA[Valve]]></category>
+      <guid isPermaLink="false">http://arstechnica.com/?p=490921</guid>
+      <description><![CDATA[First wave of daily deals includes 75% or more off <em>XCom</em>, <em>Witcher 2</em>, <em>Don't Starve</em>.]]></description>
+      <content:encoded><![CDATA[<div id="rss-wrap">
+<div>
+      <img src="http://cdn.arstechnica.net/wp-content/uploads/2014/06/Screen-Shot-2014-06-19-at-10.25.17-AM-640x209.png"><div class="caption" style="font-size:0.8em">
+			<div class="caption-text">We're curious what kind of probing the Steam Summer Sale will do to our wallets on day seven of this map.</div>
+	
+	  </div>
+  </div>
+ <p>The Steam online gaming store's <a href="http://store.steampowered.com/">annual summer sale</a> went live on Thursday, marking the fifth summer that Steam has encouraged fans to open their wallets and hide from the sun with deeply discounted games.</p>
+<p>The sale is set to run until June 30, and it includes a mix of daily deals and eight-hour "flash" sales. It has kicked off with a righteous collection of hits at over 75 percent off, including crafting-survival curio (and well-known Ars timesink) <em>Don't Starve</em>, a two-game pack of <em>XCom'</em>s recent strategy and first-person offerings, and the epic, story-driven <em>Witcher 2</em>. The day's first flash sale includes <em>Hotline Miami</em> marked down to an itsy-bitsy $1.49—which we'd call a no-brainer purchase if you've yet to smash 8-bit mafiosos in that game.</p>
+<p>As in recent sales, Valve has included <a href="http://store.steampowered.com/promotion/summer2014faq/">a site-wide crafting competition</a> in which purchases and in-game actions earn Steam customers a bunch of virtual trading cards. Players can use those cards to craft in-game items for games like <em>Dota 2,</em> <em>Team Fortress 2</em>, <em>Path of Exile</em>, and many more. Players can also now join Steam teams to combine efforts and, you know, get more hats.</p>
+</div><p><a href="http://arstechnica.com/gaming/2014/06/psa-steams-annual-summer-sale-now-live/">Read on Ars Technica</a> | <a href="http://arstechnica.com/gaming/2014/06/psa-steams-annual-summer-sale-now-live/?comments=1">Comments</a></p><div class="feedflare">
+<a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=hFgI-2Wfvek:3PNXy7nd9yc:V_sGLiPBpWU"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=hFgI-2Wfvek:3PNXy7nd9yc:V_sGLiPBpWU" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=hFgI-2Wfvek:3PNXy7nd9yc:F7zBnMyn0Lo"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=hFgI-2Wfvek:3PNXy7nd9yc:F7zBnMyn0Lo" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=hFgI-2Wfvek:3PNXy7nd9yc:qj6IDK7rITs"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=qj6IDK7rITs" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=hFgI-2Wfvek:3PNXy7nd9yc:yIl2AUoC8zA"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=yIl2AUoC8zA" border="0"></img></a>
+</div><img src="http://feeds.feedburner.com/~r/arstechnica/index/~4/hFgI-2Wfvek" height="1" width="1"/>]]></content:encoded>
+      <wfw:commentRss>http://arstechnica.com/gaming/2014/06/psa-steams-annual-summer-sale-now-live/feed/</wfw:commentRss>
+      <slash:comments>0</slash:comments>
+      <feedburner:origLink>http://arstechnica.com/gaming/2014/06/psa-steams-annual-summer-sale-now-live/</feedburner:origLink>
+    </item>
+    <item>
+      <title>Tell a lie, remove the gear: How the NSA covers up when cable taps are found</title>
+      <link>http://feeds.arstechnica.com/~r/arstechnica/index/~3/8ciKEkTMyxc/</link>
+      <comments>http://arstechnica.com/tech-policy/2014/06/tell-a-lie-remove-the-gear-how-the-nsa-covers-up-when-cable-taps-are-found/#comments</comments>
+      <pubDate>Thu, 19 Jun 2014 17:56:12 +0000</pubDate>
+      <dc:creator><![CDATA[Nate Anderson]]></dc:creator>
+      <category><![CDATA[Law & Disorder]]></category>
+      <category><![CDATA[cable taps]]></category>
+      <category><![CDATA[NSA]]></category>
+      <guid isPermaLink="false">http://arstechnica.com/?p=490917</guid>
+      <description><![CDATA[Get caught, remove the evidence, and come up with a plausible cover story.]]></description>
+      <content:encoded><![CDATA[<div id="rss-wrap">
+<div>
+      <img src="http://cdn.arstechnica.net/wp-content/uploads/2014/06/NSA-wharpdrive-slide-640x473.jpg"><div class="caption" style="font-size:0.8em">
+	
+			<div class="caption-credit">
+							Der Spiegel via Edward Snowden via NSA				</div>
+	  </div>
+  </div>
+ <p>Sometimes, the spooks <em>do</em> get caught. German magazine <em>Der Spiegel</em> yesterday revealed a <a href="http://www.spiegel.de/media/media-34042.pdf">new slide</a> (PDF) from the Edward Snowden document cache that offers a tantalizing glimpse of what it looks like when someone stumbles on an intelligence agency cable tap.</p>
+<p>The NSA's Special Source Operations (SSO) branch isn't in the business of computer hacking but of cable tapping; its logo shows an eagle flying above the globe and clutching a string of wires in its talons. These taps, each obscured with a codename, are often made deep within the network of telecom providers and often with the cooperation of key executives. But sometimes non-cleared people start raising questions about just what might be going on, as was the case with AT&amp;T whistleblower Mark Klein, who <a href="http://arstechnica.com/uncategorized/2006/04/6585-2/">revealed an NSA "secret room" in San Francisco</a>.</p>
+<p>On March 14, 2013, an SSO weekly briefing included a note regarding such a discovery. The unit had been informed two days earlier that "the access point for WHARPDRIVE was discovered by commercial consortium personnel. Witting partner personnel have removed the evidence and a plausible cover story was provided. All collection has ceased."</p>
+</div><p><a href="http://arstechnica.com/tech-policy/2014/06/tell-a-lie-remove-the-gear-how-the-nsa-covers-up-when-cable-taps-are-found/#p3">Read 2 remaining paragraphs</a> | <a href="http://arstechnica.com/tech-policy/2014/06/tell-a-lie-remove-the-gear-how-the-nsa-covers-up-when-cable-taps-are-found/?comments=1">Comments</a></p><div class="feedflare">
+<a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=8ciKEkTMyxc:OQVKGF12Svk:V_sGLiPBpWU"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=8ciKEkTMyxc:OQVKGF12Svk:V_sGLiPBpWU" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=8ciKEkTMyxc:OQVKGF12Svk:F7zBnMyn0Lo"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=8ciKEkTMyxc:OQVKGF12Svk:F7zBnMyn0Lo" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=8ciKEkTMyxc:OQVKGF12Svk:qj6IDK7rITs"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=qj6IDK7rITs" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=8ciKEkTMyxc:OQVKGF12Svk:yIl2AUoC8zA"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=yIl2AUoC8zA" border="0"></img></a>
+</div><img src="http://feeds.feedburner.com/~r/arstechnica/index/~4/8ciKEkTMyxc" height="1" width="1"/>]]></content:encoded>
+      <wfw:commentRss>http://arstechnica.com/tech-policy/2014/06/tell-a-lie-remove-the-gear-how-the-nsa-covers-up-when-cable-taps-are-found/feed/</wfw:commentRss>
+      <slash:comments>0</slash:comments>
+      <feedburner:origLink>http://arstechnica.com/tech-policy/2014/06/tell-a-lie-remove-the-gear-how-the-nsa-covers-up-when-cable-taps-are-found/</feedburner:origLink>
+    </item>
+    <item>
+      <title>Pakistan, Iran, and… USA? New heatmap shows where NSA hacks</title>
+      <link>http://feeds.arstechnica.com/~r/arstechnica/index/~3/-S4chPwmxjw/</link>
+      <comments>http://arstechnica.com/tech-policy/2014/06/pakistan-iran-and-usa-new-heatmap-shows-where-nsa-hacks/#comments</comments>
+      <pubDate>Thu, 19 Jun 2014 17:47:57 +0000</pubDate>
+      <dc:creator><![CDATA[Sean Gallagher]]></dc:creator>
+      <category><![CDATA[Law & Disorder]]></category>
+      <category><![CDATA[NSA]]></category>
+      <guid isPermaLink="false">http://arstechnica.com/?p=490891</guid>
+      <description><![CDATA[Slide of active computer network exploitations reveals NSA hacks all over the world.]]></description>
+      <content:encoded><![CDATA[<div id="rss-wrap"> <p>A screenshot from the National Security Agency’s Boundless Informant visualization tool shows that the NSA was heavily focusing its network hacking efforts in 2013 on Iran and Pakistan. All the while, the NSA also had active “computer network exploits” within the United States. The new document, published by <em>Der Spiegel</em>, is part of 53 documents recently released from the Edward Snowden cache, which appears to be from the same set initially released a year ago in Glenn Greenwald’s first article on <a href="http://www.theguardian.com/world/2013/jun/08/nsa-boundless-informant-global-datamining">Boundless Informant</a> from June 2013.</p>
+<p>The new “heatmap” from Boundless Informant, which provides the NSA a way to analyze the volume of data and distribution of sources that it is being collected from, shows “computer network exploitation” activity over an unspecified 30-day period in 2013. During the displayed period, Pakistan appears to have been the target of most of the NSA’s network hacking activity, displaying red on the heat map of intelligence activity. Iran appears to be the second most active country for the period, appearing in orange.</p>
+<div class="image right large">
+<a href="http://cdn.arstechnica.net/wp-content/uploads/2014/06/heatmapnsacne.jpg"><img src="http://cdn.arstechnica.net/wp-content/uploads/2014/06/heatmapnsacne-640x334.jpg" srcset="http://cdn.arstechnica.net/wp-content/uploads/2014/06/heatmapnsacne-1280x669.jpg 2x"></a><div class="caption" style="font-size:0.8em">
+<div class="caption-text"><a href="http://cdn.arstechnica.net/wp-content/uploads/2014/06/heatmapnsacne.jpg" class="caption-link" rel="nofollow">A map of NSA computer network exploitation activity during a month in 2013.</a></div> <div class="caption-credit">Der Spiegel</div>
+</div>
+</div>
+<p>But the NSA’s network exploits weren’t all overseas. The screenshot shows a number over the US for active computer network exploitations within the 30 day period: 289. The United States appears to be as active a location for network exploitation operations for the NSA as Russia, though it was more active in exploits against networks in China, Germany, and Yemen.</p>
+</div><p><a href="http://arstechnica.com/tech-policy/2014/06/pakistan-iran-and-usa-new-heatmap-shows-where-nsa-hacks/#p3">Read 2 remaining paragraphs</a> | <a href="http://arstechnica.com/tech-policy/2014/06/pakistan-iran-and-usa-new-heatmap-shows-where-nsa-hacks/?comments=1">Comments</a></p><div class="feedflare">
+<a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=-S4chPwmxjw:8aR7lk6C9Sw:V_sGLiPBpWU"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=-S4chPwmxjw:8aR7lk6C9Sw:V_sGLiPBpWU" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=-S4chPwmxjw:8aR7lk6C9Sw:F7zBnMyn0Lo"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=-S4chPwmxjw:8aR7lk6C9Sw:F7zBnMyn0Lo" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=-S4chPwmxjw:8aR7lk6C9Sw:qj6IDK7rITs"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=qj6IDK7rITs" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=-S4chPwmxjw:8aR7lk6C9Sw:yIl2AUoC8zA"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=yIl2AUoC8zA" border="0"></img></a>
+</div><img src="http://feeds.feedburner.com/~r/arstechnica/index/~4/-S4chPwmxjw" height="1" width="1"/>]]></content:encoded>
+      <wfw:commentRss>http://arstechnica.com/tech-policy/2014/06/pakistan-iran-and-usa-new-heatmap-shows-where-nsa-hacks/feed/</wfw:commentRss>
+      <slash:comments>0</slash:comments>
+      <feedburner:origLink>http://arstechnica.com/tech-policy/2014/06/pakistan-iran-and-usa-new-heatmap-shows-where-nsa-hacks/</feedburner:origLink>
+    </item>
+    <item>
+      <title>Secret keys stashed in Google Play apps pose risk to Android users, developers</title>
+      <link>http://feeds.arstechnica.com/~r/arstechnica/index/~3/ogWobo_540c/</link>
+      <comments>http://arstechnica.com/security/2014/06/secret-keys-stashed-in-google-play-apps-pose-risk-to-android-users-developers/#comments</comments>
+      <pubDate>Thu, 19 Jun 2014 17:17:44 +0000</pubDate>
+      <dc:creator><![CDATA[Dan Goodin]]></dc:creator>
+      <category><![CDATA[Gear & Gadgets]]></category>
+      <category><![CDATA[Risk Assessment]]></category>
+      <category><![CDATA[Technology Lab]]></category>
+      <category><![CDATA[android]]></category>
+      <category><![CDATA[google play]]></category>
+      <category><![CDATA[security]]></category>
+      <guid isPermaLink="false">http://arstechnica.com/?p=490843</guid>
+      <description><![CDATA[Google Play crawler uncovers secret tokens to Facebook, Twitter, and AWS.]]></description>
+      <content:encoded><![CDATA[<div id="rss-wrap">
+<div>
+      <img src="http://cdn.arstechnica.net/wp-content/uploads/2014/06/keys-under-mat-640x480.jpg"><div class="caption" style="font-size:0.8em">
+			<div class="caption-text">Hidden access brings potential for vulnerability.</div>
+	
+	  </div>
+  </div>
+ <p>A recent scan of the Google Play market found that Android apps contained thousands of secret authentication keys that could be maliciously used to access private cloud accounts on Amazon or compromise end-user profiles on Facebook, Twitter, and a half-dozen other services.</p>
+<p>The finding is the result of PlayDrone, a system that uses a variety of hacking techniques to bypass security measures intended to prevent third parties from crawling Google Play. The brainchild of computer scientists at Columbia University, PlayDrone comprehensively indexed Play contents, downloaded more than 1.1 million apps, and decompiled more than 880,000 of them. It is believed to be the first large-scale measurement of the sprawling Google marketplace, which offers more than one million apps and has fostered 50 billion app downloads to date.</p>
+<p>One of the most surprising observations PlayDrone made was that many apps contain secret authentication keys that can compromise accounts belonging to both developers and end users. Source code for the official AirBnB app, for example, included secret <a href="https://en.wikipedia.org/wiki/OAuth">OAuth tokens</a> for Facebook, Google, LinkedIn, Microsoft, and Yahoo. The credentials were supplied by the service providers and act as a skeleton key of sorts that allows an app to access private account data for each user. By plucking them out of the AirBnB app, an attacker could use it to read and possibly modify or add data for millions of users' profiles.</p>
+</div><p><a href="http://arstechnica.com/security/2014/06/secret-keys-stashed-in-google-play-apps-pose-risk-to-android-users-developers/#p3">Read 8 remaining paragraphs</a> | <a href="http://arstechnica.com/security/2014/06/secret-keys-stashed-in-google-play-apps-pose-risk-to-android-users-developers/?comments=1">Comments</a></p><div class="feedflare">
+<a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=ogWobo_540c:6SVrnQl1m9o:V_sGLiPBpWU"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=ogWobo_540c:6SVrnQl1m9o:V_sGLiPBpWU" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=ogWobo_540c:6SVrnQl1m9o:F7zBnMyn0Lo"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=ogWobo_540c:6SVrnQl1m9o:F7zBnMyn0Lo" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=ogWobo_540c:6SVrnQl1m9o:qj6IDK7rITs"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=qj6IDK7rITs" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=ogWobo_540c:6SVrnQl1m9o:yIl2AUoC8zA"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=yIl2AUoC8zA" border="0"></img></a>
+</div><img src="http://feeds.feedburner.com/~r/arstechnica/index/~4/ogWobo_540c" height="1" width="1"/>]]></content:encoded>
+      <wfw:commentRss>http://arstechnica.com/security/2014/06/secret-keys-stashed-in-google-play-apps-pose-risk-to-android-users-developers/feed/</wfw:commentRss>
+      <slash:comments>0</slash:comments>
+      <feedburner:origLink>http://arstechnica.com/security/2014/06/secret-keys-stashed-in-google-play-apps-pose-risk-to-android-users-developers/</feedburner:origLink>
+    </item>
+    <item>
+      <title>Nintendo: Third-party publishers will return as Wii U sees more system sellers</title>
+      <link>http://feeds.arstechnica.com/~r/arstechnica/index/~3/lxEygnugJms/</link>
+      <comments>http://arstechnica.com/gaming/2014/06/nintendo-third-party-publishers-will-return-as-wii-u-sees-more-system-sellers/#comments</comments>
+      <pubDate>Thu, 19 Jun 2014 17:05:23 +0000</pubDate>
+      <dc:creator><![CDATA[Kyle Orland]]></dc:creator>
+      <category><![CDATA[Opposable Thumbs]]></category>
+      <category><![CDATA[EA]]></category>
+      <category><![CDATA[Nintendo]]></category>
+      <category><![CDATA[publishing]]></category>
+      <category><![CDATA[third-party]]></category>
+      <category><![CDATA[Ubisoft]]></category>
+      <category><![CDATA[Wii U]]></category>
+      <guid isPermaLink="false">http://arstechnica.com/?p=490869</guid>
+      <description><![CDATA[Ars chats with Nintendo about the future of its flagship console.]]></description>
+      <content:encoded><![CDATA[<div id="rss-wrap">
+<div>
+      <img src="http://cdn.arstechnica.net/wp-content/uploads/2013/07/dusty-wiiu.jpg"><div class="caption" style="font-size:0.8em">
+			<div class="caption-text">Nintendo hopes first-party system sellers will lead to renewed third-party support that will prevent this kind of situation from being too common in the future.</div>
+	
+			<div class="caption-credit">
+							Photo by Wired / Manipulated by Aurich Lawson				</div>
+	  </div>
+  </div>
+ <p>While Nintendo had <a href="http://arstechnica.com/gaming/2014/06/nintendo-at-e3-a-comeback-is-always-just-a-game-away/">an impressive lineup of playable Wii U titles at this year's E3</a>, almost all of the games in its booth were from the company's internal studios. That's a big change from <a href="http://arstechnica.com/gaming/2012/06/pre-e3-2012-nintendo-press-conference-liveblog/">the rosy predictions of third-party rapprochement</a> that Nintendo put forth ahead of the Wii U's 2012 launch, and it reflects <a href="http://arstechnica.com/gaming/2013/07/why-third-party-publishers-still-arent-thrilled-with-wii-u/">continued widespread disillusionment among third-party publishers</a> for the platform.</p>
+<p>In an interview with Ars Technica, though, Nintendo of America Senior Director of Communication Charlie Scibetta expressed confidence that these outside publishers will come back to the Wii U as the systems sales increase in the future.</p>
+<p>"We want the same thing that the third parties want, which is to grow the installed base," Scibetta told Ars. "We're confident that if we can do that by driving the installed base through first-party software, like <i>Mario Kart 8</i>, like <i>Super Smash Bros., </i>then the third-party developers will follow because then they'll see there's a large enough installed base that it's worth their investment to bring their games to our platform. So it's our job to grow that installed base to make it more attractive for them to come to our platform."</p>
+</div><p><a href="http://arstechnica.com/gaming/2014/06/nintendo-third-party-publishers-will-return-as-wii-u-sees-more-system-sellers/#p3">Read 10 remaining paragraphs</a> | <a href="http://arstechnica.com/gaming/2014/06/nintendo-third-party-publishers-will-return-as-wii-u-sees-more-system-sellers/?comments=1">Comments</a></p><div class="feedflare">
+<a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=lxEygnugJms:uAO3OLhNxbY:V_sGLiPBpWU"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=lxEygnugJms:uAO3OLhNxbY:V_sGLiPBpWU" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=lxEygnugJms:uAO3OLhNxbY:F7zBnMyn0Lo"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=lxEygnugJms:uAO3OLhNxbY:F7zBnMyn0Lo" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=lxEygnugJms:uAO3OLhNxbY:qj6IDK7rITs"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=qj6IDK7rITs" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=lxEygnugJms:uAO3OLhNxbY:yIl2AUoC8zA"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=yIl2AUoC8zA" border="0"></img></a>
+</div><img src="http://feeds.feedburner.com/~r/arstechnica/index/~4/lxEygnugJms" height="1" width="1"/>]]></content:encoded>
+      <wfw:commentRss>http://arstechnica.com/gaming/2014/06/nintendo-third-party-publishers-will-return-as-wii-u-sees-more-system-sellers/feed/</wfw:commentRss>
+      <slash:comments>0</slash:comments>
+      <feedburner:origLink>http://arstechnica.com/gaming/2014/06/nintendo-third-party-publishers-will-return-as-wii-u-sees-more-system-sellers/</feedburner:origLink>
+    </item>
+    <item>
+      <title>iOS 7 Activation Lock cutting iPhone theft, damaging resale market</title>
+      <link>http://feeds.arstechnica.com/~r/arstechnica/index/~3/6ThR7b7Pc7A/</link>
+      <comments>http://arstechnica.com/apple/2014/06/ios-7-activation-lock-cutting-iphone-theft-damages-resale-market/#comments</comments>
+      <pubDate>Thu, 19 Jun 2014 16:22:23 +0000</pubDate>
+      <dc:creator><![CDATA[Andrew Cunningham]]></dc:creator>
+      <category><![CDATA[Gear & Gadgets]]></category>
+      <category><![CDATA[Infinite Loop]]></category>
+      <category><![CDATA[iOS 7]]></category>
+      <category><![CDATA[iphone]]></category>
+      <guid isPermaLink="false">http://arstechnica.com/?p=490727</guid>
+      <description><![CDATA[Data from three cities shows that the feature is deterring thieves.]]></description>
+      <content:encoded><![CDATA[<div id="rss-wrap">
+<div>
+      <img src="http://cdn.arstechnica.net/wp-content/uploads/2014/06/Photo-Jun-19-11-25-39-AM.png"><div class="caption" style="font-size:0.8em">
+			<div class="caption-text">iOS 7's Activation Lock feature is working as intended.</div>
+	
+			<div class="caption-credit">
+							Andrew Cunningham				</div>
+	  </div>
+  </div>
+ <p class="p1">One of the new features iOS 7 introduced was an upgrade to the Find My iPhone service called Activation Lock—in addition to tracking your phone, sending it messages, and wiping your data, any iOS device with Find My iPhone enabled now requires your Apple ID to reactivate it. Even if your phone is stolen, the thief can't turn around and resell it as a new phone.</p>
+<p class="p1">According to data from the Secure Our Smartphones Initiative group, the feature has apparently had a measurable effect on theft. <i>Bloomberg</i> <a href="http://www.bloomberg.com/news/2014-06-19/android-windows-phone-will-have-kill-switches-n-y-says.html">reports</a> that for the first five months of 2014, iPhone theft in New York City, San Francisco, and London is down by 19, 38, and 24 percent respectively compared to the same period in 2013. New York Attorney General Eric Schneiderman says that iPhone theft "plummeted" following the release of iOS 7 in September.</p>
+<p class="p1">Android and Windows Phone each have similar phone-tracking features to help people find lost or stolen phones, but their remote wipe features are less capable. Resetting an Android or Windows phone erases all of your personal data from the internal storage, but it simply resets the phone to its factory settings—it can then be reused or resold by the thief without any negative repercussions. You might even save the thief the trouble of manually wiping the phone.</p>
+</div><p><a href="http://arstechnica.com/apple/2014/06/ios-7-activation-lock-cutting-iphone-theft-damages-resale-market/#p3">Read 3 remaining paragraphs</a> | <a href="http://arstechnica.com/apple/2014/06/ios-7-activation-lock-cutting-iphone-theft-damages-resale-market/?comments=1">Comments</a></p><div class="feedflare">
+<a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=6ThR7b7Pc7A:AnYYKOGAs4E:V_sGLiPBpWU"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=6ThR7b7Pc7A:AnYYKOGAs4E:V_sGLiPBpWU" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=6ThR7b7Pc7A:AnYYKOGAs4E:F7zBnMyn0Lo"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=6ThR7b7Pc7A:AnYYKOGAs4E:F7zBnMyn0Lo" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=6ThR7b7Pc7A:AnYYKOGAs4E:qj6IDK7rITs"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=qj6IDK7rITs" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=6ThR7b7Pc7A:AnYYKOGAs4E:yIl2AUoC8zA"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=yIl2AUoC8zA" border="0"></img></a>
+</div><img src="http://feeds.feedburner.com/~r/arstechnica/index/~4/6ThR7b7Pc7A" height="1" width="1"/>]]></content:encoded>
+      <wfw:commentRss>http://arstechnica.com/apple/2014/06/ios-7-activation-lock-cutting-iphone-theft-damages-resale-market/feed/</wfw:commentRss>
+      <slash:comments>0</slash:comments>
+      <feedburner:origLink>http://arstechnica.com/apple/2014/06/ios-7-activation-lock-cutting-iphone-theft-damages-resale-market/</feedburner:origLink>
+    </item>
+    <item>
+      <title>Supreme Court smashes “do it on a computer” patents in 9-0 opinion</title>
+      <link>http://feeds.arstechnica.com/~r/arstechnica/index/~3/tA8BjH888A4/</link>
+      <comments>http://arstechnica.com/tech-policy/2014/06/supreme-court-smashes-do-it-on-a-computer-patents-in-9-0-opinion/#comments</comments>
+      <pubDate>Thu, 19 Jun 2014 16:08:07 +0000</pubDate>
+      <dc:creator><![CDATA[Joe Mullin]]></dc:creator>
+      <category><![CDATA[Law & Disorder]]></category>
+      <guid isPermaLink="false">http://arstechnica.com/?p=490717</guid>
+      <description><![CDATA[Court declines to stop software patents altogether. ]]></description>
+      <content:encoded><![CDATA[<div id="rss-wrap">
+<div>
+      <img src="http://cdn.arstechnica.net/wp-content/uploads/2014/06/wangcomputer.jpg"><div class="caption" style="font-size:0.8em">
+	
+			<div class="caption-credit">
+							<a rel="nofollow" href="https://www.flickr.com/photos/tarynmarie/218965633">Taryn Domingos</a>
+				</div>
+	  </div>
+  </div>
+ <p>The most-anticipated patent decision from this Supreme Court term was published today. The decision involves finance-related software patents that were being used against CLS Bank, a key part of the global financial infrastructure.</p>
+<p>The court ruled unanimously that all of patent-holder Alice Corp.'s claims were invalid, because they simply added computer language to a basic idea: using a financial intermediary to create trust in transactions. The <a href="http://www.supremecourt.gov/opinions/13pdf/13-298_7lh8.pdf">9-0 opinion</a> [PDF], written by Justice Clarence Thomas, is the clearest statement yet from the Supreme Court that adding technological-sounding language to existing ideas isn't enough to get a patent.</p>
+<p class="p1">Some advocates were hoping the case would go so far as to eliminate software patents altogether. If that were to happen, this would have likely been the case to do it. But the court didn't go that far, instead suggesting that software patents could still be allowed when they "improve the functioning of the computer itself" or "improve an existing technological process."</p>
+</div><p><a href="http://arstechnica.com/tech-policy/2014/06/supreme-court-smashes-do-it-on-a-computer-patents-in-9-0-opinion/#p3">Read 18 remaining paragraphs</a> | <a href="http://arstechnica.com/tech-policy/2014/06/supreme-court-smashes-do-it-on-a-computer-patents-in-9-0-opinion/?comments=1">Comments</a></p><div class="feedflare">
+<a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=tA8BjH888A4:f6zlnqUFx4s:V_sGLiPBpWU"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=tA8BjH888A4:f6zlnqUFx4s:V_sGLiPBpWU" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=tA8BjH888A4:f6zlnqUFx4s:F7zBnMyn0Lo"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=tA8BjH888A4:f6zlnqUFx4s:F7zBnMyn0Lo" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=tA8BjH888A4:f6zlnqUFx4s:qj6IDK7rITs"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=qj6IDK7rITs" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=tA8BjH888A4:f6zlnqUFx4s:yIl2AUoC8zA"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=yIl2AUoC8zA" border="0"></img></a>
+</div><img src="http://feeds.feedburner.com/~r/arstechnica/index/~4/tA8BjH888A4" height="1" width="1"/>]]></content:encoded>
+      <wfw:commentRss>http://arstechnica.com/tech-policy/2014/06/supreme-court-smashes-do-it-on-a-computer-patents-in-9-0-opinion/feed/</wfw:commentRss>
+      <slash:comments>0</slash:comments>
+      <feedburner:origLink>http://arstechnica.com/tech-policy/2014/06/supreme-court-smashes-do-it-on-a-computer-patents-in-9-0-opinion/</feedburner:origLink>
+    </item>
+    <item>
+      <title>Unlike AT&amp;T, T-Mobile isn’t charging companies to circumvent data caps</title>
+      <link>http://feeds.arstechnica.com/~r/arstechnica/index/~3/vVQ_mkv3h6Q/</link>
+      <comments>http://arstechnica.com/business/2014/06/unlike-att-t-mobile-isnt-charging-companies-to-circumvent-data-caps/#comments</comments>
+      <pubDate>Thu, 19 Jun 2014 16:06:45 +0000</pubDate>
+      <dc:creator><![CDATA[Jon Brodkin]]></dc:creator>
+      <category><![CDATA[Gear & Gadgets]]></category>
+      <category><![CDATA[Law & Disorder]]></category>
+      <category><![CDATA[Ministry of Innovation]]></category>
+      <category><![CDATA[data caps]]></category>
+      <category><![CDATA[music freedom]]></category>
+      <category><![CDATA[music streaming]]></category>
+      <category><![CDATA[Net Neutrality]]></category>
+      <category><![CDATA[t-mobile]]></category>
+      <category><![CDATA[unlimited data]]></category>
+      <guid isPermaLink="false">http://arstechnica.com/?p=490669</guid>
+      <description><![CDATA[Still, T-Mobile favors big content providers with unlimited music streaming.]]></description>
+      <content:encoded><![CDATA[<div id="rss-wrap">
+<div>
+      <img src="http://cdn.arstechnica.net/wp-content/uploads/2014/06/John-Legere-Un-carrier-Event-Hi-res-2-640x441.jpg"><div class="caption" style="font-size:0.8em">
+			<div class="caption-text">T-Mobile UnCEO John Legere</div>
+	
+			<div class="caption-credit">
+							T-Mobile				</div>
+	  </div>
+  </div>
+ <p>T-Mobile US last night <a href="https://arstechnica.com/gadgets/2014/06/t-mobile-broadens-uncarrier-ness-with-unlimited-music-iphone-test-drives/">announced</a> a "Music Freedom" program that will exempt certain music streaming services from counting against the monthly data limits that the so-called "uncarrier" imposes on its customers.</p>
+<p>"Beginning immediately, T-Mobile’s Simple Choice customers will now be able to stream all the music they want from all the most popular streaming services, including Pandora, Rhapsody, iHeartRadio, iTunes Radio, Slacker, and Spotify—without ever hitting their high-speed 4G LTE data service [limits]," <a href="http://newsroom.t-mobile.com/news/t-mobile-sets-your-music-free.htm">T-Mobile said</a>. "Music services from T-Mobile partners—Samsung’s Milk Music and the forthcoming Beatport music app from SFX—will also stream without data charges for T-Mobile customers."</p>
+<p>Companies don't have to pay T-Mobile for the privilege of not counting against 4G data limits.</p>
+</div><p><a href="http://arstechnica.com/business/2014/06/unlike-att-t-mobile-isnt-charging-companies-to-circumvent-data-caps/#p3">Read 15 remaining paragraphs</a> | <a href="http://arstechnica.com/business/2014/06/unlike-att-t-mobile-isnt-charging-companies-to-circumvent-data-caps/?comments=1">Comments</a></p><div class="feedflare">
+<a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=vVQ_mkv3h6Q:5g9KYv-VtnI:V_sGLiPBpWU"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=vVQ_mkv3h6Q:5g9KYv-VtnI:V_sGLiPBpWU" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=vVQ_mkv3h6Q:5g9KYv-VtnI:F7zBnMyn0Lo"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=vVQ_mkv3h6Q:5g9KYv-VtnI:F7zBnMyn0Lo" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=vVQ_mkv3h6Q:5g9KYv-VtnI:qj6IDK7rITs"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=qj6IDK7rITs" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=vVQ_mkv3h6Q:5g9KYv-VtnI:yIl2AUoC8zA"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=yIl2AUoC8zA" border="0"></img></a>
+</div><img src="http://feeds.feedburner.com/~r/arstechnica/index/~4/vVQ_mkv3h6Q" height="1" width="1"/>]]></content:encoded>
+      <wfw:commentRss>http://arstechnica.com/business/2014/06/unlike-att-t-mobile-isnt-charging-companies-to-circumvent-data-caps/feed/</wfw:commentRss>
+      <slash:comments>0</slash:comments>
+      <feedburner:origLink>http://arstechnica.com/business/2014/06/unlike-att-t-mobile-isnt-charging-companies-to-circumvent-data-caps/</feedburner:origLink>
+    </item>
+    <item>
+      <title>Google puts Android’s stock e-mail app in the Play Store</title>
+      <link>http://feeds.arstechnica.com/~r/arstechnica/index/~3/HutCdBMTz_c/</link>
+      <comments>http://arstechnica.com/gadgets/2014/06/google-puts-androids-stock-e-mail-app-in-the-play-store/#comments</comments>
+      <pubDate>Thu, 19 Jun 2014 15:56:47 +0000</pubDate>
+      <dc:creator><![CDATA[Ron Amadeo]]></dc:creator>
+      <category><![CDATA[Gear & Gadgets]]></category>
+      <category><![CDATA[email]]></category>
+      <category><![CDATA[gmail]]></category>
+      <category><![CDATA[updates]]></category>
+      <guid isPermaLink="false">http://arstechnica.com/?p=490671</guid>
+      <description><![CDATA[Update: Compatibility is limited (and maybe a little buggy) but give it a try.]]></description>
+      <content:encoded><![CDATA[<div id="rss-wrap">
+<div>
+      <img src="http://cdn.arstechnica.net/wp-content/uploads/2014/06/2014-06-19_11-12-20.png">
+</div>
+ <p>As part of Google's quest to <a href="http://arstechnica.com/gadgets/2013/09/balky-carriers-and-slow-oems-step-aside-google-is-defragging-android/">never, ever</a> have to do an Android system update again, the company has parted out yet another stock Android app to the Play Store. This time it's Google's Email app, which used to be tied to your version of Android but is now free for anyone to download—provided you're running version 4.0 and above. Google's Email app looks and works just like Gmail, with a navigation drawer and swipe-to-delete.</p>
+<p>Email is one of the Android Open Source Project apps that OEMs commonly skin (and occasionally ruin). Just as Google offers its keyboard, calendar, and camera on the Play Store, if users prefer Google's Email, it's now just a download away. The only apps not in the Play Store now are Calculator, Clock, Phone, and People.</p>
+<p>The version of Email on the Play Store is actually newer than what came packed with Android 4.4.3. The changelog lists "increased security for Gmail accounts," "easier account setup flow," "printing," and "other bug fixes." We really have no idea why anyone would want to use the Email app with Gmail instead of the native Gmail app, but more security is never a bad thing.</p>
+</div><p><a href="http://arstechnica.com/gadgets/2014/06/google-puts-androids-stock-e-mail-app-in-the-play-store/#p3">Read 2 remaining paragraphs</a> | <a href="http://arstechnica.com/gadgets/2014/06/google-puts-androids-stock-e-mail-app-in-the-play-store/?comments=1">Comments</a></p><div class="feedflare">
+<a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=HutCdBMTz_c:VsBPQH4jrlg:V_sGLiPBpWU"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=HutCdBMTz_c:VsBPQH4jrlg:V_sGLiPBpWU" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=HutCdBMTz_c:VsBPQH4jrlg:F7zBnMyn0Lo"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=HutCdBMTz_c:VsBPQH4jrlg:F7zBnMyn0Lo" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=HutCdBMTz_c:VsBPQH4jrlg:qj6IDK7rITs"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=qj6IDK7rITs" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=HutCdBMTz_c:VsBPQH4jrlg:yIl2AUoC8zA"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=yIl2AUoC8zA" border="0"></img></a>
+</div><img src="http://feeds.feedburner.com/~r/arstechnica/index/~4/HutCdBMTz_c" height="1" width="1"/>]]></content:encoded>
+      <wfw:commentRss>http://arstechnica.com/gadgets/2014/06/google-puts-androids-stock-e-mail-app-in-the-play-store/feed/</wfw:commentRss>
+      <slash:comments>0</slash:comments>
+      <feedburner:origLink>http://arstechnica.com/gadgets/2014/06/google-puts-androids-stock-e-mail-app-in-the-play-store/</feedburner:origLink>
+    </item>
+    <item>
+      <title>Netflix adds a new kind of original programming: The talk show</title>
+      <link>http://feeds.arstechnica.com/~r/arstechnica/index/~3/7-T1xU9zeXw/</link>
+      <comments>http://arstechnica.com/business/2014/06/netflix-brings-a-talk-show-into-its-original-programming-mix-for-2016/#comments</comments>
+      <pubDate>Thu, 19 Jun 2014 15:46:13 +0000</pubDate>
+      <dc:creator><![CDATA[Casey Johnston]]></dc:creator>
+      <category><![CDATA[Ministry of Innovation]]></category>
+      <category><![CDATA[Amazon]]></category>
+      <category><![CDATA[chelsea handler]]></category>
+      <category><![CDATA[Netflix]]></category>
+      <category><![CDATA[Original programming]]></category>
+      <category><![CDATA[Prime]]></category>
+      <category><![CDATA[streaming]]></category>
+      <category><![CDATA[talk show]]></category>
+      <category><![CDATA[video]]></category>
+      <guid isPermaLink="false">http://arstechnica.com/?p=490687</guid>
+      <description><![CDATA[Chelsea Handler and Netflix are developing a series together.]]></description>
+      <content:encoded><![CDATA[<div id="rss-wrap"> <p>Late-night talk show host Chelsea Handler and Netflix have announced plans to launch a Netflix talk show starting in 2016, according <a href="http://money.cnn.com/2014/06/19/media/chelsea-handler-netflix/index.html">CNN</a>. The show will be a Netflix original program featuring Handler, available in all of Netflix's regions.</p>
+<p>Netflix has expanded its original offerings significantly over the last year, but the formula for releasing the shows has stayed the same: when a new season of, say, <em>House of Cards</em> is ready, all the episodes are dropped at once on the service for optimal bingeing. Compared to live TV, Netflix series can be more like epic 13-hour films with hourly 15-second intermissions. Amazon, which has also flung itself full-force into original online content, takes a different approach, <a href="http://variety.com/2013/digital/news/alpha-house-ranks-as-amazon-videos-no-1-tv-series-with-freeview-1200854752/">making some episodes free</a> to non-Prime users and releasing them slowly.</p>
+<p>A talk show, however, is a more timely format and will demand that Netflix shake up its distribution routine. The company didn't reveal details of how it plans to time the release of each episode, though there are plenty of Web shows that operate in a similar way to draw inspiration from. Netflix confirmed to CNN that the deal for the show is exclusive, and Handler cannot create a talk show for any TV networks.</p>
+</div><p><a href="http://arstechnica.com/business/2014/06/netflix-brings-a-talk-show-into-its-original-programming-mix-for-2016/#p3">Read 1 remaining paragraphs</a> | <a href="http://arstechnica.com/business/2014/06/netflix-brings-a-talk-show-into-its-original-programming-mix-for-2016/?comments=1">Comments</a></p><div class="feedflare">
+<a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=7-T1xU9zeXw:EtyE87B_qpA:V_sGLiPBpWU"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=7-T1xU9zeXw:EtyE87B_qpA:V_sGLiPBpWU" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=7-T1xU9zeXw:EtyE87B_qpA:F7zBnMyn0Lo"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=7-T1xU9zeXw:EtyE87B_qpA:F7zBnMyn0Lo" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=7-T1xU9zeXw:EtyE87B_qpA:qj6IDK7rITs"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=qj6IDK7rITs" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=7-T1xU9zeXw:EtyE87B_qpA:yIl2AUoC8zA"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=yIl2AUoC8zA" border="0"></img></a>
+</div><img src="http://feeds.feedburner.com/~r/arstechnica/index/~4/7-T1xU9zeXw" height="1" width="1"/>]]></content:encoded>
+      <wfw:commentRss>http://arstechnica.com/business/2014/06/netflix-brings-a-talk-show-into-its-original-programming-mix-for-2016/feed/</wfw:commentRss>
+      <slash:comments>0</slash:comments>
+      <feedburner:origLink>http://arstechnica.com/business/2014/06/netflix-brings-a-talk-show-into-its-original-programming-mix-for-2016/</feedburner:origLink>
+    </item>
+    <item>
+      <title>Thrustmaster’s TX steering wheel will transform your Forza experience</title>
+      <link>http://feeds.arstechnica.com/~r/arstechnica/index/~3/n6mD1e-uOGo/</link>
+      <comments>http://arstechnica.com/gaming/2014/06/thrustmasters-tx-steering-wheel-will-transform-your-forza-experience/#comments</comments>
+      <pubDate>Thu, 19 Jun 2014 15:40:59 +0000</pubDate>
+      <dc:creator><![CDATA[Jonathan M. Gitlin]]></dc:creator>
+      <category><![CDATA[Cars Technica]]></category>
+      <category><![CDATA[Opposable Thumbs]]></category>
+      <guid isPermaLink="false">http://arstechnica.com/?p=488963</guid>
+      <description><![CDATA[It's wheely immersive.]]></description>
+      <content:encoded><![CDATA[<div id="rss-wrap">
+<div>
+      <img src="http://cdn.arstechnica.net/wp-content/uploads/2014/06/TX-wheel-640x361.png"><div class="caption" style="font-size:0.8em">
+	
+			<div class="caption-credit">
+							Elle Gitlin				</div>
+	  </div>
+  </div>
+ 
+<p>When I first got my hands on <em>Forza 5</em>, I felt the game <a href="http://arstechnica.com/gaming/2013/11/ars-resident-racer-takes-a-second-look-at-forza-motorsport-5/">showed plenty of promise</a> but needed to grow into its potential. Two things happened last week that suggest this has happened. The first was my introduction to <a href="http://www.thrustmaster.com/en_US/products/tx-racing-wheel-ferrari-458-italia-edition">Thrustmaster’s TX Racing Wheel</a>.</p>
+<p>Reverting back to a controller after several happy years of force-feedback steering wheels left me unclear about just how immersive Turn 10’s latest game truly was. The Xbox One debuted in November last year with a new protocol for communicating with peripherals, removing any hope for backward compatibility with my Xbox 360 racing setup. Microsoft undoubtedly had good reasons, but there’s no denying that it left <a href="http://arstechnica.com/gaming/2013/11/ars-resident-racer-takes-a-second-look-at-forza-motorsport-5/?comments=1&amp;post=25776905#comment-25776905">many</a> <a href="http://arstechnica.com/gaming/2013/11/ars-resident-racer-takes-a-second-look-at-forza-motorsport-5/?comments=1&amp;post=25777551#comment-25777551">gamers</a> <a href="http://arstechnica.com/gaming/2013/11/ars-resident-racer-takes-a-second-look-at-forza-motorsport-5/?comments=1&amp;post=25777637#comment-25777637">annoyed</a> at the prospect of having their <a href="http://arstechnica.com/gaming/2010/01/all-i-wheely-want-for-christmas-fanatec-porsche-turbo-s-wheel/">expensive racing wheel setups</a> for the Xbox 360 rendered obsolete. Now, after a couple of weeks with Thrustmaster’s Ferrari-branded product, I can report that the verdict is "OMG." Simply put, if you enjoy racing games and you own an Xbox One, your gameplay will be transformed with the addition of the Thrustmaster TX.</p>
+<p></p>
+</div><p><a href="http://arstechnica.com/gaming/2014/06/thrustmasters-tx-steering-wheel-will-transform-your-forza-experience/#p3">Read 7 remaining paragraphs</a> | <a href="http://arstechnica.com/gaming/2014/06/thrustmasters-tx-steering-wheel-will-transform-your-forza-experience/?comments=1">Comments</a></p><div class="feedflare">
+<a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=n6mD1e-uOGo:shawxoBKlic:V_sGLiPBpWU"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=n6mD1e-uOGo:shawxoBKlic:V_sGLiPBpWU" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=n6mD1e-uOGo:shawxoBKlic:F7zBnMyn0Lo"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=n6mD1e-uOGo:shawxoBKlic:F7zBnMyn0Lo" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=n6mD1e-uOGo:shawxoBKlic:qj6IDK7rITs"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=qj6IDK7rITs" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=n6mD1e-uOGo:shawxoBKlic:yIl2AUoC8zA"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=yIl2AUoC8zA" border="0"></img></a>
+</div><img src="http://feeds.feedburner.com/~r/arstechnica/index/~4/n6mD1e-uOGo" height="1" width="1"/>]]></content:encoded>
+      <wfw:commentRss>http://arstechnica.com/gaming/2014/06/thrustmasters-tx-steering-wheel-will-transform-your-forza-experience/feed/</wfw:commentRss>
+      <slash:comments>0</slash:comments>
+      <feedburner:origLink>http://arstechnica.com/gaming/2014/06/thrustmasters-tx-steering-wheel-will-transform-your-forza-experience/</feedburner:origLink>
+    </item>
+    <item>
+      <title>Imaging an exoplanet with a flower-power star shade</title>
+      <link>http://feeds.arstechnica.com/~r/arstechnica/index/~3/UH0GEWmRcm8/</link>
+      <comments>http://arstechnica.com/science/2014/06/imaging-an-exoplanet-with-a-flower-power-star-shade/#comments</comments>
+      <pubDate>Thu, 19 Jun 2014 13:00:37 +0000</pubDate>
+      <dc:creator><![CDATA[John Timmer]]></dc:creator>
+      <category><![CDATA[Scientific Method]]></category>
+      <category><![CDATA[astronomy]]></category>
+      <category><![CDATA[exoplanets]]></category>
+      <guid isPermaLink="false">http://arstechnica.com/?p=490541</guid>
+      <description><![CDATA[A specially designed shade can take a planet's host star out of the picture.]]></description>
+      <content:encoded><![CDATA[<div id="rss-wrap">
+<div>
+      <img src="http://cdn.arstechnica.net/wp-content/uploads/2014/06/Unknown.png"><div class="caption" style="font-size:0.8em">
+	
+			<div class="caption-credit">
+							<a rel="nofollow" href="http://planetquest.jpl.nasa.gov/system/videos/images/15/medium/Unknown.png?1395188082">NASA/JPL</a>
+				</div>
+	  </div>
+  </div>
+ <p>Late in May, at a <a href="http://www.worldsciencefestival.com/2014/05/alien-life-will-we-know-it-when-we-see-it/">session of the World Science Festival</a> devoted to the prospects of finding life on other planets, astronomer Sara Seager came with a rather unusual looking stage prop—a thin black slab that tapered at one end. It sat off on the side of the stage for a while before Seager got the chance to explain what it was doing there. When she finally got the chance, she said why it could be the key to imaging small, rocky planets like Earth—and determining if their atmospheres provide hints that there might be life on the surface below.</p>
+<p>So far, the only planets outside our solar system that we've imaged directly have been huge gas giants, far from their host star and young enough to still be glowing in the infrared. Even with their relative brightness and distance from the nearest star, the light from the star would completely swamp our sensors. So the telescopes used to contain what's called a coronagraph, or star shade. This blots out the central star, ensuring that the majority of light the telescope receives comes from the planets.</p>
+<p>But small planets close enough to be in the habitable zone of a star create two problems. The first is that they don't produce any of their own light; instead, we'd have to capture light that's produced by the host star and then reflected off their surfaces or atmospheres. This makes them very dim, especially relative to their host star.</p>
+</div><p><a href="http://arstechnica.com/science/2014/06/imaging-an-exoplanet-with-a-flower-power-star-shade/#p3">Read 7 remaining paragraphs</a> | <a href="http://arstechnica.com/science/2014/06/imaging-an-exoplanet-with-a-flower-power-star-shade/?comments=1">Comments</a></p><div class="feedflare">
+<a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=UH0GEWmRcm8:7H4hq2KhgIQ:V_sGLiPBpWU"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=UH0GEWmRcm8:7H4hq2KhgIQ:V_sGLiPBpWU" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=UH0GEWmRcm8:7H4hq2KhgIQ:F7zBnMyn0Lo"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=UH0GEWmRcm8:7H4hq2KhgIQ:F7zBnMyn0Lo" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=UH0GEWmRcm8:7H4hq2KhgIQ:qj6IDK7rITs"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=qj6IDK7rITs" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=UH0GEWmRcm8:7H4hq2KhgIQ:yIl2AUoC8zA"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=yIl2AUoC8zA" border="0"></img></a>
+</div><img src="http://feeds.feedburner.com/~r/arstechnica/index/~4/UH0GEWmRcm8" height="1" width="1"/>]]></content:encoded>
+      <wfw:commentRss>http://arstechnica.com/science/2014/06/imaging-an-exoplanet-with-a-flower-power-star-shade/feed/</wfw:commentRss>
+      <slash:comments>0</slash:comments>
+      <feedburner:origLink>http://arstechnica.com/science/2014/06/imaging-an-exoplanet-with-a-flower-power-star-shade/</feedburner:origLink>
+    </item>
+  </channel>
+</rss>
