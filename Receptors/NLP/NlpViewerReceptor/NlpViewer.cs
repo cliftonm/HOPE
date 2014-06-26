@@ -29,21 +29,40 @@ namespace NlpViewerReceptor
 			: base(rsys)
 		{
 			InitializeViewer();
-			AddEmitProtocol("DatabaseProtocol");
+			AddEmitProtocol("DatabaseRecord");
+			AddEmitProtocol("DropView");
 			AddEmitProtocol("RequireView");
 
-			AddReceiveProtocol("AlchemyPhrasesRecordset", signal => ProcessPhrases(signal));
+			// Don't forgot, explicit cast is required for some reason to differentiate between Action<dyanmic> and Func<bool, dynamic>
+			AddReceiveProtocol("AlchemyPhrasesRecordset", (Action<dynamic>)(signal => ProcessPhrases(signal)));
 		}
 
 		public override void Initialize()
 		{
 			base.Initialize();
 
+			// If you need to change the view:
+			//CreateCarrier("DropView", signal =>
+			//{
+			//	signal.ViewName = "AlchemyPhrases";
+			//});
+
+			CreateCarrier("DropView", signal =>
+			{
+				signal.ViewName = "FeedItemPhrases";
+			});
+
 			CreateCarrier("RequireView", signal =>
 				{
 					signal.ViewName = "AlchemyPhrases";
 					signal.Sql = "select ar.PhraseID as PhraseID, ap.Name as Name, count(ar.PhraseID) as Count from AlchemyResult ar left join AlchemyPhrase ap on ar.PhraseID = ap.ID group by ar.PhraseID, ap.Name order by count(PhraseID) desc";
 				});
+
+			CreateCarrier("RequireView", signal =>
+			{
+				signal.ViewName = "FeedItemPhrases";
+				signal.Sql = "select f.ID as FeedItemID, ar.PhraseID as PhraseID, f.FeedName as FeedName, fi.PubDate as PubDate, fi.Title as Title, fi.Categories as Categories, fi.URL as URL from AlchemyResult ar left join RSSFeedItem fi on fi.ID = ar.FeedItemID left join RSSFeed f on f.ID = fi.RSSFeedID";
+			});
 
 			CreateCarrier("DatabaseRecord", signal =>
 				{
@@ -75,10 +94,31 @@ namespace NlpViewerReceptor
 
 		protected void ProcessPhrases(dynamic signal)
 		{
+			List<dynamic> records = signal.Recordset;
+			dtItems.BeginLoadData();
+			
+			foreach (dynamic rec in records)
+			{
+				DataRow row = dtItems.NewRow();
+				row[0] = rec.PhraseID;
+				row[1] = rec.Name;
+				row[2] = rec.Count;
+				dtItems.Rows.Add(row);
+			}
+
+			dtItems.EndLoadData();
 		}
 
 		protected void OnCellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
 		{
+			// A viewer will pick up the resulting FeedItemPhrasesRecordset.
+			CreateCarrier("DatabaseRecord", signal =>
+				{
+					signal.Action = "select";				// only select is allowed on views.
+					signal.ViewName = "FeedItemPhrases";
+					signal.ResponseProtocol = "FeedItemPhrases";
+					signal.Where = "PhraseID = " + dv[e.RowIndex][0].ToString();
+				});
 		}
     }
 }

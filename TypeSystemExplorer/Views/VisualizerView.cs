@@ -427,6 +427,9 @@ namespace TypeSystemExplorer.Views
 		public void UpdateConnections()
 		{
 			CreateReceptorConnections();
+			RecalcMembranes();
+			membraneLocation.Keys.ForEach(m => m.ProcessQueuedCarriers());
+			Program.Skin.ProcessQueuedCarriers();
 			Invalidate(true);
 		}
 

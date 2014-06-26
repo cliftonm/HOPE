@@ -317,11 +317,16 @@ namespace PersistenceReceptor
 			// TODO: Join these through the common interface IGetSetSemanticType
 
 			sb.Append(String.Join(", ", (from c in types select c.Name).ToArray()));
-			sb.Append(" from " + signal.TableName);
+			sb.Append(" from " + tableOrViewName);
 
 			string where = signal.Where;
-			where = where.Replace("'", "''");			// TODO: Use parameters?
-			if (signal.Where != null) sb.Append(" where " + where);
+
+			if (where != null)
+			{
+				where = where.Replace("'", "''");			// TODO: Use parameters?
+				sb.Append(" where " + where);
+			}
+
 			// support for group by is sort of pointless since we're not supporting any mechanism for aggregate functions.
 			if (signal.GroupBy != null) sb.Append(" group by " + signal.GroupBy);
 			if (signal.OrderBy != null) sb.Append(" order by " + signal.OrderBy);

@@ -62,7 +62,7 @@ namespace AlchemyReceptor
 			urlQueue = new Queue<string>();
 
 			AddEmitProtocol("RequireTable");
-			AddEmitProtocol("DatabaseProtocol");
+			AddEmitProtocol("DatabaseRecord");
 
 			AddReceiveProtocol("URL",
 				// cast is required to resolve Func vs. Action in parameter list.
@@ -165,7 +165,7 @@ namespace AlchemyReceptor
 			{
 				url = urlQueue.Dequeue();
 				captureDate = DateTime.Now;
-				GetUrlID(url);					// We will be needing the ID of the URL.
+				GetFeedItemID(url);					// We will be needing the ID of the URL.
 				RegisterGate(FeedItemGate, 1, CheckIfParsed);
 				RegisterGate(ProcessingUrlGate, 1, ProcessNextUrl);
 			}
@@ -208,12 +208,19 @@ namespace AlchemyReceptor
 		/// <param name="url"></param>
 		protected void ParseEntities(string url)
 		{
-			GetEntities(url);
+			bool success = GetEntities(url);
 
-			if (dsEntities.Tables["entity"] != null)
+			if (success)
 			{
-				PersistUniqueEntityTypes(dsEntities.Tables["entity"]);
-				// Will continue with PersistEntities
+				if (dsEntities.Tables["entity"] != null)
+				{
+					PersistUniqueEntityTypes(dsEntities.Tables["entity"]);
+					// Will continue with PersistEntities
+				}
+				else
+				{
+					DecrementGate(ProcessECK);
+				}
 			}
 			else
 			{
@@ -223,12 +230,19 @@ namespace AlchemyReceptor
 
 		protected void ParseKeywords(string url)
 		{
-			GetKeywords(url);
+			bool success = GetKeywords(url);
 
-			if (dsKeywords.Tables["keyword"] != null)
+			if (success)
 			{
-				PersistUniqueKeywords(dsKeywords.Tables["keyword"]);
-				// Will continue with PersistKeywords
+				if (dsKeywords.Tables["keyword"] != null)
+				{
+					PersistUniqueKeywords(dsKeywords.Tables["keyword"]);
+					// Will continue with PersistKeywords
+				}
+				else
+				{
+					DecrementGate(ProcessECK);
+				}
 			}
 			else
 			{
@@ -238,12 +252,19 @@ namespace AlchemyReceptor
 
 		protected void ParseConcepts(string url)
 		{
-			GetConcepts(url);
+			bool success = GetConcepts(url);
 
-			if (dsConcepts.Tables["concept"] != null)
+			if (success)
 			{
-				PersistUniqueConcepts(dsConcepts.Tables["concept"]);
-				// Will continue with PersistConcepts.
+				if (dsConcepts.Tables["concept"] != null)
+				{
+					PersistUniqueConcepts(dsConcepts.Tables["concept"]);
+					// Will continue with PersistConcepts.
+				}
+				else
+				{
+					DecrementGate(ProcessECK);
+				}
 			}
 			else
 			{
@@ -257,43 +278,79 @@ namespace AlchemyReceptor
 			alchemyObj.LoadAPIKey("alchemyapikey.txt");
 		}
 
-		protected void GetEntities(string url)
+		protected bool GetEntities(string url)
 		{
-			dsEntities = new DataSet();
-			string xml = alchemyObj.URLGetRankedNamedEntities(url);
-			TextReader tr = new StringReader(xml);
-			XmlReader xr = XmlReader.Create(tr);
-			dsEntities.ReadXml(xr);
-			xr.Close();
-			tr.Close();
+			bool success = true;
+
+			try
+			{
+				dsEntities = new DataSet();
+				string xml = alchemyObj.URLGetRankedNamedEntities(url);
+				TextReader tr = new StringReader(xml);
+				XmlReader xr = XmlReader.Create(tr);
+				dsEntities.ReadXml(xr);
+				xr.Close();
+				tr.Close();
+			}
+			catch
+			{
+				// TODO: Log errors.
+				success = false;
+			}
+
+			return success;
 
 			// Temporary hardcoded test.
 			// dsEntities.ReadXml("alchemyEntityTestResponse.xml");
 		}
 
-		protected void GetKeywords(string url)
+		protected bool GetKeywords(string url)
 		{
-			dsKeywords = new DataSet();
-			string xml = alchemyObj.URLGetRankedKeywords(url);
-			TextReader tr = new StringReader(xml);
-			XmlReader xr = XmlReader.Create(tr);
-			dsKeywords.ReadXml(xr);
-			xr.Close();
-			tr.Close();
+			bool success = true;
+
+			try
+			{
+				dsKeywords = new DataSet();
+				string xml = alchemyObj.URLGetRankedKeywords(url);
+				TextReader tr = new StringReader(xml);
+				XmlReader xr = XmlReader.Create(tr);
+				dsKeywords.ReadXml(xr);
+				xr.Close();
+				tr.Close();
+			}
+			catch
+			{
+				// TODO: Log errors.
+				success = false;
+			}
+
+			return success;
 
 			// Temporary hardcoded test.
 			// dsKeywords.ReadXml("alchemyKeywordsTestResponse.xml");
 		}
 
-		protected void GetConcepts(string url)
+		protected bool GetConcepts(string url)
 		{
-			dsConcepts = new DataSet();
-			string xml = alchemyObj.URLGetRankedConcepts(url);
-			TextReader tr = new StringReader(xml);
-			XmlReader xr = XmlReader.Create(tr);
-			dsConcepts.ReadXml(xr);
-			xr.Close();
-			tr.Close();
+			bool success = true;
+
+			try
+			{
+				dsConcepts = new DataSet();
+				string xml = alchemyObj.URLGetRankedConcepts(url);
+				TextReader tr = new StringReader(xml);
+				XmlReader xr = XmlReader.Create(tr);
+				dsConcepts.ReadXml(xr);
+				xr.Close();
+				tr.Close();
+			}
+			catch
+			{
+				// TODO: Log errors.
+				success = false;
+			}
+
+			return success;
 
 			// Temporary hardcoded test.
 			// dsConcepts.ReadXml("alchemyConceptsTestResponse.xml");
@@ -432,11 +489,11 @@ namespace AlchemyReceptor
 							rowSignal.CaptureDate = captureDate;
 							rowSignal.PhraseID = entityPhraseIDMap[row["text"].ToString()];
 							rowSignal.Relevance = Convert.ToDouble(row["relevance"]);
-							rowSignal.UrlID = feedItemID;
+							rowSignal.FeedItemID = feedItemID;
 							rowSignal.AlchemyEntityTypeID = entityTypeIDMap[row["type"].ToString()];
 							rowSignal.AlchemyResultTypeID = resultTypeIDMap["Entity"];
 						});
-						signal.UniqueKey = "UrlID, PhraseID, AlchemyEntityTypeID";			// composite UK.
+						signal.UniqueKey = "FeedItemID, PhraseID, AlchemyEntityTypeID";			// composite UK.
 						signal.Tag = "Alchemy";
 					});
 				});
@@ -457,10 +514,10 @@ namespace AlchemyReceptor
 						rowSignal.CaptureDate = captureDate;
 						rowSignal.PhraseID = keywordPhraseIDMap[row["text"].ToString()];
 						rowSignal.Relevance = Convert.ToDouble(row["relevance"]);
-						rowSignal.UrlID = feedItemID;
+						rowSignal.FeedItemID = feedItemID;
 						rowSignal.AlchemyResultTypeID = resultTypeIDMap["Keyword"];
 					});
-					signal.UniqueKey = "UrlID, PhraseID, AlchemyResultTypeID";			// composite UK.
+					signal.UniqueKey = "FeedItemID, PhraseID, AlchemyResultTypeID";			// composite UK.
 					signal.Tag = "Alchemy";
 				});
 			});
@@ -482,10 +539,10 @@ namespace AlchemyReceptor
 						rowSignal.CaptureDate = captureDate;
 						rowSignal.PhraseID = conceptPhraseIDMap[row["text"].ToString()];
 						rowSignal.Relevance = Convert.ToDouble(row["relevance"]);
-						rowSignal.UrlID = feedItemID;
+						rowSignal.FeedItemID = feedItemID;
 						rowSignal.AlchemyResultTypeID = resultTypeIDMap["Concept"];
 					});
-					signal.UniqueKey = "UrlID, PhraseID, AlchemyResultTypeID";			// composite UK.
+					signal.UniqueKey = "FeedItemID, PhraseID, AlchemyResultTypeID";			// composite UK.
 					signal.Tag = "Alchemy";
 				});
 			});
@@ -493,7 +550,7 @@ namespace AlchemyReceptor
 			DecrementGate(ProcessECK);
 		}
 
-		protected void GetUrlID(string url)
+		protected void GetFeedItemID(string url)
 		{
 			CreateCarrierIfReceiver("DatabaseRecord", signal =>
 			{
@@ -514,7 +571,7 @@ namespace AlchemyReceptor
 			{
 				signal.TableName = "AlchemyResult";
 				signal.Action = "GetID";
-				signal.UniqueKey = "UrlID";
+				signal.UniqueKey = "FeedItemID";
 				signal.UniqueKeyValue = feedItemID.ToString();
 				signal.Tag = "AlchemyResultID";
 			});

@@ -34,7 +34,7 @@ namespace FeedReaderReceptor
 			: base(rsys)
 		{
 			AddEmitProtocol("RequireTable");
-			AddEmitProtocol("DatabaseProtocol");
+			AddEmitProtocol("DatabaseRecord");
 			AddEmitProtocol("RSSFeedItemDisplay");
 			AddEmitProtocol("URL");
 
@@ -64,8 +64,11 @@ namespace FeedReaderReceptor
 			RequireFeedTables();
 
 			// Temporary:
-			FeedName = "Ars Technica";
-			FeedUrl = "http://feeds.arstechnica.com/arstechnica/index?format=xml";
+//			FeedName = "Ars Technica";
+//			FeedUrl = "http://feeds.arstechnica.com/arstechnica/index?format=xml";
+
+			FeedName = "NPR World News";
+			FeedUrl = "http://www.npr.org/rss/rss.php?id=1004";
 
 			EndInit();		// for testing
 		}
@@ -76,12 +79,12 @@ namespace FeedReaderReceptor
 			
 			// =========== USE ACTUAL URL AS RSS FEED SOURCE ===============
 			// The real version will create an XmlReader for the URL
-			// XmlReader xr = XmlReader.Create(FeedUrl);
+			XmlReader xr = XmlReader.Create(FeedUrl);
 
 			// =========== USE FILE AS RSS FEED SOURCE ===================
-			string data = File.ReadAllText("rss.xml");
-			TextReader tr = new StringReader(data);
-			XmlReader xr = XmlReader.Create(tr);
+			// string data = File.ReadAllText("rss.xml");
+			// TextReader tr = new StringReader(data);
+			// XmlReader xr = XmlReader.Create(tr);
 
 			feed = SyndicationFeed.Load(xr);
 			xr.Close();

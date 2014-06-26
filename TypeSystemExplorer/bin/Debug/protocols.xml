@@ -375,6 +375,12 @@
       </AttributeValues>
     </SemanticTypeDecl>
 
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="DropView"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
     <SemanticTypeStruct DeclType="RequireTable">
       <Attributes>
         <NativeType Name="TableName" ImplementingType="string"/>
@@ -386,6 +392,12 @@
       <Attributes>
         <NativeType Name="ViewName" ImplementingType="string"/>
         <NativeType Name="Sql" ImplementingType="string"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <SemanticTypeStruct DeclType="DropView">
+      <Attributes>
+        <NativeType Name="ViewName" ImplementingType="string"/>
       </Attributes>
     </SemanticTypeStruct>
 
@@ -1185,6 +1197,12 @@
       </AttributeValues>
     </SemanticTypeDecl>
 
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="RSSFeedItemRecordset"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
     <SemanticTypeStruct DeclType="RSSFeedItem">
       <Attributes>
         <NativeType Name="RSSFeedID" ImplementingType="int"/>
@@ -1198,7 +1216,14 @@
         <NativeType Name="PubDate" ImplementingType="DateTime"/>
       </Attributes>
     </SemanticTypeStruct>
-  
+
+    <SemanticTypeStruct DeclType="RSSFeedItemRecordset">
+      <Attributes>
+        <NativeType Name="Recordset" ImplementingType="List&lt;dynamic&gt;"/>
+        <NativeType Name="Tag" ImplementingType="string"/>
+      </Attributes>
+    </SemanticTypeStruct>
+    
     <SemanticTypeDecl OfType="Noun">
       <AttributeValues>
         <Attribute Name="Name" Value="RSSFeedItemDisplay"/>
@@ -1250,7 +1275,7 @@
         <NativeType Name="CaptureDate" ImplementingType="DateTime"/>
         <NativeType Name="PhraseID" ImplementingType="int"/>
         <NativeType Name="Relevance" ImplementingType="double"/>
-        <NativeType Name="UrlID" ImplementingType="int"/>
+        <NativeType Name="FeedItemID" ImplementingType="int"/>
         <NativeType Name="AlchemyEntityTypeID" ImplementingType="int"/>
         <NativeType Name="AlchemyResultTypeID" ImplementingType="int"/>
         <NativeType Name="Occurs" ImplementingType="int"/>
@@ -1319,6 +1344,37 @@
         <NativeType Name="Tag" ImplementingType="string"/>
       </Attributes>
     </SemanticTypeStruct>
-    
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="FeedItemPhrases"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="FeedItemPhrases">
+      <Attributes>
+        <NativeType Name="FeedItemID" ImplementingType="int"/>
+        <NativeType Name="PhraseID" ImplementingType="int"/>
+        <NativeType Name="FeedName" ImplementingType="string"/>
+        <NativeType Name="PubDate" ImplementingType="DateTime"/>
+        <NativeType Name="Title" ImplementingType="string"/>
+        <NativeType Name="Categories" ImplementingType="string"/>
+        <SemanticElement Name="URL"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="FeedItemPhrasesRecordset"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="FeedItemPhrasesRecordset">
+      <Attributes>
+        <NativeType Name="Recordset" ImplementingType="List&lt;dynamic&gt;"/>
+        <NativeType Name="Tag" ImplementingType="string"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
   </Collection>
 </SemanticTypes>

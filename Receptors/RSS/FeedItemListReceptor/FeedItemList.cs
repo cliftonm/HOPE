@@ -32,6 +32,8 @@ namespace FeedItemListReceptor
 				// cast is required to resolve Func vs. Action in parameter list.
 				(Action<dynamic>)(signal => AddFeedItem(signal)));
 
+			AddReceiveProtocol("FeedItemPhrasesRecordset", (Action<dynamic>)(signal => ProcessFeedItems(signal)));
+
 			AddEmitProtocol("URL");
 
 			InitializeViewer();
@@ -80,6 +82,20 @@ namespace FeedItemListReceptor
 		protected void OnCellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
 		{
 			CreateCarrier("URL", signal => signal.Value = dv[e.RowIndex][4].ToString());
+		}
+
+		/// <summary>
+		/// Respond to a feed item recordset, as we want to display these.
+		/// </summary>
+		protected void ProcessFeedItems(dynamic sig)
+		{
+			dtItems.Clear();
+			List<dynamic> records = sig.Recordset;
+
+			foreach (dynamic rec in records)
+			{
+				AddFeedItem(rec);
+			}
 		}
 	}
 }
