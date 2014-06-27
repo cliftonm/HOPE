@@ -121,6 +121,10 @@ namespace TypeSystemExplorer.Controllers
 			Assert.SilentTry(() => Program.AppState.RestoreState("Form"));
 		}
 
+		public void EndSystemInit()
+		{
+		}
+
 		public void LoadXml(string filename)
 		{
 			XmlEditorController.IfNull(() => NewDocument("xmlEditor.xml"));
@@ -736,6 +740,9 @@ namespace TypeSystemExplorer.Controllers
 			// When we're all done, recreate the connections because the membrane permeability might have changed.
 			// TODO: Should this be an event the visualizer picks up on?
 			VisualizerController.View.UpdateConnections();
+
+			// Inform all receptors that the system is fully initialized.
+			Program.Skin.EndSystemInit();
 		}
 
 		protected void DeserializeMembranes(MembraneDef membraneDef, Membrane membrane, List<Membrane> membraneList)

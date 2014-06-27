@@ -73,36 +73,40 @@ namespace FeedReaderReceptor
 			FeedUrl = "http://www.npr.org/rss/rss.php?id=1004";
 		}
 
-		public override void EndSystemInit()
+		public override async void EndSystemInit()
 		{
 			base.EndSystemInit();
-			
-			// =========== USE ACTUAL URL AS RSS FEED SOURCE ===============
-			// The real version will create an XmlReader for the URL
-			XmlReader xr = XmlReader.Create(FeedUrl);
 
-			// =========== USE FILE AS RSS FEED SOURCE ===================
-			// string data = File.ReadAllText("rss.xml");
-			// TextReader tr = new StringReader(data);
-			// XmlReader xr = XmlReader.Create(tr);
+//			await Task.Run(() =>
+//				{
 
-			feed = SyndicationFeed.Load(xr);
-			xr.Close();
+					// =========== USE ACTUAL URL AS RSS FEED SOURCE ===============
+					// The real version will create an XmlReader for the URL
+					XmlReader xr = XmlReader.Create(FeedUrl);
 
-			// ============ CREATE A FILE FROM AN RSS FEED ===================
-			/*
-			XmlDocument xdoc = new XmlDocument();
-			xdoc.Load(FeedUrl);
-			StringBuilder sb = new StringBuilder();
-			XmlWriterSettings settings = new XmlWriterSettings();
-			settings.Indent = true;
-			XmlWriter xw = XmlWriter.Create(sb, settings);
-			xdoc.WriteTo(xw);
-			xw.Close();
-			File.WriteAllText("rss.xml", sb.ToString());
-			*/
+					// =========== USE FILE AS RSS FEED SOURCE ===================
+					// string data = File.ReadAllText("rss.xml");
+					// TextReader tr = new StringReader(data);
+					// XmlReader xr = XmlReader.Create(tr);
 
-			// TODO: Once the TTL is determined, the feed reader will add an event to the timer to remind itself to update the feed when the TTL expires.
+					feed = SyndicationFeed.Load(xr);
+					xr.Close();
+
+					// ============ CREATE A FILE FROM AN RSS FEED ===================
+					/*
+					XmlDocument xdoc = new XmlDocument();
+					xdoc.Load(FeedUrl);
+					StringBuilder sb = new StringBuilder();
+					XmlWriterSettings settings = new XmlWriterSettings();
+					settings.Indent = true;
+					XmlWriter xw = XmlWriter.Create(sb, settings);
+					xdoc.WriteTo(xw);
+					xw.Close();
+					File.WriteAllText("rss.xml", sb.ToString());
+					*/
+
+					// TODO: Once the TTL is determined, the feed reader will add an event to the timer to remind itself to update the feed when the TTL expires.
+//				});
 
 			CreateMissingDatabaseFeedEntry(FeedName, FeedUrl, feed.Title.Text, feed.Description.Text);
 		}

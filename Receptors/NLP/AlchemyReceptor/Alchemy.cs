@@ -183,23 +183,26 @@ namespace AlchemyReceptor
 		/// <summary>
 		/// NLP's the url if we haven't NLP'd it already.  
 		/// </summary>
-		protected void GetDataFromAlchemy()
+		protected async void GetDataFromAlchemy()
 		{
-			// We don't need to query Alchemy if we've already done so in the past.
-			// TODO: Yes, I know, this assumes static content.
-			if (alchemyResultID == -1)
-			{
-				InitializeAlchemy();
-				RegisterGate(ProcessECK, 3, ProcessNextUrl);
-				ParseEntities(url);
-				ParseKeywords(url);
-				ParseConcepts(url);
-			}
-			else
-			{
-				// Nothing to do.  Check the next queued URL.
-				DecrementGate(ProcessingUrlGate);
-			}
+//			await Task.Run(() =>
+//				{
+					// We don't need to query Alchemy if we've already done so in the past.
+					// TODO: Yes, I know, this assumes static content.
+					if (alchemyResultID == -1)
+					{
+						InitializeAlchemy();
+						RegisterGate(ProcessECK, 3, ProcessNextUrl);
+						ParseEntities(url);
+						ParseKeywords(url);
+						ParseConcepts(url);
+					}
+					else
+					{
+						// Nothing to do.  Check the next queued URL.
+						DecrementGate(ProcessingUrlGate);
+					}
+//				});
 		}
 
 		/// <summary>
@@ -487,13 +490,13 @@ namespace AlchemyReceptor
 						signal.Row = InstantiateCarrier("AlchemyResult", rowSignal =>
 						{
 							rowSignal.CaptureDate = captureDate;
-							rowSignal.PhraseID = entityPhraseIDMap[row["text"].ToString()];
+							rowSignal.AlchemyPhraseID = entityPhraseIDMap[row["text"].ToString()];
 							rowSignal.Relevance = Convert.ToDouble(row["relevance"]);
-							rowSignal.FeedItemID = feedItemID;
+							rowSignal.RSSFeedItemID = feedItemID;
 							rowSignal.AlchemyEntityTypeID = entityTypeIDMap[row["type"].ToString()];
 							rowSignal.AlchemyResultTypeID = resultTypeIDMap["Entity"];
 						});
-						signal.UniqueKey = "FeedItemID, PhraseID, AlchemyEntityTypeID";			// composite UK.
+						signal.UniqueKey = "RSSFeedItemID, AlchemyPhraseID, AlchemyEntityTypeID";			// composite UK.
 						signal.Tag = "Alchemy";
 					});
 				});
@@ -512,12 +515,12 @@ namespace AlchemyReceptor
 					signal.Row = InstantiateCarrier("AlchemyResult", rowSignal =>
 					{
 						rowSignal.CaptureDate = captureDate;
-						rowSignal.PhraseID = keywordPhraseIDMap[row["text"].ToString()];
+						rowSignal.AlchemyPhraseID = keywordPhraseIDMap[row["text"].ToString()];
 						rowSignal.Relevance = Convert.ToDouble(row["relevance"]);
-						rowSignal.FeedItemID = feedItemID;
+						rowSignal.RSSFeedItemID = feedItemID;
 						rowSignal.AlchemyResultTypeID = resultTypeIDMap["Keyword"];
 					});
-					signal.UniqueKey = "FeedItemID, PhraseID, AlchemyResultTypeID";			// composite UK.
+					signal.UniqueKey = "RSSFeedItemID, AlchemyPhraseID, AlchemyResultTypeID";			// composite UK.
 					signal.Tag = "Alchemy";
 				});
 			});
@@ -537,12 +540,12 @@ namespace AlchemyReceptor
 					{
 						// TODO: We are ignoring dbpedia, freebase, and opencyc at the moment.
 						rowSignal.CaptureDate = captureDate;
-						rowSignal.PhraseID = conceptPhraseIDMap[row["text"].ToString()];
+						rowSignal.AlchemyPhraseID = conceptPhraseIDMap[row["text"].ToString()];
 						rowSignal.Relevance = Convert.ToDouble(row["relevance"]);
-						rowSignal.FeedItemID = feedItemID;
+						rowSignal.RSSFeedItemID = feedItemID;
 						rowSignal.AlchemyResultTypeID = resultTypeIDMap["Concept"];
 					});
-					signal.UniqueKey = "FeedItemID, PhraseID, AlchemyResultTypeID";			// composite UK.
+					signal.UniqueKey = "RSSFeedItemID, AlchemyPhraseID, AlchemyResultTypeID";			// composite UK.
 					signal.Tag = "Alchemy";
 				});
 			});
@@ -571,7 +574,7 @@ namespace AlchemyReceptor
 			{
 				signal.TableName = "AlchemyResult";
 				signal.Action = "GetID";
-				signal.UniqueKey = "FeedItemID";
+				signal.UniqueKey = "RSSFeedItemID";
 				signal.UniqueKeyValue = feedItemID.ToString();
 				signal.Tag = "AlchemyResultID";
 			});

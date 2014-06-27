@@ -72,6 +72,7 @@ namespace Clifton.Receptor.Interfaces
 		ICarrier CreateInternalCarrier(ISemanticTypeStruct protocol, dynamic signal);
 		void Remove(IReceptorInstance receptorInstance);
 		List<string> GetProtocolsEndingWith(string match);
+		void EndSystemInit();
 	}
 
 	public interface ICarrier
@@ -129,8 +130,9 @@ namespace Clifton.Receptor.Interfaces
 		ICarrier CreateInternalCarrier(ISemanticTypeStruct protocol, dynamic signal);
 		void Remove(IReceptorInstance receptorInstance);
 		void Reset();
+		void EndSystemInit();
 		void Dissolve();
-		void RegisterReceptor(string fn);
+		IReceptor RegisterReceptor(string fn);
 		void RegisterReceptor(string name, IReceptorInstance instance);
 		void LoadReceptors(Action<IReceptor> afterRegister = null);
 		void ProcessQueuedCarriers();
