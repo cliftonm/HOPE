@@ -164,6 +164,36 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="..\Applets\APOD Scraper.xml">
+      <Link>Applets\APOD Scraper.xml</Link>
+    </Content>
+    <Content Include="..\Applets\FeedReader.xml">
+      <Link>Applets\FeedReader.xml</Link>
+    </Content>
+    <Content Include="..\Applets\Hello World.xml">
+      <Link>Applets\Hello World.xml</Link>
+    </Content>
+    <Content Include="..\Applets\HuntTheWumpus.xml">
+      <Link>Applets\HuntTheWumpus.xml</Link>
+    </Content>
+    <Content Include="..\Applets\HuntTheWumpusCavesOnly.xml">
+      <Link>Applets\HuntTheWumpusCavesOnly.xml</Link>
+    </Content>
+    <Content Include="..\Applets\HuntTheWumpusCavesOnlySorted.xml">
+      <Link>Applets\HuntTheWumpusCavesOnlySorted.xml</Link>
+    </Content>
+    <Content Include="..\Applets\Membrane Permeability 1.xml">
+      <Link>Applets\Membrane Permeability 1.xml</Link>
+    </Content>
+    <Content Include="..\Applets\Thumbnail Viewer and Writer.xml">
+      <Link>Applets\Thumbnail Viewer and Writer.xml</Link>
+    </Content>
+    <Content Include="..\Applets\Two Separate Thumbnail Viewers.xml">
+      <Link>Applets\Two Separate Thumbnail Viewers.xml</Link>
+    </Content>
+    <Content Include="..\Applets\Weather Report.xml">
+      <Link>Applets\Weather Report.xml</Link>
+    </Content>
     <Content Include="bin\Debug\12565.xml" />
     <Content Include="bin\Debug\94306.xml" />
     <Content Include="bin\Debug\about.xml" />

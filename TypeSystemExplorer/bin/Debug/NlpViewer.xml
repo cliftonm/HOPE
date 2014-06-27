@@ -8,14 +8,42 @@
   xmlns:wfui="WeifenLuo.WinFormsUI.Docking, WeifenLuo.WinFormsUI.Docking"
   xmlns:def="def"
   xmlns:ref="ref">
-  <wf:Form Text="NLP Viewer" Size="600, 300" StartPosition="CenterScreen" ShowInTaskbar="false" MinimizeBox="false" MaximizeBox="false">
+  <wf:Form Text="NLP Viewer" Size="300, 300" StartPosition="CenterScreen" ShowInTaskbar="false" MinimizeBox="false" MaximizeBox="false">
     <wf:Controls>
-      <wf:DataGridView Dock="Fill"
-                       AllowUserToAddRows="false"
-                       AllowUserToDeleteRows="false"
-                       ReadOnly="true"
-                       SelectionMode="FullRowSelect"
-                       RowHeadersVisible="False"/>
+      <wf:TabControl Dock="Fill">
+        <wf:Controls>
+          <wf:TabPage Text="Entities">
+            <wf:Controls>
+              <wf:DataGridView def:Name="dgvEntities" Dock="Fill"
+                               AllowUserToAddRows="false"
+                               AllowUserToDeleteRows="false"
+                               ReadOnly="true"
+                               SelectionMode="FullRowSelect"
+                               RowHeadersVisible="False"/>
+            </wf:Controls>
+          </wf:TabPage>
+          <wf:TabPage Text="Keywords">
+            <wf:Controls>
+              <wf:DataGridView def:Name="dgvKeywords" Dock="Fill"
+                               AllowUserToAddRows="false"
+                               AllowUserToDeleteRows="false"
+                               ReadOnly="true"
+                               SelectionMode="FullRowSelect"
+                               RowHeadersVisible="False"/>
+            </wf:Controls>
+          </wf:TabPage>
+          <wf:TabPage Text="Concepts">
+            <wf:Controls>
+              <wf:DataGridView def:Name="dgvConcepts" Dock="Fill"
+                               AllowUserToAddRows="false"
+                               AllowUserToDeleteRows="false"
+                               ReadOnly="true"
+                               SelectionMode="FullRowSelect"
+                               RowHeadersVisible="False"/>
+            </wf:Controls>
+          </wf:TabPage>
+        </wf:Controls>
+      </wf:TabControl>
     </wf:Controls>
   </wf:Form>
 </MycroXaml>

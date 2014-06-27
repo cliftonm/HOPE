@@ -1270,6 +1270,18 @@
       </AttributeValues>
     </SemanticTypeDecl>
 
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="AlchemyResultTypeRecord"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="AlchemyResultTypeRecordRecordset"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
     <!-- Used by the persistence store to return the ID for the record inserted. -->
 
     <SemanticTypeStruct DeclType="AlchemyResult">
@@ -1302,6 +1314,20 @@
       </Attributes>
     </SemanticTypeStruct>
 
+    <SemanticTypeStruct DeclType="AlchemyResultTypeRecord">
+      <Attributes>
+        <NativeType Name="ID" ImplementingType="int"/>
+        <NativeType Name="Name" ImplementingType="string"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <SemanticTypeStruct DeclType="AlchemyResultTypeRecordRecordset">
+      <Attributes>
+        <NativeType Name="Recordset" ImplementingType="List&lt;dynamic&gt;"/>
+        <NativeType Name="Tag" ImplementingType="string"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
     <!-- The table name is provided as additional information and the tag is what the call provided during the call to insert. -->
     <SemanticTypeDecl OfType="Noun">
       <AttributeValues>
@@ -1330,6 +1356,8 @@
     <SemanticTypeStruct DeclType="AlchemyPhrases">
       <Attributes>
         <NativeType Name="AlchemyPhraseID" ImplementingType="int"/>
+        <NativeType Name="AlchemyResultTypeID" ImplementingType="int"/>
+        <NativeType Name="EntityName" ImplementingType="string"/>
         <NativeType Name="Name" ImplementingType="string"/>
         <NativeType Name="Count" ImplementingType="int"/>
       </Attributes>

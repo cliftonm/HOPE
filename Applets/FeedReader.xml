@@ -9,7 +9,7 @@
             <ixm:MembraneDef Name="">
               <ixm:Receptors>
                 <ixm:ReceptorDef Name="SQLite Persistor" AssemblyName="PersistenceReceptor.dll" Enabled="True" Location="573, 347" />
-                <ixm:ReceptorDef Name="Feed Reader" AssemblyName="FeedReaderReceptor.dll" Enabled="True" Location="680, 287" />
+                <ixm:ReceptorDef Name="Feed Reader" AssemblyName="FeedReaderReceptor.dll" Enabled="False" Location="680, 287" />
                 <ixm:ReceptorDef Name="Alchemy" AssemblyName="AlchemyReceptor.dll" Enabled="True" Location="671, 452" />
               </ixm:Receptors>
               <ixm:Permeabilities>

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml;
 
 using Clifton.ExtensionMethods;
 using Clifton.MycroParser;
@@ -22,8 +23,18 @@ namespace NlpViewerReceptor
 		public override bool IsEdgeReceptor { get { return true; } }
 
 		protected Form form;
-		protected DataTable dtItems;
-		protected DataView dv;
+		protected DataTable dtEntities;
+		protected DataView dvEntities;
+		protected DataTable dtKeywords;
+		protected DataView dvKeywords;
+		protected DataTable dtConcepts;
+		protected DataView dvConcepts;
+
+		protected DataGridView dgvEntities;
+		protected DataGridView dgvKeywords;
+		protected DataGridView dgvConcepts;
+
+		protected Dictionary<string, int> resultTypeIDMap = new Dictionary<string, int>();
 
 		public NlpViewer(IReceptorSystem rsys)
 			: base(rsys)
@@ -34,7 +45,30 @@ namespace NlpViewerReceptor
 			AddEmitProtocol("RequireView");
 
 			// Don't forgot, explicit cast is required for some reason to differentiate between Action<dyanmic> and Func<bool, dynamic>
-			AddReceiveProtocol("AlchemyPhrasesRecordset", (Action<dynamic>)(signal => ProcessPhrases(signal)));
+			AddReceiveProtocol("AlchemyPhrasesRecordset", 
+				signal => signal.Tag == "Entities",
+				signal => ProcessEntityPhrases(signal));
+
+			AddReceiveProtocol("AlchemyPhrasesRecordset",
+				signal => signal.Tag == "Keywords",
+				signal => ProcessKeywordPhrases(signal));
+
+			AddReceiveProtocol("AlchemyPhrasesRecordset",
+				signal => signal.Tag == "Concepts",
+				signal => ProcessConceptPhrases(signal));
+
+			AddReceiveProtocol("AlchemyResultTypeRecordRecordset",
+				signal => signal.Tag == "NlpViewer",
+				signal =>
+				{
+					// Save our name to ID mapping of result types.
+					foreach(dynamic row in signal.Recordset)
+					{
+						resultTypeIDMap[row.Name] = row.ID;
+					}
+
+					LoadPhrases();
+				});
 		}
 
 		public override void Initialize()
@@ -42,20 +76,20 @@ namespace NlpViewerReceptor
 			base.Initialize();
 
 			// If you need to change the view:
-			CreateCarrier("DropView", signal =>
-			{
-				signal.ViewName = "AlchemyPhrases";
-			});
+			//CreateCarrier("DropView", signal =>
+			//{
+			//	signal.ViewName = "AlchemyPhrases";
+			//});
 
-			CreateCarrier("DropView", signal =>
-			{
-				signal.ViewName = "FeedItemPhrases";
-			});
+			//CreateCarrier("DropView", signal =>
+			//{
+			//	signal.ViewName = "FeedItemPhrases";
+			//});
 
 			CreateCarrier("RequireView", signal =>
 				{
 					signal.ViewName = "AlchemyPhrases";
-					signal.Sql = "select ar.AlchemyPhraseID as AlchemyPhraseID, ap.Name as Name, count(distinct ar.RSSFeedItemID) as Count from AlchemyResult ar left join AlchemyPhrase ap on ar.AlchemyPhraseID = ap.ID group by ar.AlchemyPhraseID, ap.Name order by count(distinct ar.RSSFeedItemID) desc";
+					signal.Sql = "select ar.AlchemyPhraseID as AlchemyPhraseID, ar.AlchemyResultTypeID as AlchemyResultTypeID, et.Name as EntityName, ap.Name as Name, count(distinct ar.RSSFeedItemID) as Count from AlchemyResult ar left join AlchemyPhrase ap on ar.AlchemyPhraseID = ap.ID left join AlchemyEntityType et on et.ID = ar.AlchemyEntityTypeID group by ar.AlchemyPhraseID, ar.AlchemyResultTypeID, et.Name, ap.Name order by count(distinct ar.RSSFeedItemID) desc";
 				});
 
 			CreateCarrier("RequireView", signal =>
@@ -66,51 +100,169 @@ namespace NlpViewerReceptor
 
 			CreateCarrier("DatabaseRecord", signal =>
 				{
+					signal.Action = "select";
+					signal.TableName = "AlchemyResultType";
+					signal.ResponseProtocol = "AlchemyResultTypeRecord";
+					signal.Tag = "NlpViewer";
+				});
+		}
+
+		/// <summary>
+		/// Load phrases for each result type.
+		/// </summary>
+		protected void LoadPhrases()
+		{
+			// Entities:
+			CreateCarrier("DatabaseRecord", signal =>
+				{
 					signal.Action = "select";				// only select is allowed on views.
 					signal.ViewName = "AlchemyPhrases";
 					signal.ResponseProtocol = "AlchemyPhrases";
+					signal.Where = "AlchemyResultTypeID = " + resultTypeIDMap["Entity"];
+					signal.Tag = "Entities";
 				});
+			
+			// Keywords:
+			CreateCarrier("DatabaseRecord", signal =>
+			{
+				signal.Action = "select";				// only select is allowed on views.
+				signal.ViewName = "AlchemyPhrases";
+				signal.ResponseProtocol = "AlchemyPhrases";
+				signal.Where = "AlchemyResultTypeID = " + resultTypeIDMap["Keyword"];
+				signal.Tag = "Keywords";
+			});
+			
+			// Concepts:
+			CreateCarrier("DatabaseRecord", signal =>
+			{
+				signal.Action = "select";				// only select is allowed on views.
+				signal.ViewName = "AlchemyPhrases";
+				signal.ResponseProtocol = "AlchemyPhrases";
+				signal.Where = "AlchemyResultTypeID = " + resultTypeIDMap["Concept"];
+				signal.Tag = "Concepts";
+			});
 		}
 
 		protected void InitializeViewer()
 		{
-			form = MycroParser.InstantiateFromFile<Form>("NlpViewer.xml", null);
+			MycroParser mp = new MycroParser();
+			XmlDocument doc = new XmlDocument();
+			doc.Load("NlpViewer.xml");
+			mp.Load(doc, "Form", null);
+			form = (Form)mp.Process();
+
+			// form = MycroParser.InstantiateFromFile<Form>("NlpViewer.xml", null);
+			dgvEntities = (DataGridView)mp.ObjectCollection["dgvEntities"];
+			dgvKeywords = (DataGridView)mp.ObjectCollection["dgvKeywords"];
+			dgvConcepts = (DataGridView)mp.ObjectCollection["dgvConcepts"];
 			form.StartPosition = FormStartPosition.Manual;
-			form.Location = new Point(0, 400);
+			form.Location = new Point(100, 400);
 
-			dtItems = new DataTable();
-			dtItems.Columns.Add(new DataColumn("AlchemyPhraseID", typeof(int)));
-			dtItems.Columns.Add(new DataColumn("Name", typeof(string)));
-			dtItems.Columns.Add(new DataColumn("Count", typeof(int)));
+			dtEntities = new DataTable();
+			dtEntities.Columns.Add(new DataColumn("AlchemyPhraseID", typeof(int)));
+			dtEntities.Columns.Add(new DataColumn("Name", typeof(string)));
+			dtEntities.Columns.Add(new DataColumn("Type", typeof(string)));
+			dtEntities.Columns.Add(new DataColumn("Count", typeof(int)));
 
-			dv = new DataView(dtItems);
+			dvEntities = new DataView(dtEntities);
 
-			((DataGridView)form.Controls[0]).DataSource = dv;
-			((DataGridView)form.Controls[0]).Columns[0].Visible = false;
-			((DataGridView)form.Controls[0]).CellContentDoubleClick += OnCellContentDoubleClick;
+			dgvEntities.DataSource = dvEntities;
+			dgvEntities.CellContentDoubleClick += OnCellContentDoubleClick;
+
+			// ==============================
+
+			dtConcepts = new DataTable();
+			dtConcepts.Columns.Add(new DataColumn("AlchemyPhraseID", typeof(int)));
+			dtConcepts.Columns.Add(new DataColumn("Name", typeof(string)));
+			dtConcepts.Columns.Add(new DataColumn("Count", typeof(int)));
+
+			dvConcepts = new DataView(dtConcepts);
+
+			dgvConcepts.DataSource = dvConcepts;
+			dgvConcepts.CellContentDoubleClick += OnCellContentDoubleClick;
+
+			// ==============================
+
+			dtKeywords = new DataTable();
+			dtKeywords.Columns.Add(new DataColumn("AlchemyPhraseID", typeof(int)));
+			dtKeywords.Columns.Add(new DataColumn("Name", typeof(string)));
+			dtKeywords.Columns.Add(new DataColumn("Count", typeof(int)));
+
+			dvKeywords = new DataView(dtKeywords);
+
+			dgvKeywords.DataSource = dvKeywords;
+			dgvKeywords.CellContentDoubleClick += OnCellContentDoubleClick;
 
 			form.Show();
 		}
 
-		protected void ProcessPhrases(dynamic signal)
+		protected void ProcessEntityPhrases(dynamic signal)
 		{
 			List<dynamic> records = signal.Recordset;
-			dtItems.BeginLoadData();
+			dtEntities.BeginLoadData();
 			
 			foreach (dynamic rec in records)
 			{
-				DataRow row = dtItems.NewRow();
+				DataRow row = dtEntities.NewRow();
+				row[0] = rec.AlchemyPhraseID;
+				row[1] = rec.Name;
+				row[2] = rec.EntityName;
+				row[3] = rec.Count;
+				dtEntities.Rows.Add(row);
+			}
+
+			dtEntities.EndLoadData();
+
+			// http://connect.microsoft.com/VisualStudio/feedback/details/335552/datagridview-resets-first-column-to-visible-when-handle-is-not-yet-created
+			// In my case, the issue is related to which tab has focus initially
+			dgvEntities.Columns[0].Visible = false;
+		}
+
+		protected void ProcessKeywordPhrases(dynamic signal)
+		{
+			List<dynamic> records = signal.Recordset;
+			dtKeywords.BeginLoadData();
+
+			foreach (dynamic rec in records)
+			{
+				DataRow row = dtKeywords.NewRow();
 				row[0] = rec.AlchemyPhraseID;
 				row[1] = rec.Name;
 				row[2] = rec.Count;
-				dtItems.Rows.Add(row);
+				dtKeywords.Rows.Add(row);
 			}
 
-			dtItems.EndLoadData();
+			dtKeywords.EndLoadData();
+
+			// http://connect.microsoft.com/VisualStudio/feedback/details/335552/datagridview-resets-first-column-to-visible-when-handle-is-not-yet-created
+			// In my case, the issue is related to which tab has focus initially
+			dgvKeywords.Columns[0].Visible = false;
+		}
+
+		protected void ProcessConceptPhrases(dynamic signal)
+		{
+			List<dynamic> records = signal.Recordset;
+			dtConcepts.BeginLoadData();
+
+			foreach (dynamic rec in records)
+			{
+				DataRow row = dtConcepts.NewRow();
+				row[0] = rec.AlchemyPhraseID;
+				row[1] = rec.Name;
+				row[2] = rec.Count;
+				dtConcepts.Rows.Add(row);
+			}
+
+			dtConcepts.EndLoadData();
+			
+			// http://connect.microsoft.com/VisualStudio/feedback/details/335552/datagridview-resets-first-column-to-visible-when-handle-is-not-yet-created
+			// In my case, the issue is related to which tab has focus initially
+			dgvConcepts.Columns[0].Visible = false;
 		}
 
 		protected void OnCellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
 		{
+			DataView dv = (DataView)((DataGridView)sender).DataSource;
 			// A viewer will pick up the resulting FeedItemPhrasesRecordset.
 			CreateCarrier("DatabaseRecord", signal =>
 				{
