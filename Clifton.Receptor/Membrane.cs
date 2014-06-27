@@ -76,6 +76,15 @@ namespace Clifton.Receptor
 			ProtocolPermeability.Clear();
 		}
 
+		/// <summary>
+		/// Call on each receptor instance when the system has been fully initialized (applet or a receptor is dropped onto the surface.)
+		/// </summary>
+		public void EndSystemInit()
+		{
+			Membranes.ForEach(m => m.EndSystemInit());
+			receptorSystem.EndSystemInit();
+		}
+
 		// TODO: The receptors container should acquire this list, rather than it being set.
 		public void UpdateMasterConnectionList(Dictionary<IReceptor, List<IReceptor>> masterList)
 		{
@@ -102,9 +111,11 @@ namespace Clifton.Receptor
 			return receptorSystem.CreateInternalCarrier(protocol, signal);
 		}
 
-		public void RegisterReceptor(string fn)
+		public IReceptor RegisterReceptor(string fn)
 		{
-			receptorSystem.RegisterReceptor(fn);
+			IReceptor receptor = receptorSystem.RegisterReceptor(fn);
+
+			return receptor;
 		}
 
 		public IReceptor RegisterReceptor(string name, string assemblyName)

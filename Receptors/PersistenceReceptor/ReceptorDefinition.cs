@@ -156,7 +156,7 @@ namespace PersistenceReceptor
 
 		protected void DropView(dynamic signal)
 		{
-			Execute("drop view " + signal.ViewName);
+			Execute("drop view if exists " + signal.ViewName);
 		}
 
 		protected void DatabaseRecord(dynamic signal)

@@ -55,13 +55,13 @@ namespace NlpViewerReceptor
 			CreateCarrier("RequireView", signal =>
 				{
 					signal.ViewName = "AlchemyPhrases";
-					signal.Sql = "select ar.PhraseID as PhraseID, ap.Name as Name, count(distinct ar.FeedItemID) as Count from AlchemyResult ar left join AlchemyPhrase ap on ar.PhraseID = ap.ID group by ar.PhraseID, ap.Name order by count(distinct ar.FeedItemID) desc";
+					signal.Sql = "select ar.AlchemyPhraseID as AlchemyPhraseID, ap.Name as Name, count(distinct ar.RSSFeedItemID) as Count from AlchemyResult ar left join AlchemyPhrase ap on ar.AlchemyPhraseID = ap.ID group by ar.AlchemyPhraseID, ap.Name order by count(distinct ar.RSSFeedItemID) desc";
 				});
 
 			CreateCarrier("RequireView", signal =>
 			{
 				signal.ViewName = "FeedItemPhrases";
-				signal.Sql = "select distinct f.ID as FeedItemID, ar.PhraseID as PhraseID, f.FeedName as FeedName, fi.PubDate as PubDate, fi.Title as Title, fi.Categories as Categories, fi.URL as URL from AlchemyResult ar left join RSSFeedItem fi on fi.ID = ar.FeedItemID left join RSSFeed f on f.ID = fi.RSSFeedID";
+				signal.Sql = "select distinct f.ID as RSSFeedItemID, ar.AlchemyPhraseID as AlchemyPhraseID, f.FeedName as FeedName, fi.PubDate as PubDate, fi.Title as Title, fi.Categories as Categories, fi.URL as URL from AlchemyResult ar left join RSSFeedItem fi on fi.ID = ar.RSSFeedItemID left join RSSFeed f on f.ID = fi.RSSFeedID";
 			});
 
 			CreateCarrier("DatabaseRecord", signal =>
@@ -79,7 +79,7 @@ namespace NlpViewerReceptor
 			form.Location = new Point(0, 400);
 
 			dtItems = new DataTable();
-			dtItems.Columns.Add(new DataColumn("PhraseID", typeof(int)));
+			dtItems.Columns.Add(new DataColumn("AlchemyPhraseID", typeof(int)));
 			dtItems.Columns.Add(new DataColumn("Name", typeof(string)));
 			dtItems.Columns.Add(new DataColumn("Count", typeof(int)));
 
@@ -100,7 +100,7 @@ namespace NlpViewerReceptor
 			foreach (dynamic rec in records)
 			{
 				DataRow row = dtItems.NewRow();
-				row[0] = rec.PhraseID;
+				row[0] = rec.AlchemyPhraseID;
 				row[1] = rec.Name;
 				row[2] = rec.Count;
 				dtItems.Rows.Add(row);
@@ -117,7 +117,7 @@ namespace NlpViewerReceptor
 					signal.Action = "select";				// only select is allowed on views.
 					signal.ViewName = "FeedItemPhrases";
 					signal.ResponseProtocol = "FeedItemPhrases";
-					signal.Where = "PhraseID = " + dv[e.RowIndex][0].ToString();
+					signal.Where = "AlchemyPhraseID = " + dv[e.RowIndex][0].ToString();
 				});
 		}
     }

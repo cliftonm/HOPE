@@ -1275,9 +1275,9 @@
     <SemanticTypeStruct DeclType="AlchemyResult">
       <Attributes>
         <NativeType Name="CaptureDate" ImplementingType="DateTime"/>
-        <NativeType Name="PhraseID" ImplementingType="int"/>
+        <NativeType Name="AlchemyPhraseID" ImplementingType="int"/>
         <NativeType Name="Relevance" ImplementingType="double"/>
-        <NativeType Name="FeedItemID" ImplementingType="int"/>
+        <NativeType Name="RSSFeedItemID" ImplementingType="int"/>
         <NativeType Name="AlchemyEntityTypeID" ImplementingType="int"/>
         <NativeType Name="AlchemyResultTypeID" ImplementingType="int"/>
         <NativeType Name="Occurs" ImplementingType="int"/>
@@ -1329,7 +1329,7 @@
 
     <SemanticTypeStruct DeclType="AlchemyPhrases">
       <Attributes>
-        <NativeType Name="PhraseID" ImplementingType="int"/>
+        <NativeType Name="AlchemyPhraseID" ImplementingType="int"/>
         <NativeType Name="Name" ImplementingType="string"/>
         <NativeType Name="Count" ImplementingType="int"/>
       </Attributes>
@@ -1356,8 +1356,8 @@
 
     <SemanticTypeStruct DeclType="FeedItemPhrases">
       <Attributes>
-        <NativeType Name="FeedItemID" ImplementingType="int"/>
-        <NativeType Name="PhraseID" ImplementingType="int"/>
+        <NativeType Name="RSSFeedItemID" ImplementingType="int"/>
+        <NativeType Name="AlchemyPhraseID" ImplementingType="int"/>
         <NativeType Name="FeedName" ImplementingType="string"/>
         <NativeType Name="PubDate" ImplementingType="DateTime"/>
         <NativeType Name="Title" ImplementingType="string"/>

@@ -53,6 +53,7 @@ namespace TypeSystemExplorer.Controllers
 			View.DropPoint = View.NegativeSurfaceOffsetAdjust(new Point(args.X, args.Y));
 			View.StartDrop = true;
 			IMembrane dropInto = View.GetMembraneAt(View.DropPoint);
+			IReceptor droppedReceptor = null;
 
 			if (args.Data.GetFormats().Contains("FileDrop"))
 			{
@@ -69,7 +70,7 @@ namespace TypeSystemExplorer.Controllers
 							once = false;
 						}
 
-						dropInto.RegisterReceptor(fn);
+						droppedReceptor = dropInto.RegisterReceptor(fn);
 						receptorsRegistered = true;
 					}
 					else if (fn.ToLower().EndsWith(".jpg"))
@@ -103,6 +104,7 @@ namespace TypeSystemExplorer.Controllers
 			if (receptorsRegistered)
 			{
 				dropInto.LoadReceptors();
+				droppedReceptor.Instance.EndSystemInit();
 			}
 
 			View.StartDrop = false;

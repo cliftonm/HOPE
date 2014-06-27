@@ -135,10 +135,12 @@ namespace Clifton.Receptor
 		/// by calling LoadReceptors.  Used for registering receptors in a batch before instantiating them.
 		/// </summary>
 		/// <param name="filename"></param>
-		public void RegisterReceptor(string filename)
+		public IReceptor RegisterReceptor(string filename)
 		{
 			Receptor r = Receptor.FromFile(filename).Instantiate(this);
 			receptors.Add(r);
+
+			return r;
 		}
 
 		/// <summary>
@@ -279,6 +281,14 @@ namespace Clifton.Receptor
 			// TODO: Refactor out of this code.
 			// TODO: Add a "RemovedReceptor" event.
 			Say("Receptor " + receptor.Name + " removed.");
+		}
+
+		/// <summary>
+		/// Call on each receptor instance when the system has been fully initialized (applet or a receptor is dropped onto the surface.)
+		/// </summary>
+		public void EndSystemInit()
+		{
+			receptors.ForEach(r => r.Instance.EndSystemInit());
 		}
 
 		/// <summary>
