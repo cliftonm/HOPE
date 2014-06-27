@@ -7,7 +7,7 @@ Hope is a "surface" enabling end-users to create user-specific applications from
 
 Typical applications have a limited surface area of functionality / behavior  -- in other words, applications are frequently very monolithic.  The user can only "extend" behavior by going outside of the application, either to the cloud or another desktop application.
 
-Conversely, the Higher Order Programming Environment provides a dynamic, runtime, adaptive surface.  "Rreceptors" provide specific behaviors with which other receptors interact via "carriers" of information.  By "dropping" a customized configuration of receptors onto the surface, the end-user can create a behavior tailored specifically to his/her needs.  This behavior can be altered on-the-fly by introducing new receptors, removing existing ones, or re-organizing interactions within "membranes."
+Conversely, the Higher Order Programming Environment provides a dynamic, runtime, adaptive surface.  "Receptors" provide specific behaviors with which other receptors interact via "carriers" of information.  By "dropping" a customized configuration of receptors onto the surface, the end-user can create a behavior tailored specifically to his/her needs.  This behavior can be altered on-the-fly by introducing new receptors, removing existing ones, or re-organizing interactions within "membranes."
 
 Screenshots
 ----
