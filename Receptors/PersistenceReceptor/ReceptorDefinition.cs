@@ -181,7 +181,7 @@ namespace PersistenceReceptor
 			cmd.CommandText = "SELECT last_insert_rowid()";
 			int id = Convert.ToInt32(cmd.ExecuteScalar());
 
-			EmitID(id, signal.TableName, signal.Tag);
+			EmitID(id, signal.TableName, signal.Tag, true);
  
 			cmd.Dispose();
 		}
@@ -238,7 +238,7 @@ namespace PersistenceReceptor
 			}
 			else
 			{
-				EmitID(Convert.ToInt32(id), signal.TableName, signal.Tag);
+				EmitID(Convert.ToInt32(id), signal.TableName, signal.Tag, false);
 			}
 		}
 
@@ -275,7 +275,9 @@ namespace PersistenceReceptor
 				id = -1;
 			}
 
-			EmitID(Convert.ToInt32(id), signal.TableName, signal.Tag);
+			int iid = Convert.ToInt32(id);
+
+			EmitID(iid, signal.TableName, signal.Tag, iid == -1);
 		}
 
 		protected void Update(dynamic signal)
@@ -407,13 +409,21 @@ namespace PersistenceReceptor
 			cmd.Dispose();
 		}
 
-		protected void EmitID(int id, string tableName, string tag)
+		/// <summary>
+		/// Emits the ID along with the associated table name, the querent's tag, and a flag indicating
+		/// whether this is a new row or an existing row.  
+		/// "Insert" always returns true for NewRow.
+		/// "InsertIfMissing" returns true if an insert occurs, otherwise false.
+		/// "GetID" return true if the record was found using the UK, otherwise false.
+		/// </summary>
+		protected void EmitID(int id, string tableName, string tag, bool newRow)
 		{
 			// Respond with the ID value.
 			CreateCarrier("IDReturn", idSignal =>
 			{
 				idSignal.ID = id;
 				idSignal.TableName = tableName;
+				idSignal.NewRow = newRow;
 				idSignal.Tag = tag;
 			});
 		}

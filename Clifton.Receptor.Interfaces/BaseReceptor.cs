@@ -44,7 +44,7 @@ namespace Clifton.Receptor.Interfaces
 	/// <summary>
 	/// Useful to derive from this receptor when not needing to implement every single property / event handler.
 	/// </summary>
-	public abstract class BaseReceptor : IReceptorInstance, ISupportInitialize
+	public abstract class BaseReceptor : IReceptorInstance
 	{
 		public event EventHandler<EventArgs> ReceiveProtocolsChanged;
 		public event EventHandler<EventArgs> EmitProtocolsChanged;
@@ -103,11 +103,7 @@ namespace Clifton.Receptor.Interfaces
 			rq.Action(carrier.Signal);
 		}
 
-		public virtual void BeginInit()
-		{
-		}
-
-		public virtual void EndInit()
+		public virtual void EndSystemInit()
 		{
 		}
 

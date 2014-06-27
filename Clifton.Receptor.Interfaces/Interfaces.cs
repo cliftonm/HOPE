@@ -50,7 +50,18 @@ namespace Clifton.Receptor.Interfaces
 		/// </summary>
 		void Initialize();
 
+		/// <summary>
+		/// Called when the system shuts down, allowing receptor instances to dispose of unmanaged resources and 
+		/// perform other cleanup.
+		/// Also called when a new applet is loaded.
+		/// </summary>
 		void Terminate();
+
+		/// <summary>
+		/// Called when the entire system has been initialized, after loading an applet.
+		/// Called on an individual receptor when it is dragged and dropped onto an existing surface.
+		/// </summary>
+		void EndSystemInit();
 	}
 
 	public interface IReceptorSystem

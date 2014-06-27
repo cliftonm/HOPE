@@ -27,7 +27,6 @@ namespace FeedReaderReceptor
 		public string FeedName {get;set;}
 
 		protected int feedID;
-		protected int feedItemID;			// for testing
 		protected SyndicationFeed feed;
 
 		public FeedReader(IReceptorSystem rsys)
@@ -39,20 +38,23 @@ namespace FeedReaderReceptor
 			AddEmitProtocol("URL");
 
 			AddReceiveProtocol("IDReturn",
-				signal => signal.TableName == "RSSFeed" && signal.Tag == "FeedReader",
+				signal => signal.TableName == "RSSFeed",
 				signal =>
 				{
 					feedID = signal.ID;
 					SaveFeedItemsToDatabase(feed);
-					EmitFeedItems(feed);
 				});
 			
-			// For testing.
 			AddReceiveProtocol("IDReturn",
-				signal => signal.TableName == "RSSFeedItem" && signal.Tag == "FeedReader",
+				signal => signal.TableName == "RSSFeedItem",
 				signal =>
 				{
-					feedItemID = signal.ID;
+					// Only emit signals regarding this feed item if it is truly a new feed item.
+					if (signal.NewRow)
+					{
+						EmitFeedItemForDisplay(feed, signal.Tag);
+						EmitFeedItemUrl(feed, signal.Tag);
+					}
 				});
 		}
 
@@ -69,13 +71,11 @@ namespace FeedReaderReceptor
 
 			FeedName = "NPR World News";
 			FeedUrl = "http://www.npr.org/rss/rss.php?id=1004";
-
-			EndInit();		// for testing
 		}
 
-		public override void EndInit()
+		public override void EndSystemInit()
 		{
-			base.EndInit();
+			base.EndSystemInit();
 			
 			// =========== USE ACTUAL URL AS RSS FEED SOURCE ===============
 			// The real version will create an XmlReader for the URL
@@ -128,15 +128,38 @@ namespace FeedReaderReceptor
 		protected void CreateMissingDatabaseFeedEntry(string feedName, string feedUrl, string title, string description)
 		{
 			CreateCarrierIfReceiver("DatabaseRecord", signal =>
-				{
-					signal.TableName = "RSSFeed";
-					signal.Action = "InsertIfMissing";
-					signal.Row = CreateFeedRow(feedName, feedUrl, title, description);
-					signal.UniqueKey = "URL";
-					signal.Tag = "FeedReader";
-				});
+			{
+				signal.TableName = "RSSFeed";
+				signal.Action = "InsertIfMissing";
+				signal.Row = CreateFeedRow(feedName, feedUrl, title, description);
+				signal.UniqueKey = "URL";
+				signal.Tag = "FeedReader";
+			});
 		}
 
+		/// <summary>
+		/// Saves each feed item to the DB
+		/// </summary>
+		protected void SaveFeedItemsToDatabase(SyndicationFeed feed)
+		{
+			foreach (SyndicationItem item in feed.Items)
+			{
+				CreateMissingDatabaseFeedItemEntry(
+					feedID,
+					item.Id,
+					item.Title.Text,
+					item.Links[0].Uri.ToString(),
+					item.Summary.Text,
+					String.Join(", ", item.Authors.Select(a => a.Name).ToArray()),
+					String.Join(", ", item.Categories.Select(c => c.Name).ToArray()),
+					item.PublishDate.LocalDateTime);
+			}
+		}
+
+		/// <summary>
+		/// Persists the feed item.
+		/// FeedItemID IS NOT THE ID OF THE FEEDITEM record, it is the ID of the RSS feed item.
+		/// </summary>
 		protected void CreateMissingDatabaseFeedItemEntry(int rssFeedID, string feedItemID, string title, string url, string descr, string authors, string categories, DateTime pubDate)
 		{
 			CreateCarrierIfReceiver("DatabaseRecord", signal =>
@@ -145,7 +168,7 @@ namespace FeedReaderReceptor
 				signal.Action = "InsertIfMissing";
 				signal.Row = CreateFeedItemRow(rssFeedID, feedItemID, title, url, descr, authors, categories, pubDate);
 				signal.UniqueKey = "FeedItemID";
-				signal.Tag = "FeedReader";
+				signal.Tag = feedItemID;
 			});
 		}
 
@@ -174,45 +197,38 @@ namespace FeedReaderReceptor
 			rowSignal.Authors = authors;
 			rowSignal.Categories = categories;
 			rowSignal.PubDate = pubDate;
+			rowSignal.NewItem = true;
+			rowSignal.ReadItem = false;
 			ICarrier rowCarrier = rsys.CreateInternalCarrier(rowProtocol, rowSignal);
 
 			return rowCarrier;
 		}
 
-		protected void SaveFeedItemsToDatabase(SyndicationFeed feed)
+		/// <summary>
+		/// Emits only new feed items for display.
+		/// </summary>
+		protected void EmitFeedItemForDisplay(SyndicationFeed feed, string feedItemID)
 		{
-			foreach (SyndicationItem item in feed.Items)
-			{
-				CreateMissingDatabaseFeedItemEntry(
-					feedID, 
-					item.Id, 
-					item.Title.Text, 
-					item.Links[0].Uri.ToString(), 
-					item.Summary.Text, 
-					String.Join(", ", item.Authors.Select(a=>a.Name).ToArray()), 
-					String.Join(", ", item.Categories.Select(c => c.Name).ToArray()), 
-					item.PublishDate.LocalDateTime); 
-			}
+			SyndicationItem item = feed.Items.Single(i => i.Id == feedItemID);
+			CreateCarrierIfReceiver("RSSFeedItemDisplay", signal =>
+				{
+					signal.FeedName = FeedName;
+					signal.Title = item.Title.Text;
+					signal.URL.Value = item.Links[0].Uri.ToString();
+					signal.Description = item.Summary.Text;
+					signal.Authors = String.Join(", ", item.Authors.Select(a => a.Name).ToArray());
+					signal.Categories = String.Join(", ", item.Categories.Select(c => c.Name).ToArray());
+					signal.PubDate = item.PublishDate.LocalDateTime;
+				});
 		}
 
-		protected void EmitFeedItems(SyndicationFeed feed)
+		protected void EmitFeedItemUrl(SyndicationFeed feed, string feedItemID)
 		{
-			foreach (SyndicationItem item in feed.Items)
-			{
-				CreateCarrierIfReceiver("RSSFeedItemDisplay", signal =>
-					{
-						signal.FeedName = FeedName;
-						signal.Title = item.Title.Text;
-						signal.URL.Value = item.Links[0].Uri.ToString();
-						signal.Description = item.Summary.Text;
-						signal.Authors = String.Join(", ", item.Authors.Select(a => a.Name).ToArray());
-						signal.Categories = String.Join(", ", item.Categories.Select(c => c.Name).ToArray());
-						signal.PubDate = item.PublishDate.LocalDateTime;
-					});
+			SyndicationItem item = feed.Items.Single(i => i.Id == feedItemID);
+			// Anyone interested directly in the URL (like the NLP) can have a go at it right now.
+			// The URL receptor, for example, would open the page on the browser.
+			CreateCarrierIfReceiver("URL", signal => signal.Value = item.Links[0].Uri.ToString());
 
-				// Anyone interested directly in the URL (like the NLP) can have a go at it right now.
-				CreateCarrierIfReceiver("URL", signal => signal.Value = item.Links[0].Uri.ToString());
-			}
 		}
     }
 }

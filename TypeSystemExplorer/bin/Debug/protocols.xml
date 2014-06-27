@@ -1214,6 +1214,8 @@
         <NativeType Name="Authors" ImplementingType="string"/>
         <NativeType Name="Categories" ImplementingType="string"/>
         <NativeType Name="PubDate" ImplementingType="DateTime"/>
+        <NativeType Name="NewItem" ImplementingType="bool"/>
+        <NativeType Name="ReadItem" ImplementingType="bool"/>
       </Attributes>
     </SemanticTypeStruct>
 
@@ -1313,6 +1315,7 @@
         <NativeType Name="TableName" ImplementingType="string"/>
         <!-- Additional qualifier that the caller of the insert can specify to further filter the response handler. -->
         <NativeType Name="Tag" ImplementingType="string"/>
+        <NativeType Name="NewRow" ImplementingType="bool"/>
       </Attributes>
     </SemanticTypeStruct>
     
