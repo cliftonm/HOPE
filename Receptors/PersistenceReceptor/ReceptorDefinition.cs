@@ -51,7 +51,8 @@ namespace PersistenceReceptor
 			crudMap["select"] = new Action<dynamic>((s) => Select(s));
 
 			protocolActionMap.Keys.ForEach(k => AddReceiveProtocol(k));
-			rsys.GetProtocolsEndingWith("Recordset").ForEach(p => AddEmitProtocol(p));
+			// rsys.GetProtocolsEndingWith("Recordset").ForEach(p => AddEmitProtocol(p));
+			AddEmitProtocol("Recordset");
 			AddEmitProtocol("IDReturn");
 
 			CreateDBIfMissing();
@@ -338,11 +339,14 @@ namespace PersistenceReceptor
             SQLiteDataReader reader = cmd.ExecuteReader();
 
 			// Create an instance of the recordset type.
-			ISemanticTypeStruct collectionProtocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct(signal.ResponseProtocol + "Recordset");
-			dynamic collection = rsys.SemanticTypeSystem.Create(signal.ResponseProtocol + "Recordset");
+			// ISemanticTypeStruct collectionProtocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct(signal.ResponseProtocol + "Recordset");
+			// dynamic collection = rsys.SemanticTypeSystem.Create(signal.ResponseProtocol + "Recordset");
+			ISemanticTypeStruct collectionProtocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct("Recordset");
+			dynamic collection = rsys.SemanticTypeSystem.Create("Recordset");
 			collection.Recordset = new List<dynamic>();
 			// Return whatever we were sent, so caller can have a reference that it needs.
 			collection.Tag = signal.Tag;			
+			collection.Schema = schema;
 
 			while (reader.Read())
 			{

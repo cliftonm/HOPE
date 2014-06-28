@@ -221,7 +221,6 @@ namespace TimerReceptor
 	public class ReceptorDefinition : BaseReceptor
 	{
 		public override string Name { get { return "Interval Timer"; } }
-		protected Dictionary<string, Action<dynamic>> protocolActionMap;
 		protected bool ready;
 		protected Timer timer;
 
@@ -230,11 +229,13 @@ namespace TimerReceptor
 		public ReceptorDefinition(IReceptorSystem rsys) : base(rsys)
 		{
 			intervalMap = new Dictionary<string, IntervalTimer>();
-			protocolActionMap = new Dictionary<string, Action<dynamic>>();
-			protocolActionMap["IntervalTimerConfiguration"] = new Action<dynamic>((s) => IntervalTimerConfiguration(s));
-			protocolActionMap["LastEventDateTimeRecordset"] = new Action<dynamic>((s) => LastEventDateTimeRecordset(s));
-			
-			protocolActionMap.Keys.ForEach(p => AddReceiveProtocol(p));
+
+			AddReceiveProtocol("InternalTimerConfiguration",
+				(Action<dynamic>)(s => IntervalTimerConfiguration(s)));
+			AddReceiveProtocol("Recordset",
+				s => s.Schema == "LastEventDateTime",
+				s => LastEventDateTimeRecordset(s));
+
 			AddEmitProtocol("RequireTable");
 			AddEmitProtocol("DatabaseRecord");
 			AddEmitProtocol("TimerEvent");
@@ -254,11 +255,6 @@ namespace TimerReceptor
 		{
 			timer.Stop();
 			timer.Dispose();
-		}
-
-		public override void ProcessCarrier(ICarrier carrier)
-		{
-			protocolActionMap[carrier.Protocol.DeclTypeName](carrier.Signal);
 		}
 
 		protected void InitializeTimer()

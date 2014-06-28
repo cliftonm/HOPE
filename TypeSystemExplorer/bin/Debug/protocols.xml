@@ -69,6 +69,12 @@
       </AttributeValues>
     </SemanticTypeDecl>
 
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="Recordset"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
     <!-- structs -->
 
     <SemanticTypeStruct DeclType="PrimaryKey">
@@ -112,8 +118,18 @@
         <SemanticElement Name="Text"/>
       </Attributes>
     </SemanticTypeStruct>
-    <!-- END HIGH LEVEL SEMANTIC TYPES -->
 
+    <SemanticTypeStruct DeclType="Recordset">
+      <Attributes>
+        <!-- Schema is the name of the ST defining the recorset structure. -->
+        <NativeType Name="Schema" ImplementingType="string"/>
+        <NativeType Name="Recordset" ImplementingType="List&lt;dynamic&gt;"/>
+        <!-- Additional info provided by the source. -->
+        <NativeType Name="Tag" ImplementingType="string"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <!-- END HIGH LEVEL SEMANTIC TYPES -->
 
     <!-- A Debug Message -->
 
@@ -431,21 +447,6 @@
       </Attributes>
     </SemanticTypeStruct>
 
-    <!-- Schema Collection Helpers -->
-
-    <SemanticTypeDecl OfType="Noun">
-      <AttributeValues>
-        <Attribute Name="Name" Value="LastEventDateTimeRecordset"/>
-      </AttributeValues>
-    </SemanticTypeDecl>
-
-    <SemanticTypeStruct DeclType="LastEventDateTimeRecordset">
-      <Attributes>
-        <NativeType Name="Recordset" ImplementingType="List&lt;dynamic&gt;"/>
-        <NativeType Name="Tag" ImplementingType="string"/>
-      </Attributes>
-    </SemanticTypeStruct>
-
     <!-- Table schemas -->
     <!-- **** LastEventDateTIme **** -->
 
@@ -467,19 +468,6 @@
 
     <SemanticTypeDecl OfType="Noun">
       <AttributeValues>
-        <Attribute Name="Name" Value="APODRecordset"/>
-      </AttributeValues>
-    </SemanticTypeDecl>
-
-    <SemanticTypeStruct DeclType="APODRecordset">
-      <Attributes>
-        <NativeType Name="Recordset" ImplementingType="List&lt;dynamic&gt;"/>
-        <NativeType Name="Tag" ImplementingType="string"/>
-      </Attributes>
-    </SemanticTypeStruct>
-    
-    <SemanticTypeDecl OfType="Noun">
-      <AttributeValues>
         <Attribute Name="Name" Value="APOD"/>
       </AttributeValues>
     </SemanticTypeDecl>
@@ -493,19 +481,6 @@
         <SemanticElement Name="Title"/>
         <SemanticElement Name="Explanation"/>
         <NativeType Name="Errors" ImplementingType="string"/>
-      </Attributes>
-    </SemanticTypeStruct>
-
-    <SemanticTypeDecl OfType="Noun">
-      <AttributeValues>
-        <Attribute Name="Name" Value="APODSearchResultsRecordset"/>
-      </AttributeValues>
-    </SemanticTypeDecl>
-    
-    <SemanticTypeStruct DeclType="APODSearchResultsRecordset">
-      <Attributes>
-        <NativeType Name="Recordset" ImplementingType="List&lt;dynamic&gt;"/>
-        <NativeType Name="Tag" ImplementingType="string"/>
       </Attributes>
     </SemanticTypeStruct>
 
@@ -680,20 +655,10 @@
         <Attribute Name="Name" Value="HW_Announce0"/>
       </AttributeValues>
     </SemanticTypeDecl>
-    <SemanticTypeDecl OfType="Noun">
-      <AttributeValues>
-        <Attribute Name="Name" Value="HW_ProcessInfo0"/>
-      </AttributeValues>
-    </SemanticTypeDecl>
 
     <SemanticTypeDecl OfType="Noun">
       <AttributeValues>
         <Attribute Name="Name" Value="HW_Announce1"/>
-      </AttributeValues>
-    </SemanticTypeDecl>
-    <SemanticTypeDecl OfType="Noun">
-      <AttributeValues>
-        <Attribute Name="Name" Value="HW_ProcessInfo1"/>
       </AttributeValues>
     </SemanticTypeDecl>
 
@@ -702,20 +667,10 @@
         <Attribute Name="Name" Value="HW_Announce2"/>
       </AttributeValues>
     </SemanticTypeDecl>
-    <SemanticTypeDecl OfType="Noun">
-      <AttributeValues>
-        <Attribute Name="Name" Value="HW_ProcessInfo2"/>
-      </AttributeValues>
-    </SemanticTypeDecl>
 
     <SemanticTypeDecl OfType="Noun">
       <AttributeValues>
         <Attribute Name="Name" Value="HW_Announce3"/>
-      </AttributeValues>
-    </SemanticTypeDecl>
-    <SemanticTypeDecl OfType="Noun">
-      <AttributeValues>
-        <Attribute Name="Name" Value="HW_ProcessInfo3"/>
       </AttributeValues>
     </SemanticTypeDecl>
 
@@ -724,20 +679,10 @@
         <Attribute Name="Name" Value="HW_Announce4"/>
       </AttributeValues>
     </SemanticTypeDecl>
-    <SemanticTypeDecl OfType="Noun">
-      <AttributeValues>
-        <Attribute Name="Name" Value="HW_ProcessInfo4"/>
-      </AttributeValues>
-    </SemanticTypeDecl>
 
     <SemanticTypeDecl OfType="Noun">
       <AttributeValues>
         <Attribute Name="Name" Value="HW_Announce5"/>
-      </AttributeValues>
-    </SemanticTypeDecl>
-    <SemanticTypeDecl OfType="Noun">
-      <AttributeValues>
-        <Attribute Name="Name" Value="HW_ProcessInfo5"/>
       </AttributeValues>
     </SemanticTypeDecl>
 
@@ -746,20 +691,10 @@
         <Attribute Name="Name" Value="HW_Announce6"/>
       </AttributeValues>
     </SemanticTypeDecl>
-    <SemanticTypeDecl OfType="Noun">
-      <AttributeValues>
-        <Attribute Name="Name" Value="HW_ProcessInfo6"/>
-      </AttributeValues>
-    </SemanticTypeDecl>
 
     <SemanticTypeDecl OfType="Noun">
       <AttributeValues>
         <Attribute Name="Name" Value="HW_Announce7"/>
-      </AttributeValues>
-    </SemanticTypeDecl>
-    <SemanticTypeDecl OfType="Noun">
-      <AttributeValues>
-        <Attribute Name="Name" Value="HW_ProcessInfo7"/>
       </AttributeValues>
     </SemanticTypeDecl>
 
@@ -768,20 +703,10 @@
         <Attribute Name="Name" Value="HW_Announce8"/>
       </AttributeValues>
     </SemanticTypeDecl>
-    <SemanticTypeDecl OfType="Noun">
-      <AttributeValues>
-        <Attribute Name="Name" Value="HW_ProcessInfo8"/>
-      </AttributeValues>
-    </SemanticTypeDecl>
 
     <SemanticTypeDecl OfType="Noun">
       <AttributeValues>
         <Attribute Name="Name" Value="HW_Announce9"/>
-      </AttributeValues>
-    </SemanticTypeDecl>
-    <SemanticTypeDecl OfType="Noun">
-      <AttributeValues>
-        <Attribute Name="Name" Value="HW_ProcessInfo9"/>
       </AttributeValues>
     </SemanticTypeDecl>
 
@@ -790,20 +715,10 @@
         <Attribute Name="Name" Value="HW_Announce10"/>
       </AttributeValues>
     </SemanticTypeDecl>
-    <SemanticTypeDecl OfType="Noun">
-      <AttributeValues>
-        <Attribute Name="Name" Value="HW_ProcessInfo10"/>
-      </AttributeValues>
-    </SemanticTypeDecl>
 
     <SemanticTypeDecl OfType="Noun">
       <AttributeValues>
         <Attribute Name="Name" Value="HW_Announce11"/>
-      </AttributeValues>
-    </SemanticTypeDecl>
-    <SemanticTypeDecl OfType="Noun">
-      <AttributeValues>
-        <Attribute Name="Name" Value="HW_ProcessInfo11"/>
       </AttributeValues>
     </SemanticTypeDecl>
 
@@ -812,20 +727,10 @@
         <Attribute Name="Name" Value="HW_Announce12"/>
       </AttributeValues>
     </SemanticTypeDecl>
-    <SemanticTypeDecl OfType="Noun">
-      <AttributeValues>
-        <Attribute Name="Name" Value="HW_ProcessInfo12"/>
-      </AttributeValues>
-    </SemanticTypeDecl>
 
     <SemanticTypeDecl OfType="Noun">
       <AttributeValues>
         <Attribute Name="Name" Value="HW_Announce13"/>
-      </AttributeValues>
-    </SemanticTypeDecl>
-    <SemanticTypeDecl OfType="Noun">
-      <AttributeValues>
-        <Attribute Name="Name" Value="HW_ProcessInfo13"/>
       </AttributeValues>
     </SemanticTypeDecl>
 
@@ -834,20 +739,10 @@
         <Attribute Name="Name" Value="HW_Announce14"/>
       </AttributeValues>
     </SemanticTypeDecl>
-    <SemanticTypeDecl OfType="Noun">
-      <AttributeValues>
-        <Attribute Name="Name" Value="HW_ProcessInfo14"/>
-      </AttributeValues>
-    </SemanticTypeDecl>
 
     <SemanticTypeDecl OfType="Noun">
       <AttributeValues>
         <Attribute Name="Name" Value="HW_Announce15"/>
-      </AttributeValues>
-    </SemanticTypeDecl>
-    <SemanticTypeDecl OfType="Noun">
-      <AttributeValues>
-        <Attribute Name="Name" Value="HW_ProcessInfo15"/>
       </AttributeValues>
     </SemanticTypeDecl>
 
@@ -856,20 +751,10 @@
         <Attribute Name="Name" Value="HW_Announce16"/>
       </AttributeValues>
     </SemanticTypeDecl>
-    <SemanticTypeDecl OfType="Noun">
-      <AttributeValues>
-        <Attribute Name="Name" Value="HW_ProcessInfo16"/>
-      </AttributeValues>
-    </SemanticTypeDecl>
 
     <SemanticTypeDecl OfType="Noun">
       <AttributeValues>
         <Attribute Name="Name" Value="HW_Announce17"/>
-      </AttributeValues>
-    </SemanticTypeDecl>
-    <SemanticTypeDecl OfType="Noun">
-      <AttributeValues>
-        <Attribute Name="Name" Value="HW_ProcessInfo17"/>
       </AttributeValues>
     </SemanticTypeDecl>
 
@@ -878,20 +763,10 @@
         <Attribute Name="Name" Value="HW_Announce18"/>
       </AttributeValues>
     </SemanticTypeDecl>
-    <SemanticTypeDecl OfType="Noun">
-      <AttributeValues>
-        <Attribute Name="Name" Value="HW_ProcessInfo18"/>
-      </AttributeValues>
-    </SemanticTypeDecl>
 
     <SemanticTypeDecl OfType="Noun">
       <AttributeValues>
         <Attribute Name="Name" Value="HW_Announce19"/>
-      </AttributeValues>
-    </SemanticTypeDecl>
-    <SemanticTypeDecl OfType="Noun">
-      <AttributeValues>
-        <Attribute Name="Name" Value="HW_ProcessInfo19"/>
       </AttributeValues>
     </SemanticTypeDecl>
 
@@ -900,25 +775,9 @@
       <Attributes>
       </Attributes>
     </SemanticTypeStruct>
-    <SemanticTypeStruct DeclType="HW_ProcessInfo0">
-      <Attributes>
-        <NativeType Name="HaveBottomlessPit" ImplementingType="bool"/>
-        <NativeType Name="HaveSuperBats" ImplementingType="bool"/>
-        <NativeType Name="HaveWumpus" ImplementingType="bool"/>
-        <NativeType Name="HaveHunter" ImplementingType="bool"/>
-      </Attributes>
-    </SemanticTypeStruct>
 
     <SemanticTypeStruct DeclType="HW_Announce1">
       <Attributes>
-      </Attributes>
-    </SemanticTypeStruct>
-    <SemanticTypeStruct DeclType="HW_ProcessInfo1">
-      <Attributes>
-        <NativeType Name="HaveBottomlessPit" ImplementingType="bool"/>
-        <NativeType Name="HaveSuperBats" ImplementingType="bool"/>
-        <NativeType Name="HaveWumpus" ImplementingType="bool"/>
-        <NativeType Name="HaveHunter" ImplementingType="bool"/>
       </Attributes>
     </SemanticTypeStruct>
 
@@ -926,25 +785,9 @@
       <Attributes>
       </Attributes>
     </SemanticTypeStruct>
-    <SemanticTypeStruct DeclType="HW_ProcessInfo2">
-      <Attributes>
-        <NativeType Name="HaveBottomlessPit" ImplementingType="bool"/>
-        <NativeType Name="HaveSuperBats" ImplementingType="bool"/>
-        <NativeType Name="HaveWumpus" ImplementingType="bool"/>
-        <NativeType Name="HaveHunter" ImplementingType="bool"/>
-      </Attributes>
-    </SemanticTypeStruct>
 
     <SemanticTypeStruct DeclType="HW_Announce3">
       <Attributes>
-      </Attributes>
-    </SemanticTypeStruct>
-    <SemanticTypeStruct DeclType="HW_ProcessInfo3">
-      <Attributes>
-        <NativeType Name="HaveBottomlessPit" ImplementingType="bool"/>
-        <NativeType Name="HaveSuperBats" ImplementingType="bool"/>
-        <NativeType Name="HaveWumpus" ImplementingType="bool"/>
-        <NativeType Name="HaveHunter" ImplementingType="bool"/>
       </Attributes>
     </SemanticTypeStruct>
 
@@ -952,25 +795,9 @@
       <Attributes>
       </Attributes>
     </SemanticTypeStruct>
-    <SemanticTypeStruct DeclType="HW_ProcessInfo4">
-      <Attributes>
-        <NativeType Name="HaveBottomlessPit" ImplementingType="bool"/>
-        <NativeType Name="HaveSuperBats" ImplementingType="bool"/>
-        <NativeType Name="HaveWumpus" ImplementingType="bool"/>
-        <NativeType Name="HaveHunter" ImplementingType="bool"/>
-      </Attributes>
-    </SemanticTypeStruct>
 
     <SemanticTypeStruct DeclType="HW_Announce5">
       <Attributes>
-      </Attributes>
-    </SemanticTypeStruct>
-    <SemanticTypeStruct DeclType="HW_ProcessInfo5">
-      <Attributes>
-        <NativeType Name="HaveBottomlessPit" ImplementingType="bool"/>
-        <NativeType Name="HaveSuperBats" ImplementingType="bool"/>
-        <NativeType Name="HaveWumpus" ImplementingType="bool"/>
-        <NativeType Name="HaveHunter" ImplementingType="bool"/>
       </Attributes>
     </SemanticTypeStruct>
 
@@ -978,25 +805,9 @@
       <Attributes>
       </Attributes>
     </SemanticTypeStruct>
-    <SemanticTypeStruct DeclType="HW_ProcessInfo6">
-      <Attributes>
-        <NativeType Name="HaveBottomlessPit" ImplementingType="bool"/>
-        <NativeType Name="HaveSuperBats" ImplementingType="bool"/>
-        <NativeType Name="HaveWumpus" ImplementingType="bool"/>
-        <NativeType Name="HaveHunter" ImplementingType="bool"/>
-      </Attributes>
-    </SemanticTypeStruct>
 
     <SemanticTypeStruct DeclType="HW_Announce7">
       <Attributes>
-      </Attributes>
-    </SemanticTypeStruct>
-    <SemanticTypeStruct DeclType="HW_ProcessInfo7">
-      <Attributes>
-        <NativeType Name="HaveBottomlessPit" ImplementingType="bool"/>
-        <NativeType Name="HaveSuperBats" ImplementingType="bool"/>
-        <NativeType Name="HaveWumpus" ImplementingType="bool"/>
-        <NativeType Name="HaveHunter" ImplementingType="bool"/>
       </Attributes>
     </SemanticTypeStruct>
 
@@ -1004,25 +815,9 @@
       <Attributes>
       </Attributes>
     </SemanticTypeStruct>
-    <SemanticTypeStruct DeclType="HW_ProcessInfo8">
-      <Attributes>
-        <NativeType Name="HaveBottomlessPit" ImplementingType="bool"/>
-        <NativeType Name="HaveSuperBats" ImplementingType="bool"/>
-        <NativeType Name="HaveWumpus" ImplementingType="bool"/>
-        <NativeType Name="HaveHunter" ImplementingType="bool"/>
-      </Attributes>
-    </SemanticTypeStruct>
 
     <SemanticTypeStruct DeclType="HW_Announce9">
       <Attributes>
-      </Attributes>
-    </SemanticTypeStruct>
-    <SemanticTypeStruct DeclType="HW_ProcessInfo9">
-      <Attributes>
-        <NativeType Name="HaveBottomlessPit" ImplementingType="bool"/>
-        <NativeType Name="HaveSuperBats" ImplementingType="bool"/>
-        <NativeType Name="HaveWumpus" ImplementingType="bool"/>
-        <NativeType Name="HaveHunter" ImplementingType="bool"/>
       </Attributes>
     </SemanticTypeStruct>
 
@@ -1030,25 +825,9 @@
       <Attributes>
       </Attributes>
     </SemanticTypeStruct>
-    <SemanticTypeStruct DeclType="HW_ProcessInfo10">
-      <Attributes>
-        <NativeType Name="HaveBottomlessPit" ImplementingType="bool"/>
-        <NativeType Name="HaveSuperBats" ImplementingType="bool"/>
-        <NativeType Name="HaveWumpus" ImplementingType="bool"/>
-        <NativeType Name="HaveHunter" ImplementingType="bool"/>
-      </Attributes>
-    </SemanticTypeStruct>
 
     <SemanticTypeStruct DeclType="HW_Announce11">
       <Attributes>
-      </Attributes>
-    </SemanticTypeStruct>
-    <SemanticTypeStruct DeclType="HW_ProcessInfo11">
-      <Attributes>
-        <NativeType Name="HaveBottomlessPit" ImplementingType="bool"/>
-        <NativeType Name="HaveSuperBats" ImplementingType="bool"/>
-        <NativeType Name="HaveWumpus" ImplementingType="bool"/>
-        <NativeType Name="HaveHunter" ImplementingType="bool"/>
       </Attributes>
     </SemanticTypeStruct>
 
@@ -1056,25 +835,9 @@
       <Attributes>
       </Attributes>
     </SemanticTypeStruct>
-    <SemanticTypeStruct DeclType="HW_ProcessInfo12">
-      <Attributes>
-        <NativeType Name="HaveBottomlessPit" ImplementingType="bool"/>
-        <NativeType Name="HaveSuperBats" ImplementingType="bool"/>
-        <NativeType Name="HaveWumpus" ImplementingType="bool"/>
-        <NativeType Name="HaveHunter" ImplementingType="bool"/>
-      </Attributes>
-    </SemanticTypeStruct>
 
     <SemanticTypeStruct DeclType="HW_Announce13">
       <Attributes>
-      </Attributes>
-    </SemanticTypeStruct>
-    <SemanticTypeStruct DeclType="HW_ProcessInfo13">
-      <Attributes>
-        <NativeType Name="HaveBottomlessPit" ImplementingType="bool"/>
-        <NativeType Name="HaveSuperBats" ImplementingType="bool"/>
-        <NativeType Name="HaveWumpus" ImplementingType="bool"/>
-        <NativeType Name="HaveHunter" ImplementingType="bool"/>
       </Attributes>
     </SemanticTypeStruct>
 
@@ -1082,25 +845,9 @@
       <Attributes>
       </Attributes>
     </SemanticTypeStruct>
-    <SemanticTypeStruct DeclType="HW_ProcessInfo14">
-      <Attributes>
-        <NativeType Name="HaveBottomlessPit" ImplementingType="bool"/>
-        <NativeType Name="HaveSuperBats" ImplementingType="bool"/>
-        <NativeType Name="HaveWumpus" ImplementingType="bool"/>
-        <NativeType Name="HaveHunter" ImplementingType="bool"/>
-      </Attributes>
-    </SemanticTypeStruct>
 
     <SemanticTypeStruct DeclType="HW_Announce15">
       <Attributes>
-      </Attributes>
-    </SemanticTypeStruct>
-    <SemanticTypeStruct DeclType="HW_ProcessInfo15">
-      <Attributes>
-        <NativeType Name="HaveBottomlessPit" ImplementingType="bool"/>
-        <NativeType Name="HaveSuperBats" ImplementingType="bool"/>
-        <NativeType Name="HaveWumpus" ImplementingType="bool"/>
-        <NativeType Name="HaveHunter" ImplementingType="bool"/>
       </Attributes>
     </SemanticTypeStruct>
 
@@ -1108,25 +855,9 @@
       <Attributes>
       </Attributes>
     </SemanticTypeStruct>
-    <SemanticTypeStruct DeclType="HW_ProcessInfo16">
-      <Attributes>
-        <NativeType Name="HaveBottomlessPit" ImplementingType="bool"/>
-        <NativeType Name="HaveSuperBats" ImplementingType="bool"/>
-        <NativeType Name="HaveWumpus" ImplementingType="bool"/>
-        <NativeType Name="HaveHunter" ImplementingType="bool"/>
-      </Attributes>
-    </SemanticTypeStruct>
 
     <SemanticTypeStruct DeclType="HW_Announce17">
       <Attributes>
-      </Attributes>
-    </SemanticTypeStruct>
-    <SemanticTypeStruct DeclType="HW_ProcessInfo17">
-      <Attributes>
-        <NativeType Name="HaveBottomlessPit" ImplementingType="bool"/>
-        <NativeType Name="HaveSuperBats" ImplementingType="bool"/>
-        <NativeType Name="HaveWumpus" ImplementingType="bool"/>
-        <NativeType Name="HaveHunter" ImplementingType="bool"/>
       </Attributes>
     </SemanticTypeStruct>
 
@@ -1134,30 +865,11 @@
       <Attributes>
       </Attributes>
     </SemanticTypeStruct>
-    <SemanticTypeStruct DeclType="HW_ProcessInfo18">
-      <Attributes>
-        <NativeType Name="HaveBottomlessPit" ImplementingType="bool"/>
-        <NativeType Name="HaveSuperBats" ImplementingType="bool"/>
-        <NativeType Name="HaveWumpus" ImplementingType="bool"/>
-        <NativeType Name="HaveHunter" ImplementingType="bool"/>
-      </Attributes>
-    </SemanticTypeStruct>
 
     <SemanticTypeStruct DeclType="HW_Announce19">
       <Attributes>
       </Attributes>
     </SemanticTypeStruct>
-    <SemanticTypeStruct DeclType="HW_ProcessInfo19">
-      <Attributes>
-        <NativeType Name="HaveBottomlessPit" ImplementingType="bool"/>
-        <NativeType Name="HaveSuperBats" ImplementingType="bool"/>
-        <NativeType Name="HaveWumpus" ImplementingType="bool"/>
-        <NativeType Name="HaveHunter" ImplementingType="bool"/>
-      </Attributes>
-    </SemanticTypeStruct>
-    
-    <!-- TODO: Probably don't need HaveHunter -->
-    <!-- TODO: Definitely don't need ProcessInfo -->
     
     <!-- RSS and NLP Protocols -->
     
@@ -1180,26 +892,7 @@
     
     <SemanticTypeDecl OfType="Noun">
       <AttributeValues>
-        <Attribute Name="Name" Value="RSSFeedRecordset"/>
-      </AttributeValues>
-    </SemanticTypeDecl>
-
-    <SemanticTypeStruct DeclType="RSSFeedRecordset">
-      <Attributes>
-        <NativeType Name="Recordset" ImplementingType="List&lt;dynamic&gt;"/>
-        <NativeType Name="Tag" ImplementingType="string"/>
-      </Attributes>
-    </SemanticTypeStruct>
-
-    <SemanticTypeDecl OfType="Noun">
-      <AttributeValues>
         <Attribute Name="Name" Value="RSSFeedItem"/>
-      </AttributeValues>
-    </SemanticTypeDecl>
-
-    <SemanticTypeDecl OfType="Noun">
-      <AttributeValues>
-        <Attribute Name="Name" Value="RSSFeedItemRecordset"/>
       </AttributeValues>
     </SemanticTypeDecl>
 
@@ -1219,13 +912,6 @@
       </Attributes>
     </SemanticTypeStruct>
 
-    <SemanticTypeStruct DeclType="RSSFeedItemRecordset">
-      <Attributes>
-        <NativeType Name="Recordset" ImplementingType="List&lt;dynamic&gt;"/>
-        <NativeType Name="Tag" ImplementingType="string"/>
-      </Attributes>
-    </SemanticTypeStruct>
-    
     <SemanticTypeDecl OfType="Noun">
       <AttributeValues>
         <Attribute Name="Name" Value="RSSFeedItemDisplay"/>
@@ -1276,12 +962,6 @@
       </AttributeValues>
     </SemanticTypeDecl>
 
-    <SemanticTypeDecl OfType="Noun">
-      <AttributeValues>
-        <Attribute Name="Name" Value="AlchemyResultTypeRecordRecordset"/>
-      </AttributeValues>
-    </SemanticTypeDecl>
-
     <!-- Used by the persistence store to return the ID for the record inserted. -->
 
     <SemanticTypeStruct DeclType="AlchemyResult">
@@ -1318,13 +998,6 @@
       <Attributes>
         <NativeType Name="ID" ImplementingType="int"/>
         <NativeType Name="Name" ImplementingType="string"/>
-      </Attributes>
-    </SemanticTypeStruct>
-
-    <SemanticTypeStruct DeclType="AlchemyResultTypeRecordRecordset">
-      <Attributes>
-        <NativeType Name="Recordset" ImplementingType="List&lt;dynamic&gt;"/>
-        <NativeType Name="Tag" ImplementingType="string"/>
       </Attributes>
     </SemanticTypeStruct>
 
@@ -1365,19 +1038,6 @@
 
     <SemanticTypeDecl OfType="Noun">
       <AttributeValues>
-        <Attribute Name="Name" Value="AlchemyPhrasesRecordset"/>
-      </AttributeValues>
-    </SemanticTypeDecl>
-
-    <SemanticTypeStruct DeclType="AlchemyPhrasesRecordset">
-      <Attributes>
-        <NativeType Name="Recordset" ImplementingType="List&lt;dynamic&gt;"/>
-        <NativeType Name="Tag" ImplementingType="string"/>
-      </Attributes>
-    </SemanticTypeStruct>
-
-    <SemanticTypeDecl OfType="Noun">
-      <AttributeValues>
         <Attribute Name="Name" Value="FeedItemPhrases"/>
       </AttributeValues>
     </SemanticTypeDecl>
@@ -1393,19 +1053,5 @@
         <SemanticElement Name="URL"/>
       </Attributes>
     </SemanticTypeStruct>
-
-    <SemanticTypeDecl OfType="Noun">
-      <AttributeValues>
-        <Attribute Name="Name" Value="FeedItemPhrasesRecordset"/>
-      </AttributeValues>
-    </SemanticTypeDecl>
-
-    <SemanticTypeStruct DeclType="FeedItemPhrasesRecordset">
-      <Attributes>
-        <NativeType Name="Recordset" ImplementingType="List&lt;dynamic&gt;"/>
-        <NativeType Name="Tag" ImplementingType="string"/>
-      </Attributes>
-    </SemanticTypeStruct>
-
   </Collection>
 </SemanticTypes>

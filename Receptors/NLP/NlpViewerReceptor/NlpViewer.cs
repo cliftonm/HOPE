@@ -45,20 +45,20 @@ namespace NlpViewerReceptor
 			AddEmitProtocol("RequireView");
 
 			// Don't forgot, explicit cast is required for some reason to differentiate between Action<dyanmic> and Func<bool, dynamic>
-			AddReceiveProtocol("AlchemyPhrasesRecordset", 
-				signal => signal.Tag == "Entities",
+			AddReceiveProtocol("Recordset",
+				signal => signal.Schema == "AlchemyPhrases" && signal.Tag == "Entities",
 				signal => ProcessEntityPhrases(signal));
 
-			AddReceiveProtocol("AlchemyPhrasesRecordset",
-				signal => signal.Tag == "Keywords",
+			AddReceiveProtocol("Recordset",
+				signal => signal.Schema == "AlchemyPhrases" && signal.Tag == "Keywords",
 				signal => ProcessKeywordPhrases(signal));
 
-			AddReceiveProtocol("AlchemyPhrasesRecordset",
-				signal => signal.Tag == "Concepts",
+			AddReceiveProtocol("Recordset",
+				signal => signal.Schema == "AlchemyPhrases" && signal.Tag == "Concepts",
 				signal => ProcessConceptPhrases(signal));
 
-			AddReceiveProtocol("AlchemyResultTypeRecordRecordset",
-				signal => signal.Tag == "NlpViewer",
+			AddReceiveProtocol("Recordset",
+				signal => signal.Schema == "ResultTypeRecord",
 				signal =>
 				{
 					// Save our name to ID mapping of result types.

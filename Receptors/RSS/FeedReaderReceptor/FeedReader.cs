@@ -73,7 +73,7 @@ namespace FeedReaderReceptor
 			FeedUrl = "http://www.npr.org/rss/rss.php?id=1004";
 		}
 
-		public override async void EndSystemInit()
+		public override void EndSystemInit()
 		{
 			base.EndSystemInit();
 

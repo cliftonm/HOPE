@@ -19,22 +19,23 @@ namespace APODScraperReceptor
 	public class ReceptorDefinition : BaseReceptor
 	{
 		public override string Name { get { return "APOD"; } }
-		protected Dictionary<string, Action<dynamic>> protocolActionMap;
 		protected int totalErrors = 0;
 
 		const string ImagesFolder = "Images";
 
 		public ReceptorDefinition(IReceptorSystem rsys) : base(rsys)
 		{
-			protocolActionMap = new Dictionary<string, Action<dynamic>>();
-			protocolActionMap["TimerEvent"] = new Action<dynamic>((s) => TimerEvent(s));
-			protocolActionMap["WebpageHtml"] = new Action<dynamic>((s) => ProcessPage(s));
-			protocolActionMap["GetImageMetadata"] = new Action<dynamic>((s) => GetImageMetadata(s));
-			protocolActionMap["APODRecordset"] = new Action<dynamic>((s) => ProcessAPODRecordset(s));
-			protocolActionMap["SearchFor"] = new Action<dynamic>((s) => SearchFor(s));
-			protocolActionMap["APODSearchResultsRecordset"] = new Action<dynamic>((s) => ProcessSearchResults(s));
+			AddReceiveProtocol("TimerEvent", (Action<dynamic>)(s => TimerEvent(s)));
+			AddReceiveProtocol("WebpageHtml", (Action<dynamic>)(s => ProcessPage(s)));
+			AddReceiveProtocol("GetImageMetadata",  (Action<dynamic>)(s => GetImageMetadata(s)));
+			AddReceiveProtocol("Recordset", 
+				s => s.Schema == "APOD",
+				s => ProcessAPODRecordset(s));
+			AddReceiveProtocol("SearchFor", (Action<dynamic>)(s => SearchFor(s)));
+			AddReceiveProtocol("APODSearchResultsRecordset", 
+				s => s.Schema == "APODSearchResults",
+				s => ProcessSearchResults(s));
 
-			protocolActionMap.Keys.ForEach(k => AddReceiveProtocol(k));
 			(new string[] { "RequireTable", "ScrapeWebpage", "ImageFilename", "DatabaseRecord", "DebugMessage", "APOD", "HaveImageMetadata" }).ForEach(p => AddEmitProtocol(p));
 		}
 
@@ -42,11 +43,6 @@ namespace APODScraperReceptor
 		{
 			RequireAPODTable();
 			InitializeImagesFolder();
-		}
-
-		public override void ProcessCarrier(ICarrier carrier)
-		{
-			protocolActionMap[carrier.Protocol.DeclTypeName](carrier.Signal);
 		}
 
 		protected void TimerEvent(dynamic signal)

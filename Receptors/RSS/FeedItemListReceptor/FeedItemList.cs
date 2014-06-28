@@ -32,7 +32,9 @@ namespace FeedItemListReceptor
 				// cast is required to resolve Func vs. Action in parameter list.
 				(Action<dynamic>)(signal => AddFeedItem(signal)));
 
-			AddReceiveProtocol("FeedItemPhrasesRecordset", (Action<dynamic>)(signal => ProcessFeedItems(signal)));
+			AddReceiveProtocol("Recordset",
+				signal => signal.Schema == "FeedItemPhrases",
+				signal => ProcessFeedItems(signal));
 
 			AddEmitProtocol("URL");
 
