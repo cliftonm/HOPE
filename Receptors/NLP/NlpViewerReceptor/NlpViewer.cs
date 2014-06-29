@@ -44,6 +44,12 @@ namespace NlpViewerReceptor
 			AddEmitProtocol("DropView");
 			AddEmitProtocol("RequireView");
 
+			AddReceiveProtocol("SearchDateRange",
+				(Action<dynamic>)(signal =>
+			{
+				SearchDateRange(signal.BeginningDate, signal.EndingDate);
+			}));
+
 			// Don't forgot, explicit cast is required for some reason to differentiate between Action<dyanmic> and Func<bool, dynamic>
 			AddReceiveProtocol("Recordset",
 				signal => signal.Schema == "AlchemyPhrases" && signal.Tag == "Entities",
@@ -76,26 +82,26 @@ namespace NlpViewerReceptor
 			base.Initialize();
 
 			// If you need to change the view:
-			//CreateCarrier("DropView", signal =>
-			//{
-			//	signal.ViewName = "AlchemyPhrases";
-			//});
+			CreateCarrier("DropView", signal =>
+			{
+				signal.ViewName = "AlchemyPhrases";
+			});
 
-			//CreateCarrier("DropView", signal =>
-			//{
-			//	signal.ViewName = "FeedItemPhrases";
-			//});
+			CreateCarrier("DropView", signal =>
+			{
+				signal.ViewName = "FeedItemPhrases";
+			});
 
 			CreateCarrier("RequireView", signal =>
 				{
 					signal.ViewName = "AlchemyPhrases";
-					signal.Sql = "select ar.AlchemyPhraseID as AlchemyPhraseID, ar.AlchemyResultTypeID as AlchemyResultTypeID, et.Name as EntityName, ap.Name as Name, count(distinct ar.RSSFeedItemID) as Count from AlchemyResult ar left join AlchemyPhrase ap on ar.AlchemyPhraseID = ap.ID left join AlchemyEntityType et on et.ID = ar.AlchemyEntityTypeID group by ar.AlchemyPhraseID, ar.AlchemyResultTypeID, et.Name, ap.Name order by count(distinct ar.RSSFeedItemID) desc";
+					signal.Sql = "select ar.AlchemyPhraseID as AlchemyPhraseID, ar.AlchemyResultTypeID as AlchemyResultTypeID, et.Name as EntityName, ap.Name as Name, ar.CaptureDate as CaptureDate, count(distinct ar.RSSFeedItemID) as Count from AlchemyResult ar left join AlchemyPhrase ap on ar.AlchemyPhraseID = ap.ID left join AlchemyEntityType et on et.ID = ar.AlchemyEntityTypeID group by ar.AlchemyPhraseID, ar.AlchemyResultTypeID, et.Name, ap.Name, ar.CaptureDate order by count(distinct ar.RSSFeedItemID) desc";
 				});
 
 			CreateCarrier("RequireView", signal =>
 			{
 				signal.ViewName = "FeedItemPhrases";
-				signal.Sql = "select distinct f.ID as RSSFeedItemID, ar.AlchemyPhraseID as AlchemyPhraseID, f.FeedName as FeedName, fi.PubDate as PubDate, fi.Title as Title, fi.Categories as Categories, fi.URL as URL from AlchemyResult ar left join RSSFeedItem fi on fi.ID = ar.RSSFeedItemID left join RSSFeed f on f.ID = fi.RSSFeedID";
+				signal.Sql = "select distinct f.ID as RSSFeedItemID, ar.AlchemyPhraseID as AlchemyPhraseID, f.FeedName as FeedName, fi.PubDate as PubDate, fi.Title as Title, fi.Categories as Categories, fi.URL as URL, ar.CaptureDate as CaptureDate from AlchemyResult ar left join RSSFeedItem fi on fi.ID = ar.RSSFeedItemID left join RSSFeed f on f.ID = fi.RSSFeedID";
 			});
 
 			CreateCarrier("DatabaseRecord", signal =>
@@ -110,37 +116,29 @@ namespace NlpViewerReceptor
 		/// <summary>
 		/// Load phrases for each result type.
 		/// </summary>
-		protected void LoadPhrases()
+		protected void LoadPhrases(string where = "")
 		{
-			// Entities:
+			RequestRecordset("Entity", "Entities", where);
+			RequestRecordset("Keyword", "Keywords", where);
+			RequestRecordset("Concept", "Concepts", where);
+		}
+
+		protected void RequestRecordset(string idName, string tagName, string where)
+		{
 			CreateCarrier("DatabaseRecord", signal =>
 				{
 					signal.Action = "select";				// only select is allowed on views.
 					signal.ViewName = "AlchemyPhrases";
 					signal.ResponseProtocol = "AlchemyPhrases";
-					signal.Where = "AlchemyResultTypeID = " + resultTypeIDMap["Entity"];
-					signal.Tag = "Entities";
+					signal.Where = "AlchemyResultTypeID = " + resultTypeIDMap[idName];
+					
+					if (!String.IsNullOrEmpty(where))
+					{
+						signal.Where = signal.Where + " and " + where;
+					}
+
+					signal.Tag = tagName;
 				});
-			
-			// Keywords:
-			CreateCarrier("DatabaseRecord", signal =>
-			{
-				signal.Action = "select";				// only select is allowed on views.
-				signal.ViewName = "AlchemyPhrases";
-				signal.ResponseProtocol = "AlchemyPhrases";
-				signal.Where = "AlchemyResultTypeID = " + resultTypeIDMap["Keyword"];
-				signal.Tag = "Keywords";
-			});
-			
-			// Concepts:
-			CreateCarrier("DatabaseRecord", signal =>
-			{
-				signal.Action = "select";				// only select is allowed on views.
-				signal.ViewName = "AlchemyPhrases";
-				signal.ResponseProtocol = "AlchemyPhrases";
-				signal.Where = "AlchemyResultTypeID = " + resultTypeIDMap["Concept"];
-				signal.Tag = "Concepts";
-			});
 		}
 
 		protected void InitializeViewer()
@@ -200,6 +198,7 @@ namespace NlpViewerReceptor
 		{
 			List<dynamic> records = signal.Records;
 			dtEntities.BeginLoadData();
+			dtEntities.Clear();
 			
 			foreach (dynamic rec in records)
 			{
@@ -222,6 +221,7 @@ namespace NlpViewerReceptor
 		{
 			List<dynamic> records = signal.Records;
 			dtKeywords.BeginLoadData();
+			dtKeywords.Clear();
 
 			foreach (dynamic rec in records)
 			{
@@ -243,6 +243,7 @@ namespace NlpViewerReceptor
 		{
 			List<dynamic> records = signal.Records;
 			dtConcepts.BeginLoadData();
+			dtConcepts.Clear();
 
 			foreach (dynamic rec in records)
 			{
@@ -271,6 +272,14 @@ namespace NlpViewerReceptor
 					signal.ResponseProtocol = "FeedItemPhrases";
 					signal.Where = "AlchemyPhraseID = " + dv[e.RowIndex][0].ToString();
 				});
+		}
+
+		protected void SearchDateRange(DateTime beginningDate, DateTime endingDate)
+		{
+			string begDate = beginningDate.ToString("yyyy-MM-dd HH:mm:ss");
+			string endDate = endingDate.ToString("yyyy-MM-dd HH:mm:ss");
+			string where = "CaptureDate between " + begDate.SingleQuote() + " and " + endDate.SingleQuote();
+			LoadPhrases(where);
 		}
     }
 }

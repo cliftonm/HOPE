@@ -208,9 +208,6 @@
     <Content Include="bin\Debug\carrier-APODPAGE-1.xml">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="bin\Debug\carrier-apod_scrape_test.xml">
-      <SubType>Designer</SubType>
-    </Content>
     <Content Include="bin\Debug\carrier-config_timer.xml">
       <SubType>Designer</SubType>
     </Content>
@@ -251,6 +248,7 @@
     <Content Include="bin\Debug\Receptors3.xml">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="bin\Debug\SearchForWithinPastDate.xml" />
     <Content Include="bin\Debug\semanticTypeTree.xml">
       <SubType>Designer</SubType>
     </Content>

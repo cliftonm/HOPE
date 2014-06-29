@@ -1034,6 +1034,7 @@
         <NativeType Name="AlchemyResultTypeID" ImplementingType="int"/>
         <NativeType Name="EntityName" ImplementingType="string"/>
         <NativeType Name="Name" ImplementingType="string"/>
+        <NativeType Name="CaptureDate" ImplementingType="DateTime"/>
         <NativeType Name="Count" ImplementingType="int"/>
       </Attributes>
     </SemanticTypeStruct>
@@ -1052,7 +1053,21 @@
         <NativeType Name="PubDate" ImplementingType="DateTime"/>
         <NativeType Name="Title" ImplementingType="string"/>
         <NativeType Name="Categories" ImplementingType="string"/>
+        <NativeType Name="CaptureDate" ImplementingType="DateTime"/>
         <SemanticElement Name="URL"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="SearchDateRange"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="SearchDateRange">
+      <Attributes>
+        <NativeType Name="BeginningDate" ImplementingType="DateTime"/>
+        <NativeType Name="EndingDate" ImplementingType="DateTime"/>
       </Attributes>
     </SemanticTypeStruct>
   </Collection>
