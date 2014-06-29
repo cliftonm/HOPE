@@ -12,7 +12,7 @@
     <wf:Controls>
       <wf:FlowLayoutPanel Dock="Fill">
         <wf:Controls>
-          <wf:RadioButton def:Name="rbToday" Text="Today" Click="ShowToday"/>
+          <wf:RadioButton def:Name="rbToday" Text="The Last Day" Click="ShowToday"/>
           <wf:RadioButton def:Name="rbLastSeven" Text="Last 7 Days" Click="ShowLastWeek"/>
           <wf:RadioButton def:Name="rbLastMonth" Text="Last 31 Days" Click="ShowLastMonth"/>
           <wf:RadioButton def:Name="rbLastYear" Text="Last Year" Click="ShowLastYear"/>

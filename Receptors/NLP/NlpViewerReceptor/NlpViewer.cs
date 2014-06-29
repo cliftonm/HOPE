@@ -95,7 +95,7 @@ namespace NlpViewerReceptor
 			CreateCarrier("RequireView", signal =>
 				{
 					signal.ViewName = "AlchemyPhrases";
-					signal.Sql = "select ar.AlchemyPhraseID as AlchemyPhraseID, ar.AlchemyResultTypeID as AlchemyResultTypeID, et.Name as EntityName, ap.Name as Name, ar.CaptureDate as CaptureDate, count(distinct ar.RSSFeedItemID) as Count from AlchemyResult ar left join AlchemyPhrase ap on ar.AlchemyPhraseID = ap.ID left join AlchemyEntityType et on et.ID = ar.AlchemyEntityTypeID group by ar.AlchemyPhraseID, ar.AlchemyResultTypeID, et.Name, ap.Name, ar.CaptureDate order by count(distinct ar.RSSFeedItemID) desc";
+					signal.Sql = "select ar.AlchemyPhraseID as AlchemyPhraseID, ar.AlchemyResultTypeID as AlchemyResultTypeID, et.Name as EntityName, ap.Name as Name, substr(ar.CaptureDate, 1, 10) as CaptureDate, count(distinct ar.RSSFeedItemID) as Count from AlchemyResult ar left join AlchemyPhrase ap on ar.AlchemyPhraseID = ap.ID left join AlchemyEntityType et on et.ID = ar.AlchemyEntityTypeID group by ar.AlchemyPhraseID, ar.AlchemyResultTypeID, et.Name, ap.Name, substr(ar.CaptureDate, 1, 10) order by count(distinct ar.RSSFeedItemID) desc";
 				});
 
 			CreateCarrier("RequireView", signal =>
