@@ -28,11 +28,17 @@ namespace APODScraperReceptor
 			AddReceiveProtocol("TimerEvent", (Action<dynamic>)(s => TimerEvent(s)));
 			AddReceiveProtocol("WebpageHtml", (Action<dynamic>)(s => ProcessPage(s)));
 			AddReceiveProtocol("GetImageMetadata",  (Action<dynamic>)(s => GetImageMetadata(s)));
+			
+			// TODO: Add a CreateCarrier method that is "discard if no receiver."
+			AddReceiveProtocol("IDReturn", (Action<dynamic>)(s => { }));		// Just eat this.
+
 			AddReceiveProtocol("Recordset", 
 				s => s.Schema == "APOD",
 				s => ProcessAPODRecordset(s));
+	
 			AddReceiveProtocol("SearchFor", (Action<dynamic>)(s => SearchFor(s)));
-			AddReceiveProtocol("APODSearchResultsRecordset", 
+
+			AddReceiveProtocol("Recordset", 
 				s => s.Schema == "APODSearchResults",
 				s => ProcessSearchResults(s));
 
@@ -290,7 +296,7 @@ namespace APODScraperReceptor
 			// Allows for custom protocols.
 			ISemanticTypeStruct respProtocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct("HaveImageMetadata");
 			dynamic respSignal = rsys.SemanticTypeSystem.Create("HaveImageMetadata");
-			List<dynamic> records = signal.Recordset;
+			List<dynamic> records = signal.Records;
 
 			// TODO: What if more than one image filename matches?
 			if (records.Count > 0)
@@ -332,7 +338,7 @@ namespace APODScraperReceptor
 		/// </summary>
 		protected void ProcessSearchResults(dynamic signal)
 		{
-			List<dynamic> records = signal.Recordset;
+			List<dynamic> records = signal.Records;
 
 			foreach (dynamic d in records)
 			{

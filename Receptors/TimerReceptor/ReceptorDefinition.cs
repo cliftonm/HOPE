@@ -230,7 +230,7 @@ namespace TimerReceptor
 		{
 			intervalMap = new Dictionary<string, IntervalTimer>();
 
-			AddReceiveProtocol("InternalTimerConfiguration",
+			AddReceiveProtocol("IntervalTimerConfiguration",
 				(Action<dynamic>)(s => IntervalTimerConfiguration(s)));
 			AddReceiveProtocol("Recordset",
 				s => s.Schema == "LastEventDateTime",
@@ -302,7 +302,7 @@ namespace TimerReceptor
 		/// </summary>
 		protected void LastEventDateTimeRecordset(dynamic signalRecordset)
 		{
-			foreach (dynamic signal in signalRecordset.Recordset)
+			foreach (dynamic signal in signalRecordset.Records)
 			{
 				string eventName = signal.EventName;
 				DateTime eventDateTime = signal.EventDateTime;

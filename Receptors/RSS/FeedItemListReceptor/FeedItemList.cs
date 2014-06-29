@@ -92,7 +92,7 @@ namespace FeedItemListReceptor
 		protected void ProcessFeedItems(dynamic sig)
 		{
 			dtItems.Clear();
-			List<dynamic> records = sig.Recordset;
+			List<dynamic> records = sig.Records;
 
 			foreach (dynamic rec in records)
 			{

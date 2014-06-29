@@ -7,8 +7,8 @@
     <ProjectGuid>{B8C25E52-C080-4FE7-BD6F-7689483DC6DF}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ReceptorTemplate</RootNamespace>
-    <AssemblyName>ReceptorTemplate</AssemblyName>
+    <RootNamespace>TabbedDataTableReceptor</RootNamespace>
+    <AssemblyName>TabbedDataTableReceptor</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

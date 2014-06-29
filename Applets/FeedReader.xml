@@ -13,13 +13,7 @@
                 <ixm:ReceptorDef Name="Alchemy" AssemblyName="AlchemyReceptor.dll" Enabled="True" Location="671, 452" />
               </ixm:Receptors>
               <ixm:Permeabilities>
-                <ixm:PermeabilityDef Protocol="LastEventDateTimeRecordset" Direction="Out" Permeable="False" />
-                <ixm:PermeabilityDef Protocol="APODRecordset" Direction="Out" Permeable="False" />
-                <ixm:PermeabilityDef Protocol="APODSearchResultsRecordset" Direction="Out" Permeable="False" />
-                <ixm:PermeabilityDef Protocol="RSSFeedRecordset" Direction="Out" Permeable="False" />
-                <ixm:PermeabilityDef Protocol="RSSFeedItemRecordset" Direction="Out" Permeable="False" />
-                <ixm:PermeabilityDef Protocol="AlchemyPhrasesRecordset" Direction="Out" Permeable="True" />
-                <ixm:PermeabilityDef Protocol="FeedItemPhrasesRecordset" Direction="Out" Permeable="True" />
+                <ixm:PermeabilityDef Protocol="Recordset" Direction="Out" Permeable="True" />
                 <ixm:PermeabilityDef Protocol="IDReturn" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="RequireTable" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="DatabaseRecord" Direction="Out" Permeable="False" />
@@ -31,6 +25,11 @@
                 <ixm:PermeabilityDef Protocol="DatabaseRecord" Direction="In" Permeable="True" />
                 <ixm:PermeabilityDef Protocol="IDReturn" Direction="In" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="URL" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="LastEventDateTime" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeed" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedItem" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="AlchemyPhrases" Direction="Out" Permeable="True" />
+                <ixm:PermeabilityDef Protocol="FeedItemPhrases" Direction="Out" Permeable="True" />
               </ixm:Permeabilities>
             </ixm:MembraneDef>
           </ixm:Membranes>
@@ -47,9 +46,10 @@
                 <ixm:PermeabilityDef Protocol="DropView" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="RequireView" Direction="Out" Permeable="True" />
                 <ixm:PermeabilityDef Protocol="RSSFeedItemDisplay" Direction="In" Permeable="False" />
-                <ixm:PermeabilityDef Protocol="FeedItemPhrasesRecordset" Direction="In" Permeable="True" />
+                <ixm:PermeabilityDef Protocol="Recordset" Direction="In" Permeable="True" />
                 <ixm:PermeabilityDef Protocol="URL" Direction="In" Permeable="False" />
-                <ixm:PermeabilityDef Protocol="AlchemyPhrasesRecordset" Direction="In" Permeable="True" />
+                <ixm:PermeabilityDef Protocol="FeedItemPhrases" Direction="In" Permeable="True" />
+                <ixm:PermeabilityDef Protocol="AlchemyPhrases" Direction="In" Permeable="True" />
               </ixm:Permeabilities>
             </ixm:MembraneDef>
           </ixm:Membranes>
@@ -61,7 +61,8 @@
               <ixm:Permeabilities>
                 <ixm:PermeabilityDef Protocol="URL" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="RSSFeedItemDisplay" Direction="In" Permeable="True" />
-                <ixm:PermeabilityDef Protocol="FeedItemPhrasesRecordset" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Recordset" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="FeedItemPhrases" Direction="In" Permeable="False" />
               </ixm:Permeabilities>
             </ixm:MembraneDef>
           </ixm:Membranes>

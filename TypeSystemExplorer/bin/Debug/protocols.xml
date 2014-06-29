@@ -121,9 +121,11 @@
 
     <SemanticTypeStruct DeclType="Recordset">
       <Attributes>
+        <!-- Name is provided by the creator of the recordset as a helpful display hint. -->
+        <NativeType Name="Name" ImplementingType="string"/>
         <!-- Schema is the name of the ST defining the recorset structure. -->
         <NativeType Name="Schema" ImplementingType="string"/>
-        <NativeType Name="Recordset" ImplementingType="List&lt;dynamic&gt;"/>
+        <NativeType Name="Records" ImplementingType="List&lt;dynamic&gt;"/>
         <!-- Additional info provided by the source. -->
         <NativeType Name="Tag" ImplementingType="string"/>
       </Attributes>

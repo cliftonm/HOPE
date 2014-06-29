@@ -321,12 +321,10 @@ namespace PersistenceReceptor
 
 			sb.Append(String.Join(", ", (from c in types select c.Name).ToArray()));
 			sb.Append(" from " + tableOrViewName);
-
 			string where = signal.Where;
 
-			if (where != null)
+			if (!String.IsNullOrEmpty(where))
 			{
-				where = where.Replace("'", "''");			// TODO: Use parameters?
 				sb.Append(" where " + where);
 			}
 
@@ -343,7 +341,7 @@ namespace PersistenceReceptor
 			// dynamic collection = rsys.SemanticTypeSystem.Create(signal.ResponseProtocol + "Recordset");
 			ISemanticTypeStruct collectionProtocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct("Recordset");
 			dynamic collection = rsys.SemanticTypeSystem.Create("Recordset");
-			collection.Recordset = new List<dynamic>();
+			collection.Records = new List<dynamic>();
 			// Return whatever we were sent, so caller can have a reference that it needs.
 			collection.Tag = signal.Tag;			
 			collection.Schema = schema;
@@ -365,7 +363,7 @@ namespace PersistenceReceptor
 				// stypes.ForEach(t => t.SetValue(rsys.SemanticTypeSystem, outSignal, reader[t.Element.Struct.DeclTypeName]));
 
 				// Add the record to the recordset.
-				collection.Recordset.Add(outSignal);
+				collection.Records.Add(outSignal);
 
 				// rsys.CreateCarrier(this, protocol, outSignal);
 			}

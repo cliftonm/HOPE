@@ -24,9 +24,9 @@
                 <ixm:ReceptorDef Name="Logger" AssemblyName="LoggingReceptor.dll" Enabled="True" Location="482, 208" />
               </ixm:Receptors>
               <ixm:Permeabilities>
-                <ixm:PermeabilityDef Protocol="LastEventDateTimeRecordset" Direction="Out" Permeable="False" />
-                <ixm:PermeabilityDef Protocol="APODRecordset" Direction="Out" Permeable="False" />
-                <ixm:PermeabilityDef Protocol="APODSearchResultsRecordset" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="LastEventDateTime" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="APOD " Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="APODSearchResults" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="RequireTable" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="ScrapeWebpage" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="ImageFilename" Direction="Out" Permeable="False" />

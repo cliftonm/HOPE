@@ -1,0 +1,34 @@
+<MycroXaml xmlns:ixm="TypeSystemExplorer.Models, TypeSystemExplorer" xmlns:def="def" xmlns:ref="ref" Name="Form">
+  <ixm:Applet>
+    <ixm:MembranesDef>
+      <ixm:Membranes>
+        <ixm:MembraneDef Name="Skin">
+          <ixm:Receptors>
+            <ixm:ReceptorDef Name="SQLite Persistor" AssemblyName="PersistenceReceptor.dll" Enabled="True" Location="144, 206" />
+            <ixm:ReceptorDef Name="NLP Viewer" AssemblyName="NlpViewerReceptor.dll" Enabled="True" Location="151, 95" />
+            <ixm:ReceptorDef Name="Feed Item List" AssemblyName="FeedItemListReceptor.dll" Enabled="True" Location="217, 168" />
+            <ixm:ReceptorDef Name="URL" AssemblyName="UrlReceptor.dll" Enabled="True" Location="212, 281" />
+          </ixm:Receptors>
+          <ixm:Permeabilities>
+            <ixm:PermeabilityDef Protocol="Recordset" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="IDReturn" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="DatabaseRecord" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="DropView" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="RequireView" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="RequireTable" Direction="In" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="RequireView" Direction="In" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="DropView" Direction="In" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="DatabaseRecord" Direction="In" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="Recordset" Direction="In" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="URL" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="RSSFeedItemDisplay" Direction="In" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="URL" Direction="In" Permeable="False" />
+          </ixm:Permeabilities>
+        </ixm:MembraneDef>
+      </ixm:Membranes>
+    </ixm:MembranesDef>
+    <ixm:CarriersDef>
+      <ixm:Carriers />
+    </ixm:CarriersDef>
+  </ixm:Applet>
+</MycroXaml>

@@ -58,11 +58,11 @@ namespace NlpViewerReceptor
 				signal => ProcessConceptPhrases(signal));
 
 			AddReceiveProtocol("Recordset",
-				signal => signal.Schema == "ResultTypeRecord",
+				signal => signal.Schema == "AlchemyResultTypeRecord",
 				signal =>
 				{
 					// Save our name to ID mapping of result types.
-					foreach(dynamic row in signal.Recordset)
+					foreach(dynamic row in signal.Records)
 					{
 						resultTypeIDMap[row.Name] = row.ID;
 					}
@@ -198,7 +198,7 @@ namespace NlpViewerReceptor
 
 		protected void ProcessEntityPhrases(dynamic signal)
 		{
-			List<dynamic> records = signal.Recordset;
+			List<dynamic> records = signal.Records;
 			dtEntities.BeginLoadData();
 			
 			foreach (dynamic rec in records)
@@ -220,7 +220,7 @@ namespace NlpViewerReceptor
 
 		protected void ProcessKeywordPhrases(dynamic signal)
 		{
-			List<dynamic> records = signal.Recordset;
+			List<dynamic> records = signal.Records;
 			dtKeywords.BeginLoadData();
 
 			foreach (dynamic rec in records)
@@ -241,7 +241,7 @@ namespace NlpViewerReceptor
 
 		protected void ProcessConceptPhrases(dynamic signal)
 		{
-			List<dynamic> records = signal.Recordset;
+			List<dynamic> records = signal.Records;
 			dtConcepts.BeginLoadData();
 
 			foreach (dynamic rec in records)
