@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<MycroXaml Name="Form"
+  xmlns:wf="System.Windows.Forms, System.Windows.Forms, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"
+  xmlns:ixa="Intertexti.Actions, Intertexti"
+  xmlns:ixc="Intertexti.Controllers, Intertexti"
+  xmlns:ixv="Intertexti.Views, Intertexti"
+  xmlns:ixm="Intertexti.Models, Intertexti"
+  xmlns:wfui="WeifenLuo.WinFormsUI.Docking, WeifenLuo.WinFormsUI.Docking"
+  xmlns:def="def"
+  xmlns:ref="ref">
+  <wf:Form Text="Search Within:" Location="800, 0" Size="500, 80" StartPosition="Manual" ShowInTaskbar="false" MinimizeBox="false" MaximizeBox="false">
+    <wf:Controls>
+      <wf:FlowLayoutPanel Dock="Fill">
+        <wf:Controls>
+          <wf:RadioButton def:Name="rbToday" Text="Today" Click="ShowToday"/>
+          <wf:RadioButton def:Name="rbLastSeven" Text="Last 7 Days" Click="ShowLastWeek"/>
+          <wf:RadioButton def:Name="rbLastMonth" Text="Last 31 Days" Click="ShowLastMonth"/>
+          <wf:RadioButton def:Name="rbLastYear" Text="Last Year" Click="ShowLastYear"/>
+          <wf:RadioButton def:Name="rbAll" Text="All" Click="ShowAll"/>
+        </wf:Controls>
+      </wf:FlowLayoutPanel>
+    </wf:Controls>
+  </wf:Form>
+</MycroXaml>
+
