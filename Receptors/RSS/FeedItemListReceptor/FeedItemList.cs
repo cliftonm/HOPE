@@ -28,6 +28,11 @@ namespace FeedItemListReceptor
 		public FeedItemList(IReceptorSystem rsys)
 			: base(rsys)
 		{
+			AddEmitProtocol("URL");
+			AddEmitProtocol("DropView");
+			AddEmitProtocol("RequireView");
+			AddEmitProtocol("DatabaseRecord");
+
 			AddReceiveProtocol("RSSFeedItemDisplay", 
 				// cast is required to resolve Func vs. Action in parameter list.
 				(Action<dynamic>)(signal => AddFeedItem(signal)));
@@ -36,9 +41,35 @@ namespace FeedItemListReceptor
 				signal => signal.Schema == "FeedItemPhrases",
 				signal => ProcessFeedItems(signal));
 
-			AddEmitProtocol("URL");
+			AddReceiveProtocol("Recordset",
+				signal => signal.Schema == "RSSFeedItemDisplay",
+				signal => ProcessFeedItems(signal));
+
+			AddReceiveProtocol("SearchDateRange",
+				(Action<dynamic>)(signal =>
+				{
+					SearchDateRange(signal.BeginningDate, signal.EndingDate);
+				}));
 
 			InitializeViewer();
+		}
+
+		public override void Initialize()
+		{
+			base.Initialize();
+
+			// If you need to change the view:
+			CreateCarrier("DropView", signal =>
+			{
+				signal.ViewName = "FeedItems";
+			});
+
+			CreateCarrier("RequireView", signal =>
+			{
+				signal.ViewName = "FeedItems";
+				signal.Sql = "select distinct f.ID as RSSFeedItemID, f.FeedName as FeedName, fi.Authors as Authors, fi.Description as Description, fi.NewItem as NewItem, fi.ReadItem as ReadItem, fi.PubDate as PubDate, fi.Title as Title, fi.Categories as Categories, fi.URL as URL from RSSFeedItem fi left join RSSFeed f on f.ID = fi.RSSFeedID";
+			});
+
 		}
 
 		protected void AddFeedItem(dynamic signal)
@@ -88,6 +119,8 @@ namespace FeedItemListReceptor
 
 		/// <summary>
 		/// Respond to a feed item recordset, as we want to display these.
+		/// We're taking full advantage of duck-typing here, as sig will come from different instances
+		/// but always define the fields we want.
 		/// </summary>
 		protected void ProcessFeedItems(dynamic sig)
 		{
@@ -98,6 +131,22 @@ namespace FeedItemListReceptor
 			{
 				AddFeedItem(rec);
 			}
+		}
+
+		protected void SearchDateRange(DateTime beginningDate, DateTime endingDate)
+		{
+			string begDate = beginningDate.ToString("yyyy-MM-dd HH:mm:ss");
+			string endDate = endingDate.ToString("yyyy-MM-dd HH:mm:ss");
+			string where = "PubDate between " + begDate.SingleQuote() + " and " + endDate.SingleQuote();
+
+			CreateCarrier("DatabaseRecord", signal =>
+			{
+				signal.Action = "select";				// only select is allowed on views.
+				signal.ViewName = "FeedItems";
+				signal.ResponseProtocol = "RSSFeedItemDisplay";
+				signal.Where = where;
+				signal.OrderBy = "PubDate desc";
+			});
 		}
 	}
 }

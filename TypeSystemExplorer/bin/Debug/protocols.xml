@@ -929,6 +929,8 @@
         <NativeType Name="Authors" ImplementingType="string"/>
         <NativeType Name="Categories" ImplementingType="string"/>
         <NativeType Name="PubDate" ImplementingType="DateTime"/>
+        <NativeType Name="NewItem" ImplementingType="bool"/>
+        <NativeType Name="ReadItem" ImplementingType="bool"/>
       </Attributes>
     </SemanticTypeStruct>
     
@@ -1054,6 +1056,8 @@
         <NativeType Name="Title" ImplementingType="string"/>
         <NativeType Name="Categories" ImplementingType="string"/>
         <NativeType Name="CaptureDate" ImplementingType="DateTime"/>
+        <NativeType Name="NewItem" ImplementingType="bool"/>
+        <NativeType Name="ReadItem" ImplementingType="bool"/>
         <SemanticElement Name="URL"/>
       </Attributes>
     </SemanticTypeStruct>

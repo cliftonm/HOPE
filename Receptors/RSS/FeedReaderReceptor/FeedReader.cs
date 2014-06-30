@@ -69,11 +69,14 @@ namespace FeedReaderReceptor
 //			FeedName = "Ars Technica";
 //			FeedUrl = "http://feeds.arstechnica.com/arstechnica/index?format=xml";
 
-			FeedName = "NPR World News";
-			FeedUrl = "http://www.npr.org/rss/rss.php?id=1004";
+			//FeedName = "NPR World News";
+			//FeedUrl = "http://www.npr.org/rss/rss.php?id=1004";
+
+			FeedName = "Code Project Articles";
+			FeedUrl = "http://www.codeproject.com/WebServices/ArticleRSS.aspx";
 		}
 
-		public override void EndSystemInit()
+		public override async void EndSystemInit()
 		{
 			base.EndSystemInit();
 
@@ -82,36 +85,38 @@ namespace FeedReaderReceptor
 			if (!String.IsNullOrEmpty(FeedUrl))
 			{
 
-				//			await Task.Run(() =>
-				//				{
+				feed = await Task<SyndicationFeed>.Run(() =>
+					{
 
-				// =========== USE ACTUAL URL AS RSS FEED SOURCE ===============
-				// The real version will create an XmlReader for the URL
-				XmlReader xr = XmlReader.Create(FeedUrl);
+						// =========== USE ACTUAL URL AS RSS FEED SOURCE ===============
+						// The real version will create an XmlReader for the URL
+						XmlReader xr = XmlReader.Create(FeedUrl);
 
-				// =========== USE FILE AS RSS FEED SOURCE ===================
-				// string data = File.ReadAllText("rss.xml");
-				// TextReader tr = new StringReader(data);
-				// XmlReader xr = XmlReader.Create(tr);
+						// =========== USE FILE AS RSS FEED SOURCE ===================
+						// string data = File.ReadAllText("rss.xml");
+						// TextReader tr = new StringReader(data);
+						// XmlReader xr = XmlReader.Create(tr);
 
-				feed = SyndicationFeed.Load(xr);
-				xr.Close();
+						SyndicationFeed sfeed = SyndicationFeed.Load(xr);
+						xr.Close();
 
-				// ============ CREATE A FILE FROM AN RSS FEED ===================
-				/*
-				XmlDocument xdoc = new XmlDocument();
-				xdoc.Load(FeedUrl);
-				StringBuilder sb = new StringBuilder();
-				XmlWriterSettings settings = new XmlWriterSettings();
-				settings.Indent = true;
-				XmlWriter xw = XmlWriter.Create(sb, settings);
-				xdoc.WriteTo(xw);
-				xw.Close();
-				File.WriteAllText("rss.xml", sb.ToString());
-				*/
+						// ============ CREATE A FILE FROM AN RSS FEED ===================
+						/*
+						XmlDocument xdoc = new XmlDocument();
+						xdoc.Load(FeedUrl);
+						StringBuilder sb = new StringBuilder();
+						XmlWriterSettings settings = new XmlWriterSettings();
+						settings.Indent = true;
+						XmlWriter xw = XmlWriter.Create(sb, settings);
+						xdoc.WriteTo(xw);
+						xw.Close();
+						File.WriteAllText("rss.xml", sb.ToString());
+						*/
 
-				// TODO: Once the TTL is determined, the feed reader will add an event to the timer to remind itself to update the feed when the TTL expires.
-				//				});
+						return sfeed;
+
+						// TODO: Once the TTL is determined, the feed reader will add an event to the timer to remind itself to update the feed when the TTL expires.
+					});
 
 				CreateMissingDatabaseFeedEntry(FeedName, FeedUrl, feed.Title.Text, feed.Description.Text);
 			}

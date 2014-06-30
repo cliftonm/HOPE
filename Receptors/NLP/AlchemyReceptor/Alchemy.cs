@@ -183,35 +183,32 @@ namespace AlchemyReceptor
 		/// <summary>
 		/// NLP's the url if we haven't NLP'd it already.  
 		/// </summary>
-		protected async void GetDataFromAlchemy()
+		protected void GetDataFromAlchemy()
 		{
-//			await Task.Run(() =>
-//				{
-					// We don't need to query Alchemy if we've already done so in the past.
-					// TODO: Yes, I know, this assumes static content.
-					if (alchemyResultID == -1)
-					{
-						InitializeAlchemy();
-						RegisterGate(ProcessECK, 3, ProcessNextUrl);
-						ParseEntities(url);
-						ParseKeywords(url);
-						ParseConcepts(url);
-					}
-					else
-					{
-						// Nothing to do.  Check the next queued URL.
-						DecrementGate(ProcessingUrlGate);
-					}
-//				});
+			// We don't need to query Alchemy if we've already done so in the past.
+			// TODO: Yes, I know, this assumes static content.
+			if (alchemyResultID == -1)
+			{
+				InitializeAlchemy();
+				RegisterGate(ProcessECK, 3, ProcessNextUrl);
+				ParseEntities(url);
+				ParseKeywords(url);
+				ParseConcepts(url);
+			}
+			else
+			{
+				// Nothing to do.  Check the next queued URL.
+				DecrementGate(ProcessingUrlGate);
+			}
 		}
 
 		/// <summary>
 		/// Populates the unique entity types and then associates the entities for this URL with their types.
 		/// </summary>
 		/// <param name="url"></param>
-		protected void ParseEntities(string url)
+		protected async void ParseEntities(string url)
 		{
-			bool success = GetEntities(url);
+			bool success = await Task<bool>.Run(() => { return GetEntities(url); });
 
 			if (success)
 			{
@@ -231,9 +228,9 @@ namespace AlchemyReceptor
 			}
 		}
 
-		protected void ParseKeywords(string url)
+		protected async void ParseKeywords(string url)
 		{
-			bool success = GetKeywords(url);
+			bool success = await Task<bool>.Run(() => { return GetKeywords(url); });
 
 			if (success)
 			{
@@ -253,9 +250,9 @@ namespace AlchemyReceptor
 			}
 		}
 
-		protected void ParseConcepts(string url)
+		protected async void ParseConcepts(string url)
 		{
-			bool success = GetConcepts(url);
+			bool success = await Task<bool>.Run(() => { return GetConcepts(url); });
 
 			if (success)
 			{

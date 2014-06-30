@@ -42,11 +42,12 @@
               </ixm:Receptors>
               <ixm:Permeabilities>
                 <ixm:PermeabilityDef Protocol="URL" Direction="Out" Permeable="False" />
-                <ixm:PermeabilityDef Protocol="DatabaseRecord" Direction="Out" Permeable="True" />
-                <ixm:PermeabilityDef Protocol="DropView" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="DropView" Direction="Out" Permeable="True" />
                 <ixm:PermeabilityDef Protocol="RequireView" Direction="Out" Permeable="True" />
+                <ixm:PermeabilityDef Protocol="DatabaseRecord" Direction="Out" Permeable="True" />
                 <ixm:PermeabilityDef Protocol="RSSFeedItemDisplay" Direction="In" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="Recordset" Direction="In" Permeable="True" />
+                <ixm:PermeabilityDef Protocol="SearchDateRange" Direction="In" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="URL" Direction="In" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="FeedItemPhrases" Direction="In" Permeable="True" />
                 <ixm:PermeabilityDef Protocol="AlchemyPhrases" Direction="In" Permeable="True" />
@@ -60,8 +61,12 @@
               </ixm:Receptors>
               <ixm:Permeabilities>
                 <ixm:PermeabilityDef Protocol="URL" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="DropView" Direction="Out" Permeable="True" />
+                <ixm:PermeabilityDef Protocol="RequireView" Direction="Out" Permeable="True" />
+                <ixm:PermeabilityDef Protocol="DatabaseRecord" Direction="Out" Permeable="True" />
                 <ixm:PermeabilityDef Protocol="RSSFeedItemDisplay" Direction="In" Permeable="True" />
                 <ixm:PermeabilityDef Protocol="Recordset" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="SearchDateRange" Direction="In" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="FeedItemPhrases" Direction="In" Permeable="False" />
               </ixm:Permeabilities>
             </ixm:MembraneDef>

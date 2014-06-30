@@ -82,15 +82,15 @@ namespace NlpViewerReceptor
 			base.Initialize();
 
 			// If you need to change the view:
-			CreateCarrier("DropView", signal =>
-			{
-				signal.ViewName = "AlchemyPhrases";
-			});
+			//CreateCarrier("DropView", signal =>
+			//{
+			//	signal.ViewName = "AlchemyPhrases";
+			//});
 
-			CreateCarrier("DropView", signal =>
-			{
-				signal.ViewName = "FeedItemPhrases";
-			});
+			//CreateCarrier("DropView", signal =>
+			//{
+			//	signal.ViewName = "FeedItemPhrases";
+			//});
 
 			CreateCarrier("RequireView", signal =>
 				{
@@ -101,7 +101,7 @@ namespace NlpViewerReceptor
 			CreateCarrier("RequireView", signal =>
 			{
 				signal.ViewName = "FeedItemPhrases";
-				signal.Sql = "select distinct f.ID as RSSFeedItemID, ar.AlchemyPhraseID as AlchemyPhraseID, f.FeedName as FeedName, fi.PubDate as PubDate, fi.Title as Title, fi.Categories as Categories, fi.URL as URL, ar.CaptureDate as CaptureDate from AlchemyResult ar left join RSSFeedItem fi on fi.ID = ar.RSSFeedItemID left join RSSFeed f on f.ID = fi.RSSFeedID";
+				signal.Sql = "select distinct f.ID as RSSFeedItemID, ar.AlchemyPhraseID as AlchemyPhraseID, f.FeedName as FeedName, fi.NewItem as NewItem, fi.ReadItem as ReadItem, fi.PubDate as PubDate, fi.Title as Title, fi.Categories as Categories, fi.URL as URL, ar.CaptureDate as CaptureDate from AlchemyResult ar left join RSSFeedItem fi on fi.ID = ar.RSSFeedItemID left join RSSFeed f on f.ID = fi.RSSFeedID";
 			});
 
 			CreateCarrier("DatabaseRecord", signal =>
