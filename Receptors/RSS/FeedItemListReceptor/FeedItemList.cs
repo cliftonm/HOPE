@@ -72,6 +72,13 @@ namespace FeedItemListReceptor
 
 		}
 
+		public override void Terminate()
+		{
+			base.Terminate();
+
+			form.Close();
+		}
+
 		protected void AddFeedItem(dynamic signal)
 		{
 			DataRow row = dtItems.NewRow();
