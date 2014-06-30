@@ -42,6 +42,7 @@ namespace FeedReaderReceptor
 				signal =>
 				{
 					feedID = signal.ID;
+					MarkOldFeedItems();
 					SaveFeedItemsToDatabase(feed);
 				});
 			
@@ -244,6 +245,24 @@ namespace FeedReaderReceptor
 			// The URL receptor, for example, would open the page on the browser.
 			CreateCarrierIfReceiver("URL", signal => signal.Value = item.Links[0].Uri.ToString());
 
+		}
+
+		/// <summary>
+		/// Mark all existing feed items for this feed ID as old.
+		/// </summary>
+		protected void MarkOldFeedItems()
+		{
+			ISemanticTypeStruct rowProtocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct("RSSFeedNewItem");
+			dynamic rowSignal = rsys.SemanticTypeSystem.Create("RSSFeedNewItem");
+			rowSignal.NewItem = false;
+
+			CreateCarrierIfReceiver("DatabaseRecord", signal =>
+			{
+				signal.TableName = "RSSFeedItem";
+				signal.Action = "update";
+				signal.Row = rsys.CreateInternalCarrier(rowProtocol, rowSignal);
+				signal.Where = "RSSFeedID = " + feedID;
+			});
 		}
     }
 }

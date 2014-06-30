@@ -24,6 +24,7 @@ namespace FeedItemListReceptor
 		protected Form form;
 		protected DataTable dtItems;
 		protected DataView dv;
+		protected DataGridView dgv;
 
 		public FeedItemList(IReceptorSystem rsys)
 			: base(rsys)
@@ -87,9 +88,9 @@ namespace FeedItemListReceptor
 			row[2] = signal.Title;
 			row[3] = signal.Categories;
 			row[4] = signal.URL.Value;
+			row[5] = signal.NewItem;
+			row[6] = signal.ReadItem;
 			dtItems.Rows.Add(row);
-
-			((DataGridView)form.Controls[0]).AutoResizeColumns();
 		}
 
 		protected void InitializeViewer()
@@ -109,12 +110,17 @@ namespace FeedItemListReceptor
 			dtItems.Columns.Add(new DataColumn("Title", typeof(string)));
 			dtItems.Columns.Add(new DataColumn("Categories", typeof(string)));
 			dtItems.Columns.Add(new DataColumn("URL", typeof(string)));
+			dtItems.Columns.Add(new DataColumn("NewItem", typeof(string)));
+			dtItems.Columns.Add(new DataColumn("ReadItem", typeof(string)));
 
 			// Setup the data source.
 			dv = new DataView(dtItems);
-			((DataGridView)form.Controls[0]).DataSource = dv;
-			((DataGridView)form.Controls[0]).Columns[4].Visible = false;
-			((DataGridView)form.Controls[0]).CellContentDoubleClick += OnCellContentDoubleClick;
+			dgv = (DataGridView)form.Controls[0];
+			dgv.DataSource = dv;
+			dgv.Columns[4].Visible = false;
+			dgv.Columns[5].Visible = false;
+			dgv.Columns[6].Visible = false;
+			dgv.CellContentDoubleClick += OnCellContentDoubleClick;
 
 			form.Show();
 		}
@@ -122,6 +128,8 @@ namespace FeedItemListReceptor
 		protected void OnCellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
 		{
 			CreateCarrier("URL", signal => signal.Value = dv[e.RowIndex][4].ToString());
+			dv[e.RowIndex][6] = true;
+			dgv.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.White;
 		}
 
 		/// <summary>
@@ -133,11 +141,38 @@ namespace FeedItemListReceptor
 		{
 			dtItems.Clear();
 			List<dynamic> records = sig.Records;
+			dtItems.BeginLoadData();
 
 			foreach (dynamic rec in records)
 			{
 				AddFeedItem(rec);
 			}
+
+			dtItems.EndLoadData();
+
+			foreach (DataGridViewRow row in dgv.Rows)
+			{
+				bool newRow = Convert.ToBoolean(row.Cells[5].Value);	// Is the row new?
+				bool readRow = Convert.ToBoolean(row.Cells[6].Value);	// Has the row been read?
+
+				if (readRow)
+				{
+					row.DefaultCellStyle.BackColor = Color.White;
+				}
+				else
+				{
+					if (newRow)
+					{
+						row.DefaultCellStyle.BackColor = Color.LightBlue;
+					}
+					else
+					{
+						row.DefaultCellStyle.BackColor = Color.LightGreen;
+					}
+				}
+			}
+
+			((DataGridView)form.Controls[0]).AutoResizeColumns();
 		}
 
 		protected void SearchDateRange(DateTime beginningDate, DateTime endingDate)

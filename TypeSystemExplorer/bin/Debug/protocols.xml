@@ -916,6 +916,18 @@
 
     <SemanticTypeDecl OfType="Noun">
       <AttributeValues>
+        <Attribute Name="Name" Value="RSSFeedNewItem"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="RSSFeedNewItem">
+      <Attributes>
+        <NativeType Name="NewItem" ImplementingType="bool"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
         <Attribute Name="Name" Value="RSSFeedItemDisplay"/>
       </AttributeValues>
     </SemanticTypeDecl>

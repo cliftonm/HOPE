@@ -82,15 +82,15 @@ namespace NlpViewerReceptor
 			base.Initialize();
 
 			// If you need to change the view:
-			//CreateCarrier("DropView", signal =>
-			//{
-			//	signal.ViewName = "AlchemyPhrases";
-			//});
+			CreateCarrier("DropView", signal =>
+			{
+				signal.ViewName = "AlchemyPhrases";
+			});
 
-			//CreateCarrier("DropView", signal =>
-			//{
-			//	signal.ViewName = "FeedItemPhrases";
-			//});
+			CreateCarrier("DropView", signal =>
+			{
+				signal.ViewName = "FeedItemPhrases";
+			});
 
 			CreateCarrier("RequireView", signal =>
 				{
