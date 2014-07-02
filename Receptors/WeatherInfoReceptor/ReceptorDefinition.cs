@@ -128,8 +128,8 @@ namespace WeatherInfoReceptor
 
 			foreach (dynamic h in signal.Hazards)
 			{
-				string phenomena = h.Attribute("phenomena").Value;
-				string significance = h.Attribute("significance").Value;
+				string phenomena = h.Phenomena;
+				string significance = h.Significance;
 				hazard.Add("A");
 				hazard.Add(phenomena);
 				hazard.Add(significance);
