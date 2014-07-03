@@ -1,0 +1,302 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>The HOPE Backstory</title>
+</head>
+
+<body>
+
+<h2>The HOPE Backstory</h2>
+<p>HOPE is essentially a publish-subscribe pattern supporting distributed, 
+asynchronous work.</p>
+<h3>Publisher / Subscriber Systems</h3>
+<p><i>In software architecture, publish–subscribe is a messaging pattern where 
+senders of messages, called publishers, do not program the messages to be sent 
+directly to specific receivers, called subscribers. Instead, published messages 
+are characterized into classes, without knowledge of what, if any, subscribers 
+there may be. Similarly, subscribers express interest in one or more classes, 
+and only receive messages that are of interest, without knowledge of what, if 
+any, publishers there are.</i></p>
+<p>Let's tease apart what
+<a href="http://en.wikipedia.org/wiki/Publish/subscribe">wikipedia</a> says 
+about pub/sub systems and see how these concepts map to the underlying 
+architecture of HOPE.</p>
+<h4>Publishers</h4>
+<p><i>Senders of messages, called publishers, do not program the messages to be 
+sent directly to specific receivers, called subscribers. </i></p>
+<ul>
+	<li>The term &quot;protocol&quot; is used to describe the message class, which is 
+	mapped to an actual runtime generated .NET class.</li>
+	<li>Publishers and subscribers are called &quot;receptors.&quot;</li>
+	<li>Receptors can be publishers, subscribers, or both.</li>
+</ul>
+<h4>Messages</h4>
+<p><i>Published messages are characterized into classes.</i></p>
+<ul>
+	<li>Carriers consisting of a protocol (the actual name of the class 
+	containing the data) and the signal, the data itself.</li>
+	<li>Classes are described declaratively in XML, translated into C# code, and 
+	instantiated at runtime.</li>
+	<li>Publishers and subscribers do not &quot;know&quot; the runtime instance structure 
+	(as in, there usually is no pre-determined interface) thus type checking is 
+	done at runtime.</li>
+	<li>Publishers and subscribers manipulate the instance data using the 
+	&quot;dynamic&quot; keyword.</li>
+	<li>A publisher receptor declares what protocols it emits.&nbsp; This is 
+	done mainly to support the visualizer in showing the protocol pathways 
+	between receptors (subscribers and publishers.)</li>
+</ul>
+<h4>Subscribers</h4>
+<p><i>Subscribers express interest in one or more classes, and only receive 
+messages that are of interest, without knowledge of what, if any, publishers 
+there are.</i></p>
+<ul>
+	<li>A subscriber receptor declares what protocols it receives.&nbsp; This 
+	information is used by the visualizer to show protocol pathways</li>
+</ul>
+<h4>Subscriber Messages</h4>
+<p><i>In the pub/sub model, subscribers typically receive only a subset of the 
+total messages published. The process of selecting messages for reception and 
+processing is called filtering. </i></p>
+<ul>
+	<li>The protocols the subscriber receptor declares are used to filter 
+	subscriber receptors so that the carrier is &quot;received&quot; only by receptor 
+	subscribers interested in the carrier's protoocol.</li>
+</ul>
+<h4>Filtering</h4>
+<p><i>There are two common forms of filtering: topic-based and content-based.</i></p>
+<ul>
+	<li>Hope uses both topic-based (protocol) and content-based (signal) 
+	filtering.</li>
+</ul>
+<h4>Topic Filtering</h4>
+<p><i>In a topic-based system, messages are published to &quot;topics&quot; or named 
+logical channels. Subscribers in a topic-based system will receive all messages 
+published to the topics to which they subscribe, and all subscribers to a topic 
+will receive the same messages. The publisher is responsible for defining the 
+classes of messages to which subscribers can subscribe.</i></p>
+<ul>
+	<li>Internally, HOPE maintains a map of logical channels that connect 
+	publisher receptors to subscriber receptors.&nbsp; This map is updated at 
+	runtime as receptors are added, removed, and moved in and out of membranes 
+	(see below.)</li>
+	<li>As mentioned above, receptors define the protocols that they publish and 
+	those to which they subscribe.</li>
+</ul>
+<h4>Content Filtering</h4>
+<p><i>In a content-based system, messages are only delivered to a subscriber if 
+the attributes or content of those messages match constraints defined by the 
+subscriber. The subscriber is responsible for classifying the messages.</i></p>
+<ul>
+	<li>Subscriber receptors can optionally provide lambda expressions (as Func&lt;bool, 
+	dynamic&gt; types) that qualify the reception of a carrier, allowing the 
+	subscriber receptor to specify constraints on the signal.</li>
+</ul>
+<h4>Brokers</h4>
+<p><i>In many pub/sub systems, publishers post messages to an intermediary 
+message broker or event bus, and subscribers register subscriptions with that 
+broker, letting the broker perform the filtering.</i></p>
+<ul>
+	<li>HOPE implements two kinds of message brokers:<ul>
+		<li>All receptors within a single collection use a &quot;collection broker&quot; 
+		for registration and and topic/content (protocol and signal) filtering.</li>
+		<li>&quot;Membranes&quot; maintain separate receptor collections.&nbsp; A membrane 
+		is a broker that is user-configured (rather than configured by the 
+		receptors) to allow topics (protocols) to &quot;permeate the membrane&quot;, 
+		either inward or outward.</li>
+		<li>Membranes do not currently support content filtering.</li>
+	</ul>
+	</li>
+</ul>
+<h4>Broker Queuing and Prioritizing</h4>
+<p><i>The broker normally performs a store and forward function to route 
+messages from publishers to subscribers. In addition, the broker may prioritize 
+messages in a queue before routing.</i></p>
+<ul>
+	<li>The collection broker will normally forward a carrier immediately or, 
+	when the visualizer is used, it creates an Action&lt;&gt; lambda expression that 
+	is evaluated when the carrier reaches it target receptors.<ul>
+		<li>If a receptor for the carrier exists (topic/content filtering 
+		evaluates to &quot;true&quot;) the carrier is processed.</li>
+		<li>If no qualified receptors exist, the collection broker will either 
+		discard the carrier or queue the carrier (this is currently determined 
+		by how the publisher receptor creates the carrier.)</li>
+		<li>Queued carriers are processed once a qualified subscriber receptor 
+		comes into existence in some &quot;reachable&quot; receptor collection.&nbsp; 
+		Reachable means either within the receptor collection of the publisher 
+		or through one or more membranes to another receptor collection.</li>
+	</ul>
+	</li>
+	<li>The membrane broker can block a protocol (impermeability) or can be 
+	permeable, allowing the carrier to possibly reach the subscriber receptors 
+	in other receptor collections.&nbsp;
+	<ul>
+		<li>If no qualified receptors exist, the collection broker will either 
+		discard the carrier or queue the carrier (this is currently determined 
+		by how the publisher receptor creates the carrier.)</li>
+	</ul>
+	</li>
+	<li>Carrier prioritization is currently not implemented.</li>
+</ul>
+<h4>Subscriber Message Initialization</h4>
+<p><i>Subscribers may register for specific messages at build time, 
+initialization time or runtime.</i> </p>
+<ul>
+	<li>Subscriber registration occurs during initialization and at runtime 
+	(dynamic subscription.)&nbsp; </li>
+	<li>Publisher registration occurs during initialization and at runtime 
+	(dynamic publishing.)</li>
+	<li>Subscription and publishing are determined by the receptor 
+	implementation -- the user does not have direct control over this process 
+	unless the receptor implements some interface to the user (UI, for example) 
+	that allows the user to change the pub/sub registration.</li>
+	<li>Membranes provide a mechanism for the user to create receptor 
+	collections and determine the permeability of carriers by topic (protocol.)</li>
+</ul>
+<h4>Dynamic Topology</h4>
+<p><i>Publishers are loosely coupled to subscribers, and need not even know of 
+their existence. With the topic being the focus, publishers and subscribers are 
+allowed to remain ignorant of system topology. </i></p>
+<ul>
+	<li>The topology of the system is dynamic, determined (either by the user or 
+	programmatically) by the current configuration of receptor collections.</li>
+</ul>
+<h4>Scalability</h4>
+<p><i>Pub/sub provides the opportunity for better scalability than traditional 
+client–server, through parallel operation, message caching, tree-based or 
+network-based routing, etc.</i></p>
+<ul>
+	<li>Carriers can be processed in parallel.</li>
+	<li>Carriers can be transmitted between physical systems.</li>
+	<li>Receptors can be implemented across systems:<ul>
+		<li>distributing workload </li>
+		<li>providing redundancy</li>
+	</ul>
+	</li>
+	<li>Receptors can operate asynchronously:<ul>
+		<li>performing internal operations asynchronously</li>
+		<li>interfacing with other services (such as web services) 
+		asynchronously</li>
+	</ul>
+	</li>
+	<li>Coordinating workflow in a distributed, asynchronous environment has 
+	many complexities which are only superficially addressed at the moment:<ul>
+		<li>Guarantee of receipt and work -- did a receptor receive the carrier 
+		and complete the work?</li>
+		<li>Error handling -- did a receptor complete the work without error?</li>
+		<li>Error recovery -- how is an error handled?</li>
+		<li>Guarantee of sequential operation -- carrier C1 must be processed by 
+		receptor R before carrier C2 is processed<ul>
+			<li>This is often an issue during initialization -- for example, 
+			guaranteeing the database tables/views exist before operating on 
+			those tables/views.</li>
+		</ul>
+		</li>
+		<li>Query - Response coordination -- a receptor publishes a carrier and 
+		requires the result of the operation before continuing with its own 
+		process.</li>
+		<li>Dependencies -- a receptor requires multiple responses (usually from 
+		different receptors) before proceeding with its own process.</li>
+		<li>Required receptors -- what receptors are required in the collection 
+		for a receptor to perform its work, and how are these required receptors 
+		instantiated?</li>
+	</ul>
+	</li>
+</ul>
+<h3>Issues / Concerns</h3>
+<p><i>The most serious problems with pub/sub systems are a side-effect of their 
+main advantage: the decoupling of publisher from subscriber. </i></p>
+<h4>Testing, Traceability, and Repeatability</h4>
+<p><i>A pub/sub system must be designed carefully to be able to provide stronger 
+system properties that a particular application might require, such as assured 
+delivery.</i></p>
+<ul>
+	<li>Testing a HOPE applet is difficult due to the dynamic nature of the 
+	topology, both within and across membranes (receptor collections.)</li>
+	<li>Traceability across an asynchronous distributed system is complex.</li>
+	<li>Repeatability across an asynchronous distributed system is often not 
+	guaranteed.</li>
+	<li>Other problems (load surges, slowdowns, IP broadcast storms) have 
+	already been observed, especially when running applets that process 
+	thousands of web-scraping or web service operations.</li>
+</ul>
+<h4>Tightly Coupled Semantics</h4>
+<p><i>Pub/sub are tightly coupled, via event subscriptions and patterns, to the 
+semantics of the underlying event schema and values.</i></p>
+<ul>
+	<li>It has already been seen that pub/sub pushes the issue of re-usability 
+	onto the semantics of the underlying event schema and values (protocol and 
+	signal.)</li>
+	<li>This often leads to minor variations (similar to database views) of the 
+	same signal, requiring unique schema (protocols.)</li>
+	<li>All these minor variations increase the semantic complexity and 
+	maintainability of the entire system and is an area in which work is being 
+	done to reduce this semantic complexity.</li>
+</ul>
+<h4>Security</h4>
+<p><i>For pub/sub systems that use brokers (servers), the agreement for a broker 
+to send messages to a subscriber is in-band, and can be subject to security 
+problems. Brokers might be fooled into sending notifications to the wrong 
+client, amplifying denial of service requests against the client. Brokers 
+themselves could be overloaded as they allocate resources to track created 
+subscriptions.<br>
+<br>
+Even with systems that do not rely on brokers, a subscriber might be able to 
+receive data that it is not authorized to receive. An unauthorized publisher may 
+be able to introduce incorrect or damaging messages into the pub/sub system. 
+This is especially true with systems that broadcast or multicast their messages. 
+Encryption (e.g. Transport Layer Security (SSL/TLS)) can prevent unauthorized 
+access but cannot prevent damaging messages from being introduced by authorized 
+publishers.</i></p>
+<ul>
+	<li>HOPE does not currently implement any encryption or Transport Layer 
+	Security.</li>
+	<li>Malformed or malicious carriers can be easily introduced into a HOPE 
+	applet.</li>
+</ul>
+<h4>Islands of Behavior</h4>
+<p>This is from my personal observations.</p>
+<p><i>Pub/sub implements &quot;islands of behavior&quot; </i></p>
+<ul>
+	<li>This requires careful thought and planning to tease apart behaviors so 
+	that they can be distributed across multiple receptors.</li>
+	<li>This in turn increases the complexity of coordinating workflow 
+	(responses and dependencies) between islands of behavior.</li>
+	<li>The advantage is that this enforces an implementation that is inherently 
+	distributable and capable of asynchronous operation.</li>
+	<li>The disadvantage is that we are inherently lacking programming tools to:<ul>
+		<li>Construct the scaffolding templates that are common for all islands 
+		of behavior (receptors.)</li>
+		<li>Assist in the thought processes necessary for reducing behavior to 
+		core tasks.</li>
+		<li>Assist in the assimilation of responses to form coordinated 
+		workflows.</li>
+	</ul>
+	</li>
+	<li>In actual usage, receptors can be categorized as &quot;high-level&quot; and 
+	&quot;low-level&quot; (and numerous in-between categories)<ul>
+		<li>High-level receptors issue carriers to low-level receptors and then 
+		perform work when all necessary responses are received.</li>
+		<li>High-level receptors often intermix operations that can be performed 
+		asynchronously by low-level carriers along with operations that must be 
+		performed sequentially by low-level receptors.</li>
+		<li>Low-level receptors (at the lowest level) have no dependencies on 
+		other receptors (though other receptors may subscribe to the incoming 
+		and outgoing protocols) and perform work autonomously.</li>
+	</ul>
+	</li>
+</ul>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+
+</body>
+
+</html>
