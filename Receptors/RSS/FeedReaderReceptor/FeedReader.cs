@@ -19,12 +19,16 @@ namespace FeedReaderReceptor
     {
 		public override string Name { get { return "Feed Reader"; } }
 		public override bool IsEdgeReceptor { get { return true; } }
+		public override string ConfigurationUI { get { return "FeedReaderConfig.xml"; } }
 
 		[UserConfigurableProperty("Feed URL:")]
 		public string FeedUrl { get; set; }
 
 		[UserConfigurableProperty("Feed Name:")]
 		public string FeedName {get;set;}
+
+		[UserConfigurableProperty("Feed Update Interval:")]
+		public int RefreshInterval { get; set; }
 
 		protected int feedID;
 		protected SyndicationFeed feed;
@@ -73,8 +77,8 @@ namespace FeedReaderReceptor
 			//FeedName = "NPR World News";
 			//FeedUrl = "http://www.npr.org/rss/rss.php?id=1004";
 
-			FeedName = "Code Project Articles";
-			FeedUrl = "http://www.codeproject.com/WebServices/ArticleRSS.aspx";
+//			FeedName = "Code Project Articles";
+//			FeedUrl = "http://www.codeproject.com/WebServices/ArticleRSS.aspx";
 		}
 
 		public override async void EndSystemInit()

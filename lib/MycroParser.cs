@@ -409,19 +409,35 @@ namespace Clifton.MycroParser
 			objectsToEndInit = new List<Tuple<Type, object>>();
 		}
 
-		public static T InstantiateFromFile<T>(string filename, Action<MycroParser> AddInstances)
+		public static T InstantiateFromFile<T>(string filename, Action<MycroParser> AddInstances=null, object eventSink=null)
 		{
 			MycroParser mp = new MycroParser();
 			AddInstances.IfNotNull(t => t(mp));
 			XmlDocument doc = new XmlDocument();
 			doc.Load(filename);
-			mp.Load(doc, "Form", null);
+			mp.Load(doc, "Form", eventSink);
 			T obj = (T)mp.Process();
 
 			// Pass object collection to the instantiated class if it implements IMycroParserInstantiatedObject.
 			if (obj is IMycroParserInstantiatedObject)
 			{
 				((IMycroParserInstantiatedObject)obj).ObjectCollection = mp.ObjectCollection;
+			}
+
+			return obj;
+		}
+
+		public T Load<T>(string filename, object eventSink)
+		{
+			XmlDocument doc = new XmlDocument();
+			doc.Load(filename);
+			Load(doc, "Form", eventSink);
+			T obj = (T)Process();
+
+			// Pass object collection to the instantiated class if it implements IMycroParserInstantiatedObject.
+			if (obj is IMycroParserInstantiatedObject)
+			{
+				((IMycroParserInstantiatedObject)obj).ObjectCollection = ObjectCollection;
 			}
 
 			return obj;

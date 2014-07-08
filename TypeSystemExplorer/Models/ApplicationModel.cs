@@ -14,16 +14,24 @@ namespace TypeSystemExplorer.Models
 		protected bool isDirty;
 		protected DataSet dataSet;
 		protected string filename;
+		protected string xmlFilename;
 
 		public delegate void DirtyModelDlgt(bool dirtyState);
 		public event DirtyModelDlgt ModelIsDirty;
 
 		public bool HasFilename { get { return !String.IsNullOrEmpty(filename); } }
+		public bool HasXmlFilename { get { return !String.IsNullOrEmpty(xmlFilename); } }
 
 		public string Filename
 		{
 			get { return filename; }
 			set { filename = value; }
+		}
+
+		public string XmlFilename
+		{
+			get { return xmlFilename; }
+			set { xmlFilename = value; }
 		}
 
 		public bool IsDirty

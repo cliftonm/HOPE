@@ -53,6 +53,12 @@ namespace Clifton.Receptor.Interfaces
 		public virtual bool IsEdgeReceptor { get { return false; } }
 		public virtual bool IsHidden { get { return false; } }
 
+		/// <summary>
+		/// Allows a receptor to specify a MyXaml (MycroXaml) form UI for configuring the receptor.
+		/// The default (null) means "no configuration UI."
+		/// </summary>
+		public virtual string ConfigurationUI { get { return null; } }
+
 		protected List<ReceiveQualifier> receiveProtocols;
 		protected List<string> emitProtocols;
 		protected Dictionary<string, Gate> gates;

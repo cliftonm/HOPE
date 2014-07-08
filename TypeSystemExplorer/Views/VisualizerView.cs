@@ -17,6 +17,7 @@ using System.Windows.Forms;
 using Clifton.Drawing;
 using Clifton.ExtensionMethods;
 using Clifton.MycroParser;
+using Clifton.Tools.Data;
 using Clifton.Tools.Strings.Extensions;
 
 using Clifton.Receptor;
@@ -29,10 +30,14 @@ using TypeSystemExplorer.Controls;
 using TypeSystemExplorer.Controllers;
 using TypeSystemExplorer.Models;
 
-using Clifton.Tools.Data;
-
 namespace TypeSystemExplorer.Views
 {
+	public class ConfigurationInfo
+	{
+		public IReceptor Receptor { get; set; }
+		public MycroParser Parser { get; set; }
+	}
+
 	// From http://www.differentpla.net/content/2005/02/using-propertygrid-with-dictionary
 	class DictionaryPropertyGridAdapter : ICustomTypeDescriptor
 	{
@@ -1318,14 +1323,91 @@ namespace TypeSystemExplorer.Views
 
 				if (r.Contains(p))
 				{
-					kvp.Key.Enabled ^= true;
 					match = true;
-					Invalidate(true);
+					IReceptor receptor = kvp.Key;
+
+					if (receptor.Instance.ConfigurationUI != null)
+					{
+						MycroParser mp = new MycroParser();
+						Form form = mp.Load<Form>(receptor.Instance.ConfigurationUI, this);
+						form.Tag = new ConfigurationInfo() { Receptor = receptor, Parser = mp };
+						PopulateControls(receptor, mp);
+						form.ShowDialog();
+					}
+					else
+					{
+						receptor.Enabled ^= true;
+						Invalidate(true);
+					}
+
 					break;
 				}
 			}
 
 			return match;
+		}
+
+		/// <summary>
+		/// Populate controls mapped by the PropertyControlMap from the values in the receptor, acquired by reflection.
+		/// </summary>
+		protected void PopulateControls(IReceptor r, MycroParser mp)
+		{
+			foreach (PropertyControlEntry pce in ((PropertyControlMap)mp.ObjectCollection["ControlMap"]).Entries)		// TODO: magic name.
+			{
+				PropertyInfo piReceptor = r.Instance.GetType().GetProperty(pce.PropertyName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+				object val = piReceptor.GetValue(r.Instance);
+				object control = mp.ObjectCollection[pce.ControlName];
+				PropertyInfo piControl = control.GetType().GetProperty(pce.ControlPropertyName, BindingFlags.Public | BindingFlags.Instance);
+				object convertedVal = Converter.Convert(val, piControl.PropertyType);
+				piControl.SetValue(control, convertedVal);
+			}
+
+			// Special handling for "enabled."
+			// TODO: Fix this by moving Enabled into IReceptorInstance and BaseReceptor
+			object ckEnabled;
+			if (mp.ObjectCollection.TryGetValue("ckEnabled", out ckEnabled))
+			{
+				((CheckBox)ckEnabled).Checked = r.Enabled;
+			}
+		}
+
+		/// <summary>
+		/// Save the data in the configuration UI form back to the receptor.
+		/// </summary>
+		protected void SaveValues(IReceptorInstance r, MycroParser mp)
+		{
+			foreach (PropertyControlEntry pce in ((PropertyControlMap)mp.ObjectCollection["ControlMap"]).Entries)		// TODO: magic name.
+			{
+				PropertyInfo piReceptor = r.GetType().GetProperty(pce.PropertyName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+				object control = mp.ObjectCollection[pce.ControlName];
+				PropertyInfo piControl = control.GetType().GetProperty(pce.ControlPropertyName, BindingFlags.Public | BindingFlags.Instance);
+				object val = piControl.GetValue(control);
+				object convertedVal = Converter.Convert(val, piReceptor.PropertyType);
+				piReceptor.SetValue(r, convertedVal);
+			}
+		}
+
+		protected void OnReceptorConfigOK(object sender, EventArgs args)
+		{
+			Form form = (Form)((Control)sender).Parent;
+			ConfigurationInfo ci = (ConfigurationInfo)form.Tag;
+			SaveValues(ci.Receptor.Instance, ci.Parser);
+
+			// Special handling for "enabled."
+			// TODO: Fix this by moving Enabled into IReceptorInstance and BaseReceptor
+			object ckEnabled;
+			if (ci.Parser.ObjectCollection.TryGetValue("ckEnabled", out ckEnabled))
+			{
+				ci.Receptor.Enabled = ((CheckBox)ckEnabled).Checked;
+				Invalidate(true);
+			}
+
+			form.Close();
+		}
+
+		protected void OnReceptorConfigCancel(object sender, EventArgs args)
+		{
+			((Form)((Control)sender).Parent).Close();
 		}
 
 		protected bool TestMembraneDoubleClick(Point p)

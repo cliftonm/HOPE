@@ -41,6 +41,7 @@
   <ItemGroup>
     <Compile Include="Carrier.cs" />
     <Compile Include="Membrane.cs" />
+    <Compile Include="PropertyControlMap.cs" />
     <Compile Include="Receptor.cs" />
     <Compile Include="Receptors.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

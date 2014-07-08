@@ -22,6 +22,7 @@ using Clifton.Receptor;
 using Clifton.Receptor.Interfaces;
 using Clifton.SemanticTypeSystem;
 using Clifton.SemanticTypeSystem.Interfaces;
+using Clifton.Tools.Data;
 using Clifton.Tools.Strings;
 using Clifton.Tools.Strings.Extensions;
 
@@ -38,10 +39,13 @@ namespace TypeSystemExplorer.Controllers
 		public string CurrentFilename
 		{
 			get { return ApplicationModel.Filename; }
-			protected set
-			{
-				ApplicationModel.Filename = value;
-			}
+			protected set { ApplicationModel.Filename = value; }
+		}
+
+		public string CurrentXmlFilename
+		{
+			get { return ApplicationModel.XmlFilename; }
+			protected set { ApplicationModel.XmlFilename = value; }
 		}
 
 		public SemanticTypeTreeController SemanticTypeTreeController { get; protected set; }
@@ -101,7 +105,7 @@ namespace TypeSystemExplorer.Controllers
 							new State("W", View.Size.Width),
 							new State("H", View.Size.Height),
 							new State("WindowState", View.WindowState.ToString()),
-							new State("Last Opened", CurrentFilename),
+							// new State("Last Opened", CurrentFilename),
 						};
 
 			},
@@ -112,7 +116,7 @@ namespace TypeSystemExplorer.Controllers
 					Assert.SilentTry(() => View.Location = new Point(state.Single(t => t.Key == "X").Value.to_i(), state.Single(t => t.Key == "Y").Value.to_i()));
 					Assert.SilentTry(() => View.Size = new Size(state.Single(t => t.Key == "W").Value.to_i(), state.Single(t => t.Key == "H").Value.to_i()));
 					Assert.SilentTry(() => View.WindowState = state.Single(t => t.Key == "WindowState").Value.ToEnum<FormWindowState>());
-					Assert.SilentTry(() => CurrentFilename = state.Single(t => t.Key == "Last Opened").Value);
+					// Assert.SilentTry(() => CurrentFilename = state.Single(t => t.Key == "Last Opened").Value);
 				});
 		}
 
@@ -129,7 +133,7 @@ namespace TypeSystemExplorer.Controllers
 		{
 			XmlEditorController.IfNull(() => NewDocument("xmlEditor.xml"));
 			XmlEditorController.View.Editor.LoadFile(filename);
-			CurrentFilename = filename;
+			CurrentXmlFilename = filename;
 			// SetCaption(filename);
 
 			CreateTypes(this, EventArgs.Empty);
@@ -195,7 +199,7 @@ namespace TypeSystemExplorer.Controllers
 			if (CheckDirtyModel())
 			{
 				XmlEditorController.IfNotNull(t => t.View.Editor.Document.TextContent = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\r\n");
-				CurrentFilename = String.Empty;
+				CurrentXmlFilename = String.Empty;
 			}
 		}
 
@@ -214,20 +218,20 @@ namespace TypeSystemExplorer.Controllers
 				{
 					// MruMenu.AddFile(ofd.FileName);
 					LoadXml(ofd.FileName);
-					CurrentFilename = ofd.FileName;
+					CurrentXmlFilename = ofd.FileName;
 				}
 			}
 		}
 
 		protected void SaveXml(object sender, EventArgs args)
 		{
-			if (!ApplicationModel.HasFilename)
+			if (!ApplicationModel.HasXmlFilename)
 			{
 				SaveXmlAs(sender, args);
 			}
 			else
 			{
-				XmlEditorController.View.Editor.SaveFile(CurrentFilename);
+				XmlEditorController.View.Editor.SaveFile(CurrentXmlFilename);
 			}
 		}
 
@@ -242,7 +246,7 @@ namespace TypeSystemExplorer.Controllers
 
 			if (res == DialogResult.OK)
 			{
-				CurrentFilename = sfd.FileName;
+				CurrentXmlFilename = sfd.FileName;
 				XmlEditorController.View.Editor.SaveFile(sfd.FileName);
 				// MruMenu.AddFile(sfd.FileName);
 				// SetCaption(sfd.FileName);
@@ -538,7 +542,14 @@ namespace TypeSystemExplorer.Controllers
 
 		public void SaveReceptors(object sender, EventArgs args)
 		{
-			SaveReceptorsInternal(CurrentFilename);
+			if (!String.IsNullOrEmpty(CurrentFilename))
+			{
+				SaveReceptorsInternal(CurrentFilename);
+			}
+			else
+			{
+				SaveReceptorsAs(sender, args);
+			}
 		}
 
 		public void SaveReceptorsAs(object sender, EventArgs args)
@@ -651,6 +662,8 @@ namespace TypeSystemExplorer.Controllers
 						Point p = VisualizerController.View.GetLocation(r);
 						AddAttribute(rNode, "Location", p.X + ", " + p.Y);
 					}
+
+					SerializeReceptorUserConfigurableProperties(rNode, r);
 				}
 			});
 
@@ -677,6 +690,41 @@ namespace TypeSystemExplorer.Controllers
 					}
 				});
 			
+		}
+
+		/// <summary>
+		/// Serialize user configurable attributes.  These are properties of a receptor instance with the UserConfigurablePropertyAttribute attribute.
+		/// </summary>
+		protected void SerializeReceptorUserConfigurableProperties(XmlNode rNode, IReceptor r)
+		{
+			bool createdCollectionNode = false;
+			XmlNode uiConfigs = null;
+
+			r.Instance.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance).ForEach(prop =>
+				{
+					if (prop.GetCustomAttribute(typeof(UserConfigurablePropertyAttribute)) != null)
+					{
+						object obj = prop.GetValue(r.Instance);
+						string val = String.Empty;
+						obj.IfNotNull(o =>
+							{
+								if (!createdCollectionNode)
+								{
+									// Add collection node.
+									uiConfigs = rNode.OwnerDocument.CreateElement("ixm", "UserConfigs", "TypeSystemExplorer.Models, TypeSystemExplorer");
+									rNode.AppendChild(uiConfigs);
+									createdCollectionNode = true;
+								}
+
+								// Don't serialize null value properties.
+								val = o.ToString();
+								XmlNode uiNode = uiConfigs.OwnerDocument.CreateElement("ixm", "UserConfig", "TypeSystemExplorer.Models, TypeSystemExplorer");
+								AddAttribute(uiNode, "Name", prop.Name);
+								AddAttribute(uiNode, "Value", val);
+								uiConfigs.AppendChild(uiNode);
+							});
+					}
+				});
 		}
 
 		public void LoadApplet(string filename)
@@ -748,6 +796,7 @@ namespace TypeSystemExplorer.Controllers
 		protected void DeserializeMembranes(MembraneDef membraneDef, Membrane membrane, List<Membrane> membraneList)
 		{
 			Dictionary<IReceptor, Point> receptorLocationMap = new Dictionary<IReceptor, Point>();
+			Dictionary<IReceptor, List<UserConfig>> configs = new Dictionary<IReceptor, List<UserConfig>>();
 			Point noLocation = new Point(-1, -1);
 			membrane.Name = membraneDef.Name;
 
@@ -756,12 +805,28 @@ namespace TypeSystemExplorer.Controllers
 					IReceptor r = membrane.RegisterReceptor(n.Name, n.AssemblyName);
 					receptorLocationMap[r] = n.Location;
 					r.Enabled = n.Enabled;
+					configs[r] = n.UserConfigs;
 				});
 
 			// After registration, but before the NewReceptor fire event, set the drop point.
 			// Load all the receptors defined in this membrane first.
 			membrane.LoadReceptors((rec) =>
 			{
+				// Restore any user configuration values.
+				List<UserConfig> configList;
+
+				if (configs.TryGetValue(rec, out configList))
+				{
+					configList.ForEach(uc =>
+						{
+							Type rt = rec.Instance.GetType();
+							PropertyInfo pi = rt.GetProperty(uc.Name);
+							string strVal = uc.Value;
+							object val = Converter.Convert(strVal, pi.PropertyType);
+							pi.SetValue(rec.Instance, val);
+						});
+				}
+
 				Point p;
 
 				// Internal receptors, like ourselves, will not be in this deserialized collection.
@@ -883,6 +948,7 @@ namespace TypeSystemExplorer.Controllers
 		public string Name { get { return "System"; } }
 		public bool IsEdgeReceptor { get { return false; } }
 		public bool IsHidden { get { return true; } }
+		public string ConfigurationUI { get { return null; } }
 
 		public IReceptorSystem ReceptorSystem
 		{

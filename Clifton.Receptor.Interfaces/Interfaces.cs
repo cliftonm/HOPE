@@ -36,6 +36,7 @@ namespace Clifton.Receptor.Interfaces
 		string Name { get; }
 		bool IsEdgeReceptor { get; }
 		bool IsHidden { get; }
+		string ConfigurationUI { get; }
 
 		// The receptor system must be reset when a receptor moves to a different membrane,
 		// that is, to another receptor system.

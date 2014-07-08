@@ -92,16 +92,24 @@ namespace TypeSystemExplorer.Models
 		}
 	}
 
+	public class UserConfig
+	{
+		public string Name { get; set; }
+		public string Value { get; set; }
+	}
+
 	public class ReceptorDef
 	{
 		public string Name { get; set; }
 		public string AssemblyName { get; set; }
 		public Point Location { get; set; }
 		public bool Enabled { get; set; }
+		public List<UserConfig> UserConfigs { get; set; }
 
 		public ReceptorDef()
 		{
 			// Default.
+			UserConfigs = new List<UserConfig>();
 			Enabled = true;
 		}
 	}

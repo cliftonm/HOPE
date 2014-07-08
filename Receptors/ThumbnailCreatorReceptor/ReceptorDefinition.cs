@@ -60,7 +60,7 @@ namespace ThumbnailCreatorReceptor
 							Bitmap bitmap = new Bitmap(fn);
 							// Reduce the size of the image.  If we don't do this, scrolling and rendering of scaled images is horrifically slow.
 							// Image image = new Bitmap(bitmap, 1024, 1024 * bitmap.Height / bitmap.Width);
-							Image image = new Bitmap(bitmap, 320, 320 * bitmap.Height / bitmap.Width);
+							Image image = new Bitmap(bitmap, 1024, 1024 * bitmap.Height / bitmap.Width);
 							image.Tag = fn;
 							bitmap.Dispose();
 
