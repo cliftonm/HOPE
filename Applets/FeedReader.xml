@@ -9,7 +9,13 @@
             <ixm:MembraneDef Name="">
               <ixm:Receptors>
                 <ixm:ReceptorDef Name="SQLite Persistor" AssemblyName="PersistenceReceptor.dll" Enabled="True" Location="573, 347" />
-                <ixm:ReceptorDef Name="Feed Reader" AssemblyName="FeedReaderReceptor.dll" Enabled="True" Location="680, 287" />
+                <ixm:ReceptorDef Name="Feed Reader" AssemblyName="FeedReaderReceptor.dll" Enabled="True" Location="680, 287">
+                  <ixm:UserConfigs>
+                    <ixm:UserConfig Name="FeedUrl" Value="http://www.codeproject.com/WebServices/ArticleRSS.aspx" />
+                    <ixm:UserConfig Name="FeedName" Value="Code Project Articles" />
+                    <ixm:UserConfig Name="RefreshInterval" Value="20" />
+                  </ixm:UserConfigs>
+                </ixm:ReceptorDef>
                 <ixm:ReceptorDef Name="Alchemy" AssemblyName="AlchemyReceptor.dll" Enabled="True" Location="671, 452" />
               </ixm:Receptors>
               <ixm:Permeabilities>

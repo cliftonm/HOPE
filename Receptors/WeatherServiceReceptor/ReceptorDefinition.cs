@@ -30,7 +30,12 @@ namespace WeatherServiceReceptor
 	public class ReceptorDefinition : BaseReceptor
 	{
 		public override string Name { get { return "Weather Service"; } }
-		
+
+		public override string ConfigurationUI { get { return "ZipcodeConfig.xml"; } }
+
+		[UserConfigurableProperty("Zipcode:")]
+		public string Zipcode { get; set; }
+
 		public ReceptorDefinition(IReceptorSystem rsys) : base(rsys)
 		{
 			AddReceiveProtocol("Zipcode");
@@ -38,7 +43,26 @@ namespace WeatherServiceReceptor
 			AddEmitProtocol("WeatherInfo");
 		}
 
-		public override async void ProcessCarrier(ICarrier carrier)
+		public override void EndSystemInit()
+		{
+			base.EndSystemInit();
+
+			if (!String.IsNullOrEmpty(Zipcode))
+			{
+				// Send to zipcode service
+				CreateCarrier("Zipcode", signal => signal.Value = Zipcode);
+				// Since we also receive this protocol, we do not need to explictly process the zipcode!
+				// ProcessZipcode(Zipcode);
+			}
+		}
+
+		public override void ProcessCarrier(ICarrier carrier)
+		{
+			string zipcode = carrier.Signal.Value;
+			ProcessZipcode(zipcode);
+		}
+
+		public async void ProcessZipcode(string zipcode)
 		{
 			XDocument xdoc;
 
@@ -46,7 +70,6 @@ namespace WeatherServiceReceptor
 			{
 				xdoc = await Task.Run(() =>
 				{
-					string zipcode = carrier.Signal.Value;
 					ndfdXML weather = new ndfdXML();
 					string latLonXml = weather.LatLonListZipCode(zipcode);
 					XDocument xdoc2 = XDocument.Parse(latLonXml);
@@ -82,7 +105,7 @@ namespace WeatherServiceReceptor
 
 			try
 			{
-				outSignal.Zipcode = carrier.Signal.Value;
+				outSignal.Zipcode = zipcode;
 				outSignal.Low = xdoc.Element("dwml").Element("data").Element("parameters").Elements("temperature").Where(el => el.Attribute("type").Value == "minimum").Single().Element("value").Value.Trim();
 				outSignal.High = xdoc.Element("dwml").Element("data").Element("parameters").Elements("temperature").Where(el => el.Attribute("type").Value == "maximum").Single().Element("value").Value.Trim();
 				outSignal.Summary = xdoc.Element("dwml").Element("data").Element("parameters").Element("weather").Element("weather-conditions").Attribute("weather-summary").Value;

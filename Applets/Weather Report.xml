@@ -8,29 +8,39 @@
           <ixm:Membranes>
             <ixm:MembraneDef Name="">
               <ixm:Receptors>
-                <ixm:ReceptorDef Name="Weather Info" AssemblyName="WeatherInfoReceptor.dll" Enabled="True" Location="433, 438" />
-                <ixm:ReceptorDef Name="Weather Service" AssemblyName="WeatherServiceReceptor.dll" Enabled="True" Location="302, 321" />
-                <ixm:ReceptorDef Name="Zip Code Service" AssemblyName="ZipCodeReceptor.dll" Enabled="True" Location="443, 336" />
-                <ixm:ReceptorDef Name="Text Display" AssemblyName="TextDisplayReceptor.dll" Enabled="True" Location="293, 415" />
+                <ixm:ReceptorDef Name="Weather Info" AssemblyName="WeatherInfoReceptor.dll" Enabled="True" Location="321, 341" />
+                <ixm:ReceptorDef Name="Weather Service" AssemblyName="WeatherServiceReceptor.dll" Enabled="True" Location="190, 224" />
+                <ixm:ReceptorDef Name="Zip Code Service" AssemblyName="ZipCodeReceptor.dll" Enabled="True" Location="331, 239" />
+                <ixm:ReceptorDef Name="Text Display" AssemblyName="TextDisplayReceptor.dll" Enabled="True" Location="181, 318" />
               </ixm:Receptors>
               <ixm:Permeabilities>
                 <ixm:PermeabilityDef Protocol="TextToSpeech" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="WeatherInfo" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Location" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="WeatherInfo" Direction="In" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="Location" Direction="In" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="Zipcode" Direction="In" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="Text" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="TextToSpeech" Direction="In" Permeable="False" />
               </ixm:Permeabilities>
             </ixm:MembraneDef>
           </ixm:Membranes>
           <ixm:Membranes>
             <ixm:MembraneDef Name="">
               <ixm:Receptors>
-                <ixm:ReceptorDef Name="Text To Speech" AssemblyName="TextToSpeechReceptor.dll" Enabled="True" Location="864, 441" />
-                <ixm:ReceptorDef Name="Weather Info" AssemblyName="WeatherInfoReceptor.dll" Enabled="True" Location="751, 432" />
-                <ixm:ReceptorDef Name="Weather Service" AssemblyName="WeatherServiceReceptor.dll" Enabled="True" Location="835, 328" />
-                <ixm:ReceptorDef Name="Zip Code Service" AssemblyName="ZipCodeReceptor.dll" Enabled="True" Location="712, 338" />
+                <ixm:ReceptorDef Name="Text To Speech" AssemblyName="TextToSpeechReceptor.dll" Enabled="True" Location="712, 334" />
+                <ixm:ReceptorDef Name="Weather Info" AssemblyName="WeatherInfoReceptor.dll" Enabled="True" Location="599, 325" />
+                <ixm:ReceptorDef Name="Weather Service" AssemblyName="WeatherServiceReceptor.dll" Enabled="True" Location="683, 221">
+                  <ixm:UserConfigs>
+                    <ixm:UserConfig Name="Zipcode" Value="12565" />
+                  </ixm:UserConfigs>
+                </ixm:ReceptorDef>
+                <ixm:ReceptorDef Name="Zip Code Service" AssemblyName="ZipCodeReceptor.dll" Enabled="True" Location="560, 231" />
               </ixm:Receptors>
               <ixm:Permeabilities>
+                <ixm:PermeabilityDef Protocol="TextToSpeech" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="WeatherInfo" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Location" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="TextToSpeech" Direction="In" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="Text" Direction="In" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="WeatherInfo" Direction="In" Permeable="False" />
@@ -42,5 +52,8 @@
         </ixm:MembraneDef>
       </ixm:Membranes>
     </ixm:MembranesDef>
+    <ixm:CarriersDef>
+      <ixm:Carriers />
+    </ixm:CarriersDef>
   </ixm:Applet>
 </MycroXaml>

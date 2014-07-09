@@ -261,6 +261,7 @@
     <Content Include="bin\Debug\xmlEditor.xml">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="bin\Debug\ZipcodeConfig.xml" />
     <Content Include="ToDo.txt" />
     <Content Include="x64\SQLite.Interop.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

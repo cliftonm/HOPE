@@ -285,7 +285,10 @@ namespace AlchemyReceptor
 			try
 			{
 				dsEntities = new DataSet();
-				string xml = alchemyObj.URLGetRankedNamedEntities(url);
+				AlchemyAPI_EntityParams eparams = new AlchemyAPI_EntityParams();
+				eparams.setSentiment(true);
+				eparams.setMaxRetrieve(250);
+				string xml = alchemyObj.URLGetRankedNamedEntities(url, eparams);
 				TextReader tr = new StringReader(xml);
 				XmlReader xr = XmlReader.Create(tr);
 				dsEntities.ReadXml(xr);
