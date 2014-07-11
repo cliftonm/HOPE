@@ -34,6 +34,7 @@ namespace Clifton.Receptor.Interfaces
 		event EventHandler<EventArgs> EmitProtocolsChanged;
 
 		string Name { get; }
+		string Subname { get; }
 		bool IsEdgeReceptor { get; }
 		bool IsHidden { get; }
 		string ConfigurationUI { get; }
@@ -63,6 +64,12 @@ namespace Clifton.Receptor.Interfaces
 		/// Called on an individual receptor when it is dragged and dropped onto an existing surface.
 		/// </summary>
 		void EndSystemInit();
+
+
+		/// <summary>
+		/// Called when the user configurable items in a receptor instance have been updated by user or other action.
+		/// </summary>
+		void UserConfigurationUpdated();
 	}
 
 	public interface IReceptorSystem

@@ -1,0 +1,69 @@
+<MycroXaml xmlns:ixm="TypeSystemExplorer.Models, TypeSystemExplorer" xmlns:def="def" xmlns:ref="ref" Name="Form">
+  <ixm:Applet>
+    <ixm:MembranesDef>
+      <ixm:Membranes>
+        <ixm:MembraneDef Name="Skin">
+          <ixm:Receptors>
+            <ixm:ReceptorDef Name="URL" AssemblyName="UrlReceptor.dll" Enabled="True" Location="443, 91" />
+          </ixm:Receptors>
+          <ixm:Permeabilities>
+            <ixm:PermeabilityDef Protocol="URL" Direction="In" Permeable="False" />
+          </ixm:Permeabilities>
+          <ixm:Membranes>
+            <ixm:MembraneDef Name="">
+              <ixm:Receptors>
+                <ixm:ReceptorDef Name="Feed Reader" AssemblyName="FeedReaderReceptor.dll" Enabled="True" Location="266, 247">
+                  <ixm:UserConfigs>
+                    <ixm:UserConfig Name="FeedUrl" Value="http://www.codeproject.com/WebServices/ArticleRSS.aspx" />
+                    <ixm:UserConfig Name="FeedName" Value="Code Project Articles" />
+                  </ixm:UserConfigs>
+                </ixm:ReceptorDef>
+                <ixm:ReceptorDef Name="Carrier List Viewer" AssemblyName="CarrierListViewerReceptor.dll" Enabled="True" Location="375, 243">
+                  <ixm:UserConfigs>
+                    <ixm:UserConfig Name="ProtocolName" Value="RSSFeedItem" />
+                  </ixm:UserConfigs>
+                </ixm:ReceptorDef>
+              </ixm:Receptors>
+              <ixm:Permeabilities>
+                <ixm:PermeabilityDef Protocol="RSSFeedItem" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedItem" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="URL" Direction="Out" Permeable="True" />
+              </ixm:Permeabilities>
+            </ixm:MembraneDef>
+          </ixm:Membranes>
+          <ixm:Membranes>
+            <ixm:MembraneDef Name="">
+              <ixm:Receptors>
+                <ixm:ReceptorDef Name="Feed Reader" AssemblyName="FeedReaderReceptor.dll" Enabled="True" Location="548, 271">
+                  <ixm:UserConfigs>
+                    <ixm:UserConfig Name="FeedUrl" Value="http://www.reddit.com/.rss" />
+                    <ixm:UserConfig Name="FeedName" Value="Reddit" />
+                  </ixm:UserConfigs>
+                </ixm:ReceptorDef>
+                <ixm:ReceptorDef Name="Feed Reader" AssemblyName="FeedReaderReceptor.dll" Enabled="True" Location="680, 271">
+                  <ixm:UserConfigs>
+                    <ixm:UserConfig Name="FeedUrl" Value="http://feeds.arstechnica.com/arstechnica/technology-lab?format=xml" />
+                    <ixm:UserConfig Name="FeedName" Value="Ars Technica Tech Lab" />
+                  </ixm:UserConfigs>
+                </ixm:ReceptorDef>
+                <ixm:ReceptorDef Name="Carrier List Viewer" AssemblyName="CarrierListViewerReceptor.dll" Enabled="True" Location="601, 154">
+                  <ixm:UserConfigs>
+                    <ixm:UserConfig Name="ProtocolName" Value="RSSFeedItem" />
+                  </ixm:UserConfigs>
+                </ixm:ReceptorDef>
+              </ixm:Receptors>
+              <ixm:Permeabilities>
+                <ixm:PermeabilityDef Protocol="RSSFeedItem" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="URL" Direction="Out" Permeable="True" />
+                <ixm:PermeabilityDef Protocol="RSSFeedItem" Direction="In" Permeable="False" />
+              </ixm:Permeabilities>
+            </ixm:MembraneDef>
+          </ixm:Membranes>
+        </ixm:MembraneDef>
+      </ixm:Membranes>
+    </ixm:MembranesDef>
+    <ixm:CarriersDef>
+      <ixm:Carriers />
+    </ixm:CarriersDef>
+  </ixm:Applet>
+</MycroXaml>

@@ -946,6 +946,7 @@ namespace TypeSystemExplorer.Controllers
 #pragma warning restore 67
 
 		public string Name { get { return "System"; } }
+		public string Subname { get { return String.Empty; } }
 		public bool IsEdgeReceptor { get { return false; } }
 		public bool IsHidden { get { return true; } }
 		public string ConfigurationUI { get { return null; } }
@@ -974,6 +975,10 @@ namespace TypeSystemExplorer.Controllers
 		}
 
 		public void Terminate()
+		{
+		}
+
+		public void UserConfigurationUpdated()
 		{
 		}
 

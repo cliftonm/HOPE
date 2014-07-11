@@ -50,6 +50,7 @@ namespace Clifton.Receptor.Interfaces
 		public event EventHandler<EventArgs> EmitProtocolsChanged;
 
 		public abstract string Name { get; }
+		public virtual string Subname { get { return String.Empty; } }
 		public virtual bool IsEdgeReceptor { get { return false; } }
 		public virtual bool IsHidden { get { return false; } }
 
@@ -81,10 +82,18 @@ namespace Clifton.Receptor.Interfaces
 			compositeGates = new Dictionary<string, CompositeGate>();
 		}
 
+		/// <summary>
+		/// Called when the receptor initialization has completed.
+		/// </summary>
 		public virtual void Initialize()
 		{
 		}
 
+		/// <summary>
+		/// Called when the system shuts down, allowing receptor instances to dispose of unmanaged resources and 
+		/// perform other cleanup.
+		/// Also called when a new applet is loaded.
+		/// </summary>
 		public virtual void Terminate()
 		{
 		}
@@ -109,7 +118,18 @@ namespace Clifton.Receptor.Interfaces
 			rq.Action(carrier.Signal);
 		}
 
+		/// <summary>
+		/// Called when the entire system has been initialized, after loading an applet.
+		/// Called on an individual receptor when it is dragged and dropped onto an existing surface.
+		/// </summary>
 		public virtual void EndSystemInit()
+		{
+		}
+
+		/// <summary>
+		/// Called when the user configurable items in a receptor instance have been updated by user or other action.
+		/// </summary>
+		public virtual void UserConfigurationUpdated()
 		{
 		}
 
@@ -160,45 +180,75 @@ namespace Clifton.Receptor.Interfaces
 			}
 		}
 
+		/// <summary>
+		/// Add an unqualified receive protocol.  Override ProcessCarrier to handle this protocol.
+		/// </summary>
 		protected virtual void AddReceiveProtocol(string p)
 		{
 			receiveProtocols.Add(new ReceiveQualifier(p));
 			ReceiveProtocolsChanged.Fire(this, EventArgs.Empty);
 		}
 
+		/// <summary>
+		/// Add an unqualified receive protocol and execute the specified action when received.
+		/// </summary>
 		protected virtual void AddReceiveProtocol(string p, Action<dynamic> a)
 		{
 			receiveProtocols.Add(new ReceiveQualifier(p, a));
 			ReceiveProtocolsChanged.Fire(this, EventArgs.Empty);
 		}
 
+		/// <summary>
+		/// Add a receive protocol that is qualified by a function.
+		/// </summary>
 		protected virtual void AddReceiveProtocol(string p, Func<dynamic, bool> q)
 		{
 			receiveProtocols.Add(new ReceiveQualifier(p, q));
 			ReceiveProtocolsChanged.Fire(this, EventArgs.Empty);
 		}
 
+		/// <summary>
+		/// Add a receive protocol that is qualified by a function and specifies the action when qualified.
+		/// </summary>
 		protected virtual void AddReceiveProtocol(string p, Func<dynamic, bool> q, Action<dynamic> a)
 		{
 			receiveProtocols.Add(new ReceiveQualifier(p, q, a));
 			ReceiveProtocolsChanged.Fire(this, EventArgs.Empty);
 		}
 
+		/// <summary>
+		/// Remove a specific receive protocol.
+		/// </summary>
 		protected virtual void RemoveReceiveProtocol(string p)
 		{
 			receiveProtocols.Remove(receiveProtocols.Single(rp=>rp.Protocol==p));
 			ReceiveProtocolsChanged.Fire(this, EventArgs.Empty);
 		}
 
+		/// <summary>
+		/// Add protocol that this receptor emits.
+		/// </summary>
 		protected virtual void AddEmitProtocol(string p)
 		{
 			emitProtocols.Add(p);
 			EmitProtocolsChanged.Fire(this, EventArgs.Empty);
 		}
 
+		/// <summary>
+		/// Remove a specific emit protocol.
+		/// </summary>
 		protected virtual void RemoveEmitProtocol(string p)
 		{
 			emitProtocols.Remove(p);
+			EmitProtocolsChanged.Fire(this, EventArgs.Empty);
+		}
+
+		/// <summary>
+		/// Remove all emit protocols.
+		/// </summary>
+		protected virtual void RemoveEmitProtocols()
+		{
+			emitProtocols.Clear();
 			EmitProtocolsChanged.Fire(this, EventArgs.Empty);
 		}
 
@@ -252,6 +302,18 @@ namespace Clifton.Receptor.Interfaces
 		/// </summary>
 		protected void NullAction()
 		{
+		}
+
+		/// <summary>
+		/// Emits the exception as a carrier, which can be viewed, logged, etc, by other receptors.
+		/// </summary>
+		protected void EmitException(string name, Exception ex)
+		{
+			CreateCarrierIfReceiver("Exception", signal =>
+			{
+				signal.ReceptorName = "Feed Reader Receptor";
+				signal.Message = ex.Message;
+			});
 		}
 	}
 }

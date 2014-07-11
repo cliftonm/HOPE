@@ -1392,6 +1392,8 @@ namespace TypeSystemExplorer.Views
 			Form form = (Form)((Control)sender).Parent;
 			ConfigurationInfo ci = (ConfigurationInfo)form.Tag;
 			SaveValues(ci.Receptor.Instance, ci.Parser);
+			// Notify instance that the configuration has been updated.
+			ci.Receptor.Instance.UserConfigurationUpdated();
 
 			// Special handling for "enabled."
 			// TODO: Fix this by moving Enabled into IReceptorInstance and BaseReceptor
@@ -1865,9 +1867,18 @@ namespace TypeSystemExplorer.Views
 							e.Graphics.DrawEllipse(pen, new Rectangle(p, s));
 						}
 
-						SizeF strSize = e.Graphics.MeasureString(kvp.Key.Name, font);
+						// Name
+						SizeF strSize = e.Graphics.MeasureString(kvp.Key.Instance.Name, font);
 						Point center = Point.Subtract(bottomCenter, new Size((int)strSize.Width / 2, 0));
 						e.Graphics.DrawString(kvp.Key.Name, font, whiteBrush, center);
+
+						// Subname
+						if (!String.IsNullOrEmpty(kvp.Key.Instance.Subname))
+						{
+							strSize = e.Graphics.MeasureString(kvp.Key.Instance.Subname, font);
+							center = Point.Subtract(bottomCenter, new Size((int)strSize.Width / 2, -15));
+							e.Graphics.DrawString(kvp.Key.Instance.Subname, font, whiteBrush, center);
+						}
 					});
 
 				flyouts.ForEach(f =>
