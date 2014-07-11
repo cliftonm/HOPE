@@ -9,7 +9,11 @@
             <ixm:MembraneDef Name="">
               <ixm:Receptors>
                 <ixm:ReceptorDef Name="Weather Info" AssemblyName="WeatherInfoReceptor.dll" Enabled="True" Location="321, 341" />
-                <ixm:ReceptorDef Name="Weather Service" AssemblyName="WeatherServiceReceptor.dll" Enabled="True" Location="190, 224" />
+                <ixm:ReceptorDef Name="Weather Service" AssemblyName="WeatherServiceReceptor.dll" Enabled="True" Location="190, 224">
+                  <ixm:UserConfigs>
+                    <ixm:UserConfig Name="Zipcode" Value="12565" />
+                  </ixm:UserConfigs>
+                </ixm:ReceptorDef>
                 <ixm:ReceptorDef Name="Zip Code Service" AssemblyName="ZipCodeReceptor.dll" Enabled="True" Location="331, 239" />
                 <ixm:ReceptorDef Name="Text Display" AssemblyName="TextDisplayReceptor.dll" Enabled="True" Location="181, 318" />
               </ixm:Receptors>

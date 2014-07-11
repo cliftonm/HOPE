@@ -1102,5 +1102,61 @@
         <NativeType Name="EndingDate" ImplementingType="DateTime"/>
       </Attributes>
     </SemanticTypeStruct>
+
+    <!-- Exceptions -->
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="Exception"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="Exception">
+      <Attributes>
+        <NativeType Name="ReceptorName" ImplementingType="string"/>
+        <NativeType Name="Message" ImplementingType="string"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <!-- Alchemy types -->
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="AlchemyEntity"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="AlchemyKeyword"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="AlchemyConcept"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="AlchemyEntity">
+      <Attributes>
+        <NativeType Name="text" ImplementingType="string"/>
+        <NativeType Name="type" ImplementingType="string"/>
+        <NativeType Name="count" ImplementingType="string"/>
+        <NativeType Name="relevance" ImplementingType="string"/>
+      </Attributes>
+    </SemanticTypeStruct>
+    <SemanticTypeStruct DeclType="AlchemyKeyword">
+      <Attributes>
+        <NativeType Name="text" ImplementingType="string"/>
+        <NativeType Name="relevance" ImplementingType="string"/>
+      </Attributes>
+    </SemanticTypeStruct>
+    <SemanticTypeStruct DeclType="AlchemyConcept">
+      <Attributes>
+        <NativeType Name="text" ImplementingType="string"/>
+        <NativeType Name="relevance" ImplementingType="string"/>
+        <NativeType Name="dbpedia" ImplementingType="string"/>
+        <NativeType Name="freebase" ImplementingType="string"/>
+        <NativeType Name="opencyc" ImplementingType="string"/>
+      </Attributes>
+    </SemanticTypeStruct>
   </Collection>
 </SemanticTypes>

@@ -197,6 +197,7 @@
     <Content Include="bin\Debug\12565.xml" />
     <Content Include="bin\Debug\94306.xml" />
     <Content Include="bin\Debug\about.xml" />
+    <Content Include="bin\Debug\alchemyapikey.txt" />
     <Content Include="bin\Debug\alchemyConceptsTestResponse.xml" />
     <Content Include="bin\Debug\alchemyEntityTestResponse.xml">
       <SubType>Designer</SubType>

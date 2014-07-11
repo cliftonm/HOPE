@@ -16,6 +16,7 @@ namespace CarrierListViewerReceptor
 	public class CarrierListViewer : BaseReceptor
     {
 		public override string Name { get { return "Carrier List Viewer"; } }
+		public override string Subname { get { return ProtocolName; } }
 		public override bool IsEdgeReceptor { get { return true; } }
 		public override string ConfigurationUI { get { return "CarrierListViewerConfig.xml"; } }
 

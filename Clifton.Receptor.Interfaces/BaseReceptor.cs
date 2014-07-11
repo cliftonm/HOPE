@@ -232,6 +232,7 @@ namespace Clifton.Receptor.Interfaces
 		{
 			emitProtocols.Add(p);
 			EmitProtocolsChanged.Fire(this, EventArgs.Empty);
+			AddInternalSemanticElements(p);
 		}
 
 		/// <summary>
@@ -311,9 +312,29 @@ namespace Clifton.Receptor.Interfaces
 		{
 			CreateCarrierIfReceiver("Exception", signal =>
 			{
-				signal.ReceptorName = "Feed Reader Receptor";
+				signal.ReceptorName = name;
 				signal.Message = ex.Message;
 			});
+		}
+
+		/// <summary>
+		/// This is an interesting function that looks at the internals of the protocol, and
+		/// for every semantic element, it adds an emitter protocol for that type as well.
+		/// When the carrier is actually created, additional carriers for internal semantic elements
+		/// will also be created conditionally, if a receiver exists.
+		/// This behavior is "exploratory" in that we may not always want this, but since this whole
+		/// concept is so unique, there really is no "best practice" for this behavior.
+		/// Also note that this method recurses!
+		/// </summary>
+		protected void AddInternalSemanticElements(string protocol)
+		{
+			ISemanticTypeStruct st = rsys.SemanticTypeSystem.GetSemanticTypeStruct(protocol);
+
+			st.SemanticElements.ForEach(se =>
+				{
+					// Recurse, adding semantic elements that are part of the parent protocol.
+					AddEmitProtocol(se.Name);
+				});
 		}
 	}
 }

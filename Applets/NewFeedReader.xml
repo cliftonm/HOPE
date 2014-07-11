@@ -5,58 +5,114 @@
         <ixm:MembraneDef Name="Skin">
           <ixm:Receptors>
             <ixm:ReceptorDef Name="URL" AssemblyName="UrlReceptor.dll" Enabled="True" Location="443, 91" />
+            <ixm:ReceptorDef Name="Carrier List Viewer" AssemblyName="CarrierListViewerReceptor.dll" Enabled="True" Location="373, 493">
+              <ixm:UserConfigs>
+                <ixm:UserConfig Name="ProtocolName" Value="AlchemyEntity" />
+              </ixm:UserConfigs>
+            </ixm:ReceptorDef>
+            <ixm:ReceptorDef Name="Carrier List Viewer" AssemblyName="CarrierListViewerReceptor.dll" Enabled="True" Location="492, 491">
+              <ixm:UserConfigs>
+                <ixm:UserConfig Name="ProtocolName" Value="AlchemyKeyword" />
+              </ixm:UserConfigs>
+            </ixm:ReceptorDef>
+            <ixm:ReceptorDef Name="Carrier List Viewer" AssemblyName="CarrierListViewerReceptor.dll" Enabled="True" Location="626, 489">
+              <ixm:UserConfigs>
+                <ixm:UserConfig Name="ProtocolName" Value="AlchemyConcept" />
+              </ixm:UserConfigs>
+            </ixm:ReceptorDef>
           </ixm:Receptors>
           <ixm:Permeabilities>
             <ixm:PermeabilityDef Protocol="URL" Direction="In" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="" Direction="In" Permeable="False" />
           </ixm:Permeabilities>
           <ixm:Membranes>
             <ixm:MembraneDef Name="">
               <ixm:Receptors>
-                <ixm:ReceptorDef Name="Feed Reader" AssemblyName="FeedReaderReceptor.dll" Enabled="True" Location="266, 247">
-                  <ixm:UserConfigs>
-                    <ixm:UserConfig Name="FeedUrl" Value="http://www.codeproject.com/WebServices/ArticleRSS.aspx" />
-                    <ixm:UserConfig Name="FeedName" Value="Code Project Articles" />
-                  </ixm:UserConfigs>
-                </ixm:ReceptorDef>
-                <ixm:ReceptorDef Name="Carrier List Viewer" AssemblyName="CarrierListViewerReceptor.dll" Enabled="True" Location="375, 243">
+                <ixm:ReceptorDef Name="Carrier List Viewer" AssemblyName="CarrierListViewerReceptor.dll" Enabled="True" Location="366, 204">
                   <ixm:UserConfigs>
                     <ixm:UserConfig Name="ProtocolName" Value="RSSFeedItem" />
                   </ixm:UserConfigs>
                 </ixm:ReceptorDef>
               </ixm:Receptors>
               <ixm:Permeabilities>
-                <ixm:PermeabilityDef Protocol="RSSFeedItem" Direction="Out" Permeable="False" />
-                <ixm:PermeabilityDef Protocol="RSSFeedItem" Direction="In" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="URL" Direction="Out" Permeable="True" />
+                <ixm:PermeabilityDef Protocol="RSSFeedItem" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="AlchemyEntity" Direction="Out" Permeable="True" />
+                <ixm:PermeabilityDef Protocol="AlchemyKeyword" Direction="Out" Permeable="True" />
+                <ixm:PermeabilityDef Protocol="AlchemyConcept" Direction="Out" Permeable="True" />
               </ixm:Permeabilities>
+              <ixm:Membranes>
+                <ixm:MembraneDef Name="">
+                  <ixm:Receptors>
+                    <ixm:ReceptorDef Name="Feed Reader" AssemblyName="FeedReaderReceptor.dll" Enabled="True" Location="237, 265">
+                      <ixm:UserConfigs>
+                        <ixm:UserConfig Name="FeedUrl" Value="http://www.codeproject.com/WebServices/ArticleRSS.aspx" />
+                        <ixm:UserConfig Name="FeedName" Value="Code Project Articles" />
+                      </ixm:UserConfigs>
+                    </ixm:ReceptorDef>
+                    <ixm:ReceptorDef Name="Alchemy" AssemblyName="AlchemyReceptor.dll" Enabled="True" Location="296, 312" />
+                  </ixm:Receptors>
+                  <ixm:Permeabilities>
+                    <ixm:PermeabilityDef Protocol="RSSFeedItem" Direction="Out" Permeable="True" />
+                    <ixm:PermeabilityDef Protocol="URL" Direction="Out" Permeable="False" />
+                    <ixm:PermeabilityDef Protocol="AlchemyEntity" Direction="Out" Permeable="True" />
+                    <ixm:PermeabilityDef Protocol="AlchemyKeyword" Direction="Out" Permeable="True" />
+                    <ixm:PermeabilityDef Protocol="AlchemyConcept" Direction="Out" Permeable="True" />
+                    <ixm:PermeabilityDef Protocol="URL" Direction="In" Permeable="False" />
+                    <ixm:PermeabilityDef Protocol="RequireTable" Direction="Out" Permeable="False" />
+                    <ixm:PermeabilityDef Protocol="DatabaseRecord" Direction="Out" Permeable="False" />
+                    <ixm:PermeabilityDef Protocol="IDReturn" Direction="In" Permeable="False" />
+                  </ixm:Permeabilities>
+                </ixm:MembraneDef>
+              </ixm:Membranes>
             </ixm:MembraneDef>
           </ixm:Membranes>
           <ixm:Membranes>
             <ixm:MembraneDef Name="">
               <ixm:Receptors>
-                <ixm:ReceptorDef Name="Feed Reader" AssemblyName="FeedReaderReceptor.dll" Enabled="True" Location="548, 271">
-                  <ixm:UserConfigs>
-                    <ixm:UserConfig Name="FeedUrl" Value="http://www.reddit.com/.rss" />
-                    <ixm:UserConfig Name="FeedName" Value="Reddit" />
-                  </ixm:UserConfigs>
-                </ixm:ReceptorDef>
-                <ixm:ReceptorDef Name="Feed Reader" AssemblyName="FeedReaderReceptor.dll" Enabled="True" Location="680, 271">
-                  <ixm:UserConfigs>
-                    <ixm:UserConfig Name="FeedUrl" Value="http://feeds.arstechnica.com/arstechnica/technology-lab?format=xml" />
-                    <ixm:UserConfig Name="FeedName" Value="Ars Technica Tech Lab" />
-                  </ixm:UserConfigs>
-                </ixm:ReceptorDef>
-                <ixm:ReceptorDef Name="Carrier List Viewer" AssemblyName="CarrierListViewerReceptor.dll" Enabled="True" Location="601, 154">
+                <ixm:ReceptorDef Name="Carrier List Viewer" AssemblyName="CarrierListViewerReceptor.dll" Enabled="True" Location="651, 134">
                   <ixm:UserConfigs>
                     <ixm:UserConfig Name="ProtocolName" Value="RSSFeedItem" />
                   </ixm:UserConfigs>
                 </ixm:ReceptorDef>
               </ixm:Receptors>
               <ixm:Permeabilities>
-                <ixm:PermeabilityDef Protocol="RSSFeedItem" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="URL" Direction="Out" Permeable="True" />
                 <ixm:PermeabilityDef Protocol="RSSFeedItem" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="AlchemyEntity" Direction="Out" Permeable="True" />
+                <ixm:PermeabilityDef Protocol="AlchemyKeyword" Direction="Out" Permeable="True" />
+                <ixm:PermeabilityDef Protocol="AlchemyConcept" Direction="Out" Permeable="True" />
               </ixm:Permeabilities>
+              <ixm:Membranes>
+                <ixm:MembraneDef Name="">
+                  <ixm:Receptors>
+                    <ixm:ReceptorDef Name="Feed Reader" AssemblyName="FeedReaderReceptor.dll" Enabled="True" Location="575, 278">
+                      <ixm:UserConfigs>
+                        <ixm:UserConfig Name="FeedUrl" Value="http://www.reddit.com/.rss" />
+                        <ixm:UserConfig Name="FeedName" Value="Reddit" />
+                      </ixm:UserConfigs>
+                    </ixm:ReceptorDef>
+                    <ixm:ReceptorDef Name="Alchemy" AssemblyName="AlchemyReceptor.dll" Enabled="True" Location="640, 332" />
+                    <ixm:ReceptorDef Name="Feed Reader" AssemblyName="FeedReaderReceptor.dll" Enabled="True" Location="688, 268">
+                      <ixm:UserConfigs>
+                        <ixm:UserConfig Name="FeedUrl" Value="http://feeds.arstechnica.com/arstechnica/technology-lab?format=xml" />
+                        <ixm:UserConfig Name="FeedName" Value="Ars Technica Tech Lab" />
+                      </ixm:UserConfigs>
+                    </ixm:ReceptorDef>
+                  </ixm:Receptors>
+                  <ixm:Permeabilities>
+                    <ixm:PermeabilityDef Protocol="RSSFeedItem" Direction="Out" Permeable="True" />
+                    <ixm:PermeabilityDef Protocol="URL" Direction="Out" Permeable="False" />
+                    <ixm:PermeabilityDef Protocol="AlchemyEntity" Direction="Out" Permeable="True" />
+                    <ixm:PermeabilityDef Protocol="AlchemyKeyword" Direction="Out" Permeable="True" />
+                    <ixm:PermeabilityDef Protocol="AlchemyConcept" Direction="Out" Permeable="True" />
+                    <ixm:PermeabilityDef Protocol="URL" Direction="In" Permeable="False" />
+                    <ixm:PermeabilityDef Protocol="RequireTable" Direction="Out" Permeable="False" />
+                    <ixm:PermeabilityDef Protocol="DatabaseRecord" Direction="Out" Permeable="False" />
+                    <ixm:PermeabilityDef Protocol="IDReturn" Direction="In" Permeable="False" />
+                  </ixm:Permeabilities>
+                </ixm:MembraneDef>
+              </ixm:Membranes>
             </ixm:MembraneDef>
           </ixm:Membranes>
         </ixm:MembraneDef>

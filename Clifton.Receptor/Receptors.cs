@@ -414,7 +414,25 @@ namespace Clifton.Receptor
 			// ad-infinitum.
 			ProcessReceptors(from, carrier, stopRecursion);
 
+			// Recurse into SE's of the protocol and emit carriers for those as well, if a receiver exists.
+			CreateCarriersForSemanticElements(from, protocol, signal, stopRecursion);
+
 			return carrier;
+		}
+
+		/// <summary>
+		/// Recurse into SE's of the protocol and emit carriers for those as well, if a receiver exists.
+		/// </summary>
+		protected void CreateCarriersForSemanticElements(IReceptorInstance from, ISemanticTypeStruct protocol, dynamic signal, bool stopRecursion)
+		{
+			protocol.SemanticElements.ForEach(se =>
+				{
+					ISemanticTypeStruct semStruct = SemanticTypeSystem.GetSemanticTypeStruct(se.Name);
+					dynamic subsignal = SemanticTypeSystem.Create(se.Name);
+					object val = se.GetValue(SemanticTypeSystem, signal);
+					se.SetValue(SemanticTypeSystem, subsignal, val);
+					CreateCarrierIfReceiver(from, semStruct, subsignal);
+				});
 		}
 
 		/// <summary>
