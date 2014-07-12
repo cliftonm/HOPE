@@ -1,4 +1,5 @@
 ﻿#define VIVEK
+// #define REMOVE_EMPTY_MEMBRANES
 
 using System;
 using System.Collections;
@@ -280,7 +281,7 @@ namespace TypeSystemExplorer.Views
 		const int CarrierTime = 5; // 5 for 1/4 second delay, 25 for 1 second delay.  50 for 2 second delay.
 		const int OrbitCountMax = 50;
 		const int MetadataHeight = 15;	// the row height for metadata text.
-		const int MembraneNumbRadius = 10;
+		const int MembraneNubRadius = 10;
 
 		protected Size ReceptorSize = new Size(40, 40);
 		protected Size ReceptorHalfSize = new Size(20, 20);
@@ -561,31 +562,34 @@ namespace TypeSystemExplorer.Views
 		}
 
 		/// <summary>
-		/// Returns the innermost membrane at the specified point or the skin membrane.
+		/// Return the innermost selected membrane by comparing the test point to the membrane nub's radius.
+		/// Return null if no membrane found. 
+		/// By default, the test point must be within the nub radius.  If useNubRadius is false, then the membrane radius is used
+		/// to qualify the test point.
 		/// </summary>
-		public IMembrane GetMembraneAt(Point p)
+		public Membrane FindInnermostSelectedMembrane(Point testPoint, Membrane m, bool useNubRadius = true)
 		{
-			IMembrane m = Program.Skin;
-			IMembrane inner = null;
+			Membrane ret = null;
 
-			// An inner membrane will always have a smaller radius
-			double radius = double.MaxValue;
-
-			membraneLocation.ForEach(kvp =>
-				{
-					if (CircleToBoundingRectangle(kvp.Value.Center, kvp.Value.Radius).Contains(p) && (kvp.Value.Radius < radius))
-					{
-						radius = kvp.Value.Radius;
-						inner = kvp.Key;
-					}
-				});
-
-			if (inner != null)
+			// TODO: We wouldn't need this test if the skin were always part of the membrane location map.
+			if (membraneLocation.ContainsKey(m))
 			{
-				m = inner;
+				// Use either the nub radius or the membrane radius, depending on the flag.  
+				int radius = (useNubRadius ? MembraneNubRadius : membraneLocation[m].Radius);
+
+				if (CircleToBoundingRectangle(membraneLocation[m].Center, radius).Contains(testPoint))
+				{
+					ret = m;
+				}
 			}
 
-			return m;
+			foreach (Membrane child in m.Membranes)
+			{
+				Membrane recurseRet = FindInnermostSelectedMembrane(testPoint, (Membrane)child, useNubRadius);
+				recurseRet.IfNotNull(r => ret = r);
+			}
+
+			return ret;
 		}
 
 		// This is complex piece of code.
@@ -842,22 +846,24 @@ namespace TypeSystemExplorer.Views
 				}
 				else
 				{
-					var selectedMembranes = membraneLocation.Where(kvp => CircleToBoundingRectangle(kvp.Value.Center, MembraneNumbRadius).Contains(testPoint));
+					// We also want to check if the mouse is also on a membrane nub.  This affects certain operations.
+					// Sometimes membranes can contain other membranes where the outer membrane has no receptors, resulting in the nubs being in exactly the same locations.
+					// We always want to initiate with the innermost membrane in that case.
+					selectedMembrane = FindInnermostSelectedMembrane(testPoint, Program.Skin);
 
-					if (selectedMembranes.Count() > 0)
+					if (selectedMembrane != null)
 					{
 						// Setup for horizontal shake test.
 						shakeStart = DateTime.Now;
 						shakeCurrentDirection = 0;
 						shakeCount = 0;
 						shakeOK = true;
-
-						selectedMembrane = selectedMembranes.First().Key;
 						movingMembrane = true;
 						mouseStart = args.Location;
 					}
 					else
 					{
+						// If neither membrane nor receptor is selected, then go into rubberband mode.
 						selectedReceptor = null;
 						rubberBand = true;
 						mouseStart = args.Location;
@@ -868,7 +874,7 @@ namespace TypeSystemExplorer.Views
 			else if (args.Button == MouseButtons.Right)
 			{
 				// If no membrane is selected, move the entire surface.
-				var selectedMembranes = membraneLocation.Where(kvp => CircleToBoundingRectangle(SurfaceOffsetAdjust(kvp.Value.Center), MembraneNumbRadius).Contains(testPoint));
+				var selectedMembranes = membraneLocation.Where(kvp => CircleToBoundingRectangle(SurfaceOffsetAdjust(kvp.Value.Center), MembraneNubRadius).Contains(testPoint));
 
 				// Only move the surface if no membrane is selected.  
 				// TODO: Do we really need to do this?
@@ -903,11 +909,12 @@ namespace TypeSystemExplorer.Views
 			// we're comparing it to the client rectangle.
 			Point testPoint = args.Location;
 
+			// Moving a receptor always takes priority.
 			if (movingReceptor)
 			{
 				movingReceptor = false;
 
-				if ((selectedReceptor != null) && (!ClientRectangle.Contains(testPoint)))
+				if (!ClientRectangle.Contains(testPoint))
 				{
 					// Remove the receptor completely from the surface.
 					GetReceptorMembrane(selectedReceptor).Remove(selectedReceptor);
@@ -917,8 +924,10 @@ namespace TypeSystemExplorer.Views
 				{
 					// If the final position for the receptor is in a different membrane, move the receptor there.
 					Membrane sourceMembrane = GetReceptorMembrane(selectedReceptor);
-					Membrane destMembrane = (Membrane)GetMembraneAt(testPoint);
-
+					Membrane destMembrane = FindInnermostSelectedMembrane(testPoint, Program.Skin, false);
+					destMembrane.IfNull(() => destMembrane = Program.Skin);
+					// Did the receptor move within the same membrane?  If so, ignore it, otherwise
+					// move the receptor to the innermost membrane.
 					if (sourceMembrane != destMembrane)
 					{
 						sourceMembrane.MoveReceptorToMembrane(selectedReceptor, destMembrane);
@@ -930,12 +939,14 @@ namespace TypeSystemExplorer.Views
 
 				selectedReceptor = null;
 			}
-			else if (movingMembrane)
+			
+			if (movingMembrane)
 			{
 				movingMembrane = false;
 				selectedMembrane = null;
 			}
-			else if (rubberBand)
+
+			if (rubberBand)
 			{
 				// Gather and contained receptors into a membrane.
 				// mouseStart and mousePosition define the rectangle.
@@ -965,7 +976,10 @@ namespace TypeSystemExplorer.Views
 					}
 					else
 					{
-						// Not supported?
+						// We are including receptors contained within other membranes.  
+						// The idea here is to create a membrane containing those membranes as well as any non-contained receptors.
+						// For this, we need to know the outer membrane:
+
 					}
 				}
 				// else no receptors selected.
@@ -987,7 +1001,7 @@ namespace TypeSystemExplorer.Views
 				if (shakeOK && VerticalShakeTest(offset))
 				{
 					shakeOK = false;			// User must release and start again.
-					// Receptors always belong to membranes.
+					// Receptors always belong to membranes
 					Membrane m = GetReceptorMembrane(selectedReceptor);
 
 					// And the membrane has a parent (not skin)...
@@ -998,6 +1012,14 @@ namespace TypeSystemExplorer.Views
 						Point curPos = receptorLocation[selectedReceptor];
 						receptorLocation[selectedReceptor] = Point.Add(curPos, new Size(offset));
 						mouseStart = args.Location;
+
+						// If the membrane and all its children now have no receptors, we will remove it.
+						if (!MembraneOrChildrenHaveReceptors(m))
+						{
+							m.Dissolve();
+							RemoveMembranes(m);
+						}
+
 						CreateReceptorConnections();
 						RecalcMembranes();
 						Invalidate(true);
@@ -1015,6 +1037,8 @@ namespace TypeSystemExplorer.Views
 			}
 			else if (movingMembrane)
 			{
+				// IMPORTANT! You cannot dissolve a membrane that contains a single receptor.  You must remove the receptor first.
+				// TODO: Fix this at some point, so that both vert. and horiz. shaking can be tested without affecting each other.
 				base.OnMouseMove(args);
 				Point offset = Point.Subtract(args.Location, new Size(mouseStart));
 
@@ -1023,6 +1047,7 @@ namespace TypeSystemExplorer.Views
 				{
 					shakeOK = false;			// User must release and start again.
 					selectedMembrane.Dissolve();
+					RemoveMembranes(selectedMembrane);
 					CreateReceptorConnections();
 					RecalcMembranes();
 					Invalidate(true);
@@ -1030,8 +1055,12 @@ namespace TypeSystemExplorer.Views
 				else
 				{
 					// To move the membrane, we actually move each receptor inside the membrane.
+					// The exception is when there are no receptors in the membrane or its children, 
 					// Move receptors in this membrane and all inner membranes.
 					MoveReceptors(selectedMembrane, offset);
+					// Also move the membrane and child membranes, as this handles empty children.
+					MoveMembranes(selectedMembrane, offset);
+
 					mouseStart = args.Location;
 					CreateReceptorConnections();
 					RecalcMembranes();
@@ -1053,8 +1082,13 @@ namespace TypeSystemExplorer.Views
 			mouseHoverStartTime = DateTime.Now;
 		}
 
-		protected void MoveReceptors(IMembrane m, Point offset)
+		/// <summary>
+		/// Move all receptors in this membrane and recurse into child membranes to move those receptors as well.
+		/// </summary>
+		protected bool MoveReceptors(IMembrane m, Point offset)
 		{
+			bool moved = false;
+
 			m.Receptors.ForEach(r =>
 			{
 				// System receptors aren't moved.  Their hidden.
@@ -1062,10 +1096,53 @@ namespace TypeSystemExplorer.Views
 				{
 					Point curPos = receptorLocation[r];
 					receptorLocation[r] = Point.Add(curPos, new Size(offset));
+					moved = true;
 				}
 			});
 
-			((Membrane)m).Membranes.ForEach(inner => MoveReceptors(inner, offset));
+			((Membrane)m).Membranes.ForEach(inner => moved |= MoveReceptors(inner, offset));
+
+			return moved;
+		}
+
+		/// <summary>
+		/// Move the membrane and recurse into children to move them as well.
+		/// </summary>
+		protected void MoveMembranes(IMembrane m, Point offset)
+		{
+			if (membraneLocation.ContainsKey(m))
+			{
+				Point p = membraneLocation[m].Center;
+				membraneLocation[m].Center = Point.Add(p, new Size(offset));
+			}
+
+			m.Membranes.ForEach(c => MoveMembranes(c, offset));
+		}
+
+		/// <summary>
+		/// Recursively remove this membrane and all child membranes from the MembraneLocation map.
+		/// </summary>
+		/// <param name="m"></param>
+		protected void RemoveMembranes(IMembrane m)
+		{
+			m.Membranes.ForEach(c => RemoveMembranes(c));
+			membraneLocation.Remove(m);
+		}
+
+		/// <summary>
+		/// Returns true if the membrane or its children have receptors.
+		/// </summary>
+		protected bool MembraneOrChildrenHaveReceptors(IMembrane m)
+		{
+			bool ret = m.Receptors.Count > 0;
+
+			// stop if we have any membrane containing receptors.
+			if (!ret)
+			{
+				m.Membranes.ForEach(c => ret |= MembraneOrChildrenHaveReceptors(c));
+			}
+
+			return ret;
 		}
 
 		protected bool HorizontalShakeTest(Point offset)
@@ -1417,7 +1494,7 @@ namespace TypeSystemExplorer.Views
 			bool match = false;
 
 			// Double clicking on the surface outside of any membrane automatically selects the skin.
-			IMembrane membrane = GetMembraneAt(p);
+			IMembrane membrane = FindInnermostSelectedMembrane(p, Program.Skin);
 
 			// We ignore double-clicking on the skin.
 			if (membrane != Program.Skin)
@@ -1649,7 +1726,10 @@ namespace TypeSystemExplorer.Views
 			return m;
 		}
 
-		protected void GetCenter(Membrane m, ref int cx, ref int cy, ref int count)
+		/// <summary>
+		/// Get the center and count of all non-hidden receptors in this membrane and all the child membranes.
+		/// </summary>
+		protected void GetCenter(IMembrane m, ref int cx, ref int cy, ref int count)
 		{
 			// Can't use ref'd variables in lambda expressions.
 			foreach (IReceptor r in m.Receptors)
@@ -1664,13 +1744,18 @@ namespace TypeSystemExplorer.Views
 				}
 			}
 
+			// Recurse into child membranes.
 			foreach (Membrane inner in m.Membranes)
 			{
 				GetCenter(inner, ref cx, ref cy, ref count);
 			}
 		}
 
-		protected void GetMaxRadius(Membrane m, int cx, int cy, ref double radius)
+		/// <summary>
+		/// Get the radius of the membrane determined by the position of non-hidden receptors in this membrane
+		/// and all child membranes.
+		/// </summary>
+		protected void GetMaxRadius(IMembrane m, int cx, int cy, ref double radius)
 		{
 			foreach(Receptor r in m.Receptors)
 			{
@@ -1689,25 +1774,41 @@ namespace TypeSystemExplorer.Views
 				}
 			}
 
+			// Recurse into child membranes.
 			foreach (Membrane inner in m.Membranes)
 			{
 				GetMaxRadius(inner, cx, cy, ref radius);
 			}
 		}
 
+		/// <summary>
+		/// Recalculate the radii of the membranes.
+		/// We used to remove membranes that did not contain any receptors, however
+		/// this is a distinct possibility in how the user might want to work, by 
+		/// creating multiple membrane layers first, without any receptors, or simply
+		/// by creating membranes that are empty at the moment.
+		/// </summary>
 		protected void RecalcMembranes()
 		{
 			if (showMembranes)
 			{
+#if REMOVE_EMPTY_MEMBRANES
 				List<IMembrane> toRemove = new List<IMembrane>();
+#endif
 				Dictionary<IMembrane, Circle> updates = new Dictionary<IMembrane, Circle>();
 
 				// Get the center of all receptors within a membrane.
 				// Can't use ref'd variables in lambda expressions.
-				foreach(Membrane m in membraneLocation.Keys)
+				foreach (KeyValuePair<IMembrane, Circle> kvp in membraneLocation)
 				{
+					IMembrane m = kvp.Key;
+#if REMOVE_EMPTY_MEMBRANES
 					// Membrane must have receptors and can't be the root (skin) membrane.
 					if ((m.Receptors.Count > 0) && (m.ParentMembrane != null))
+#else
+					// Skin membrane is not rendered.
+					if (m.ParentMembrane != null)
+#endif
 					{
 						int cx = 0, cy = 0, count = 0;
 
@@ -1715,27 +1816,55 @@ namespace TypeSystemExplorer.Views
 						// Recurse into inner membranes as well.
 						GetCenter(m, ref cx, ref cy, ref count);
 
-						// You can't have a membrane without receptors, so count is always non-zero.
-						cx /= count;
-						cy /= count;
+						if (count != 0)
+						{
+							// This membrane still has receptors:
+							cx /= count;
+							cy /= count;
 
-						// Get radius by finding the most distant receptor.
-						double radius = 0;
-						GetMaxRadius(m, cx, cy, ref radius);
+							// Get radius by finding the most distant receptor.
+							double radius = 0;
+							GetMaxRadius(m, cx, cy, ref radius);
 
-						// Add a factor to the radius
-						radius += 50;
+							// Add a factor to the radius
+							radius += 50;
 
-						// Can't even modify the value of a collection being iterated!
-						updates[m] = new Circle() { Center = new Point(cx, cy), Radius = (int)radius };
+							// If this membrane has child membranes, add a factor such that, if the outer membrane
+							// has no receptors, it still renders visually as a bit bigger.
+							if (m.Membranes.Count > 0)
+							{
+								radius += 50;
+							}
+
+							// Can't even modify the value of a collection being iterated!
+							updates[m] = new Circle() { Center = new Point(cx, cy), Radius = (int)radius };
+						}
+						else
+						{
+							// The membrane has no receptors, so just draw the membrane with a fixed radius at 
+							// whatever it's last position was.
+							double radius = 50;
+
+							// If this membrane has child membranes, add a factor such that, if the outer membrane
+							// has no receptors, it still renders visually as a bit bigger.
+							if (m.Membranes.Count > 0)
+							{
+								radius += 50;
+							}
+
+							updates[m] = new Circle() { Center = kvp.Value.Center, Radius = (int)radius };
+						}
 					}
-					else
+#if REMOVE_EMPTY_MEMBRANES
+					else if (m.ParentMembrane != null) // Obviously, don't remove the Skin membrane (not that it's in the list at the moment anyways.)
 					{
 						toRemove.Add(m);
 					}
+#endif
 				}
-
+#if REMOVE_EMPTY_MEMBRANES
 				toRemove.ForEach(m => membraneLocation.Remove(m));
+#endif
 				updates.ForEach(kvp => membraneLocation[kvp.Key] = kvp.Value);
 			}
 		}
@@ -1777,7 +1906,7 @@ namespace TypeSystemExplorer.Views
 
 						// Draw a nub at the center of the membrane.
 						gp = new GraphicsPath();
-						r = CircleToBoundingRectangle(SurfaceOffsetAdjust(m.Center), MembraneNumbRadius);
+						r = CircleToBoundingRectangle(SurfaceOffsetAdjust(m.Center), MembraneNubRadius);
 						gp.AddEllipse(r);
 						pgb = new PathGradientBrush(gp);
 						pgb.CenterPoint = SurfaceOffsetAdjust(m.Center);

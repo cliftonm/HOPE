@@ -739,7 +739,7 @@ namespace TypeSystemExplorer.Controllers
 			membraneList.Add(Program.Skin);
 
 			VisualizerController.View.StartDrop = true;
-			VisualizerController.View.ShowMembranes = false;
+			VisualizerController.View.ShowMembranes = false;		// don't show membranes while we're loading the applet.  Causes problems because the model isn't fully loaded!
 			// Skin is the the root membrane.  It has no siblings.
 			DeserializeMembranes(applet.MembranesDef.Membranes[0], Program.Skin, membraneList);
 			VisualizerController.View.StartDrop = false;
