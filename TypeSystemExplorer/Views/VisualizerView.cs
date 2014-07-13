@@ -576,8 +576,8 @@ namespace TypeSystemExplorer.Views
 			{
 				// Use either the nub radius or the membrane radius, depending on the flag.  
 				int radius = (useNubRadius ? MembraneNubRadius : membraneLocation[m].Radius);
-
-				if (CircleToBoundingRectangle(membraneLocation[m].Center, radius).Contains(testPoint))
+				
+				if (PointInCircle(membraneLocation[m].Center, radius, testPoint))
 				{
 					ret = m;
 				}
@@ -830,7 +830,7 @@ namespace TypeSystemExplorer.Views
 			{
 				CheckPlayPauseButtons(args.Location);
 
-				var selectedReceptors = receptorLocation.Where(kvp => CircleToBoundingRectangle(kvp.Value, ReceptorSize.Width/2).Contains(testPoint));
+				var selectedReceptors = receptorLocation.Where(kvp => PointInCircle(kvp.Value, ReceptorSize.Width/2, testPoint));
 
 				if (selectedReceptors.Count() > 0)
 				{
@@ -874,7 +874,7 @@ namespace TypeSystemExplorer.Views
 			else if (args.Button == MouseButtons.Right)
 			{
 				// If no membrane is selected, move the entire surface.
-				var selectedMembranes = membraneLocation.Where(kvp => CircleToBoundingRectangle(SurfaceOffsetAdjust(kvp.Value.Center), MembraneNubRadius).Contains(testPoint));
+				var selectedMembranes = membraneLocation.Where(kvp => PointInCircle(SurfaceOffsetAdjust(kvp.Value.Center), MembraneNubRadius, testPoint));
 
 				// Only move the surface if no membrane is selected.  
 				// TODO: Do we really need to do this?
@@ -923,8 +923,9 @@ namespace TypeSystemExplorer.Views
 				else
 				{
 					// If the final position for the receptor is in a different membrane, move the receptor there.
+					// We adjust the test point here for surface offsets.
 					Membrane sourceMembrane = GetReceptorMembrane(selectedReceptor);
-					Membrane destMembrane = FindInnermostSelectedMembrane(testPoint, Program.Skin, false);
+					Membrane destMembrane = FindInnermostSelectedMembrane(NegativeSurfaceOffsetAdjust(testPoint), Program.Skin, false);
 					destMembrane.IfNull(() => destMembrane = Program.Skin);
 					// Did the receptor move within the same membrane?  If so, ignore it, otherwise
 					// move the receptor to the innermost membrane.
@@ -1830,8 +1831,9 @@ namespace TypeSystemExplorer.Views
 							radius += 50;
 
 							// If this membrane has child membranes, add a factor such that, if the outer membrane
-							// has no receptors, it still renders visually as a bit bigger.
-							if (m.Membranes.Count > 0)
+							// has no receptors, it renders visually as a bit bigger so as to prevent exact overlap of 
+							// the outer membrane with the inner one.
+							if (m.Membranes.Count > 0 && m.Receptors.Count == 0)
 							{
 								radius += 50;
 							}
@@ -2305,11 +2307,33 @@ namespace TypeSystemExplorer.Views
 			}
 		}
 
+		/// <summary>
+		/// Returns true if the test point is inside the circle at p with radius r.
+		/// </summary>
+		protected bool PointInCircle(Point p, int r, Point testPoint)
+		{
+			Size s = p.AbsDelta(testPoint);
+			bool ret = false;
+
+			// Optimizations, as per: http://stackoverflow.com/questions/481144/equation-for-testing-if-a-point-is-inside-a-circle
+			// Is it inside a diamond formed around the circle?
+			if (s.Width + s.Height < r)
+			{
+				// OK, so far so good, is it actually in the circle
+				if ((s.Width ^ 2 + s.Height ^ 2) < (r ^ 2))
+				{
+					ret = true;
+				}
+			}
+
+			return ret;
+		}
+
 		protected Rectangle CircleToBoundingRectangle(Point ctr, int radius)
 		{
 			return new Rectangle(ctr.X - radius, ctr.Y - radius, radius * 2, radius * 2);
-		}
-
+		}		
+		
 		/// <summary>
 		/// Returns a point adjusted (adding) for the surface offset.
 		/// </summary>

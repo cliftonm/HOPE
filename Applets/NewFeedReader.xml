@@ -85,8 +85,8 @@
                   <ixm:Receptors>
                     <ixm:ReceptorDef Name="Feed Reader" AssemblyName="FeedReaderReceptor.dll" Enabled="True" Location="575, 278">
                       <ixm:UserConfigs>
-                        <ixm:UserConfig Name="FeedUrl" Value="http://www.reddit.com/.rss" />
-                        <ixm:UserConfig Name="FeedName" Value="Reddit" />
+                        <ixm:UserConfig Name="FeedUrl" Value="http://www.reddit.com/r/technology/.rss" />
+                        <ixm:UserConfig Name="FeedName" Value="Reddit Tech" />
                       </ixm:UserConfigs>
                     </ixm:ReceptorDef>
                     <ixm:ReceptorDef Name="Alchemy" AssemblyName="AlchemyReceptor.dll" Enabled="True" Location="640, 332" />
