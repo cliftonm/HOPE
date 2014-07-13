@@ -36,10 +36,10 @@
               </ixm:Receptors>
               <ixm:Permeabilities>
                 <ixm:PermeabilityDef Protocol="URL" Direction="Out" Permeable="True" />
-                <ixm:PermeabilityDef Protocol="RSSFeedItem" Direction="In" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="AlchemyEntity" Direction="Out" Permeable="True" />
                 <ixm:PermeabilityDef Protocol="AlchemyKeyword" Direction="Out" Permeable="True" />
                 <ixm:PermeabilityDef Protocol="AlchemyConcept" Direction="Out" Permeable="True" />
+                <ixm:PermeabilityDef Protocol="RSSFeedItem" Direction="Out" Permeable="False" />
               </ixm:Permeabilities>
               <ixm:Membranes>
                 <ixm:MembraneDef Name="">
@@ -59,9 +59,6 @@
                     <ixm:PermeabilityDef Protocol="AlchemyKeyword" Direction="Out" Permeable="True" />
                     <ixm:PermeabilityDef Protocol="AlchemyConcept" Direction="Out" Permeable="True" />
                     <ixm:PermeabilityDef Protocol="URL" Direction="In" Permeable="False" />
-                    <ixm:PermeabilityDef Protocol="RequireTable" Direction="Out" Permeable="False" />
-                    <ixm:PermeabilityDef Protocol="DatabaseRecord" Direction="Out" Permeable="False" />
-                    <ixm:PermeabilityDef Protocol="IDReturn" Direction="In" Permeable="False" />
                   </ixm:Permeabilities>
                 </ixm:MembraneDef>
               </ixm:Membranes>
@@ -78,10 +75,10 @@
               </ixm:Receptors>
               <ixm:Permeabilities>
                 <ixm:PermeabilityDef Protocol="URL" Direction="Out" Permeable="True" />
-                <ixm:PermeabilityDef Protocol="RSSFeedItem" Direction="In" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="AlchemyEntity" Direction="Out" Permeable="True" />
                 <ixm:PermeabilityDef Protocol="AlchemyKeyword" Direction="Out" Permeable="True" />
                 <ixm:PermeabilityDef Protocol="AlchemyConcept" Direction="Out" Permeable="True" />
+                <ixm:PermeabilityDef Protocol="RSSFeedItem" Direction="Out" Permeable="False" />
               </ixm:Permeabilities>
               <ixm:Membranes>
                 <ixm:MembraneDef Name="">
@@ -107,9 +104,6 @@
                     <ixm:PermeabilityDef Protocol="AlchemyKeyword" Direction="Out" Permeable="True" />
                     <ixm:PermeabilityDef Protocol="AlchemyConcept" Direction="Out" Permeable="True" />
                     <ixm:PermeabilityDef Protocol="URL" Direction="In" Permeable="False" />
-                    <ixm:PermeabilityDef Protocol="RequireTable" Direction="Out" Permeable="False" />
-                    <ixm:PermeabilityDef Protocol="DatabaseRecord" Direction="Out" Permeable="False" />
-                    <ixm:PermeabilityDef Protocol="IDReturn" Direction="In" Permeable="False" />
                   </ixm:Permeabilities>
                 </ixm:MembraneDef>
               </ixm:Membranes>

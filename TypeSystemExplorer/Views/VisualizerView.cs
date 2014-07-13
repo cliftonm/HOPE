@@ -1494,10 +1494,10 @@ namespace TypeSystemExplorer.Views
 			bool match = false;
 
 			// Double clicking on the surface outside of any membrane automatically selects the skin.
-			IMembrane membrane = FindInnermostSelectedMembrane(p, Program.Skin);
+			IMembrane membrane = FindInnermostSelectedMembrane(p, Program.Skin, false);
 
 			// We ignore double-clicking on the skin.
-			if (membrane != Program.Skin)
+			if (membrane != null)
 			{
 				// The grid we present to the user should look like this:
 				// Membrane: [name]
@@ -1519,7 +1519,7 @@ namespace TypeSystemExplorer.Views
 				dt.Columns.Add(new DataColumn("Protocol", typeof(string)));	
 				dt.Columns.Add(new DataColumn("Direction", typeof(string)));
 				dt.Columns.Add(new DataColumn("Permeable", typeof(bool)));
-
+				membrane.UpdatePermeability();			// Get the current permeability, based on active child "outs" and active parent "ins".
 				membrane.ProtocolPermeability.ForEach(kvp =>
 					{
 						DataRow row = dt.NewRow();

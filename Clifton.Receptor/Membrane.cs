@@ -249,6 +249,81 @@ namespace Clifton.Receptor
 			receptorSystem.ProcessQueuedCarriers();
 		}
 
+		/// <summary>
+		/// Updates (creating new, deleting removed) protocol permeability.
+		/// Remember, we only care if the membrane is permeable to the protocol, regardless of
+		/// the number and types of receptors on either side of the membrane.
+		/// However, the ProtocolPermeability "key" is composite (name and direction) because
+		/// emitters (and listeners) of the same protocol can live on both sides of a membrane.
+		/// </summary>
+		public void UpdatePermeability()
+		{
+			List<PermeabilityKey> allKeys = ProtocolPermeability.Keys.ToList();
+
+			// Create new entries for new emitted protocols:
+			List<string> emitted = GetEmittedProtocols();
+
+			// The enabled "out" protocols of the immediate children are also added to this list, to allow any active
+			// "outs" to also permeate through this membrane.  I believe only the immediate children need to be checked,
+			// as the list of potential permeable out protocols is conditional on those immediate children's permeability
+			// flags being set to true.
+			// Also note that we don't need to update our permeability lists unless requested by calling this function.
+			Membranes.ForEach(c =>
+			{
+				foreach (KeyValuePair<PermeabilityKey, PermeabilityConfiguration> kvp in c.ProtocolPermeability)
+				{
+					if ((kvp.Key.Direction == PermeabilityDirection.Out) && (kvp.Value.Permeable))
+					{
+						emitted.Add(kvp.Key.Protocol);
+					}
+				}
+			});
+
+			emitted.ForEach(p =>
+			{
+				PermeabilityKey pk = new PermeabilityKey() { Protocol = p, Direction = PermeabilityDirection.Out };
+
+				if (!ProtocolPermeability.ContainsKey(pk))
+				{
+					ProtocolPermeability[pk] = new PermeabilityConfiguration();
+				}
+				else
+				{
+					// Entry is not in use.
+					allKeys.Remove(pk);
+				}
+			});
+
+			// Create new entries for new receiving protocols.
+			// We only need to listen to parent protocols that can be emitted.
+			List<string> listening = new List<string>();
+
+			if (ParentMembrane != null)
+			{
+				// Any "out" protocol of the parent can be seen as an "in" protocol.
+				// This is an easier test than the one above for active out child protocols.
+				listening.AddRange(ParentMembrane.GetEmittedProtocols());
+			}
+
+			listening.ForEach(p =>
+			{
+				PermeabilityKey pk = new PermeabilityKey() { Protocol = p, Direction = PermeabilityDirection.In };
+
+				if (!ProtocolPermeability.ContainsKey(pk))
+				{
+					ProtocolPermeability[pk] = new PermeabilityConfiguration();
+				}
+				else
+				{
+					// Entry is not in use.
+					allKeys.Remove(pk);
+				}
+			});
+
+			// Remove entries that no longer are in use.
+			allKeys.ForEach(p => ProtocolPermeability.Remove(p));
+		}
+
 		protected void OnNewReceptor(object sender, ReceptorEventArgs args)
 		{
 			// Forward to other listeners.
@@ -267,57 +342,6 @@ namespace Clifton.Receptor
 			// Forward to other listeners.
 			ReceptorRemoved.Fire(this, args);
 			UpdatePermeability();
-		}
-
-		/// <summary>
-		/// Updates (creating new, deleting removed) protocol permeability.
-		/// Remember, we only care if the membrane is permeable to the protocol, regardless of
-		/// the number and types of receptors on either side of the membrane.
-		/// However, the ProtocolPermeability "key" is composite (name and direction) because
-		/// emitters (and listeners) of the same protocol can live on both sides of a membrane.
-		/// </summary>
-		protected void UpdatePermeability()
-		{
-			List<PermeabilityKey> allKeys = ProtocolPermeability.Keys.ToList();
-
-			// Create new entries for new emitted protocols:
-			List<string> emitted = GetEmittedProtocols();
-
-			emitted.ForEach(p =>
-				{
-					PermeabilityKey pk = new PermeabilityKey() {Protocol = p, Direction = PermeabilityDirection.Out};
-
-					if (!ProtocolPermeability.ContainsKey(pk))
-					{
-						ProtocolPermeability[pk] = new PermeabilityConfiguration();
-					}
-					else
-					{
-						// Entry is in use.
-						allKeys.Remove(pk);
-					}
-				});
-
-			// Create new entries for new receiving protocols:
-			List<string> listening = GetListeningProtocols();
-
-			listening.ForEach(p=>
-				{
-					PermeabilityKey pk = new PermeabilityKey() { Protocol = p, Direction = PermeabilityDirection.In };
-
-					if (!ProtocolPermeability.ContainsKey(pk))
-					{
-						ProtocolPermeability[pk] = new PermeabilityConfiguration();
-					}
-					else
-					{
-						// Entry is in use.
-						allKeys.Remove(pk);
-					}
-				});
-
-			// Remove entries that no longer are in use.
-			allKeys.ForEach(p => ProtocolPermeability.Remove(p));
 		}
 	}
 }

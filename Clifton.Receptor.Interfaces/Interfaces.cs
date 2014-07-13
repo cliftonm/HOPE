@@ -144,6 +144,7 @@ namespace Clifton.Receptor.Interfaces
 		void RegisterReceptor(string name, IReceptorInstance instance);
 		void LoadReceptors(Action<IReceptor> afterRegister = null);
 		void ProcessQueuedCarriers();
+		void UpdatePermeability();
 		
 		IMembrane ParentMembrane { get; }
 		List<string> GetEmittedProtocols();
