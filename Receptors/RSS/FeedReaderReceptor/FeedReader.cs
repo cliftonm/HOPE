@@ -68,7 +68,7 @@ namespace FeedReaderReceptor
 				}
 				catch (Exception ex)
 				{
-					EmitException("Feed Reader Receptor", ex);
+					EmitException(ex);
 				}
 			}
 		}

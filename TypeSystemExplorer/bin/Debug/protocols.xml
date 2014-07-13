@@ -1141,12 +1141,14 @@
         <NativeType Name="type" ImplementingType="string"/>
         <NativeType Name="count" ImplementingType="string"/>
         <NativeType Name="relevance" ImplementingType="string"/>
+        <SemanticElement Name="URL"/>
       </Attributes>
     </SemanticTypeStruct>
     <SemanticTypeStruct DeclType="AlchemyKeyword">
       <Attributes>
         <NativeType Name="text" ImplementingType="string"/>
         <NativeType Name="relevance" ImplementingType="string"/>
+        <SemanticElement Name="URL"/>
       </Attributes>
     </SemanticTypeStruct>
     <SemanticTypeStruct DeclType="AlchemyConcept">
@@ -1156,6 +1158,7 @@
         <NativeType Name="dbpedia" ImplementingType="string"/>
         <NativeType Name="freebase" ImplementingType="string"/>
         <NativeType Name="opencyc" ImplementingType="string"/>
+        <SemanticElement Name="URL"/>
       </Attributes>
     </SemanticTypeStruct>
   </Collection>

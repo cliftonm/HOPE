@@ -982,6 +982,10 @@ namespace TypeSystemExplorer.Controllers
 		{
 		}
 
+		public void PrepopulateConfig(MycroParser mp)
+		{
+		}
+
 		public void ProcessCarrier(ICarrier carrier)
 		{
 			switch (carrier.Protocol.DeclTypeName)

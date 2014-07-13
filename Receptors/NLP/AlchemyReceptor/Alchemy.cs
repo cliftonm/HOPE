@@ -64,19 +64,21 @@ namespace AlchemyReceptor
 			DataSet dsKeywords = await Task.Run(() => { return GetKeywords(url); });
 			DataSet dsConcepts = await Task.Run(() => { return GetConcepts(url); });
 
-			dsEntities.Tables["entity"].IfNotNull(t => Emit("AlchemyEntity", t));
-			dsKeywords.Tables["keyword"].IfNotNull(t => Emit("AlchemyKeyword", t));
-			dsConcepts.Tables["concept"].IfNotNull(t => Emit("AlchemyConcept", t));
+			dsEntities.Tables["entity"].IfNotNull(t => Emit("AlchemyEntity", t, url));
+			dsKeywords.Tables["keyword"].IfNotNull(t => Emit("AlchemyKeyword", t, url));
+			dsConcepts.Tables["concept"].IfNotNull(t => Emit("AlchemyConcept", t, url));
 		}
 
-		protected void Emit(string protocol, DataTable data)
+		protected void Emit(string protocol, DataTable data, string url)
 		{
 			data.ForEach(row =>
 				{
 					CreateCarrierIfReceiver(protocol, signal =>
 						{
+							signal.URL.Value = url;	// .Value because this is a semantic element and Value drills into the implementing native type.
 							// Use the protocol as the driver of the fields we want to emit.
 							ISemanticTypeStruct st = rsys.SemanticTypeSystem.GetSemanticTypeStruct(protocol);
+
 							st.AllTypes.ForEach(se =>
 								{
 									// Sometimes a column will be missing.
@@ -114,7 +116,7 @@ namespace AlchemyReceptor
 			}
 			catch(Exception ex)
 			{
-				EmitException("Alchemy Receptor", ex);
+				EmitException(ex);
 			}
 #endif
 			return dsEntities;
@@ -142,7 +144,7 @@ namespace AlchemyReceptor
 			}
 			catch(Exception ex)
 			{
-				EmitException("Alchemy Receptor", ex);
+				EmitException(ex);
 			}
 #endif
 			return dsKeywords;
@@ -169,7 +171,7 @@ namespace AlchemyReceptor
 			}
 			catch(Exception ex)
 			{
-				EmitException("Alchemy Receptor", ex);
+				EmitException(ex);
 			}
 #endif
 			return dsConcepts;

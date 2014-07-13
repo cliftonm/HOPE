@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Clifton.ExtensionMethods;
-
+using Clifton.MycroParser;
 using Clifton.SemanticTypeSystem.Interfaces;
 
 namespace Clifton.Receptor.Interfaces
@@ -180,6 +180,10 @@ namespace Clifton.Receptor.Interfaces
 			}
 		}
 
+		public virtual void PrepopulateConfig(Clifton.MycroParser.MycroParser mp)
+		{
+		}
+
 		/// <summary>
 		/// Add an unqualified receive protocol.  Override ProcessCarrier to handle this protocol.
 		/// </summary>
@@ -230,9 +234,12 @@ namespace Clifton.Receptor.Interfaces
 		/// </summary>
 		protected virtual void AddEmitProtocol(string p)
 		{
-			emitProtocols.Add(p);
-			EmitProtocolsChanged.Fire(this, EventArgs.Empty);
-			AddInternalSemanticElements(p);
+			if (!emitProtocols.Contains(p))
+			{
+				emitProtocols.Add(p);
+				EmitProtocolsChanged.Fire(this, EventArgs.Empty);
+				AddInternalSemanticElements(p);
+			}
 		}
 
 		/// <summary>
@@ -308,11 +315,11 @@ namespace Clifton.Receptor.Interfaces
 		/// <summary>
 		/// Emits the exception as a carrier, which can be viewed, logged, etc, by other receptors.
 		/// </summary>
-		protected void EmitException(string name, Exception ex)
+		protected void EmitException(Exception ex)
 		{
 			CreateCarrierIfReceiver("Exception", signal =>
 			{
-				signal.ReceptorName = name;
+				signal.ReceptorName = Name;
 				signal.Message = ex.Message;
 			});
 		}

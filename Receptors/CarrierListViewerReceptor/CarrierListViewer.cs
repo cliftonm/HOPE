@@ -10,6 +10,7 @@ using Clifton.ExtensionMethods;
 using Clifton.MycroParser;
 using Clifton.Receptor.Interfaces;
 using Clifton.SemanticTypeSystem.Interfaces;
+using Clifton.Tools.Strings.Extensions;
 
 namespace CarrierListViewerReceptor
 {
@@ -44,6 +45,7 @@ namespace CarrierListViewerReceptor
 			base.EndSystemInit();
 			CreateViewerTable();
 			ListenForProtocol();
+			UpdateCaption();
 		}
 
 		/// <summary>
@@ -54,12 +56,23 @@ namespace CarrierListViewerReceptor
 			base.UserConfigurationUpdated();
 			CreateViewerTable();
 			ListenForProtocol();
+			UpdateCaption();
 		}
 
 		public override void Terminate()
 		{
 			base.Terminate();
 			form.Close();
+		}
+
+		protected void UpdateCaption()
+		{
+			if (!String.IsNullOrEmpty(ProtocolName))
+			{
+				string updatedText = form.Text.LeftOf('-');
+				updatedText = updatedText + " - " + ProtocolName;
+				form.Text = updatedText;
+			}
 		}
 
 		/// <summary>
@@ -134,7 +147,7 @@ namespace CarrierListViewerReceptor
 			}
 			catch (Exception ex)
 			{
-				EmitException("Carrier List Viewer Receptor", ex);
+				EmitException(ex);
 			}
 		}
 

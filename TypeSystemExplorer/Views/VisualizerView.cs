@@ -1430,14 +1430,20 @@ namespace TypeSystemExplorer.Views
 		/// </summary>
 		protected void PopulateControls(IReceptor r, MycroParser mp)
 		{
-			foreach (PropertyControlEntry pce in ((PropertyControlMap)mp.ObjectCollection["ControlMap"]).Entries)		// TODO: magic name.
+			r.Instance.PrepopulateConfig(mp);
+
+			// Not all carriers have control maps for their configuration.
+			if (mp.ObjectCollection.ContainsKey("ControlMap"))
 			{
-				PropertyInfo piReceptor = r.Instance.GetType().GetProperty(pce.PropertyName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-				object val = piReceptor.GetValue(r.Instance);
-				object control = mp.ObjectCollection[pce.ControlName];
-				PropertyInfo piControl = control.GetType().GetProperty(pce.ControlPropertyName, BindingFlags.Public | BindingFlags.Instance);
-				object convertedVal = Converter.Convert(val, piControl.PropertyType);
-				piControl.SetValue(control, convertedVal);
+				foreach (PropertyControlEntry pce in ((PropertyControlMap)mp.ObjectCollection["ControlMap"]).Entries)		// TODO: magic name.
+				{
+					PropertyInfo piReceptor = r.Instance.GetType().GetProperty(pce.PropertyName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+					object val = piReceptor.GetValue(r.Instance);
+					object control = mp.ObjectCollection[pce.ControlName];
+					PropertyInfo piControl = control.GetType().GetProperty(pce.ControlPropertyName, BindingFlags.Public | BindingFlags.Instance);
+					object convertedVal = Converter.Convert(val, piControl.PropertyType);
+					piControl.SetValue(control, convertedVal);
+				}
 			}
 
 			// Special handling for "enabled."
@@ -1454,14 +1460,17 @@ namespace TypeSystemExplorer.Views
 		/// </summary>
 		protected void SaveValues(IReceptorInstance r, MycroParser mp)
 		{
-			foreach (PropertyControlEntry pce in ((PropertyControlMap)mp.ObjectCollection["ControlMap"]).Entries)		// TODO: magic name.
+			if (mp.ObjectCollection.ContainsKey("ControlMap"))
 			{
-				PropertyInfo piReceptor = r.GetType().GetProperty(pce.PropertyName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-				object control = mp.ObjectCollection[pce.ControlName];
-				PropertyInfo piControl = control.GetType().GetProperty(pce.ControlPropertyName, BindingFlags.Public | BindingFlags.Instance);
-				object val = piControl.GetValue(control);
-				object convertedVal = Converter.Convert(val, piReceptor.PropertyType);
-				piReceptor.SetValue(r, convertedVal);
+				foreach (PropertyControlEntry pce in ((PropertyControlMap)mp.ObjectCollection["ControlMap"]).Entries)		// TODO: magic name.
+				{
+					PropertyInfo piReceptor = r.GetType().GetProperty(pce.PropertyName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+					object control = mp.ObjectCollection[pce.ControlName];
+					PropertyInfo piControl = control.GetType().GetProperty(pce.ControlPropertyName, BindingFlags.Public | BindingFlags.Instance);
+					object val = piControl.GetValue(control);
+					object convertedVal = Converter.Convert(val, piReceptor.PropertyType);
+					piReceptor.SetValue(r, convertedVal);
+				}
 			}
 		}
 

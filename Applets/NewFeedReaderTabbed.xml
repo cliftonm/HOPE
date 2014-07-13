@@ -5,19 +5,9 @@
         <ixm:MembraneDef Name="Skin">
           <ixm:Receptors>
             <ixm:ReceptorDef Name="URL" AssemblyName="UrlReceptor.dll" Enabled="True" Location="443, 91" />
-            <ixm:ReceptorDef Name="Carrier List Viewer" AssemblyName="CarrierListViewerReceptor.dll" Enabled="True" Location="373, 493">
+            <ixm:ReceptorDef Name="Carrier Tabbed List Viewer" AssemblyName="CarrierTabbedListViewerReceptor.dll" Enabled="True" Location="472, 499">
               <ixm:UserConfigs>
-                <ixm:UserConfig Name="ProtocolName" Value="AlchemyEntity" />
-              </ixm:UserConfigs>
-            </ixm:ReceptorDef>
-            <ixm:ReceptorDef Name="Carrier List Viewer" AssemblyName="CarrierListViewerReceptor.dll" Enabled="True" Location="492, 491">
-              <ixm:UserConfigs>
-                <ixm:UserConfig Name="ProtocolName" Value="AlchemyKeyword" />
-              </ixm:UserConfigs>
-            </ixm:ReceptorDef>
-            <ixm:ReceptorDef Name="Carrier List Viewer" AssemblyName="CarrierListViewerReceptor.dll" Enabled="True" Location="626, 489">
-              <ixm:UserConfigs>
-                <ixm:UserConfig Name="ProtocolName" Value="AlchemyConcept" />
+                <ixm:UserConfig Name="ProtocolTabs" Value="Entities,AlchemyEntity;Keywords,AlchemyKeyword;Concepts,AlchemyConcept" />
               </ixm:UserConfigs>
             </ixm:ReceptorDef>
           </ixm:Receptors>

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Clifton.MycroParser;
 using Clifton.SemanticTypeSystem.Interfaces;
 
 namespace Clifton.Receptor.Interfaces
@@ -70,6 +71,13 @@ namespace Clifton.Receptor.Interfaces
 		/// Called when the user configurable items in a receptor instance have been updated by user or other action.
 		/// </summary>
 		void UserConfigurationUpdated();
+
+		/// <summary>
+		/// Called before the controls are populated, to give the receptor instance a chance to do other initialization 
+		/// of the configuration UI.
+		/// </summary>
+		/// <param name="mp"></param>
+		void PrepopulateConfig(Clifton.MycroParser.MycroParser mp);
 	}
 
 	public interface IReceptorSystem
