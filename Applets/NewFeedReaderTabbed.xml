@@ -4,8 +4,8 @@
       <ixm:Membranes>
         <ixm:MembraneDef Name="Skin">
           <ixm:Receptors>
-            <ixm:ReceptorDef Name="URL" AssemblyName="UrlReceptor.dll" Enabled="True" Location="443, 91" />
-            <ixm:ReceptorDef Name="Carrier Tabbed List Viewer" AssemblyName="CarrierTabbedListViewerReceptor.dll" Enabled="True" Location="472, 499">
+            <ixm:ReceptorDef Name="URL" AssemblyName="UrlReceptor.dll" Enabled="True" Location="563, 97" />
+            <ixm:ReceptorDef Name="Carrier Tabbed List Viewer" AssemblyName="CarrierTabbedListViewerReceptor.dll" Enabled="True" Location="650, 422">
               <ixm:UserConfigs>
                 <ixm:UserConfig Name="ProtocolTabs" Value="Entities,AlchemyEntity;Keywords,AlchemyKeyword;Concepts,AlchemyConcept" />
               </ixm:UserConfigs>
@@ -20,7 +20,7 @@
           <ixm:Membranes>
             <ixm:MembraneDef Name="">
               <ixm:Receptors>
-                <ixm:ReceptorDef Name="Carrier List Viewer" AssemblyName="CarrierListViewerReceptor.dll" Enabled="True" Location="366, 204">
+                <ixm:ReceptorDef Name="Carrier List Viewer" AssemblyName="CarrierListViewerReceptor.dll" Enabled="True" Location="502, 284">
                   <ixm:UserConfigs>
                     <ixm:UserConfig Name="ProtocolName" Value="RSSFeedItem" />
                   </ixm:UserConfigs>
@@ -32,17 +32,18 @@
                 <ixm:PermeabilityDef Protocol="AlchemyKeyword" Direction="Out" Permeable="True" />
                 <ixm:PermeabilityDef Protocol="AlchemyConcept" Direction="Out" Permeable="True" />
                 <ixm:PermeabilityDef Protocol="RSSFeedItem" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="URL" Direction="In" Permeable="False" />
               </ixm:Permeabilities>
               <ixm:Membranes>
                 <ixm:MembraneDef Name="">
                   <ixm:Receptors>
-                    <ixm:ReceptorDef Name="Feed Reader" AssemblyName="FeedReaderReceptor.dll" Enabled="True" Location="237, 265">
+                    <ixm:ReceptorDef Name="Feed Reader" AssemblyName="FeedReaderReceptor.dll" Enabled="True" Location="373, 345">
                       <ixm:UserConfigs>
                         <ixm:UserConfig Name="FeedUrl" Value="http://www.codeproject.com/WebServices/ArticleRSS.aspx" />
                         <ixm:UserConfig Name="FeedName" Value="Code Project Articles" />
                       </ixm:UserConfigs>
                     </ixm:ReceptorDef>
-                    <ixm:ReceptorDef Name="Alchemy" AssemblyName="AlchemyReceptor.dll" Enabled="True" Location="296, 312" />
+                    <ixm:ReceptorDef Name="Alchemy" AssemblyName="AlchemyReceptor.dll" Enabled="True" Location="432, 392" />
                   </ixm:Receptors>
                   <ixm:Permeabilities>
                     <ixm:PermeabilityDef Protocol="RSSFeedItem" Direction="Out" Permeable="True" />
@@ -59,13 +60,17 @@
           <ixm:Membranes>
             <ixm:MembraneDef Name="">
               <ixm:Receptors>
-                <ixm:ReceptorDef Name="Carrier List Viewer" AssemblyName="CarrierListViewerReceptor.dll" Enabled="True" Location="651, 134">
+                <ixm:ReceptorDef Name="Carrier List Viewer" AssemblyName="CarrierListViewerReceptor.dll" Enabled="True" Location="831, 106">
                   <ixm:UserConfigs>
                     <ixm:UserConfig Name="ProtocolName" Value="RSSFeedItem" />
                   </ixm:UserConfigs>
                 </ixm:ReceptorDef>
               </ixm:Receptors>
               <ixm:Permeabilities>
+                <ixm:PermeabilityDef Protocol="URL" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="AlchemyEntity" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="AlchemyKeyword" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="AlchemyConcept" Direction="In" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="URL" Direction="Out" Permeable="True" />
                 <ixm:PermeabilityDef Protocol="AlchemyEntity" Direction="Out" Permeable="True" />
                 <ixm:PermeabilityDef Protocol="AlchemyKeyword" Direction="Out" Permeable="True" />
@@ -75,14 +80,14 @@
               <ixm:Membranes>
                 <ixm:MembraneDef Name="">
                   <ixm:Receptors>
-                    <ixm:ReceptorDef Name="Feed Reader" AssemblyName="FeedReaderReceptor.dll" Enabled="True" Location="575, 278">
+                    <ixm:ReceptorDef Name="Feed Reader" AssemblyName="FeedReaderReceptor.dll" Enabled="True" Location="755, 250">
                       <ixm:UserConfigs>
                         <ixm:UserConfig Name="FeedUrl" Value="http://www.reddit.com/r/technology/.rss" />
                         <ixm:UserConfig Name="FeedName" Value="Reddit Tech" />
                       </ixm:UserConfigs>
                     </ixm:ReceptorDef>
-                    <ixm:ReceptorDef Name="Alchemy" AssemblyName="AlchemyReceptor.dll" Enabled="True" Location="640, 332" />
-                    <ixm:ReceptorDef Name="Feed Reader" AssemblyName="FeedReaderReceptor.dll" Enabled="True" Location="688, 268">
+                    <ixm:ReceptorDef Name="Alchemy" AssemblyName="AlchemyReceptor.dll" Enabled="True" Location="820, 304" />
+                    <ixm:ReceptorDef Name="Feed Reader" AssemblyName="FeedReaderReceptor.dll" Enabled="True" Location="868, 240">
                       <ixm:UserConfigs>
                         <ixm:UserConfig Name="FeedUrl" Value="http://feeds.arstechnica.com/arstechnica/technology-lab?format=xml" />
                         <ixm:UserConfig Name="FeedName" Value="Ars Technica Tech Lab" />
@@ -95,6 +100,48 @@
                     <ixm:PermeabilityDef Protocol="AlchemyEntity" Direction="Out" Permeable="True" />
                     <ixm:PermeabilityDef Protocol="AlchemyKeyword" Direction="Out" Permeable="True" />
                     <ixm:PermeabilityDef Protocol="AlchemyConcept" Direction="Out" Permeable="True" />
+                    <ixm:PermeabilityDef Protocol="URL" Direction="In" Permeable="False" />
+                  </ixm:Permeabilities>
+                </ixm:MembraneDef>
+              </ixm:Membranes>
+            </ixm:MembraneDef>
+          </ixm:Membranes>
+          <ixm:Membranes>
+            <ixm:MembraneDef Name="">
+              <ixm:Receptors>
+                <ixm:ReceptorDef Name="Carrier Tabbed List Viewer" AssemblyName="CarrierTabbedListViewerReceptor.dll" Enabled="True" Location="820, 566">
+                  <ixm:UserConfigs>
+                    <ixm:UserConfig Name="ProtocolTabs" Value="Entities,FilteredAlchemyEntity;Keywords,FilteredAlchemyKeyword;Concepts,FilteredAlchemyConcept" />
+                  </ixm:UserConfigs>
+                </ixm:ReceptorDef>
+              </ixm:Receptors>
+              <ixm:Permeabilities>
+                <ixm:PermeabilityDef Protocol="URL" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="AlchemyEntity" Direction="In" Permeable="True" />
+                <ixm:PermeabilityDef Protocol="AlchemyKeyword" Direction="In" Permeable="True" />
+                <ixm:PermeabilityDef Protocol="AlchemyConcept" Direction="In" Permeable="True" />
+                <ixm:PermeabilityDef Protocol="URL" Direction="Out" Permeable="True" />
+                <ixm:PermeabilityDef Protocol="FilteredAlchemyEntity" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="FilteredAlchemyKeyword" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="FilteredAlchemyConcept" Direction="Out" Permeable="False" />
+              </ixm:Permeabilities>
+              <ixm:Membranes>
+                <ixm:MembraneDef Name="">
+                  <ixm:Receptors>
+                    <ixm:ReceptorDef Name="Filter" AssemblyName="FilterReceptor.dll" Enabled="True" Location="690, 568">
+                      <ixm:UserConfigs>
+                        <ixm:UserConfig Name="ProtocolFilters" Value="AlchemyEntity~contains([text], 'Windows 8.1');AlchemyKeyword~contains([text], 'OpenGL');AlchemyConcept~contains([text], 'Linux')" />
+                      </ixm:UserConfigs>
+                    </ixm:ReceptorDef>
+                  </ixm:Receptors>
+                  <ixm:Permeabilities>
+                    <ixm:PermeabilityDef Protocol="AlchemyEntity" Direction="In" Permeable="True" />
+                    <ixm:PermeabilityDef Protocol="AlchemyKeyword" Direction="In" Permeable="True" />
+                    <ixm:PermeabilityDef Protocol="AlchemyConcept" Direction="In" Permeable="True" />
+                    <ixm:PermeabilityDef Protocol="URL" Direction="Out" Permeable="False" />
+                    <ixm:PermeabilityDef Protocol="FilteredAlchemyEntity" Direction="Out" Permeable="True" />
+                    <ixm:PermeabilityDef Protocol="FilteredAlchemyKeyword" Direction="Out" Permeable="True" />
+                    <ixm:PermeabilityDef Protocol="FilteredAlchemyConcept" Direction="Out" Permeable="True" />
                     <ixm:PermeabilityDef Protocol="URL" Direction="In" Permeable="False" />
                   </ixm:Permeabilities>
                 </ixm:MembraneDef>

@@ -268,9 +268,9 @@ namespace Clifton.Receptor
 			// as the list of potential permeable out protocols is conditional on those immediate children's permeability
 			// flags being set to true.
 			// Also note that we don't need to update our permeability lists unless requested by calling this function.
-			Membranes.ForEach(c =>
+			Membranes.ForEach(m =>
 			{
-				foreach (KeyValuePair<PermeabilityKey, PermeabilityConfiguration> kvp in c.ProtocolPermeability)
+				foreach (KeyValuePair<PermeabilityKey, PermeabilityConfiguration> kvp in m.ProtocolPermeability)
 				{
 					if ((kvp.Key.Direction == PermeabilityDirection.Out) && (kvp.Value.Permeable))
 					{
@@ -303,6 +303,27 @@ namespace Clifton.Receptor
 				// Any "out" protocol of the parent can be seen as an "in" protocol.
 				// This is an easier test than the one above for active out child protocols.
 				listening.AddRange(ParentMembrane.GetEmittedProtocols());
+
+				// Any "in" protocol of the parent can also be seen as an "in" protocol in the child.
+				foreach (KeyValuePair<PermeabilityKey, PermeabilityConfiguration> kvp in ParentMembrane.ProtocolPermeability)
+				{
+					if ((kvp.Key.Direction == PermeabilityDirection.In) && (kvp.Value.Permeable))
+					{
+						listening.Add(kvp.Key.Protocol);
+					}
+				}
+
+				// We can also receive protocols emitted by sibling membranes that have out protocols enabled.
+				ParentMembrane.Membranes.Where(m=>m != this).ForEach(m =>
+					{
+						foreach (KeyValuePair<PermeabilityKey, PermeabilityConfiguration> kvp in m.ProtocolPermeability)
+						{
+							if ((kvp.Key.Direction == PermeabilityDirection.Out) && (kvp.Value.Permeable))
+							{
+								listening.Add(kvp.Key.Protocol);
+							}
+						}
+					});
 			}
 
 			listening.ForEach(p =>

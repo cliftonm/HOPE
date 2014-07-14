@@ -230,6 +230,15 @@ namespace Clifton.Receptor.Interfaces
 		}
 
 		/// <summary>
+		/// Remove all receive protocols.
+		/// </summary>
+		protected virtual void RemoveReceiveProtocols()
+		{
+			receiveProtocols.Clear();
+			ReceiveProtocolsChanged.Fire(this, EventArgs.Empty);
+		}
+
+		/// <summary>
 		/// Add protocol that this receptor emits.
 		/// </summary>
 		protected virtual void AddEmitProtocol(string p)

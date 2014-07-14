@@ -178,7 +178,9 @@ namespace CarrierTabbedListViewerReceptor
 					protocol = protocol.Replace(",", "").Replace(";", "");
 
 					// the format is [tabname],[protocolname];[tabname],[protocolname];...etc...
+					sb.Append(and);
 					sb.Append(tabName + "," + protocol);
+					and = ";";
 				}
 			}
 

@@ -669,6 +669,7 @@ namespace TypeSystemExplorer.Controllers
 
 			// Serialize membranes.
 
+			// Protocols for this membrane.
 			XmlNode permeabilities = xdoc.CreateElement("ixm", "Permeabilities", "TypeSystemExplorer.Models, TypeSystemExplorer");
 			membraneDefNode.AppendChild(permeabilities);
 
@@ -684,10 +685,7 @@ namespace TypeSystemExplorer.Controllers
 			// Recurse into child membranes (if they have receptors.)
 			m.Membranes.ForEach(innerMembrane =>
 				{
-					if (innerMembrane.Receptors.Count > 0)
-					{
-						SerializeMembrane(membraneDefNode, innerMembrane);
-					}
+					SerializeMembrane(membraneDefNode, innerMembrane);
 				});
 			
 		}

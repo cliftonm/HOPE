@@ -1118,7 +1118,7 @@
     </SemanticTypeStruct>
 
     <!-- Alchemy types -->
-
+    
     <SemanticTypeDecl OfType="Noun">
       <AttributeValues>
         <Attribute Name="Name" Value="AlchemyEntity"/>
@@ -1161,5 +1161,49 @@
         <SemanticElement Name="URL"/>
       </Attributes>
     </SemanticTypeStruct>
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="FilteredAlchemyEntity"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="FilteredAlchemyKeyword"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="FilteredAlchemyConcept"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="FilteredAlchemyEntity">
+      <Attributes>
+        <NativeType Name="text" ImplementingType="string"/>
+        <NativeType Name="type" ImplementingType="string"/>
+        <NativeType Name="count" ImplementingType="string"/>
+        <NativeType Name="relevance" ImplementingType="string"/>
+        <SemanticElement Name="URL"/>
+      </Attributes>
+    </SemanticTypeStruct>
+    <SemanticTypeStruct DeclType="FilteredAlchemyKeyword">
+      <Attributes>
+        <NativeType Name="text" ImplementingType="string"/>
+        <NativeType Name="relevance" ImplementingType="string"/>
+        <SemanticElement Name="URL"/>
+      </Attributes>
+    </SemanticTypeStruct>
+    <SemanticTypeStruct DeclType="FilteredAlchemyConcept">
+      <Attributes>
+        <NativeType Name="text" ImplementingType="string"/>
+        <NativeType Name="relevance" ImplementingType="string"/>
+        <NativeType Name="dbpedia" ImplementingType="string"/>
+        <NativeType Name="freebase" ImplementingType="string"/>
+        <NativeType Name="opencyc" ImplementingType="string"/>
+        <SemanticElement Name="URL"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
   </Collection>
 </SemanticTypes>

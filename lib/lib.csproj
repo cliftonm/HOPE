@@ -30,6 +30,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Antlr3.Runtime">
+      <HintPath>Binaries\Antlr3.Runtime.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -45,6 +48,26 @@
     <Compile Include="Converter.cs" />
     <Compile Include="DiagnosticDictionary.cs" />
     <Compile Include="Drawing.cs" />
+    <Compile Include="ExpressionEvaluator\Domain\BinaryExpression.cs" />
+    <Compile Include="ExpressionEvaluator\Domain\EvaluationVisitor.cs" />
+    <Compile Include="ExpressionEvaluator\Domain\Function.cs" />
+    <Compile Include="ExpressionEvaluator\Domain\LogicalExpression.cs" />
+    <Compile Include="ExpressionEvaluator\Domain\LogicalExpressionVisitor.cs" />
+    <Compile Include="ExpressionEvaluator\Domain\Parameter.cs" />
+    <Compile Include="ExpressionEvaluator\Domain\SerializationVisitor.cs" />
+    <Compile Include="ExpressionEvaluator\Domain\TernaryExpression.cs" />
+    <Compile Include="ExpressionEvaluator\Domain\UnaryExpression.cs" />
+    <Compile Include="ExpressionEvaluator\Domain\Value.cs" />
+    <Compile Include="ExpressionEvaluator\EvaluateFunctionHandler.cs" />
+    <Compile Include="ExpressionEvaluator\EvaluateParameterHandler.cs" />
+    <Compile Include="ExpressionEvaluator\EvaluationException.cs" />
+    <Compile Include="ExpressionEvaluator\EvaluationOption.cs" />
+    <Compile Include="ExpressionEvaluator\Expression.cs" />
+    <Compile Include="ExpressionEvaluator\FunctionArgs.cs" />
+    <Compile Include="ExpressionEvaluator\NCalcLexer.cs" />
+    <Compile Include="ExpressionEvaluator\NCalcParser.cs" />
+    <Compile Include="ExpressionEvaluator\Numbers.cs" />
+    <Compile Include="ExpressionEvaluator\ParameterArgs.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="IMycroParserInstantiatedObject.cs" />
     <Compile Include="JoinExtensions.cs" />
@@ -58,6 +81,7 @@
     <Compile Include="Threading\Semaphore.cs" />
     <Compile Include="Threading\TimedLock.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -1,4 +1,4 @@
-﻿#define TEST
+﻿// #define TEST
 
 using System;
 using System.Collections.Generic;
@@ -119,8 +119,8 @@ namespace AlchemyReceptor
 				EmitException(ex);
 			}
 #endif
-			return dsEntities;
 
+			return dsEntities;
 		}
 
 		protected DataSet GetKeywords(string url)
@@ -147,6 +147,7 @@ namespace AlchemyReceptor
 				EmitException(ex);
 			}
 #endif
+
 			return dsKeywords;
 		}
 
@@ -174,6 +175,7 @@ namespace AlchemyReceptor
 				EmitException(ex);
 			}
 #endif
+
 			return dsConcepts;
 		}
 	}
