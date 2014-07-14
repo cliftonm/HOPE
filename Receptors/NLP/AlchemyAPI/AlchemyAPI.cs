@@ -952,13 +952,37 @@ namespace AlchemyAPI
                 {
                     XmlNode status = root.SelectSingleNode("/results/status");
 
+					// OLD:
+					/*
                     if (status.InnerText != "OK")
                     {
                         System.ApplicationException ex =
 						new System.ApplicationException ("Error making API call.");
 
                         throw ex;
-                    }
+                    }*/
+
+					// MTC 7/14/2014
+					// Much better, as it gives me the error message from the server.
+					if (status.InnerText != "OK")
+					{
+						string errorMessage = "Error making API call.";
+
+						try
+						{
+							XmlNode statusInfo = root.SelectSingleNode("/results/statusInfo");
+							errorMessage = statusInfo.InnerText;
+						}
+						catch
+						{
+							// some problem with the statusInfo.  Return the generic message.
+						}
+
+						System.ApplicationException ex = new System.ApplicationException(errorMessage);
+
+						throw ex;
+					}
+
                 }
                 else if (AlchemyAPI_BaseParams.OutputMode.RDF == outputMode)
                 {

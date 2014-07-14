@@ -160,7 +160,8 @@ namespace CarrierListViewerReceptor
 				ISemanticTypeStruct st = rsys.SemanticTypeSystem.GetSemanticTypeStruct(ProtocolName);
 				st.AllTypes.ForEach(t =>
 					{
-						dt.Columns.Add(new DataColumn(t.Name));
+						DataColumn dc = new DataColumn(t.Name, t.GetImplementingType(rsys.SemanticTypeSystem));
+						dt.Columns.Add(dc);
 					});
 
 				dvSignals = new DataView(dt);

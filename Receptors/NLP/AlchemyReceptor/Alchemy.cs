@@ -160,7 +160,7 @@ namespace AlchemyReceptor
 #else
 			AlchemyAPI_ConceptParams eparams = new AlchemyAPI_ConceptParams();
 			eparams.setMaxRetrieve(250);
-			string xml = alchemyObj.URLGetRankedConcepts(url);
+			string xml = alchemyObj.URLGetRankedConcepts(url, eparams);
 			TextReader tr = new StringReader(xml);
 			XmlReader xr = XmlReader.Create(tr);
 			dsConcepts.ReadXml(xr);

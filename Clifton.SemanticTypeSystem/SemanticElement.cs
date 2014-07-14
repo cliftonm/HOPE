@@ -17,9 +17,8 @@ namespace Clifton.SemanticTypeSystem
 
 		/// <summary>
 		/// Returns the name of the native type or semantic element singleton implemented by the semantic element.
+		/// This does NOT recurse to get the underlying native type from a semantic element hierarchy.  See GetImplementingType.
 		/// </summary>
-		/// <param name="sts"></param>
-		/// <returns></returns>
 		public string GetImplementingName(ISemanticTypeSystem sts)
 		{
 			string ret = null;
@@ -40,6 +39,28 @@ namespace Clifton.SemanticTypeSystem
 		}
 
 		/// <summary>
+		/// Returns the underlying native type of an element in a semantic structure, resolving sub-semenantic elements as well down to their native type.
+		/// </summary>
+		public Type GetImplementingType(ISemanticTypeSystem sts)
+		{
+			Type ret = null;
+			List<INativeType> ntypes = sts.GetSemanticTypeStruct(Name).NativeTypes;
+			List<ISemanticElement> stypes = sts.GetSemanticTypeStruct(Name).SemanticElements;
+			Assert.That(ntypes.Count + stypes.Count == 1, "Getting the element type of a semantic type requires that the semantic type defines one and only one native type or child semantic type in order to resolve the native type property whose value is to be set.");
+
+			if (ntypes.Count == 1)
+			{
+				ret = ntypes[0].GetImplementingType(sts);
+			}
+			else
+			{
+				ret = stypes[0].GetImplementingType(sts);
+			}
+
+			return ret;
+		}
+
+		/// <summary>
 		/// Resolve the ST down to it's singleton native type and return the value.
 		/// </summary>
 		public object GetValue(ISemanticTypeSystem sts, object instance)
@@ -47,11 +68,10 @@ namespace Clifton.SemanticTypeSystem
 			object ret = null;
 
 			PropertyInfo pi = instance.GetType().GetProperty(Name);
-			Type type = pi.GetType();
 
 			List<INativeType> ntypes = sts.GetSemanticTypeStruct(Name).NativeTypes;
 			List<ISemanticElement> stypes = sts.GetSemanticTypeStruct(Name).SemanticElements;
-			Assert.That(ntypes.Count + stypes.Count == 1, "Setting a value on a semantic type requires that the semantic type defines one and only one native type or child semantic type in order to resolve the native type property whose value is to be set.");
+			Assert.That(ntypes.Count + stypes.Count == 1, "Getting a value on a semantic type requires that the semantic type defines one and only one native type or child semantic type in order to resolve the native type property whose value is to be set.");
 			object item = pi.GetValue(instance);
 
 			if (ntypes.Count == 1)
@@ -108,3 +128,4 @@ namespace Clifton.SemanticTypeSystem
 		}
 	}
 }
+											  

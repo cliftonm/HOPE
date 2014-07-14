@@ -51,7 +51,20 @@ namespace Clifton.SemanticTypeSystem.Interfaces
 		string ImplementingType { get; }
 
 		// sts parameter is not used for the native type setter/getter, but provides compatability with ISemanticElement.SetValue so we can have a common interface.
+
+		/// <summary>
+		/// Returns the underlying native type of an element in a semantic structure, resolving sub-semenantic elements as well down to their native type.
+		/// </summary>
+		Type GetImplementingType(ISemanticTypeSystem sts);
+
+		/// <summary>
+		/// Resolve the ST down to it's singleton native type and return the value.
+		/// </summary>
 		object GetValue(ISemanticTypeSystem sts, object instance);
+
+		/// <summary>
+		/// Resolve the ST down to it's singleton native type and return the value.
+		/// </summary>
 		void SetValue(ISemanticTypeSystem sts, object instance, object value);
 	}
 
@@ -60,7 +73,20 @@ namespace Clifton.SemanticTypeSystem.Interfaces
 		string Name { get; }
 
 		// sts parameter is not used for the native type setter/getter, but provides compatability with ISemanticElement.SetValue so we can have a common interface.
+
+		/// <summary>
+		/// Returns the underlying native type of an element in a semantic structure, resolving sub-semenantic elements as well down to their native type.
+		/// </summary>
+		Type GetImplementingType(ISemanticTypeSystem sts);
+
+		/// <summary>
+		/// Resolve the ST down to it's singleton native type and return the value.
+		/// </summary>
 		object GetValue(ISemanticTypeSystem sts, object instance);
+
+		/// <summary>
+		/// Resolve the ST down to it's singleton native type and return the value.
+		/// </summary>
 		void SetValue(ISemanticTypeSystem sts, object instance, object value);
 	}
 
@@ -68,9 +94,26 @@ namespace Clifton.SemanticTypeSystem.Interfaces
 	{
 		string Name { get; }
 		ISemanticType Element { get; set; }
+
+		/// <summary>
+		/// Returns the name of the native type or semantic element singleton implemented by the semantic element.
+		/// This does NOT recurse to get the underlying native type from a semantic element hierarchy.  See GetImplementingType.
+		/// </summary>
 		string GetImplementingName(ISemanticTypeSystem sts);
 
+		/// <summary>
+		/// Returns the underlying native type of an element in a semantic structure, resolving sub-semenantic elements as well down to their native type.
+		/// </summary>
+		Type GetImplementingType(ISemanticTypeSystem sts);
+
+		/// <summary>
+		/// Resolve the ST down to it's singleton native type and return the value.
+		/// </summary>
 		object GetValue(ISemanticTypeSystem sts, object instance);
+
+		/// <summary>
+		/// Resolve the ST down to it's singleton native type and return the value.
+		/// </summary>
 		void SetValue(ISemanticTypeSystem sts, object instance, object value);
 	}
 
