@@ -49,6 +49,14 @@ namespace FilterReceptor
 			base.EndSystemInit();
 			InitializeFromConfig();
 			InitializeReceiveAndEmitProtocols();
+/*
+			// test a protocol:
+			ISemanticTypeStruct outprotocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct("AlchemyConcept");
+			dynamic outsignal = rsys.SemanticTypeSystem.Create("AlchemyConcept");
+			outsignal.text = "Linux";
+			ICarrier carrier = rsys.CreateInternalCarrier(outprotocol, outsignal);
+			ProcessCarrier(carrier);
+ */ 
 		}
 
 		public override void ProcessCarrier(ICarrier carrier)

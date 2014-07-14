@@ -31,6 +31,7 @@ namespace AlchemyReceptor
 			AddEmitProtocol("AlchemyEntity");
 			AddEmitProtocol("AlchemyKeyword");
 			AddEmitProtocol("AlchemyConcept");
+			AddEmitProtocol("Exception");
 
 			AddReceiveProtocol("URL",
 				// cast is required to resolve Func vs. Action in parameter list.
@@ -59,10 +60,22 @@ namespace AlchemyReceptor
 		protected async void ParseUrl(dynamic signal)
 		{
 			string url = signal.Value;
-			
-			DataSet dsEntities = await Task.Run(() => { return GetEntities(url); });
-			DataSet dsKeywords = await Task.Run(() => { return GetKeywords(url); });
-			DataSet dsConcepts = await Task.Run(() => { return GetConcepts(url); });
+			DataSet dsEntities = null;
+			DataSet dsKeywords = null;
+			DataSet dsConcepts = null;
+
+			// Exceptions need to be handled in the application thread.
+			try
+			{
+				dsEntities = await Task.Run(() => { return GetEntities(url); });
+				dsKeywords = await Task.Run(() => { return GetKeywords(url); });
+				dsConcepts = await Task.Run(() => { return GetConcepts(url); });
+			}
+			catch (Exception ex)
+			{
+				EmitException(ex);
+				return;
+			}
 
 			dsEntities.Tables["entity"].IfNotNull(t => Emit("AlchemyEntity", t, url));
 			dsKeywords.Tables["keyword"].IfNotNull(t => Emit("AlchemyKeyword", t, url));
@@ -103,21 +116,14 @@ namespace AlchemyReceptor
 			// Using previously captured dataset
 			dsEntities.ReadXml("alchemyEntityTestResponse.xml");
 #else
-			try
-			{
-				AlchemyAPI_EntityParams eparams = new AlchemyAPI_EntityParams();
-				eparams.setMaxRetrieve(250);
-				string xml = alchemyObj.URLGetRankedNamedEntities(url, eparams);
-				TextReader tr = new StringReader(xml);
-				XmlReader xr = XmlReader.Create(tr);
-				dsEntities.ReadXml(xr);
-				xr.Close();
-				tr.Close();
-			}
-			catch(Exception ex)
-			{
-				EmitException(ex);
-			}
+			AlchemyAPI_EntityParams eparams = new AlchemyAPI_EntityParams();
+			eparams.setMaxRetrieve(250);
+			string xml = alchemyObj.URLGetRankedNamedEntities(url, eparams);
+			TextReader tr = new StringReader(xml);
+			XmlReader xr = XmlReader.Create(tr);
+			dsEntities.ReadXml(xr);
+			xr.Close();
+			tr.Close();
 #endif
 
 			return dsEntities;
@@ -131,21 +137,14 @@ namespace AlchemyReceptor
 			// Using previously captured dataset
 			dsKeywords.ReadXml("alchemyKeywordsTestResponse.xml");
 #else
-			try
-			{
-				AlchemyAPI_KeywordParams eparams = new AlchemyAPI_KeywordParams();
-				eparams.setMaxRetrieve(250);
-				string xml = alchemyObj.URLGetRankedKeywords(url);
-				TextReader tr = new StringReader(xml);
-				XmlReader xr = XmlReader.Create(tr);
-				dsKeywords.ReadXml(xr);
-				xr.Close();
-				tr.Close();
-			}
-			catch(Exception ex)
-			{
-				EmitException(ex);
-			}
+			AlchemyAPI_KeywordParams eparams = new AlchemyAPI_KeywordParams();
+			eparams.setMaxRetrieve(250);
+			string xml = alchemyObj.URLGetRankedKeywords(url);
+			TextReader tr = new StringReader(xml);
+			XmlReader xr = XmlReader.Create(tr);
+			dsKeywords.ReadXml(xr);
+			xr.Close();
+			tr.Close();
 #endif
 
 			return dsKeywords;
@@ -159,21 +158,14 @@ namespace AlchemyReceptor
 			// Using previously captured dataset
 			dsConcepts.ReadXml("alchemyConceptsTestResponse.xml");
 #else
-			try
-			{
-				AlchemyAPI_ConceptParams eparams = new AlchemyAPI_ConceptParams();
-				eparams.setMaxRetrieve(250);
-				string xml = alchemyObj.URLGetRankedConcepts(url);
-				TextReader tr = new StringReader(xml);
-				XmlReader xr = XmlReader.Create(tr);
-				dsConcepts.ReadXml(xr);
-				xr.Close();
-				tr.Close();
-			}
-			catch(Exception ex)
-			{
-				EmitException(ex);
-			}
+			AlchemyAPI_ConceptParams eparams = new AlchemyAPI_ConceptParams();
+			eparams.setMaxRetrieve(250);
+			string xml = alchemyObj.URLGetRankedConcepts(url);
+			TextReader tr = new StringReader(xml);
+			XmlReader xr = XmlReader.Create(tr);
+			dsConcepts.ReadXml(xr);
+			xr.Close();
+			tr.Close();
 #endif
 
 			return dsConcepts;

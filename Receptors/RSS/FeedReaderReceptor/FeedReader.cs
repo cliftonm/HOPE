@@ -34,6 +34,7 @@ namespace FeedReaderReceptor
 			: base(rsys)
 		{
 			AddEmitProtocol("RSSFeedItem");
+			AddEmitProtocol("Exception");
 		}
 
 		/// <summary>

@@ -5,11 +5,17 @@
         <ixm:MembraneDef Name="Skin">
           <ixm:Receptors>
             <ixm:ReceptorDef Name="URL" AssemblyName="UrlReceptor.dll" Enabled="True" Location="563, 97" />
-            <ixm:ReceptorDef Name="Carrier Tabbed List Viewer" AssemblyName="CarrierTabbedListViewerReceptor.dll" Enabled="True" Location="650, 422">
+            <ixm:ReceptorDef Name="Carrier Tabbed List Viewer" AssemblyName="CarrierTabbedListViewerReceptor.dll" Enabled="True" Location="650, 421">
               <ixm:UserConfigs>
                 <ixm:UserConfig Name="ProtocolTabs" Value="Entities,AlchemyEntity;Keywords,AlchemyKeyword;Concepts,AlchemyConcept" />
+                <ixm:UserConfig Name="WindowName" Value="Semantics" />
+                <ixm:UserConfig Name="WindowX" Value="840" />
+                <ixm:UserConfig Name="WindowY" Value="373" />
+                <ixm:UserConfig Name="WindowWidth" Value="0" />
+                <ixm:UserConfig Name="WindowHeight" Value="0" />
               </ixm:UserConfigs>
             </ixm:ReceptorDef>
+            <ixm:ReceptorDef Name="Exceptions" AssemblyName="ExceptionReceptor.dll" Enabled="True" Location="493, 555" />
           </ixm:Receptors>
           <ixm:Permeabilities>
             <ixm:PermeabilityDef Protocol="URL" Direction="Out" Permeable="False" />
@@ -23,6 +29,11 @@
                 <ixm:ReceptorDef Name="Carrier List Viewer" AssemblyName="CarrierListViewerReceptor.dll" Enabled="True" Location="502, 284">
                   <ixm:UserConfigs>
                     <ixm:UserConfig Name="ProtocolName" Value="RSSFeedItem" />
+                    <ixm:UserConfig Name="WindowName" Value="Code Project Articles" />
+                    <ixm:UserConfig Name="WindowX" Value="335" />
+                    <ixm:UserConfig Name="WindowY" Value="73" />
+                    <ixm:UserConfig Name="WindowWidth" Value="0" />
+                    <ixm:UserConfig Name="WindowHeight" Value="0" />
                   </ixm:UserConfigs>
                 </ixm:ReceptorDef>
               </ixm:Receptors>
@@ -33,6 +44,10 @@
                 <ixm:PermeabilityDef Protocol="AlchemyConcept" Direction="Out" Permeable="True" />
                 <ixm:PermeabilityDef Protocol="RSSFeedItem" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="URL" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="AlchemyEntity" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="AlchemyKeyword" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="AlchemyConcept" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Exception" Direction="Out" Permeable="True" />
               </ixm:Permeabilities>
               <ixm:Membranes>
                 <ixm:MembraneDef Name="">
@@ -51,6 +66,7 @@
                     <ixm:PermeabilityDef Protocol="AlchemyEntity" Direction="Out" Permeable="True" />
                     <ixm:PermeabilityDef Protocol="AlchemyKeyword" Direction="Out" Permeable="True" />
                     <ixm:PermeabilityDef Protocol="AlchemyConcept" Direction="Out" Permeable="True" />
+                    <ixm:PermeabilityDef Protocol="Exception" Direction="Out" Permeable="True" />
                     <ixm:PermeabilityDef Protocol="URL" Direction="In" Permeable="False" />
                   </ixm:Permeabilities>
                 </ixm:MembraneDef>
@@ -63,6 +79,11 @@
                 <ixm:ReceptorDef Name="Carrier List Viewer" AssemblyName="CarrierListViewerReceptor.dll" Enabled="True" Location="831, 106">
                   <ixm:UserConfigs>
                     <ixm:UserConfig Name="ProtocolName" Value="RSSFeedItem" />
+                    <ixm:UserConfig Name="WindowName" Value="Tech News" />
+                    <ixm:UserConfig Name="WindowX" Value="337" />
+                    <ixm:UserConfig Name="WindowY" Value="379" />
+                    <ixm:UserConfig Name="WindowWidth" Value="0" />
+                    <ixm:UserConfig Name="WindowHeight" Value="0" />
                   </ixm:UserConfigs>
                 </ixm:ReceptorDef>
               </ixm:Receptors>
@@ -76,6 +97,8 @@
                 <ixm:PermeabilityDef Protocol="AlchemyKeyword" Direction="Out" Permeable="True" />
                 <ixm:PermeabilityDef Protocol="AlchemyConcept" Direction="Out" Permeable="True" />
                 <ixm:PermeabilityDef Protocol="RSSFeedItem" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Exception" Direction="Out" Permeable="True" />
+                <ixm:PermeabilityDef Protocol="Exception" Direction="In" Permeable="False" />
               </ixm:Permeabilities>
               <ixm:Membranes>
                 <ixm:MembraneDef Name="">
@@ -100,6 +123,7 @@
                     <ixm:PermeabilityDef Protocol="AlchemyEntity" Direction="Out" Permeable="True" />
                     <ixm:PermeabilityDef Protocol="AlchemyKeyword" Direction="Out" Permeable="True" />
                     <ixm:PermeabilityDef Protocol="AlchemyConcept" Direction="Out" Permeable="True" />
+                    <ixm:PermeabilityDef Protocol="Exception" Direction="Out" Permeable="True" />
                     <ixm:PermeabilityDef Protocol="URL" Direction="In" Permeable="False" />
                   </ixm:Permeabilities>
                 </ixm:MembraneDef>
@@ -112,6 +136,11 @@
                 <ixm:ReceptorDef Name="Carrier Tabbed List Viewer" AssemblyName="CarrierTabbedListViewerReceptor.dll" Enabled="True" Location="820, 566">
                   <ixm:UserConfigs>
                     <ixm:UserConfig Name="ProtocolTabs" Value="Entities,FilteredAlchemyEntity;Keywords,FilteredAlchemyKeyword;Concepts,FilteredAlchemyConcept" />
+                    <ixm:UserConfig Name="WindowName" Value="Filtered Semantics" />
+                    <ixm:UserConfig Name="WindowX" Value="840" />
+                    <ixm:UserConfig Name="WindowY" Value="70" />
+                    <ixm:UserConfig Name="WindowWidth" Value="0" />
+                    <ixm:UserConfig Name="WindowHeight" Value="0" />
                   </ixm:UserConfigs>
                 </ixm:ReceptorDef>
               </ixm:Receptors>

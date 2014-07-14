@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -33,6 +34,21 @@ namespace CarrierTabbedListViewerReceptor
 		[UserConfigurableProperty("Internal")]
 		public string ProtocolTabs { get; set; }
 
+		[UserConfigurableProperty("WindowName")]
+		public string WindowName { get; set; }
+
+		[UserConfigurableProperty("X")]
+		public int WindowX { get; set; }
+
+		[UserConfigurableProperty("Y")]
+		public int WindowY { get; set; }
+
+		[UserConfigurableProperty("W")]
+		public int WindowWidth { get; set; }
+
+		[UserConfigurableProperty("H")]
+		public int WindowHeight { get; set; }
+
 		public CarrierTabbedListViewer(IReceptorSystem rsys)
 			: base(rsys)
 		{
@@ -49,8 +65,10 @@ namespace CarrierTabbedListViewerReceptor
 		public override void EndSystemInit()
 		{
 			base.EndSystemInit();
+			UpdateFormLocationAndSize();
 			InitializeConfigTable();
 			UpdateReceivedProtocolsAndTabs();
+			UpdateCaption();
 		}
 
 		public override void ProcessCarrier(ICarrier carrier)
@@ -87,6 +105,15 @@ namespace CarrierTabbedListViewerReceptor
 		{
 			UpdateReceivedProtocolsAndTabs();
 			UpdateTabProtocolProperty();
+			UpdateCaption();
+		}
+
+		protected void UpdateCaption()
+		{
+			if (!String.IsNullOrEmpty(WindowName))
+			{
+				form.Text = WindowName;
+			}
 		}
 
 		/// <summary>
@@ -99,6 +126,40 @@ namespace CarrierTabbedListViewerReceptor
 			form = mp.Load<Form>("CarrierTabbedListViewer.xml", this);
 			tcProtocols = (TabControl)mp.ObjectCollection["tcProtocols"];
 			form.Show();
+
+			// Wire up the location changed event after the form has initialized,
+			// so we don't generate this event during form creation.  That way,
+			// the user's config will be preserved and used when the system
+			// finishes initialization.
+			form.LocationChanged += OnLocationChanged;
+			form.SizeChanged += OnSizeChanged;
+		}
+
+		protected void OnLocationChanged(object sender, EventArgs e)
+		{
+			WindowX = form.Location.X;
+			WindowY = form.Location.Y;
+		}
+
+		protected void OnSizeChanged(object sender, EventArgs e)
+		{
+			WindowWidth = form.Size.Width;
+			WindowHeight = form.Size.Height;
+		}
+
+		protected void UpdateFormLocationAndSize()
+		{
+			// Only update if user has changed the size from its declarative value.
+			if (WindowX != 0 && WindowY != 0)
+			{
+				form.Location = new Point(WindowX, WindowY);
+			}
+
+			// Only update if user has changed the size from its declarative value.
+			if (WindowWidth != 0 && WindowHeight != 0)
+			{
+				form.Size = new Size(WindowWidth, WindowHeight);
+			}
 		}
 
 		protected DataTable InitializeDataTable()
