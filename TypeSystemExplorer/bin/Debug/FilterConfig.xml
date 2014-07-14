@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<MycroXaml Name="Form"
+  xmlns:wf="System.Windows.Forms, System.Windows.Forms, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"
+  xmlns:r="Clifton.Receptor, Clifton.Receptor"
+  xmlns:def="def"
+  xmlns:ref="ref">
+  <wf:Form Text="Filter Configuration" Size="480, 300" StartPosition="CenterScreen" ShowInTaskbar="false" MinimizeBox="false" MaximizeBox="false">
+    <wf:Controls>
+      <wf:Label Text="Tabs and their protocols:" Location="20, 23" Size="250, 15" TextAlign="BottomLeft"/>
+      <wf:DataGridView def:Name="dgvFilters"
+                        AllowUserToAddRows="true"
+                        AllowUserToDeleteRows="true"
+                        ReadOnly="false"
+                        RowHeadersVisible="true"
+                        AutoSizeColumnsMode="Fill"
+                        Anchor="Top, Left, Bottom,Right"
+                        Location="20, 40" Size="320, 170"/>
+      <wf:CheckBox def:Name="ckEnabled" Text="Enabled?" Location="20, 220" Size="80, 25" Anchor="Bottom, Left"/>
+      <wf:Button Text="Save" Location="360, 10" Size="80, 25" Click="OnReceptorConfigOK" Anchor="Top, Right"/>
+      <wf:Button Text="Cancel" Location="360, 40" Size="80, 25" Click="OnReceptorConfigCancel" Anchor="Top, Right"/>
+    </wf:Controls>
+  </wf:Form>
+</MycroXaml>
+
+
+
