@@ -193,9 +193,9 @@ namespace FilterReceptor
 
 		protected void FilterSignal(string protocol, dynamic signal, List<string> filters)
 		{
-			try
-			{
-				filters.ForEach(filter =>
+			filters.ForEach(filter =>
+				{
+					try
 					{
 						Expression exp = new Expression(filter);
 
@@ -226,20 +226,20 @@ namespace FilterReceptor
 									});
 							}
 						}
-					});
-			}
-			catch (Exception ex)
-			{
-				EmitException(ex);
-			}
+					}
+					catch (Exception ex)
+					{
+						EmitException(ex.Message + " with filter " + filter);
+					}
+				});
 		}
 
 		protected void OnEvaluateFunction(string name, FunctionArgs args)
 		{
 			if (name.ToLower() == "contains")
 			{
-				string v1 = args.Parameters[0].Evaluate().ToString();
-				string v2 = args.Parameters[1].Evaluate().ToString();
+				string v1 = args.Parameters[0].Evaluate().ToString().ToLower();
+				string v2 = args.Parameters[1].Evaluate().ToString().ToLower();
 
 				args.Result = v1.Contains(v2);
 			}

@@ -116,16 +116,19 @@ namespace AlchemyReceptor
 			// Using previously captured dataset
 			dsEntities.ReadXml("alchemyEntityTestResponse.xml");
 #else
-			AlchemyAPI_EntityParams eparams = new AlchemyAPI_EntityParams();
-			eparams.setMaxRetrieve(250);
-			string xml = alchemyObj.URLGetRankedNamedEntities(url, eparams);
-			TextReader tr = new StringReader(xml);
-			XmlReader xr = XmlReader.Create(tr);
-			dsEntities.ReadXml(xr);
-			xr.Close();
-			tr.Close();
+			if (!Cached("Entity", url, ref dsEntities))
+			{
+				AlchemyAPI_EntityParams eparams = new AlchemyAPI_EntityParams();
+				eparams.setMaxRetrieve(250);
+				string xml = alchemyObj.URLGetRankedNamedEntities(url, eparams);
+				TextReader tr = new StringReader(xml);
+				XmlReader xr = XmlReader.Create(tr);
+				dsEntities.ReadXml(xr);
+				xr.Close();
+				tr.Close();
+				Cache("Entity", url, dsEntities);
+			}
 #endif
-
 			return dsEntities;
 		}
 
@@ -137,16 +140,19 @@ namespace AlchemyReceptor
 			// Using previously captured dataset
 			dsKeywords.ReadXml("alchemyKeywordsTestResponse.xml");
 #else
-			AlchemyAPI_KeywordParams eparams = new AlchemyAPI_KeywordParams();
-			eparams.setMaxRetrieve(250);
-			string xml = alchemyObj.URLGetRankedKeywords(url);
-			TextReader tr = new StringReader(xml);
-			XmlReader xr = XmlReader.Create(tr);
-			dsKeywords.ReadXml(xr);
-			xr.Close();
-			tr.Close();
+			if (!Cached("Keyword", url, ref dsKeywords))
+			{
+				AlchemyAPI_KeywordParams eparams = new AlchemyAPI_KeywordParams();
+				eparams.setMaxRetrieve(250);
+				string xml = alchemyObj.URLGetRankedKeywords(url);
+				TextReader tr = new StringReader(xml);
+				XmlReader xr = XmlReader.Create(tr);
+				dsKeywords.ReadXml(xr);
+				xr.Close();
+				tr.Close();
+				Cache("Keyword", url, dsKeywords);
+			}
 #endif
-
 			return dsKeywords;
 		}
 
@@ -158,17 +164,48 @@ namespace AlchemyReceptor
 			// Using previously captured dataset
 			dsConcepts.ReadXml("alchemyConceptsTestResponse.xml");
 #else
-			AlchemyAPI_ConceptParams eparams = new AlchemyAPI_ConceptParams();
-			eparams.setMaxRetrieve(250);
-			string xml = alchemyObj.URLGetRankedConcepts(url, eparams);
-			TextReader tr = new StringReader(xml);
-			XmlReader xr = XmlReader.Create(tr);
-			dsConcepts.ReadXml(xr);
-			xr.Close();
-			tr.Close();
+			if (!Cached("Concept", url, ref dsConcepts))
+			{
+				AlchemyAPI_ConceptParams eparams = new AlchemyAPI_ConceptParams();
+				eparams.setMaxRetrieve(250);
+				string xml = alchemyObj.URLGetRankedConcepts(url, eparams);
+				TextReader tr = new StringReader(xml);
+				XmlReader xr = XmlReader.Create(tr);
+				dsConcepts.ReadXml(xr);
+				xr.Close();
+				tr.Close();
+				Cache("Concept", url, dsConcepts);
+			}
 #endif
-
 			return dsConcepts;
+		}
+
+		/// <summary>
+		/// Return true if cached and populate the refenced DataSet parameter.
+		/// </summary>
+		protected bool Cached(string prefix, string url, ref DataSet ds)
+		{
+			string urlHash = url.GetHashCode().ToString();
+			string fn = prefix + "-" + urlHash + ".xml";
+
+			bool cached = File.Exists(fn);
+
+			if (cached)
+			{
+				ds.ReadXml(fn);
+			}
+
+			return cached;
+		}
+
+		/// <summary>
+		/// Cache the dataset.
+		/// </summary>
+		protected void Cache(string prefix, string url, DataSet ds)
+		{
+			string urlHash = url.GetHashCode().ToString();
+			string fn = prefix + "-" + urlHash + ".xml";
+			ds.WriteXml(fn);
 		}
 	}
 }

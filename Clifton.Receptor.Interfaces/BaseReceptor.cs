@@ -334,6 +334,18 @@ namespace Clifton.Receptor.Interfaces
 		}
 
 		/// <summary>
+		/// Emits the exception as a carrier, which can be viewed, logged, etc, by other receptors.
+		/// </summary>
+		protected void EmitException(string message)
+		{
+			CreateCarrierIfReceiver("Exception", signal =>
+			{
+				signal.ReceptorName = Name;
+				signal.Message = message;
+			});
+		}
+
+		/// <summary>
 		/// This is an interesting function that looks at the internals of the protocol, and
 		/// for every semantic element, it adds an emitter protocol for that type as well.
 		/// When the carrier is actually created, additional carriers for internal semantic elements

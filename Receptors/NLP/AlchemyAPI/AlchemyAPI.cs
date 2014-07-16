@@ -952,7 +952,7 @@ namespace AlchemyAPI
                 {
                     XmlNode status = root.SelectSingleNode("/results/status");
 
-					// OLD:
+					// OLD:							  star
 					/*
                     if (status.InnerText != "OK")
                     {

@@ -1,0 +1,978 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>d-tier</title>
+</head>
+
+<body>
+
+<p>d-tier : multi-dimensional tiers</p>
+<p>Semantic Web</p>
+<ul>
+	<li>Feed Reader</li>
+	<li>Natural Language Processing</li>
+	<li>Distributed system behavior</li>
+	<li>autonomous receptors and complexity in a d-tier architecture</li>
+	<li>user interface complexity - getting the information that the UI needs 
+	often involves working with new data, old data, and extraction of state.</li>
+</ul>
+<h2><img border="0" src="filter3.png" width="706" height="647"></h2>
+<h2>To Run This Application...</h2>
+<ol>
+	<li>You will need to register with AlchemyAPI to obtain an API key and this key 
+must be placed in the file &quot;alchemyapikey.txt&quot; in the bin\Debug (or bin\Release) 
+folder.</li>
+	<li>Download the code from <a href="https://github.com/cliftonm/HOPE">
+	https://github.com/cliftonm/HOPE</a> </li>
+	<li>Check out the branch &quot;semantic-feed-reader&quot;</li>
+	<li>When you launch HOPE, load the applet called &quot;NewFeedReaderTabbed&quot;</li>
+	<li>The various display forms may appear initially underneath the HOPE 
+	application main window -- move the main window and the display forms as you 
+	wish, the locations and sizes will be persisted between sessions.</li>
+</ol>
+<h2>Introduction</h2>
+<p>To state the obvious, there is a vast amount of information &quot;in the cloud&quot;, 
+and it grows every millisecond.&nbsp; Some of it is rather static, like a 
+wikipedia page, news article or blog, and some of it is very dynamic, like stock 
+tickers, weather, and tweets.&nbsp; And again stating the obvious, from a 
+usability standpoint, the integrated means to chew that information such that 
+what is presented to the user are only things that have meaning to that user 
+simply do not exist, or if they do, they're limited to &quot;here google, filter my 
+news items by these categories.&quot;&nbsp; But if, for example, I want to be alerted 
+to when someone blogs about Visual Studio 14 (or whatever version of VS is in 
+CTP when you read this article), well, good luck with that.</p>
+<p>We can look at the Semantic Web:</p>
+<p><i>By encouraging the inclusion of semantic content in web pages, the 
+Semantic Web aims at converting the current web, dominated by unstructured and 
+semi-structured documents into a &quot;web of data&quot;.</i> (<a href="http://en.wikipedia.org/wiki/Semantic_Web">http://en.wikipedia.org/wiki/Semantic_Web</a>)
+</p>
+<p>But adoption of this movement is morbidly slow and probably will not deliver 
+enough semantic information about the content to be actually useful.</p>
+<p>That leaves us with &quot;Natural Language Processing&quot;, or NLP:</p>
+<p><i>&quot;enabling computers to derive meaning from human or natural language 
+input&quot;</i> (<a href="http://en.wikipedia.org/wiki/Natural_language_processing">http://en.wikipedia.org/wiki/Natural_language_processing</a>).</p>
+<p>Using NLP, we can extract the actual semantic meaning of the content.&nbsp; 
+What this article explores is integrating one NLP service (<a href="http://www.alchemyapi.com/">AlchemyAPI</a>) 
+with webpage scraping (a feature of AlchemyAPI) to extract and persist said 
+semantic meaning.&nbsp; Given a basic set of functionality, there are many 
+features that can then be further developed (such as tracking / reporting on 
+trends) from the semantic meaning once it has been derived from content.&nbsp; 
+These additional features may be explored in future articles.&nbsp; Specifically 
+what will be presented here is:</p>
+<ol>
+	<li>Using the
+	<a href="http://msdn.microsoft.com/en-us/library/system.servicemodel.syndication.syndicationfeed.aspx">
+	SyndicationFeed</a> class to acquire feed items</li>
+	<li>Extracting the semantic meaning using AlchemyAPI's NLP </li>
+	<li>Persisting feed item links and each item's associated meaning</li>
+	<li>Providing a simple UI presentation for exploring feed items and their 
+	associated semantics</li>
+</ol>
+<p>RSS is a specific niche tool and one needs to be able to use other tools for 
+non-feed content.&nbsp; Rather than develop a monolithic application glued to 
+RSS, I'm also going to be demonstrating a
+<a href="http://marcclifton.wordpress.com/2014/07/10/d-tier-development/">D-Tier</a> 
+approach (distributed, dimensional, dynamic) for building this application, 
+using the <a href="https://github.com/cliftonm/HOPE">Higher Order Programming 
+Environment</a> (HOPE) as the platform of choice.&nbsp; This can be leveraged to 
+include other means of acquiring content, using other NLP processors (such as
+<a href="http://www.opencalais.com/">OpenCalais</a> or
+<a href="http://www.semantria.com/">Semantria</a>), and developing components 
+for working with the semantic meaning in other unique and interesting ways.&nbsp; 
+If you are unfamiliar with my previous articles on HOPE, please read the
+<a href="http://www.codeproject.com/Articles/777843/HOPE-Higher-Order-Programming-Environment">
+introductory article</a>.&nbsp; As such, I will be interweaving discussions 
+regarding HOPE development with the primary topic of this article.</p>
+<h3>AlchemyAPI</h3>
+<p>AlchemyAPI is one of several NLP's.&nbsp; For my particular purposes, they 
+are attractive for the following reasons:</p>
+<ul>
+	<li>Fast response -- of the services I've looked at, they have the fastest 
+	response times</li>
+<li>A free option -- NLP providers can be expensive!&nbsp; While OpenCalais is 
+free, AlchemyAPI provides a richer analysis and is free for 1000 transactions 
+per day.</li>
+	<li>Built in web page scraper -- I certainly don't want to write one, so 
+	this feature is crucial.&nbsp; AlchemyAPI's web page scraper looks quite 
+	good.&nbsp; Some of the other services either tie in with expensive options.&nbsp; 
+	OpenCalais is assocaited with <a href="semanticproxy.com">SemanticProxy</a> 
+	however the demo faults (out of memory) and I have not tried the 
+	programmatic interface.</li>
+<li>Painless API -- the .NET API provided by AlchemyAPI is painless to use and 
+the XML format can be directly parsed into a .NET <code>DataSet</code> object.&nbsp; 
+In my review of Semantria and OpenCalais, this was definitely not the case -- I 
+encountered bugs in the .NET OpenCalais API and the complexity of Semantria's 
+API was frustrating, though Semantria has been very helpful in guiding me 
+through the issues.&nbsp; I will be posting a complete review of all three of 
+these NLP services in a separate article.</li>
+</ul>
+<p>Based on the aforementioned criteria, the choice was rather clear.&nbsp; I 
+will note one thing -- I have noticed the AlchemyAPI going down for a while, so 
+it's a good idea to have a backup NLP provider available.&nbsp; If you're just 
+wanting to dabble, I suggest OpenCalais, as it is completely free.</p>
+<h3>Why Higher Order Programming Environment?</h3>
+<p>Why am I writing this in the HOPE framework?&nbsp; Several reasons:</p>
+<ul>
+	<li>I want to continue promoting and extending the capabilities of this 
+	framework</li>
+	<li>I want to avoid a monolithic application.&nbsp; NLP can be applied to 
+	many things beyond RSS feeds and I want a platform that allows me to plug 
+	and play, and I mean really &quot;play&quot; with different configurations, NLP 
+	providers, etc., for extracting semantic meaning.&nbsp; HOPE is designed for 
+	precisely this kind of Lego-building.</li>
+	<li>Visualizing NLP results is a uncharted territory.&nbsp; While I only use 
+	boring data table lists, there is a rich field of visualization to explore 
+	with regards to NLP results.&nbsp; Again, HOPE is an excellent framework for 
+	plugging in different visualizers and playing with them.</li>
+	<li>In my opinion, writing synchronous, single threaded monolithic 
+	applications is a dead end, and HOPE represents a very interesting 
+	alternative for creating distributed, dynamic, and dimensional applications 
+	that promotes non-deterministic UI's and behaviors: it the <i>user</i>, not 
+	the <i>developer</i> that determines the behavior and visualization of the 
+	applet.</li>
+	<li>It's fun, and it's easy.</li>
+</ul>
+<p>Still interested?&nbsp; Then let's begin with feed readers, move on to 
+visualizers, and then parsing feed content with NLP.</p>
+<h2>The Feed Reader Receptor</h2>
+<p><img border="0" src="receptor1.png" width="100" height="108"></p>
+<p>(a receptor with feed items ready to be processed.)</p>
+<p>In HOPE, behaviors are written in autonomous receptors.&nbsp; We can start 
+with a very simple receptor that loads acquires the feed items and emits them.&nbsp; 
+</p>
+<h3>The RSSFeedItem Semantic Structrure</h3>
+<p>We need to define the protocol for a feed item, which is done in XML:</p>
+<pre>&lt;SemanticTypeStruct DeclType=&quot;RSSFeedItem&quot;&gt;
+  &lt;Attributes&gt;
+    &lt;NativeType Name=&quot;FeedName&quot; ImplementingType=&quot;string&quot;/&gt;
+    &lt;NativeType Name=&quot;Title&quot; ImplementingType=&quot;string&quot;/&gt;
+    &lt;SemanticElement Name=&quot;URL&quot;/&gt; &lt;!-- the link --&gt;
+    &lt;NativeType Name=&quot;Description&quot; ImplementingType=&quot;string&quot;/&gt;
+    &lt;NativeType Name=&quot;Authors&quot; ImplementingType=&quot;string&quot;/&gt;
+    &lt;NativeType Name=&quot;Categories&quot; ImplementingType=&quot;string&quot;/&gt;
+    &lt;NativeType Name=&quot;PubDate&quot; ImplementingType=&quot;DateTime&quot;/&gt;
+  &lt;/Attributes&gt;
+&lt;/SemanticTypeStruct&gt;</pre>
+<p>If you're new to HOPE, one of the foundational concepts is that all data is 
+itself semantic, which has pros and cons in this first cut and is always an 
+interesting decision point: should the types always be semantic elements or can 
+the be native types?&nbsp; I'll leave that question for another discussion.</p>
+<h3>Receptor Implementation</h3>
+<p>The three things of interest to note here:</p>
+<ul>
+	<li>There is a configuration UI so the user can specify the feed name and 
+	URL.</li>
+	<li>Note how user-configurable properties are decorated with the 
+	<code>UserConfigurableProperty</code> attribute, so the serializer knows what to persist 
+	when the applet is saved / loaded.</li>
+<li>The feed is loaded asynchronously, and when the task completes, the feed 
+items are emitted.</li>
+</ul>
+<pre>public class FeedReader : BaseReceptor
+{
+  public override string Name { get { return &quot;Feed Reader&quot;; } }
+  public override bool IsEdgeReceptor { get { return true; } }
+  public override string ConfigurationUI { get { return &quot;FeedReaderConfig.xml&quot;; } }
+
+  [UserConfigurableProperty(&quot;Feed URL:&quot;)]
+  public string FeedUrl { get; set; }
+
+  [UserConfigurableProperty(&quot;Feed Name:&quot;)]
+  public string FeedName {get;set;}
+
+  protected SyndicationFeed feed;
+
+  public FeedReader(IReceptorSystem rsys)
+    : base(rsys)
+  {
+    AddEmitProtocol(&quot;RSSFeedItem&quot;);
+  }
+
+  /// &lt;summary&gt;
+  /// If specified, immmediately acquire the feed and start emitting feed items.
+  /// &lt;/summary&gt;
+  public override void EndSystemInit()
+  {
+    base.EndSystemInit();
+    AcquireFeed();
+  }
+
+  /// &lt;summary&gt;
+  /// When the user configuration fields have been updated, re-acquire the feed.
+  /// &lt;/summary&gt;
+  public override void UserConfigurationUpdated()
+  {
+    base.UserConfigurationUpdated();
+    AcquireFeed();
+  }
+
+  /// &lt;summary&gt;
+  /// Acquire the feed and emit the feed items. 
+  /// &lt;/summary&gt;
+  protected async void AcquireFeed()
+  {
+    if (!String.IsNullOrEmpty(FeedUrl))
+    {
+      try
+      {
+        SyndicationFeed feed = await GetFeedAsync(FeedUrl);
+        EmitFeedItems(feed);
+      }
+      catch (Exception ex)
+      {
+        EmitException(&quot;Feed Reader Receptor&quot;, ex);
+      }
+    }
+  }
+
+
+  /// &lt;summary&gt;
+  /// Acquire the feed asynchronously.
+  /// &lt;/summary&gt;
+  protected async Task&lt;SyndicationFeed&gt; GetFeedAsync(string feedUrl)
+  {
+    SyndicationFeed feed = await Task.Run(() =&gt;
+    {
+      XmlReader xr = XmlReader.Create(feedUrl);
+      SyndicationFeed sfeed = SyndicationFeed.Load(xr);
+      xr.Close();
+
+      return sfeed;
+    });
+
+    return feed;
+  }
+
+  /// &lt;summary&gt;
+  /// Emits only new feed items for display.
+  /// &lt;/summary&gt;
+  protected void EmitFeedItems(SyndicationFeed feed)
+  {
+    feed.Items.ForEach(item =&gt;
+    {
+      CreateCarrier(&quot;RSSFeedItem&quot;, signal =&gt;
+        {
+          signal.FeedName = FeedName;
+          signal.Title = item.Title.Text;
+          signal.URL.Value = item.Links[0].Uri.ToString();
+          signal.Description = item.Summary.Text;
+          signal.Authors = String.Join(&quot;, &quot;, item.Authors.Select(a =&gt; a.Name).ToArray());
+          signal.Categories = String.Join(&quot;, &quot;, item.Categories.Select(c =&gt; c.Name).ToArray());
+          signal.PubDate = item.PublishDate.LocalDateTime;
+        });
+    });
+  }
+}</pre>
+<h3>Feed Reader User Configuration</h3>
+<p><img border="0" src="feedreaderconfig.png" width="480" height="190"></p>
+<p>A very simple UI is used to configure the feed (note that this configuration 
+is persisted when the HOPE applet is saved.)&nbsp; Because the UI is defined in 
+XML, it can be easily customized for other appearances -- this customizability 
+is a particular strength of HOPE.&nbsp; The parser used is a derivative of
+<a href="http://www.codeproject.com/Articles/8365/MycroXaml">MycroXaml</a> which 
+I wrote about 10 years ago.</p>
+<p>The salient point here is the explicit binding of control properties to the 
+receptor instance's properties.</p>
+<pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; ?&gt;
+&lt;MycroXaml Name=&quot;Form&quot;
+  xmlns:wf=&quot;System.Windows.Forms, System.Windows.Forms, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089&quot;
+  xmlns:r=&quot;Clifton.Receptor, Clifton.Receptor&quot;
+  xmlns:def=&quot;def&quot;
+  xmlns:ref=&quot;ref&quot;&gt;
+  &lt;wf:Form Text=&quot;Feed Reader Configuration&quot; Size=&quot;480, 190&quot; StartPosition=&quot;CenterScreen&quot; ShowInTaskbar=&quot;false&quot; MinimizeBox=&quot;false&quot; MaximizeBox=&quot;false&quot;&gt;
+    &lt;wf:Controls&gt;
+      &lt;wf:Label Text=&quot;Feed Name:&quot; Location=&quot;20, 23&quot; Size=&quot;70, 15&quot;/&gt;
+      &lt;wf:TextBox def:Name=&quot;tbFeedName&quot; Location=&quot;92, 20&quot; Size=&quot;150, 20&quot;/&gt;
+      &lt;wf:Label Text=&quot;Feed URL:&quot; Location=&quot;20, 48&quot; Size=&quot;70, 15&quot;/&gt;
+      &lt;wf:TextBox def:Name=&quot;tbFeedUrl&quot; Location=&quot;92, 45&quot; Size=&quot;250, 20&quot;/&gt;
+      &lt;wf:CheckBox def:Name=&quot;ckEnabled&quot; Text=&quot;Enabled?&quot; Location=&quot;20, 120&quot; Size=&quot;80, 25&quot;/&gt;
+      &lt;wf:Button Text=&quot;Save&quot; Location=&quot;360, 10&quot; Size=&quot;80, 25&quot; Click=&quot;OnReceptorConfigOK&quot;/&gt;
+      &lt;wf:Button Text=&quot;Cancel&quot; Location=&quot;360, 40&quot; Size=&quot;80, 25&quot; Click=&quot;OnReceptorConfigCancel&quot;/&gt;
+    &lt;/wf:Controls&gt;
+    &lt;r:PropertyControlMap def:Name=&quot;ControlMap&quot;&gt;
+      &lt;r:Entries&gt;
+        &lt;r:PropertyControlEntry PropertyName=&quot;FeedUrl&quot; ControlName=&quot;tbFeedUrl&quot; ControlPropertyName=&quot;Text&quot;/&gt;
+        &lt;r:PropertyControlEntry PropertyName=&quot;FeedName&quot; ControlName=&quot;tbFeedName&quot; ControlPropertyName=&quot;Text&quot;/&gt;
+      &lt;/r:Entries&gt;
+    &lt;/r:PropertyControlMap&gt;
+  &lt;/wf:Form&gt;
+&lt;/MycroXaml&gt;</pre>
+<h3>Receptor and Carrier</h3>
+<p>Once the asynchronous function returns, we note that there are several 
+carriers (one for each item listed in the feed) awaiting to be processed.&nbsp; 
+We can inspect their signals by hovering the mouse over one of the carriers (the 
+yellow triangle) which displays the signal in the property grid:</p>
+<p><img border="0" src="feedreader1.png" width="642" height="278"></p>
+<h2>The Feed Item Viewer</h2>
+<p>Next, we need a way to view feeds.&nbsp; Rather than write a specific feed 
+reader viewer, I'm going instead to implement a general purpose &quot;carrier viewer&quot; 
+that will display the carrier signals in a <code>DataGridView</code> control.&nbsp; As a 
+general purpose receptor, this will be useful for other applications as well.&nbsp; 
+The only thing we'll need to configure is the protocol (the semantic structure) 
+that the viewer should listen for.</p>
+<h3>Configuring the Feed Item Viewer</h3>
+<p><img border="0" src="feedreader2.png" width="480" height="150"></p>
+<p>As with the feed reader, we have a small XML file (not shown) that lets us 
+specify the protocol we want to monitor.&nbsp; In our case, it's &quot;RSSFeedItem.&quot;</p>
+<h3>The Code</h3>
+<p>The code is again quite simple, with the addition of removing the old 
+protocol if the user changes it.</p>
+<pre>public class CarrierListViewer : BaseReceptor
+{
+  public override string Name { get { return &quot;Carrier List Viewer&quot;; } }
+  public override bool IsEdgeReceptor { get { return true; } }
+  public override string ConfigurationUI { get { return &quot;CarrierListViewerConfig.xml&quot;; } }
+
+  [UserConfigurableProperty(&quot;Protocol Name:&quot;)]
+  public string ProtocolName { get; set; }
+
+  protected string oldProtocol;
+  protected DataView dvSignals;
+  protected DataGridView dgvSignals;
+  protected Form form;
+
+  public CarrierListViewer(IReceptorSystem rsys)
+    : base(rsys)
+  {
+  }
+
+  public override void Initialize()
+  {
+    base.Initialize();
+    InitializeUI();
+  }
+
+  public override void EndSystemInit()
+  {
+    base.EndSystemInit();
+    CreateViewerTable();
+    ListenForProtocol();
+  }
+
+  /// &lt;summary&gt;
+  /// Instantiate the UI.
+  /// &lt;/summary&gt;
+  protected void InitializeUI()
+  {
+    // Setup the UI:
+    MycroParser mp = new MycroParser();
+    form = mp.Load&lt;Form&gt;(&quot;CarrierListViewer.xml&quot;, this);
+    dgvSignals = (DataGridView)mp.ObjectCollection[&quot;dgvRecords&quot;];
+    form.Show();
+  }
+
+  /// &lt;summary&gt;
+  /// When the user configuration fields have been updated, reset the protocol we are listening for.
+  /// &lt;/summary&gt;
+  public override void UserConfigurationUpdated()
+  {
+    base.UserConfigurationUpdated();
+    CreateViewerTable();
+    ListenForProtocol();
+  }
+
+  /// &lt;summary&gt;
+  /// Create the table and column definitions for the protocol.
+  /// &lt;/summary&gt;
+  protected void CreateViewerTable()
+  {
+    if (!String.IsNullOrEmpty(ProtocolName))
+    {
+      DataTable dt = new DataTable();
+      ISemanticTypeStruct st = rsys.SemanticTypeSystem.GetSemanticTypeStruct(ProtocolName);
+      st.AllTypes.ForEach(t =&gt;
+      {
+        dt.Columns.Add(new DataColumn(t.Name));
+      });
+
+    dvSignals = new DataView(dt);
+    dgvSignals.DataSource = dvSignals;
+    }
+  }
+
+  /// &lt;summary&gt;
+  /// Remove the old protocol (if it exists) and start listening to the new.
+  /// &lt;/summary&gt;
+  protected void ListenForProtocol()
+  {
+    if (!String.IsNullOrEmpty(oldProtocol))
+    {
+      RemoveReceiveProtocol(oldProtocol);
+    }
+
+    oldProtocol = ProtocolName;
+    AddReceiveProtocol(ProtocolName, (Action&lt;dynamic&gt;)((signal) =&gt; ShowSignal(signal)));
+  }
+
+  /// &lt;summary&gt;
+  /// Add a record to the existing view showing the signal's content.
+  /// &lt;/summary&gt;
+  /// &lt;param name=&quot;signal&quot;&gt;&lt;/param&gt;
+  protected void ShowSignal(dynamic signal)
+  {
+    try
+    {
+      DataTable dt = dvSignals.Table;
+      DataRow row = dt.NewRow();
+      ISemanticTypeStruct st = rsys.SemanticTypeSystem.GetSemanticTypeStruct(ProtocolName);
+
+      st.AllTypes.ForEach(t =&gt;
+        {
+          object val = t.GetValue(rsys.SemanticTypeSystem, signal);
+          row[t.Name] = val;
+        });
+
+      dt.Rows.Add(row);
+    }
+    catch (Exception ex)
+    {
+      EmitException(&quot;Carrier List Viewer Receptor&quot;, ex);
+    }
+  }
+}</pre>
+<h3>Displaying Feed Items</h3>
+<p>We can now drop the Carrier List Viewer onto the surface, double-click on it 
+to configure the protocol, and we immediately note that it is now wired up as a 
+receiver of what the Feed Reader receptor emits:</p>
+<p><img border="0" src="feedreader3.png" width="236" height="141"></p>
+<p>A small XML file declares the UI (again, easily configured to some other 
+presentation or third party control):</p>
+<pre>&lt;MycroXaml Name=&quot;Form&quot;
+  xmlns:wf=&quot;System.Windows.Forms, System.Windows.Forms, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089&quot;
+  xmlns:def=&quot;def&quot;
+  xmlns:ref=&quot;ref&quot;&gt;
+  &lt;wf:Form Text=&quot;List Viewer&quot; Size=&quot;500, 300&quot; StartPosition=&quot;CenterScreen&quot; ShowInTaskbar=&quot;false&quot; MinimizeBox=&quot;false&quot; MaximizeBox=&quot;false&quot;&gt;
+    &lt;wf:Controls&gt;
+      &lt;wf:DataGridView def:Name=&quot;dgvRecords&quot; Dock=&quot;Fill&quot;
+        AllowUserToAddRows=&quot;false&quot;
+        AllowUserToDeleteRows=&quot;false&quot;
+        ReadOnly=&quot;true&quot;
+        SelectionMode=&quot;FullRowSelect&quot;
+        RowHeadersVisible=&quot;False&quot;/&gt;
+    &lt;/wf:Controls&gt;
+  &lt;/wf:Form&gt;
+&lt;/MycroXaml&gt;</pre>
+<p>And here's a result from the Code Project article feed:</p>
+<p><img border="0" src="feedreader4.png" width="858" height="504"></p>
+<h3>Configuring Feed Readers (Introducing Membranes)</h3>
+<p>Let's pause here for a bit and see what we can do with HOPE now.&nbsp; For 
+example, we can create multiple feed readers, all feeding into one list viewer:</p>
+<p><img border="0" src="feedreader5.png" width="372" height="196"></p>
+<p>And here's a sample listing:</p>
+<p><img border="0" src="feedreader6.png" width="500" height="300"></p>
+<p>But let's say you want a list just for Code Project.&nbsp; We can do that 
+with a new feature of HOPE called &quot;membranes.&quot;&nbsp; While I'm not going to go 
+into the full details of membranes yet, you can read up on the idea under
+<a href="http://en.wikipedia.org/wiki/Membrane_computing">Membrane Computing</a>.&nbsp; 
+An overview of the idea is this: carriers (the protocols and their signals) are 
+contained within a membrane and can only permeate the membrane (moving in or 
+moving out) if the membrane has been configured to be permeable to that 
+protocol.&nbsp; So, we can use membranes for &quot;islands of computation:&quot;</p>
+<p><img border="0" src="feedreader7.png" width="565" height="296"></p>
+<p>Resulting in separate feed item lists:</p>
+<p><img border="0" src="feedreader8.png" width="495" height="529"></p>
+<h3>Working With Semantic Types</h3>
+<p>Another thing we can add to the viewer is the ability to emit semantic types 
+when the user double-clicks on a line.&nbsp; Remember that when we defined the 
+RSSFeedItem semantic type, the URL was itself a semantic type:</p>
+<pre>&lt;SemanticElement Name=&quot;URL&quot;/&gt;</pre>
+<p>We can look for all semantic type attributes and emit them, letting some 
+other receptor do something with them.&nbsp; We inspect the protocol the viewer 
+listens to for semantic elements and add them to the emitter list:</p>
+<pre>// Add other semantic type emitters:
+RemoveEmitProtocols();
+ISemanticTypeStruct st = rsys.SemanticTypeSystem.GetSemanticTypeStruct(ProtocolName);
+st.SemanticElements.ForEach(se =&gt; AddEmitProtocol(se.Name));</pre>
+<p>and, when we double click, the receptor iterates through semantic elements of 
+the protocol it is representing and issues carriers whose signal is the value 
+for that semantic element:</p>
+<pre>/// &lt;summary&gt;
+/// Emit a semantic protocol with the value in the selected row and the column determined by the semantic element name.
+/// &lt;/summary&gt;
+protected void OnCellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
+{
+  ISemanticTypeStruct st = rsys.SemanticTypeSystem.GetSemanticTypeStruct(ProtocolName);
+
+  st.SemanticElements.ForEach(se =&gt;
+  {
+     CreateCarrier(se.Name, signal =&gt; se.SetValue(rsys.SemanticTypeSystem, signal, dvSignals[e.RowIndex][se.Name].ToString()));
+  });
+}</pre>
+<p>In the
+<a href="http://www.codeproject.com/Articles/781135/APOD-Website-Scraper-a-HOPE-demonstration">
+APOD web scraper article</a>, I had created a simple receptor that listens for 
+the semantic type &quot;URL&quot; and launches the browser with that URL, so we can re-use 
+that receptor here:</p>
+<p><img border="0" src="feedreader9.png" width="547" height="318"></p>
+<p>Notice how we need only one URL receptor.&nbsp; Each membrane is made 
+permeable to the URL protocol:</p>
+<p><img border="0" src="feedreader10.png" width="365" height="132"></p>
+<p>This allows the URL protocol to permeate out of the membrane, thus connecting 
+the carrier list viewer (which at runtime configured itself as emitting the URL 
+protocol) to the URL receptor.&nbsp; Now we have two separate feed item lists 
+and a way to go to the feed item in the browser by double-clicking on an item in 
+either list.</p>
+<h3>Protocol Semantic Sub-Elements</h3>
+<p>A new feature in HOPE is the ability to create carriers on semantic elements 
+of a parent carrier.&nbsp; For example, because the protocol RSSFeedItem 
+contains the semantic element &quot;URL&quot;, when the &quot;RSSFeedItem&quot; signal is emitted, a 
+second carrier for the semantic element &quot;URL&quot; is created as well.&nbsp; When 
+this behavior of HOPE is enabled, you can immediately see the effects in our 
+current feed reader applet:</p>
+<p><img border="0" src="feedreader11.png" width="566" height="332"></p>
+<p>Notice the additional pathways from the Feed Reader Receptor directly to the 
+URL receptor.&nbsp; This feature is experimental but is definitely a useful and 
+quite interesting to explore the behavior of carrier protocol-signals.&nbsp; 
+Indeed, as it is implemented in the above configuration, this has the 
+interesting effect of opening every feed item's page in the browser.&nbsp; 
+However, this is not what we want, so instead, we'll create a child membrane 
+around just the feed readers to prevent the URL from permeating the membrane and 
+being received by the URL Receptor:</p>
+<p><img border="0" src="feedreader13.png" width="556" height="305"></p>
+<p>For each membrane around a Feed Reader Receptor, we configure it so that only 
+the RSSFeedItem protocol permeates the membrane.&nbsp; </p>
+<p><img border="0" src="feedreader12.png" width="369" height="112"></p>
+<p>This gives us the desired behavior -- only the Carrier List Viewer's emitting 
+of the &quot;URL&quot; protocol is received by the URL Receptor.</p>
+<h2>Applying Natural Language Processing to the Feed Items</h2>
+<p>The feature of creating carriers for semantic elements within a protocol can 
+be taken advantage of however by the NLP, for which we definitely do want 
+processing of each feed item's URL.&nbsp; As mentioned earlier, I'm using 
+AlchemyAPI as the NLP service.&nbsp; Notice that I combined the two feed readers 
+on the right into a single child membrane and how the Alchemy Receptor is now 
+associated to the Feed Reader receptors because the Alchemy Receptor is 
+listening for &quot;URL&quot; protocols:</p>
+<p><img border="0" src="feedreader14.png" width="656" height="379"></p>
+<p>Note that, because of how we've configured the feed readers into two separate 
+&quot;systems&quot;, it is not possible to have only a single Alchemy Receptor -- this 
+would require allowing the URL protocol to permeate the feed reader membrane, 
+which would then lead us back to the issue described earlier.&nbsp; However, is 
+this really an issue?&nbsp; In fact, not necessarily, especially if you consider 
+the advantages of a distributed system as well as leveraging asynchronous 
+behaviors.&nbsp; Furthermore, if the multiple instances are actually a problem, 
+at some point the HOPE framework may allow you to specify logical receptors, 
+which would then support a single instance (or more) in the underlying 
+implementation.</p>
+<h3>The Alchemy API Receptor Code</h3>
+<p>Alchemy API provides three results from the NLP in its more-or-less default 
+configuration: Entities, Keywords, and Concepts, each having unique attributes, 
+as illustrated in this screenshot from the article comparing three NLP services:</p>
+<p><img border="0" src="alchemy1.png" width="993" height="206"></p>
+<p>Salient points:</p>
+<ul>
+	<li>AlchemyAPI allows us to directly pass in the URL, as it has a built in 
+	content scraper.&nbsp; This saves us a lot of effort in either extracting 
+	the content ourselves (a daunting task) or using a third party service.&nbsp; 
+	</li>
+	<li>To acquire the entities, keywords, and concepts, we have to make three 
+	separate calls.&nbsp; Note how I'm increasing the limits of the entries 
+	returned (the default is 50) to the maximum, 250.&nbsp; </li>
+<li>Note that I have a &quot;TEST&quot; compiler conditional, as I don't want to hit 
+AlchemyAPI during testing of the entire applet, nor do I want to wait the 4 or 5 
+seconds it takes AlchemyAPI to return with the data.&nbsp; The test datasets 
+were previously acquired and serialized.&nbsp; </li>
+	<li>AlchemyAPI returns a very nicely formatted XML document that can be read 
+	directly into a .NET <code>DataSet</code>.&nbsp; I'm ignoring some of the information in 
+	that <code>DataSet</code>, which you may wish to explore.</li>
+</ul>
+<p>Here's the complete code for Alchemy Receptor:</p>
+<pre>public class Alchemy : BaseReceptor
+{
+  public override string Name { get { return &quot;Alchemy&quot;; } }
+  public override bool IsEdgeReceptor { get { return true; } }
+
+  protected AlchemyAPI.AlchemyAPI alchemyObj;
+
+  public Alchemy(IReceptorSystem rsys)
+    : base(rsys)
+  {
+    AddEmitProtocol(&quot;AlchemyEntity&quot;);
+    AddEmitProtocol(&quot;AlchemyKeyword&quot;);
+    AddEmitProtocol(&quot;AlchemyConcept&quot;);
+
+    AddReceiveProtocol(&quot;URL&quot;,
+      // cast is required to resolve Func vs. Action in parameter list.
+      (Action&lt;dynamic&gt;)(signal =&gt; ParseUrl(signal)));
+  }
+
+  public override void Initialize()
+  {
+    base.Initialize();
+    InitializeAlchemy();
+  }
+
+  protected void InitializeAlchemy()
+  {
+    alchemyObj = new AlchemyAPI.AlchemyAPI();
+    alchemyObj.LoadAPIKey(&quot;alchemyapikey.txt&quot;);
+  }
+
+  /// &lt;summary&gt;
+  /// Calls the AlchemyAPI to parse the URL. The results are 
+  /// emitted to an NLP Viewer receptor and to the database for
+  /// later querying.
+  /// &lt;/summary&gt;
+  /// &lt;param name=&quot;signal&quot;&gt;&lt;/param&gt;
+  protected async void ParseUrl(dynamic signal)
+  {
+    string url = signal.Value;
+
+    DataSet dsEntities = await Task.Run(() =&gt; { return GetEntities(url); });
+    DataSet dsKeywords = await Task.Run(() =&gt; { return GetKeywords(url); });
+    DataSet dsConcepts = await Task.Run(() =&gt; { return GetConcepts(url); });
+
+    dsEntities.Tables[&quot;entity&quot;].IfNotNull(t =&gt; Emit(&quot;AlchemyEntity&quot;, t));
+    dsKeywords.Tables[&quot;keyword&quot;].IfNotNull(t =&gt; Emit(&quot;AlchemyKeyword&quot;, t));
+    dsConcepts.Tables[&quot;concept&quot;].IfNotNull(t =&gt; Emit(&quot;AlchemyConcept&quot;, t));
+  }
+
+  protected void Emit(string protocol, DataTable data)
+  {
+    data.ForEach(row =&gt;
+      {
+        CreateCarrierIfReceiver(protocol, signal =&gt;
+          {
+            // Use the protocol as the driver of the fields we want to emit.
+            ISemanticTypeStruct st = rsys.SemanticTypeSystem.GetSemanticTypeStruct(protocol);
+            st.AllTypes.ForEach(se =&gt;
+              {
+                object val = row[se.Name];
+
+                if (val != null &amp;&amp; val != DBNull.Value)
+                {
+                  se.SetValue(rsys.SemanticTypeSystem, signal, val);
+                }
+              });
+          });
+      });
+  }
+
+  protected DataSet GetEntities(string url)
+  {
+    DataSet dsEntities = new DataSet();
+#if TEST
+    // Using previously captured dataset
+    dsEntities.ReadXml(&quot;alchemyEntityTestResponse.xml&quot;);
+#else
+    try
+    {
+      AlchemyAPI_EntityParams eparams = new AlchemyAPI_EntityParams();
+      eparams.setMaxRetrieve(250);
+      string xml = alchemyObj.URLGetRankedNamedEntities(url, eparams);
+      TextReader tr = new StringReader(xml);
+      XmlReader xr = XmlReader.Create(tr);
+      dsEntities.ReadXml(xr);
+      xr.Close();
+      tr.Close();
+    }
+    catch(Exception ex)
+    {
+      EmitException(&quot;Alchemy Receptor&quot;, ex);
+    }
+#endif
+    return dsEntities;
+  }
+
+  protected DataSet GetKeywords(string url)
+  {
+    DataSet dsKeywords = new DataSet();
+
+#if TEST
+    // Using previously captured dataset
+    dsKeywords.ReadXml(&quot;alchemyKeywordsTestResponse.xml&quot;);
+#else
+    try
+    {
+      AlchemyAPI_KeywordParams eparams = new AlchemyAPI_KeywordParams();
+      eparams.setMaxRetrieve(250);
+      string xml = alchemyObj.URLGetRankedKeywords(url);
+      TextReader tr = new StringReader(xml);
+      XmlReader xr = XmlReader.Create(tr);
+      dsKeywords.ReadXml(xr);
+      xr.Close();
+      tr.Close();
+    }
+    catch(Exception ex)
+    {
+      EmitException(&quot;Alchemy Receptor&quot;, ex);
+    }
+#endif
+    return dsKeywords;
+  }
+
+  protected DataSet GetConcepts(string url)
+  {
+    DataSet dsConcepts = new DataSet();
+
+#if TEST
+    // Using previously captured dataset
+    dsConcepts.ReadXml(&quot;alchemyConceptsTestResponse.xml&quot;);
+#else
+    try
+    {
+      AlchemyAPI_ConceptParams eparams = new AlchemyAPI_ConceptParams();
+      eparams.setMaxRetrieve(250);
+      string xml = alchemyObj.URLGetRankedConcepts(url);
+      TextReader tr = new StringReader(xml);
+      XmlReader xr = XmlReader.Create(tr);
+      dsConcepts.ReadXml(xr);
+      xr.Close();
+      tr.Close();
+    }
+    catch(Exception ex)
+    {
+      EmitException(&quot;Alchemy Receptor&quot;, ex);
+    }
+#endif
+    return dsConcepts;
+  }
+}</pre>
+<p>To display the results, we'll drop in Carrier List Viewer Receptors that list 
+the NLP results from all feeds:</p>
+<p><img border="0" src="feedreader15.png" width="672" height="493"></p>
+<p>To accomplish this, we need to allow the AlchemyEntity, AlchemyKeyword, and 
+AlchemyConcept protocols to permeate the membranes:</p>
+<p><img border="0" src="feedreader16.png" width="364" height="176"></p>
+<p>When we do this for both membranes surrounding the Alchemy Receptor, the 
+visualizer then shows us that the Alchemy receptor is emitting protocols that 
+the Carrier List Viewre Receptor is interested in.&nbsp; Each Carrier List 
+Viewer receptor on the bottom of the screenshot has been configured to receive 
+the respective protocol.</p>
+<p>Of course, we don't necessarily need to see all three types (entities, 
+keywords, concepts) - this all depends on how you'd like to configure the 
+applet.&nbsp; You'll note above that I'm using three separate list viewers, one 
+for each category of analysis.&nbsp; Later on I'll be using a tabbed list viewer 
+to manage all this information.</p>
+<h2>AlchemyAPI</h2>
+<p>This section specifically discusses the AlchemyAPI service.&nbsp; Not 
+everything that AlchemyAPI provides is discussed here -- just the most common 
+features.&nbsp; Specifically, &quot;sentiment&quot; and &quot;relationships&quot; are not covered, 
+but you can read more about those on the <a href="http://www.alchemyapi.com/">
+AlchemyAPI website</a>.</p>
+<p>Given a document or URL, you can extract the semantic meaning into three 
+categories: Entities, Keywords, and Concepts.</p>
+<h3>Entities</h3>
+<p><img border="0" src="entities1.png" width="439" height="242"></p>
+<p>AlchemyAPI returns the following information for each entity:</p>
+<p>text: this is the entity name (or, more specifically, the noun)</p>
+<p>type: AlchemyAPI attempts to determine the entity type, which includes such 
+labels as City, Company, Continent, Country, Crime, Degree, Facility, Field 
+Terminology, Geographic Feature, Holiday, Job Title, Person, Operating System, 
+Organization, PrintMedia, Product, Region, Sport, StateOrCounty, and Technology.&nbsp; 
+The complete list can be found
+<a href="http://www.alchemyapi.com/api/entity/types.html">here</a>.</p>
+<p>count: This is a count of the occurrences of the entity.&nbsp; This count 
+(common to all NLP's I've reviewed) utilizes a coreference feature called &quot;<a href="http://en.wikipedia.org/wiki/Anaphora_(linguistics)">anaphora 
+resolution</a>&quot;: &quot;In the sentence <i>Sally arrived, but nobody saw her</i>, the 
+pronoun <i>her</i> is anaphoric, referring back to <i>Sally</i>.&quot; (from 
+wikipedia)</p>
+<p>relevance: A relevance score from 0.0 - 1.0, where 1.0 is the most relevant.&nbsp; 
+According to Steve Herschleb, API Evangelist at AlchemyAPI: <i>&quot;<span id="__w2_dh3jKrB_toggle_link" href="http://www.quora.com/AlchemyAPI/How-is-relevance-value-calculated-for-each-keyword-in-a-web-page-by-AlchemyAPI#"><span id="ld_xurtnl_28291"><span id="ld_xurtnl_28293"><span class="inline_editor_value">The 
+relevance score for each keyword ranks the general importance of each extracted 
+keyword. How the score is actually calculate involves some pretty complex 
+statistics, but the algorithm includes things like the word's position within 
+the text, the other words around it, how many times it's used, etc.&quot; </span>
+</span></span></span></i>
+<span id="__w2_dh3jKrB_toggle_link" href="http://www.quora.com/AlchemyAPI/How-is-relevance-value-calculated-for-each-keyword-in-a-web-page-by-AlchemyAPI#">
+<span id="ld_xurtnl_28291"><span id="ld_xurtnl_28293">
+<span class="inline_editor_value">(<a href="http://www.quora.com/AlchemyAPI/How-is-relevance-value-calculated-for-each-keyword-in-a-web-page-by-AlchemyAPI">source</a> 
+from Quora website)</span></span></span></span></p>
+<h3>Keywords</h3>
+<p><img border="0" src="keywords1.png" width="380" height="354"></p>
+<p>Keywords consist of the keyword text and relevance.&nbsp; <i>&quot;Keywords are 
+the important topics in your content and can be used to index data, generate tag 
+clouds or for searching. AlchemyAPI's keyword extraction API is capable of 
+finding keywords in text and and ranking them. The sentiment can then be 
+determined for each extracted keyword.&quot;</i> (<a href="http://www.alchemyapi.com/products/features/keyword-extraction/">source</a>)&nbsp; 
+Note that I do not demonstrate sentiment in this applet -- performing sentiment 
+analysis is a separate call that counts as a &quot;transaction.&quot;</p>
+<h3>Concepts</h3>
+<p><img border="0" src="concepts1.png" width="710" height="309"></p>
+<p>Concepts are an interesting feature of AlchemyAPI: &quot;</p>
+<div class="two-thirds">
+	<i>&quot;AlchemyAPI employs sophisticated text analysis techniques to concept tag 
+	documents in a manner similar to how humans would identify concepts. The 
+	concept tagging API is capable of making high-level abstractions by 
+	understanding how concepts relate, and can identify concepts that aren't 
+	necessarily directly referenced in the text.&nbsp; For example, if an 
+	article mentions CERN and the Higgs boson, it will tag Large Hadron Collider 
+	as a concept even if the term is not mentioned explicitly in the page. By 
+	using concept tagging you can perform higher level analysis of your content 
+	than just basic keyword identification.&quot;</i> (<a href="http://www.alchemyapi.com/products/features/concept-tagging/">source</a>)</div>
+<p>One of the interesting things about AlchemyAPI's concepts is its data 
+linking.&nbsp; You can read more about Linked Data
+<a href="http://linkeddata.org/">here</a>.&nbsp; From the above screenshot, you 
+can see that there are three linked data results from
+<a href="http://dbpedia.org/About">DBpedia</a>,
+<a href="https://www.freebase.com/">Freebase</a>, and
+<a href="http://www.cyc.com/platform/opencyc">opencyc</a>.&nbsp; Depending on 
+the content, AlchemyAPI will link to several other knowledge bases as well.</p>
+<h3>AlchemyAPI Exceptions</h3>
+<p><img border="0" src="exceptions1.png" width="202" height="288"></p>
+<p>The exception routine in AlchemyAPI is rather poor -- it does not actually 
+report the error that the server produced, which is definitely part of the 
+resulting XML.&nbsp; </p>
+<p><img border="0" src="exceptions2.png" width="265" height="256"></p>
+<p>A simple modification provides a much more meaningful result (in 
+AlchemyAPI.cs, starting on line 955):</p>
+<pre>// OLD:
+/*
+if (status.InnerText != &quot;OK&quot;)
+{
+  System.ApplicationException ex = new System.ApplicationException (&quot;Error making API call.&quot;);
+
+  throw ex;
+}*/
+
+// MTC 7/14/2014
+// Much better, as it gives me the error message from the server.
+if (status.InnerText != &quot;OK&quot;)
+{
+  string errorMessage = &quot;Error making API call.&quot;;
+
+  try
+  {
+    XmlNode statusInfo = root.SelectSingleNode(&quot;/results/statusInfo&quot;);
+    errorMessage = statusInfo.InnerText;
+  }
+  catch
+  {
+    // some problem with the statusInfo. Return the generic message.
+  }
+
+  System.ApplicationException ex = new System.ApplicationException(errorMessage);
+
+  throw ex;
+}</pre>
+<h3>Caching Content</h3>
+<p>Ideally we don't want to repeatedly scrape the same pages so for the moment 
+(because I don't want to add the whole persistence piece in this article), I've 
+added a simple caching mechanism to avoid exceeding one's daily limit of 1000 
+transactions:</p>
+<pre>/// &lt;summary&gt;
+/// Return true if cached and populate the refenced DataSet parameter.
+/// &lt;/summary&gt;
+protected bool Cached(string prefix, string url, ref DataSet ds)
+{
+  string urlHash = url.GetHashCode().ToString();
+  string fn = prefix + &quot;-&quot; + urlHash + &quot;.xml&quot;;
+
+  bool cached = File.Exists(fn);
+
+  if (cached)
+  {
+    ds.ReadXml(fn);
+  }
+
+  return cached;
+}
+
+/// &lt;summary&gt;
+/// Cache the dataset.
+/// &lt;/summary&gt;
+protected void Cache(string prefix, string url, DataSet ds)
+{
+  string urlHash = url.GetHashCode().ToString();
+  string fn = prefix + &quot;-&quot; + urlHash + &quot;.xml&quot;;
+  ds.WriteXml(fn);
+}
+</pre>
+<p>This is only a temporary measure, true data persistence to a database will be 
+covered in part 2.</p>
+<h3>Content Limit Size</h3>
+<p><img border="0" src="alchemy2.png" width="345" height="98"></p>
+<p>An error that you may also get is &quot;content exceeds size limit&quot;.&nbsp; 
+According to Alchemy, the limit for the content size is ______________</p>
+<h2>More With Receptors</h2>
+<p>To achieve my primary goal in this article, filtering feeds from the NLP 
+results, we need to add some further behaviors, the first of which is simply a 
+tabbed list viewer receptor that will enable easier management of all these 
+lists. </p>
+<h3>Tabbed List Viewer Receptor</h3>
+<p>I'm not going to show the code (it's very similar to the Carrier List Viewer 
+Receptor above), instead I'll just walk through the configuration and usage.</p>
+<h4>Configuration</h4>
+<p><img border="0" src="feedreader17.png" width="478" height="293"></p>
+<p>After dropping the tabbed list viewer receptor onto the surface, we 
+double-click on it and configure the tabs we want and the protocols that it 
+lists.&nbsp; The astute reader may realize that this will not work for 
+RSSFeedItem protocols -- there is nothing to distinguish to feed items from one RSS feed from another.&nbsp; This can only be accomplished by qualifying the 
+signal's data, in this case with the feed name.&nbsp; This feature is not 
+currently implemented because it needs to be done in a general purpose manner.</p>
+<h4>Wiring it up</h4>
+<p>Once the protocols are defined, we can see how it is connected:</p>
+<p><img border="0" src="feedreader18.png" width="646" height="458"></p>
+<h4>Results</h4>
+<p>The NLP results now display in a tabbed list form rather than in discrete 
+list forms:</p>
+<p><img border="0" src="feedreader19.png" width="500" height="300"></p>
+<h3>Associating the URL with NLP Results</h3>
+<p>The NLP result isn't very useful by itself.&nbsp; We need to associate the 
+URL for each result, which we can do by adding the semantic element to the 
+Alchemy protocols:</p>
+<pre>&lt;SemanticElement Name=&quot;URL&quot;/&gt;</pre>
+<p>and of course assigning that property to each result record that is emitted 
+by the Alchemy Receptor:</p>
+<pre>signal.URL.Value = url;  // .Value because this is a semantic element and Value drills into the implementing native type.</pre>
+<p>Notice immediately what now happens:</p>
+<p><img border="0" src="feedReader20.png" width="667" height="509"></p>
+<p>Because the Alchemy protocols now include the semantic element &quot;URL&quot;, the 
+list viewer receptor and URL Receptor are now auto-magically wired up (well, it 
+was implemented in a couple lines of code, as illustrated above in the single 
+list viewer) such that, when the user double-clicks on an entry in the tabbed 
+viewer, it emits all known semantic elements, of which &quot;URL&quot; is one (and the 
+only one right now.)&nbsp; Again, the astute reader will say, &quot;but what about 
+the URL's that are part of the Linked Data content, such as DBpedia?&quot;&nbsp; And 
+that is a very good question which is not addressed in this article.</p>
+<p>As a side-note, the beauty of the HOPE architecture is illustrated in the 
+above behavior: the capability of the system is defined equally (if not more, 
+actually) by the semantics of the protocols -- the richer your semantics become, 
+the more interesting behaviors that can be created that work with those 
+semantics.</p>
+<h3>A Filter Receptor</h3>
+<p>We finally get to the crux of the matter -- filtering feeds based on the NLP 
+results.&nbsp; To make this somewhat sophisticated, I'm going to use the
+<a href="http://ncalc.codeplex.com/">NCalc Expression Evaluator</a> so that we 
+can do interesting things such as filtering entities or concepts not just by 
+keywords but by a relevance threshold as well.&nbsp; We'll do this as 
+generically as possible.&nbsp; First, the filtered protocol is emitted exactly 
+as received, however it is necessary to use a different semantic protocol to 
+avoid ambiguity between unfiltered and filtered results.&nbsp; To some extent, 
+this can be viewed as a potential flaw in the HOPE architecture, but this 
+problem is common in publisher/subscriber systems, which is one of aspect of 
+HOPE.&nbsp; We will look at this issue at some point in the future.</p>
+<h4>Configuration</h4>
+<p><img border="0" src="filter1.png" width="480" height="300"></p>
+<p>The above screenshot illustrates a sample configuration of filtering 
+protocols.&nbsp; Certainly, more filters on the same protocols (or other 
+protocols) can be added.</p>
+<p>We display the filtered list in a tabbed list view, configured as such:</p>
+<p><img border="0" src="filter2.png" width="480" height="300"></p>
+<h4>Wiring it up</h4>
+<p>Membranes are again used to ensure that protocols are received and emitted in 
+a controlled manner:</p>
+<p><img border="0" src="filter3.png" width="706" height="647"></p>
+<p>We can now view both unfiltered and filtered feed items.</p>
+<p><img border="0" src="alchemy3.png" width="692" height="400"></p>
+<h2>Conclusion</h2>
+<p>Natural Language Processing is a unique way of parsing &quot;big data&quot;, providing 
+semantic meaning suitable for potentially complex machine processing that 
+results in information specifically tailored for delivery to us humans.&nbsp; 
+However, such a lofty statement can only be achieved with the development of 
+algorithms that process this information into something that actually has 
+&quot;meaning.&quot;&nbsp; What I've demonstrated here is a very rudimentary process 
+little better than keyword filtering, but hopefully it may inspire someone to 
+use these services to develop the ideas further!&nbsp;&nbsp;&nbsp; </p>
+<p>While I've entangled the discussion of NLP with the Higher Order Programming 
+Environment framework, personally I hope this may be inspiring to others as well 
+to develop processing receptors and visualizations beyond simple lists.</p>
+<p>There is still more work to be done in this demo which will be the focus of 
+Part 2: persisting the NLP data to a database, querying, and improving the 
+usability such as displaying whether a feed item is new or has been already 
+read.</p>
+
+</body>
+
+</html>

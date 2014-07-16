@@ -9,10 +9,10 @@
               <ixm:UserConfigs>
                 <ixm:UserConfig Name="ProtocolTabs" Value="Entities,AlchemyEntity;Keywords,AlchemyKeyword;Concepts,AlchemyConcept" />
                 <ixm:UserConfig Name="WindowName" Value="Semantics" />
-                <ixm:UserConfig Name="WindowX" Value="840" />
-                <ixm:UserConfig Name="WindowY" Value="373" />
-                <ixm:UserConfig Name="WindowWidth" Value="0" />
-                <ixm:UserConfig Name="WindowHeight" Value="0" />
+                <ixm:UserConfig Name="WindowX" Value="886" />
+                <ixm:UserConfig Name="WindowY" Value="376" />
+                <ixm:UserConfig Name="WindowWidth" Value="894" />
+                <ixm:UserConfig Name="WindowHeight" Value="300" />
               </ixm:UserConfigs>
             </ixm:ReceptorDef>
             <ixm:ReceptorDef Name="Exceptions" AssemblyName="ExceptionReceptor.dll" Enabled="True" Location="493, 555" />
@@ -63,10 +63,10 @@
                   <ixm:Permeabilities>
                     <ixm:PermeabilityDef Protocol="RSSFeedItem" Direction="Out" Permeable="True" />
                     <ixm:PermeabilityDef Protocol="URL" Direction="Out" Permeable="False" />
+                    <ixm:PermeabilityDef Protocol="Exception" Direction="Out" Permeable="True" />
                     <ixm:PermeabilityDef Protocol="AlchemyEntity" Direction="Out" Permeable="True" />
                     <ixm:PermeabilityDef Protocol="AlchemyKeyword" Direction="Out" Permeable="True" />
                     <ixm:PermeabilityDef Protocol="AlchemyConcept" Direction="Out" Permeable="True" />
-                    <ixm:PermeabilityDef Protocol="Exception" Direction="Out" Permeable="True" />
                     <ixm:PermeabilityDef Protocol="URL" Direction="In" Permeable="False" />
                   </ixm:Permeabilities>
                 </ixm:MembraneDef>
@@ -92,13 +92,13 @@
                 <ixm:PermeabilityDef Protocol="AlchemyEntity" Direction="In" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="AlchemyKeyword" Direction="In" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="AlchemyConcept" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Exception" Direction="In" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="URL" Direction="Out" Permeable="True" />
                 <ixm:PermeabilityDef Protocol="AlchemyEntity" Direction="Out" Permeable="True" />
                 <ixm:PermeabilityDef Protocol="AlchemyKeyword" Direction="Out" Permeable="True" />
                 <ixm:PermeabilityDef Protocol="AlchemyConcept" Direction="Out" Permeable="True" />
                 <ixm:PermeabilityDef Protocol="RSSFeedItem" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="Exception" Direction="Out" Permeable="True" />
-                <ixm:PermeabilityDef Protocol="Exception" Direction="In" Permeable="False" />
               </ixm:Permeabilities>
               <ixm:Membranes>
                 <ixm:MembraneDef Name="">
@@ -120,10 +120,10 @@
                   <ixm:Permeabilities>
                     <ixm:PermeabilityDef Protocol="RSSFeedItem" Direction="Out" Permeable="True" />
                     <ixm:PermeabilityDef Protocol="URL" Direction="Out" Permeable="False" />
+                    <ixm:PermeabilityDef Protocol="Exception" Direction="Out" Permeable="True" />
                     <ixm:PermeabilityDef Protocol="AlchemyEntity" Direction="Out" Permeable="True" />
                     <ixm:PermeabilityDef Protocol="AlchemyKeyword" Direction="Out" Permeable="True" />
                     <ixm:PermeabilityDef Protocol="AlchemyConcept" Direction="Out" Permeable="True" />
-                    <ixm:PermeabilityDef Protocol="Exception" Direction="Out" Permeable="True" />
                     <ixm:PermeabilityDef Protocol="URL" Direction="In" Permeable="False" />
                   </ixm:Permeabilities>
                 </ixm:MembraneDef>
@@ -137,8 +137,8 @@
                   <ixm:UserConfigs>
                     <ixm:UserConfig Name="ProtocolTabs" Value="Entities,FilteredAlchemyEntity;Keywords,FilteredAlchemyKeyword;Concepts,FilteredAlchemyConcept" />
                     <ixm:UserConfig Name="WindowName" Value="Filtered Semantics" />
-                    <ixm:UserConfig Name="WindowX" Value="840" />
-                    <ixm:UserConfig Name="WindowY" Value="70" />
+                    <ixm:UserConfig Name="WindowX" Value="486" />
+                    <ixm:UserConfig Name="WindowY" Value="72" />
                     <ixm:UserConfig Name="WindowWidth" Value="0" />
                     <ixm:UserConfig Name="WindowHeight" Value="0" />
                   </ixm:UserConfigs>
@@ -149,6 +149,7 @@
                 <ixm:PermeabilityDef Protocol="AlchemyEntity" Direction="In" Permeable="True" />
                 <ixm:PermeabilityDef Protocol="AlchemyKeyword" Direction="In" Permeable="True" />
                 <ixm:PermeabilityDef Protocol="AlchemyConcept" Direction="In" Permeable="True" />
+                <ixm:PermeabilityDef Protocol="Exception" Direction="In" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="URL" Direction="Out" Permeable="True" />
                 <ixm:PermeabilityDef Protocol="FilteredAlchemyEntity" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="FilteredAlchemyKeyword" Direction="Out" Permeable="False" />
@@ -159,7 +160,7 @@
                   <ixm:Receptors>
                     <ixm:ReceptorDef Name="Filter" AssemblyName="FilterReceptor.dll" Enabled="True" Location="690, 568">
                       <ixm:UserConfigs>
-                        <ixm:UserConfig Name="ProtocolFilters" Value="AlchemyEntity~contains([text], 'Windows 8.1');AlchemyKeyword~contains([text], 'OpenGL');AlchemyConcept~contains([text], 'Linux')" />
+                        <ixm:UserConfig Name="ProtocolFilters" Value="AlchemyEntity~contains([text], 'Windows 8.1');AlchemyKeyword~contains([text], 'OpenGL');AlchemyConcept~contains([text], 'Linux');AlchemyConcept~[text]='Agile software development';AlchemyConcept~[text]='ARM architecture';AlchemyConcept~[text]='Cloud computing';AlchemyConcept~[text]='Concept';AlchemyConcept~[text]='software architecture';AlchemyConcept~[text]='Tesla';AlchemyEntity~contains([text], 'Linux');AlchemyEntity~contains([text], 'quantum');AlchemyEntity~contains[text], 'Raspberry Pi');AlchemyEntity~contains([text], 'BeagleBone')" />
                       </ixm:UserConfigs>
                     </ixm:ReceptorDef>
                   </ixm:Receptors>
