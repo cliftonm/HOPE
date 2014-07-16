@@ -878,12 +878,16 @@ namespace Clifton.MycroParser
 			//					((IMycroXaml)ret).Initialize(parent);
 			//				}
 
+			// TODO: Here we process attributes first, as some WinForm attributes, like Anchor, on child controls,
+			// requires that the parent attributes (such as Size) have already been set!!!
+			string refName = ProcessAttributes(node, ret, t);
+
 			// implements the class-property-class model
 			ProcessChildProperties(node, ret, t);
 
 			OnEndChildProcessing();
 
-			string refName = ProcessAttributes(node, ret, t);
+			// TODO: ProcessAttributes was here.
 
 			// Optimization, to remove SuspendLayout followed by ResumeLayout when no 
 			// properties are being set (the ref only has a Name attribute).

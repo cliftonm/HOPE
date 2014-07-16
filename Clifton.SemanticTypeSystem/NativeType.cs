@@ -22,6 +22,49 @@ namespace Clifton.SemanticTypeSystem
 		/// </summary>
 		public string ImplementingType { get; set; }
 
+		// TODO: We have "ImplementingType" property and "GetImplementingType" method.  UGLY!
+		public Type GetImplementingType(ISemanticTypeSystem sts)
+		{
+			switch (ImplementingType.ToLower())
+			{
+				case "string":
+					return typeof(string);
+				case "int":
+				case "integer":
+					return typeof(int);
+				case "uint":
+					return typeof(uint);
+				case "short":
+					return typeof(short);
+				case "ushort":
+					return typeof(ushort);
+				case "long":
+					return typeof(long);
+				case "ulong":
+					return typeof(ulong);
+				case "float":
+					return typeof(float);
+				case "double":
+					return typeof(double);
+				case "decimal":
+					return typeof(decimal);
+				case "bool":
+				case "boolean":
+					return typeof(bool);
+				case "datetime":
+					// TODO: Should be an ST made up of date/time, which themselves are ST's of day, month, year, hour, minute second?
+					return typeof(DateTime);
+				case "byte":
+					return typeof(byte);
+				case "sbyte":
+					return typeof(sbyte);
+				case "char":
+					return typeof(char);
+				default:
+					throw new ApplicationException("Unknown implementing type: " + ImplementingType);
+			}
+		}
+
 		/// <summary>
 		/// Returns the value of a native type for the specified dynamic instance.
 		/// </summary>

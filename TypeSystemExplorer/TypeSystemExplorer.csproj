@@ -197,6 +197,7 @@
     <Content Include="bin\Debug\12565.xml" />
     <Content Include="bin\Debug\94306.xml" />
     <Content Include="bin\Debug\about.xml" />
+    <Content Include="bin\Debug\alchemyapikey.txt" />
     <Content Include="bin\Debug\alchemyConceptsTestResponse.xml" />
     <Content Include="bin\Debug\alchemyEntityTestResponse.xml">
       <SubType>Designer</SubType>
@@ -221,11 +222,18 @@
     <Content Include="bin\Debug\carrier-test_select.xml" />
     <Content Include="bin\Debug\carrier-test_table_create.xml" />
     <Content Include="bin\Debug\carrier-test_update.xml" />
+    <Content Include="bin\Debug\CarrierListViewer.xml" />
+    <Content Include="bin\Debug\CarrierListViewerConfig.xml" />
+    <Content Include="bin\Debug\CarrierTabbedListViewer.xml" />
+    <Content Include="bin\Debug\CarrierTabbedListViewerConfig.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="bin\Debug\event_seed.xml" />
     <Content Include="bin\Debug\FeedItemList.xml" />
     <Content Include="bin\Debug\FeedReaderConfig.xml">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="bin\Debug\FilterConfig.xml" />
     <Content Include="bin\Debug\layout.xml" />
     <Content Include="bin\Debug\mainform.xml">
       <SubType>Designer</SubType>

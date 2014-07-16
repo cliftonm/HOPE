@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Clifton.MycroParser;
 using Clifton.SemanticTypeSystem.Interfaces;
 
 namespace Clifton.Receptor.Interfaces
@@ -34,6 +35,7 @@ namespace Clifton.Receptor.Interfaces
 		event EventHandler<EventArgs> EmitProtocolsChanged;
 
 		string Name { get; }
+		string Subname { get; }
 		bool IsEdgeReceptor { get; }
 		bool IsHidden { get; }
 		string ConfigurationUI { get; }
@@ -63,6 +65,19 @@ namespace Clifton.Receptor.Interfaces
 		/// Called on an individual receptor when it is dragged and dropped onto an existing surface.
 		/// </summary>
 		void EndSystemInit();
+
+
+		/// <summary>
+		/// Called when the user configurable items in a receptor instance have been updated by user or other action.
+		/// </summary>
+		void UserConfigurationUpdated();
+
+		/// <summary>
+		/// Called before the controls are populated, to give the receptor instance a chance to do other initialization 
+		/// of the configuration UI.
+		/// </summary>
+		/// <param name="mp"></param>
+		void PrepopulateConfig(Clifton.MycroParser.MycroParser mp);
 	}
 
 	public interface IReceptorSystem
@@ -137,6 +152,7 @@ namespace Clifton.Receptor.Interfaces
 		void RegisterReceptor(string name, IReceptorInstance instance);
 		void LoadReceptors(Action<IReceptor> afterRegister = null);
 		void ProcessQueuedCarriers();
+		void UpdatePermeability();
 		
 		IMembrane ParentMembrane { get; }
 		List<string> GetEmittedProtocols();

@@ -10,9 +10,6 @@
       <wf:TextBox def:Name="tbFeedName" Location="92, 20" Size="150, 20"/>
       <wf:Label Text="Feed URL:" Location="20, 48" Size="70, 15"/>
       <wf:TextBox def:Name="tbFeedUrl" Location="92, 45" Size="250, 20"/>
-      <wf:Label Text="Refresh Interval:" Location="20, 73" Size="85, 15"/>
-      <wf:TextBox def:Name="tbRefreshInterval" Location="107, 70" Size="50, 20"/>
-      <wf:Label Text="minutes" Location="160, 73" Size="60, 15"/>
       <wf:CheckBox def:Name="ckEnabled" Text="Enabled?" Location="20, 120" Size="80, 25"/>
       <wf:Button Text="Save" Location="360, 10" Size="80, 25" Click="OnReceptorConfigOK"/>
       <wf:Button Text="Cancel" Location="360, 40" Size="80, 25" Click="OnReceptorConfigCancel"/>
@@ -21,7 +18,6 @@
       <r:Entries>
         <r:PropertyControlEntry PropertyName="FeedUrl" ControlName="tbFeedUrl" ControlPropertyName="Text"/>
         <r:PropertyControlEntry PropertyName="FeedName" ControlName="tbFeedName" ControlPropertyName="Text"/>
-        <r:PropertyControlEntry PropertyName="RefreshInterval" ControlName="tbRefreshInterval" ControlPropertyName="Text"/>
       </r:Entries>
     </r:PropertyControlMap>
   </wf:Form>

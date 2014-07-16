@@ -20,6 +20,10 @@ Screenshots
 
 ![Membrane Computing](https://marcclifton.files.wordpress.com/2014/06/membranes.png)
 
+* Natural Language Processing of RSS Feeds
+
+![NLP](http://www.codeproject.com/KB/cs/797457/filter3.png)
+
 Demos
 ----
 
@@ -38,6 +42,7 @@ Read the articles:
  - [Introductory Article]
  - [APOD Scraper Article] 
  - [Hunt the Wumpus]
+ - [Semantic Web and Natural Language Processing]
 
 To Contribute
 ----
@@ -72,4 +77,5 @@ MIT
 [APOD Scraper Article]:http://www.codeproject.com/Articles/781135/APOD-Website-Scraper-a-HOPE-demonstration
 [Membrane Computing]:http://en.wikipedia.org/wiki/Membrane_computing
 [Hunt the Wumpus]:http://www.codeproject.com/Articles/786118/Hunt-the-Wumpus
+[Semantic Web and Natural Language Processing]:http://www.codeproject.com/Articles/797457/The-Semantic-Web-and-Natural-Language-Processing
 

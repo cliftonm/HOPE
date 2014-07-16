@@ -75,6 +75,12 @@
       </AttributeValues>
     </SemanticTypeDecl>
 
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="DataTable"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
     <!-- structs -->
 
     <SemanticTypeStruct DeclType="PrimaryKey">
@@ -126,6 +132,18 @@
         <!-- Schema is the name of the ST defining the recorset structure. -->
         <NativeType Name="Schema" ImplementingType="string"/>
         <NativeType Name="Records" ImplementingType="List&lt;dynamic&gt;"/>
+        <!-- Additional info provided by the source. -->
+        <NativeType Name="Tag" ImplementingType="string"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <SemanticTypeStruct DeclType="DataTable">
+      <Attributes>
+        <!-- Name is provided by the creator of the recordset as a helpful display hint. -->
+        <NativeType Name="Name" ImplementingType="string"/>
+        <!-- Schema is the name of the ST defining the recorset structure. -->
+        <NativeType Name="Schema" ImplementingType="string"/>
+        <NativeType Name="Records" ImplementingType="DataTable"/>
         <!-- Additional info provided by the source. -->
         <NativeType Name="Tag" ImplementingType="string"/>
       </Attributes>
@@ -894,11 +912,11 @@
     
     <SemanticTypeDecl OfType="Noun">
       <AttributeValues>
-        <Attribute Name="Name" Value="RSSFeedItem"/>
+        <Attribute Name="Name" Value="RSSFeedItemRecord"/>
       </AttributeValues>
     </SemanticTypeDecl>
 
-    <SemanticTypeStruct DeclType="RSSFeedItem">
+    <SemanticTypeStruct DeclType="RSSFeedItemRecord">
       <Attributes>
         <NativeType Name="RSSFeedID" ImplementingType="int"/>
         <NativeType Name="FeedItemID" ImplementingType="string"/>    <!-- ID from the feed item itself -->
@@ -928,11 +946,11 @@
 
     <SemanticTypeDecl OfType="Noun">
       <AttributeValues>
-        <Attribute Name="Name" Value="RSSFeedItemDisplay"/>
+        <Attribute Name="Name" Value="RSSFeedItem"/>
       </AttributeValues>
     </SemanticTypeDecl>
 
-    <SemanticTypeStruct DeclType="RSSFeedItemDisplay">
+    <SemanticTypeStruct DeclType="RSSFeedItem">
       <Attributes>
         <NativeType Name="FeedName" ImplementingType="string"/>
         <NativeType Name="Title" ImplementingType="string"/>
@@ -941,8 +959,6 @@
         <NativeType Name="Authors" ImplementingType="string"/>
         <NativeType Name="Categories" ImplementingType="string"/>
         <NativeType Name="PubDate" ImplementingType="DateTime"/>
-        <NativeType Name="NewItem" ImplementingType="bool"/>
-        <NativeType Name="ReadItem" ImplementingType="bool"/>
       </Attributes>
     </SemanticTypeStruct>
     
@@ -1086,5 +1102,108 @@
         <NativeType Name="EndingDate" ImplementingType="DateTime"/>
       </Attributes>
     </SemanticTypeStruct>
+
+    <!-- Exceptions -->
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="Exception"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="Exception">
+      <Attributes>
+        <NativeType Name="ReceptorName" ImplementingType="string"/>
+        <NativeType Name="Message" ImplementingType="string"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <!-- Alchemy types -->
+    
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="AlchemyEntity"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="AlchemyKeyword"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="AlchemyConcept"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="AlchemyEntity">
+      <Attributes>
+        <NativeType Name="text" ImplementingType="string"/>
+        <NativeType Name="type" ImplementingType="string"/>
+        <NativeType Name="count" ImplementingType="string"/>
+        <NativeType Name="relevance" ImplementingType="string"/>
+        <SemanticElement Name="URL"/>
+      </Attributes>
+    </SemanticTypeStruct>
+    <SemanticTypeStruct DeclType="AlchemyKeyword">
+      <Attributes>
+        <NativeType Name="text" ImplementingType="string"/>
+        <NativeType Name="relevance" ImplementingType="string"/>
+        <SemanticElement Name="URL"/>
+      </Attributes>
+    </SemanticTypeStruct>
+    <SemanticTypeStruct DeclType="AlchemyConcept">
+      <Attributes>
+        <NativeType Name="text" ImplementingType="string"/>
+        <NativeType Name="relevance" ImplementingType="string"/>
+        <NativeType Name="dbpedia" ImplementingType="string"/>
+        <NativeType Name="freebase" ImplementingType="string"/>
+        <NativeType Name="opencyc" ImplementingType="string"/>
+        <SemanticElement Name="URL"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="FilteredAlchemyEntity"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="FilteredAlchemyKeyword"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="FilteredAlchemyConcept"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="FilteredAlchemyEntity">
+      <Attributes>
+        <NativeType Name="text" ImplementingType="string"/>
+        <NativeType Name="type" ImplementingType="string"/>
+        <NativeType Name="count" ImplementingType="string"/>
+        <NativeType Name="relevance" ImplementingType="string"/>
+        <SemanticElement Name="URL"/>
+      </Attributes>
+    </SemanticTypeStruct>
+    <SemanticTypeStruct DeclType="FilteredAlchemyKeyword">
+      <Attributes>
+        <NativeType Name="text" ImplementingType="string"/>
+        <NativeType Name="relevance" ImplementingType="string"/>
+        <SemanticElement Name="URL"/>
+      </Attributes>
+    </SemanticTypeStruct>
+    <SemanticTypeStruct DeclType="FilteredAlchemyConcept">
+      <Attributes>
+        <NativeType Name="text" ImplementingType="string"/>
+        <NativeType Name="relevance" ImplementingType="string"/>
+        <NativeType Name="dbpedia" ImplementingType="string"/>
+        <NativeType Name="freebase" ImplementingType="string"/>
+        <NativeType Name="opencyc" ImplementingType="string"/>
+        <SemanticElement Name="URL"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
   </Collection>
 </SemanticTypes>

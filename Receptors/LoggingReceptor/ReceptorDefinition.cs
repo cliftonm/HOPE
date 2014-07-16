@@ -20,6 +20,7 @@ namespace LoggerReceptor
 		public ReceptorDefinition(IReceptorSystem rsys) : base(rsys)
 		{
 			AddReceiveProtocol("DebugMessage");
+			AddReceiveProtocol("Exception");
 			AddEmitProtocol("SystemMessage");
 		}
 
@@ -31,6 +32,12 @@ namespace LoggerReceptor
 				System.Diagnostics.Debug.WriteLine(msg);
 
 				Flyout(msg);
+			}
+			else if (carrier.Protocol.DeclTypeName == "Exception")
+			{
+				string m1 = carrier.Signal.ReceptorName;
+				string m2 = carrier.Signal.Message;
+				Flyout(m1+": "+m2);
 			}
 		}
 

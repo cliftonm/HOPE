@@ -669,6 +669,7 @@ namespace TypeSystemExplorer.Controllers
 
 			// Serialize membranes.
 
+			// Protocols for this membrane.
 			XmlNode permeabilities = xdoc.CreateElement("ixm", "Permeabilities", "TypeSystemExplorer.Models, TypeSystemExplorer");
 			membraneDefNode.AppendChild(permeabilities);
 
@@ -684,10 +685,7 @@ namespace TypeSystemExplorer.Controllers
 			// Recurse into child membranes (if they have receptors.)
 			m.Membranes.ForEach(innerMembrane =>
 				{
-					if (innerMembrane.Receptors.Count > 0)
-					{
-						SerializeMembrane(membraneDefNode, innerMembrane);
-					}
+					SerializeMembrane(membraneDefNode, innerMembrane);
 				});
 			
 		}
@@ -739,7 +737,7 @@ namespace TypeSystemExplorer.Controllers
 			membraneList.Add(Program.Skin);
 
 			VisualizerController.View.StartDrop = true;
-			VisualizerController.View.ShowMembranes = false;
+			VisualizerController.View.ShowMembranes = false;		// don't show membranes while we're loading the applet.  Causes problems because the model isn't fully loaded!
 			// Skin is the the root membrane.  It has no siblings.
 			DeserializeMembranes(applet.MembranesDef.Membranes[0], Program.Skin, membraneList);
 			VisualizerController.View.StartDrop = false;
@@ -946,6 +944,7 @@ namespace TypeSystemExplorer.Controllers
 #pragma warning restore 67
 
 		public string Name { get { return "System"; } }
+		public string Subname { get { return String.Empty; } }
 		public bool IsEdgeReceptor { get { return false; } }
 		public bool IsHidden { get { return true; } }
 		public string ConfigurationUI { get { return null; } }
@@ -974,6 +973,14 @@ namespace TypeSystemExplorer.Controllers
 		}
 
 		public void Terminate()
+		{
+		}
+
+		public void UserConfigurationUpdated()
+		{
+		}
+
+		public void PrepopulateConfig(MycroParser mp)
 		{
 		}
 
