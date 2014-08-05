@@ -1,13 +1,39 @@
 Higher Order Programming Environment
 =========
 
-What is the Higher Order Programming Environment?
+The Higher Order Programming Environment Concept
+---
 
-Hope is a "surface" enabling end-users to create user-specific applications from "receptor" components.
+The Higher Order Programming Environment is an architectural template for implementing end-user processes as finite automata (FA) in a 
+distributed computing space.  FA's inter-communicate with semanticized data, enabling the end-user to create unique and custom 
+computational stacks out of FA building blocks, called "receptors", which self-wire based on the semantic "interest" of each receptor 
+in the semantic information emitted by other receptors (similar to a pub-sub architecture.)  Applications developed in the HOPE architecture 
+are continually emergent in that new semantic types (and therefore concrete meaning) can be created from existing data and new computational 
+stacks can be constructed from existing and/or new receptors to work with new meaning (information.)  Unique ways of rendering information 
+can be immediately plugged into an existing computation stack, as rending, being just another kind of computation, is implemented as a receptor.  
+Text-to-speech, 2D and 3D modeling, language translation, charting, these are all ways that a user can dynamically create specialized user 
+interfaces for their individual needs.
 
-Typical applications have a limited surface area of functionality / behavior  -- in other words, applications are frequently very monolithic.  The user can only "extend" behavior by going outside of the application, either to the cloud or another desktop application.
+HOPE Application Development
+---
 
-Conversely, the Higher Order Programming Environment provides a dynamic, runtime, adaptive surface.  "Receptors" provide specific behaviors with which other receptors interact via "carriers" of information.  By "dropping" a customized configuration of receptors onto the surface, the end-user can create a behavior tailored specifically to his/her needs.  This behavior can be altered on-the-fly by introducing new receptors, removing existing ones, or re-organizing interactions within "membranes."
+Application development occurs in several tiers.  The underlying framework is open sourced, whereas receptor development can be either 
+contributed to the open source community or the receptor assembly sold commercially or held privately by individuals or corporations for their 
+proprietary use.  The framework and receptors are developed in the traditional software development process with programmers.  Conversely, 
+many HOPE application stacks can be implemented by users with little training, although complex stacks often utilize specialized application 
+stack consultants.  Being an open architecture, the end-user can also contract or hire in-house receptor developers, either for commercial 
+purposes or for propriety in-house algorithms.  Regardless, all communities can draw on the growing number of open-source receptors either 
+to use directly or to customize for their own purposes.
+
+HOPE Receptors
+---
+
+Receptors are semantic finite automata.  As in a pub-sub architecture, receptors inform a broker of semantic data in which the 
+receptor has interest.  Semantic information that is published by a receptor is automatically distributed to subscribing receptors.  
+However, the receptor can qualify acceptance of the information using non-static filters (dynamic filtering allows receptors to adjust for 
+overall internal and external system state.)  Furthermore, the broker can "emit" sub-components of a semantic structure to interested 
+subscriber receptors when the sub-component is itself semantic (as opposed to a native computer type.)  This enables unique computational stacks 
+on semantic subsets without having to specifically break apart the semantic structure into its components. 
 
 Screenshots
 ----
