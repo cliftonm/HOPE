@@ -38,7 +38,8 @@ namespace WeatherServiceReceptor
 
 		public ReceptorDefinition(IReceptorSystem rsys) : base(rsys)
 		{
-			AddReceiveProtocol("Zipcode");
+			AddReceiveProtocol("Zipcode");		// We can receive a zipcode from some external source.
+			AddEmitProtocol("Zipcode");			// We also emit a zipcode because we may be configured to process a zipcode on startup, in which case we need to initiate getting the city, state.
 			AddEmitProtocol("TextToSpeech");
 			AddEmitProtocol("WeatherInfo");
 		}
@@ -51,8 +52,8 @@ namespace WeatherServiceReceptor
 			{
 				// Send to zipcode service
 				CreateCarrier("Zipcode", signal => signal.Value = Zipcode);
-				// Since we also receive this protocol, we do not need to explictly process the zipcode!
-				// ProcessZipcode(Zipcode);
+				// We need to process the zipcode as well since we don't receive carriers that we also emit.
+				ProcessZipcode(Zipcode);
 			}
 		}
 

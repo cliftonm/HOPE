@@ -1248,8 +1248,10 @@ namespace TypeSystemExplorer.Views
 
 		protected void MouseEnterEvent(object sender, EventArgs args)
 		{
+			// Replaced by Brad Smith's "Making the MouseWheel event conform to user's expections:
+			// http://www.brad-smith.info/blog/archives/635
 			// We need to set focus to the control otherwise we don't get mouse wheel events.
-			Focus();
+			// Focus();
 		}
 
 		protected void MouseWheelEvent(object sender, MouseEventArgs args)
