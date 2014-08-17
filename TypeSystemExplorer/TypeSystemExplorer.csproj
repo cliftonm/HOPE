@@ -266,7 +266,9 @@
     </Content>
     <Content Include="bin\Debug\symbolTable.xml" />
     <Content Include="bin\Debug\test types with line.xml" />
-    <Content Include="bin\Debug\visualizer.xml" />
+    <Content Include="bin\Debug\visualizer.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="bin\Debug\xmlEditor.xml">
       <SubType>Designer</SubType>
     </Content>
