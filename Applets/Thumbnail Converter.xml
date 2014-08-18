@@ -4,19 +4,26 @@
       <ixm:Membranes>
         <ixm:MembraneDef Name="Skin">
           <ixm:Receptors>
-            <ixm:ReceptorDef Name="Thumbnail Converter" AssemblyName="ThumbnailCreatorReceptor.dll" Enabled="True" Location="191, 214" />
+            <ixm:ReceptorDef Name="Thumbnail Converter" AssemblyName="ThumbnailCreatorReceptor.dll" Enabled="True" Location="191, 214">
+              <ixm:UserConfigs>
+                <ixm:UserConfig Name="MaxSize" Value="1024" />
+              </ixm:UserConfigs>
+            </ixm:ReceptorDef>
             <ixm:ReceptorDef Name="Thumbnail Viewer" AssemblyName="ThumbnailViewerReceptor.dll" Enabled="True" Location="362, 219" />
           </ixm:Receptors>
           <ixm:Permeabilities>
             <ixm:PermeabilityDef Protocol="DebugMessage" Direction="Out" Permeable="False" />
             <ixm:PermeabilityDef Protocol="ThumbnailImage" Direction="Out" Permeable="False" />
-            <ixm:PermeabilityDef Protocol="ImageFilename" Direction="Out" Permeable="False" />
             <ixm:PermeabilityDef Protocol="SystemShowImage" Direction="Out" Permeable="False" />
             <ixm:PermeabilityDef Protocol="ViewImage" Direction="Out" Permeable="False" />
             <ixm:PermeabilityDef Protocol="GetImageMetadata" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="ImageFilename" Direction="Out" Permeable="False" />
           </ixm:Permeabilities>
         </ixm:MembraneDef>
       </ixm:Membranes>
     </ixm:MembranesDef>
+    <ixm:CarriersDef>
+      <ixm:Carriers />
+    </ixm:CarriersDef>
   </ixm:Applet>
 </MycroXaml>

@@ -20,13 +20,18 @@ namespace ThumbnailCreatorReceptor
 	public class ReceptorDefinition : BaseReceptor
 	{
 		public override string Name { get { return "Thumbnail Converter"; } }
-		
+		public override string ConfigurationUI { get { return "ThumbnailConverterConfig.xml"; } }
+
+		[UserConfigurableProperty("Max Size:")]
+		public int MaxSize { get; set; }
+																								
 		public ReceptorDefinition(IReceptorSystem rsys) : base(rsys)
 		{
 			this.rsys = rsys;
 			AddReceiveProtocol("ImageFilename");
 			AddEmitProtocol("DebugMessage");
 			AddEmitProtocol("ThumbnailImage", false);
+			MaxSize = 320;
 		}
 
 		protected void ProcessImage(object state)
@@ -35,7 +40,7 @@ namespace ThumbnailCreatorReceptor
 
 			Bitmap bitmap = new Bitmap(fn);
 			// Reduce the size of the image.  If we don't do this, scrolling and rendering of scaled images is horrifically slow.
-			Image image = new Bitmap(bitmap, 1024, 1024 * bitmap.Height / bitmap.Width);
+			Image image = new Bitmap(bitmap, MaxSize, MaxSize * bitmap.Height / bitmap.Width);
 			image.Tag = fn;
 			bitmap.Dispose();
 
