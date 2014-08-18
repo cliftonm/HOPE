@@ -41,7 +41,6 @@ namespace HuntTheWumpus
 			form.Location = new Point(600, 100);
 			form.Size = new Size(320, 130);
 			form.StartPosition = FormStartPosition.Manual;
-			form.TopMost = true;
 
 			moveButtons = new Button[3] { new Button(), new Button(), new Button() };
 			shootButtons = new Button[3] { new Button(), new Button(), new Button() };

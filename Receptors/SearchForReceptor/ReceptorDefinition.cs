@@ -35,7 +35,6 @@ namespace SearchForReceptor
 			form.Text = "Search For:";
 			form.Location = new Point(100, 100);
 			form.Size = new Size(500, 60);
-			form.TopMost = true;
 			tb = new TextBox();
 			tb.KeyPress += OnKeyPress;
 			form.Controls.Add(tb);

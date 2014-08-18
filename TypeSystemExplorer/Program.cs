@@ -45,6 +45,20 @@ namespace TypeSystemExplorer
 		}
 	}
 
+
+	// Register a "drop" receptor used exclusively for dropping messages onto a membrane.
+	// This allows us to have a separate receptor from "System" and therefore 
+	public class DropReceptor : BaseReceptor
+	{
+		public override string Name { get { return "DropReceptor"; } }
+		public override bool IsHidden { get { return true; } }
+
+		public DropReceptor(IReceptorSystem rsys)
+			: base(rsys)
+		{
+		}
+	}
+
 	static class Program
 	{
 		public static Form MainForm;
@@ -57,6 +71,7 @@ namespace TypeSystemExplorer
 		// The outermost membrane is called the "skin."
 
 		public static Membrane Skin;
+		public static DropReceptor DropReceptor;
 
 		// TODO: Eventually put this somewhere.
 		public static Dictionary<IReceptor, List<IReceptor>> MasterReceptorConnectionList = new Dictionary<IReceptor, List<IReceptor>>();
@@ -73,6 +88,9 @@ namespace TypeSystemExplorer
 				Skin.Name = "Skin";
 				// Receptors = new ReceptorsContainer();
 				// Receptors.SemanticTypeSystem = SemanticTypeSystem;
+
+				DropReceptor = new DropReceptor(Skin.ReceptorSystem);
+				// Program.Skin.RegisterReceptor("DropReceptor", dr);
 
 				Application.EnableVisualStyles();
 				Application.SetCompatibleTextRenderingDefault(false);

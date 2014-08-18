@@ -241,13 +241,22 @@ namespace Clifton.Receptor.Interfaces
 		/// <summary>
 		/// Add protocol that this receptor emits.
 		/// </summary>
-		protected virtual void AddEmitProtocol(string p)
+		protected virtual void AddEmitProtocol(string p, bool processInternalSemanticElements = true)
 		{
 			if (!emitProtocols.Contains(p))
 			{
 				emitProtocols.Add(p);
 				EmitProtocolsChanged.Fire(this, EventArgs.Empty);
-				AddInternalSemanticElements(p);
+
+				// Kludge to allow a receptor to specify that internal semantic elements of a protocol
+				// should not be processed.  ThumbnailCreatorReceptor and ThumbnailViewerReceptor are 
+				// good use cases for this, as otherwise an infinite loop will occur between the two,
+				// as the creator also would emit the SE "ImageFilename" and the viewer emits "ImageFilename"
+				// as part of the SE's ViewImage and GetImageMetadata 
+				if (processInternalSemanticElements)
+				{
+					AddInternalSemanticElements(p);
+				}
 			}
 		}
 

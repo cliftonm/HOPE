@@ -49,6 +49,8 @@ namespace Clifton.Receptor
 
 		public IReceptor this[string name] { get { return receptorSystem[name]; } }
 
+		public IReceptorSystem ReceptorSystem { get { return receptorSystem; } }
+
 		protected ReceptorsContainer receptorSystem;
 		protected ISemanticTypeSystem semanticTypeSystem;
 

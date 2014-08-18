@@ -19,8 +19,8 @@ namespace ThumbnailViewerReceptor
 		{
 			AddReceiveProtocol("ThumbnailImage");
 			AddEmitProtocol("SystemShowImage");
-			AddEmitProtocol("ViewImage");
-			AddEmitProtocol("GetImageMetadata");
+			AddEmitProtocol("ViewImage", false);
+			AddEmitProtocol("GetImageMetadata", false);
 		}
 
 		public override void ProcessCarrier(ICarrier carrier)

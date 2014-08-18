@@ -460,7 +460,7 @@ namespace Clifton.Receptor
 
 		// TODO: This code needs to be optimized.
 		/// <summary>
-		/// Returns the target receptors that are will receive the carrier protocol, qualified by the receptor's optional condition on the signal.
+		/// Returns the target receptors that will receive the carrier protocol, qualified by the receptor's optional condition on the signal.
 		/// </summary>
 		protected List<IReceptor> GetTargetReceptorsFor(IReceptor from, ICarrier carrier)
 		{

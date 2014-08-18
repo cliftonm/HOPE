@@ -278,7 +278,7 @@ namespace TypeSystemExplorer.Views
 	public class VisualizerView : UserControl
 	{
 		const int RenderTime = 120;
-		const int CarrierTime = 5; // 5 for 1/4 second delay, 25 for 1 second delay.  50 for 2 second delay.
+		const int CarrierTime = 25; // 5 for 1/4 second delay, 25 for 1 second delay.  50 for 2 second delay.
 		const int OrbitCountMax = 50;
 		const int MetadataHeight = 15;	// the row height for metadata text.
 		const int MembraneNubRadius = 10;
@@ -787,7 +787,7 @@ namespace TypeSystemExplorer.Views
 			// TODO: We need to check if any receptors exist and whether any are hidden or not.  If it's hidden, then we don't create a carrier animation instance.
 			if (!ApplicationController.GetReceiveProtocols().Select(rp=>rp.Protocol).Contains(e.Carrier.Protocol.DeclTypeName))
 			{
-				if (e.From == Program.Skin["System"].Instance)
+				if (e.From == Program.Skin["DropReceptor"].Instance)
 				{
 					Point p = dropPoint;
 					
@@ -801,7 +801,17 @@ namespace TypeSystemExplorer.Views
 				}
 				else
 				{
-					Point p = receptorLocation.Single(kvp => kvp.Key.Instance == e.From).Value;
+					Point p;
+
+					try
+					{
+						p = receptorLocation.Single(kvp => kvp.Key.Instance == e.From).Value;
+					}
+					catch (Exception ex)
+					{
+						throw new ApplicationException("Receptor " + e.From.Name + " should exist but it does not.");
+					}
+
 					p.Offset((int)(ReceptorSize.Width * Math.Cos(Math.PI * 2.0 * orbitCount / OrbitCountMax)) - 3, (int)(ReceptorSize.Height * Math.Sin(Math.PI * 2.0 * orbitCount / OrbitCountMax)) - 3);
 					carrierAnimations.Add(new CarrierAnimationItem() { StartPosition = p, Carrier = e.Carrier });
 					orbitCount = (orbitCount + 1) % OrbitCountMax;

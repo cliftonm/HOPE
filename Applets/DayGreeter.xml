@@ -11,22 +11,34 @@
             </ixm:ReceptorDef>
             <ixm:ReceptorDef Name="Text Display" AssemblyName="TextDisplayReceptor.dll" Enabled="True" Location="274, 102" />
             <ixm:ReceptorDef Name="Text To Speech" AssemblyName="TextToSpeechReceptor.dll" Enabled="True" Location="245, 171" />
-            <ixm:ReceptorDef Name="Zip Code Service" AssemblyName="ZipCodeReceptor.dll" Enabled="True" Location="167, 248" />
-            <ixm:ReceptorDef Name="Weather Service" AssemblyName="WeatherServiceReceptor.dll" Enabled="True" Location="425, 212">
+            <ixm:ReceptorDef Name="Zip Code Service" AssemblyName="ZipCodeReceptor.dll" Enabled="False" Location="167, 248" />
+            <ixm:ReceptorDef Name="Weather Service" AssemblyName="WeatherServiceReceptor.dll" Enabled="False" Location="425, 212">
               <ixm:UserConfigs>
                 <ixm:UserConfig Name="Zipcode" Value="12565" />
               </ixm:UserConfigs>
             </ixm:ReceptorDef>
             <ixm:ReceptorDef Name="Weather Info" AssemblyName="WeatherInfoReceptor.dll" Enabled="True" Location="328, 312" />
+            <ixm:ReceptorDef Name="Thumbnail Converter" AssemblyName="ThumbnailCreatorReceptor.dll" Enabled="True" Location="270, 406" />
+            <ixm:ReceptorDef Name="Thumbnail Viewer" AssemblyName="ThumbnailViewerReceptor.dll" Enabled="True" Location="390, 409" />
           </ixm:Receptors>
           <ixm:Permeabilities>
             <ixm:PermeabilityDef Protocol="Text" Direction="Out" Permeable="False" />
             <ixm:PermeabilityDef Protocol="Location" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="Zipcode" Direction="Out" Permeable="False" />
             <ixm:PermeabilityDef Protocol="TextToSpeech" Direction="Out" Permeable="False" />
             <ixm:PermeabilityDef Protocol="WeatherInfo" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="DebugMessage" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="ThumbnailImage" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="ImageFilename" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="SystemShowImage" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="ViewImage" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="GetImageMetadata" Direction="Out" Permeable="False" />
           </ixm:Permeabilities>
         </ixm:MembraneDef>
       </ixm:Membranes>
     </ixm:MembranesDef>
+    <ixm:CarriersDef>
+      <ixm:Carriers />
+    </ixm:CarriersDef>
   </ixm:Applet>
 </MycroXaml>

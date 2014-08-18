@@ -63,6 +63,7 @@ namespace TypeSystemExplorer.Controllers
 			// documentControllerMap = new DiagnosticDictionary<IDockContent, NotecardController>("DocumentControllerMap");
 			RegisterUserStateOperations();
 			Program.Skin.RegisterReceptor("System", this);
+			Program.Skin.RegisterReceptor("DropReceptor", Program.DropReceptor);
 			Program.Skin.NewMembrane += OnNewMembrane;
 		}
 
@@ -72,6 +73,7 @@ namespace TypeSystemExplorer.Controllers
 		protected void OnNewMembrane(object sender, MembraneEventArgs e)
 		{
 			e.Membrane.RegisterReceptor("System", this);
+			e.Membrane.RegisterReceptor("DropReceptor", Program.DropReceptor);
 			e.Membrane.NewMembrane += OnNewMembrane;
 			e.Membrane.LoadReceptors();				// finish initializing the system receptor.
 		}
@@ -178,6 +180,7 @@ namespace TypeSystemExplorer.Controllers
 			{
 				LoadXml("protocols.xml");
 				Program.Skin.RegisterReceptor("System", this);
+				Program.Skin.RegisterReceptor("DropReceptor", Program.DropReceptor);
 			}
 		}
 
@@ -774,7 +777,7 @@ namespace TypeSystemExplorer.Controllers
 
 						if (inMembrane != null)
 						{
-							inMembrane.CreateCarrier(Program.Skin["System"].Instance, protocol, signal);
+							inMembrane.CreateCarrier(Program.Skin["DropReceptor"].Instance, protocol, signal);
 						}
 						else
 						{

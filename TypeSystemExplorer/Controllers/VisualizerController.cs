@@ -86,7 +86,7 @@ namespace TypeSystemExplorer.Controllers
 						ISemanticTypeStruct protocol = Program.SemanticTypeSystem.GetSemanticTypeStruct("ImageFilename");
 						dynamic signal = Program.SemanticTypeSystem.Create("ImageFilename");
 						signal.Filename = fn;
-						dropInto.CreateCarrier(Program.Skin["System"].Instance, protocol, signal);
+						dropInto.CreateCarrier(Program.Skin["DropReceptor"].Instance, protocol, signal);
 					}
 					else if (fn.ToLower().EndsWith(".xml"))
 					{
@@ -168,7 +168,7 @@ namespace TypeSystemExplorer.Controllers
 					}
 				});
 
-				ICarrier carrier = dropInto.CreateCarrier(Program.Skin["System"].Instance, protocol, signal);
+				ICarrier carrier = dropInto.CreateCarrier(Program.Skin["DropReceptor"].Instance, protocol, signal);
 				carriers[protocol.DeclTypeName] = carrier;
 			});
 		}

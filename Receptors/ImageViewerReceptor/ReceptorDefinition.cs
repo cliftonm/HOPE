@@ -27,7 +27,6 @@ namespace ImageViewerReceptor
 			form.Text = fn;
 			form.Location = new Point(100, 100);
 			form.Size = new Size(400, 400);
-			form.TopMost = true;
 			PictureBox pb = new PictureBox();
 			form.Controls.Add(pb);
 			pb.Dock = DockStyle.Fill;
