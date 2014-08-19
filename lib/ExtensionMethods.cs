@@ -176,6 +176,21 @@ namespace Clifton.ExtensionMethods
 			}
 		}
 
+		public static void ForEachWithIndexUntil<T>(this IEnumerable<T> collection, Action<T, int> action, Func<T, int, bool> until)
+		{
+			int n = 0;
+
+			foreach (var item in collection)
+			{
+				if (until(item, n))
+				{
+					break;
+				}
+
+				action(item, n++);
+			}
+		}
+
 		/// <summary>
 		/// Executes the "elseAction" if the collection is empty.
 		/// </summary>

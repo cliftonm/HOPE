@@ -65,6 +65,9 @@ namespace Clifton.Receptor.Interfaces
 		protected Dictionary<string, Gate> gates;
 		protected Dictionary<string, CompositeGate> compositeGates;
 
+		protected bool receptorInitialized;
+		protected bool systemInitialized;
+
 		public virtual IReceptorSystem ReceptorSystem
 		{
 			get { return rsys; }
@@ -87,6 +90,7 @@ namespace Clifton.Receptor.Interfaces
 		/// </summary>
 		public virtual void Initialize()
 		{
+			receptorInitialized = true;
 		}
 
 		/// <summary>
@@ -124,6 +128,7 @@ namespace Clifton.Receptor.Interfaces
 		/// </summary>
 		public virtual void EndSystemInit()
 		{
+			systemInitialized = true;
 		}
 
 		/// <summary>

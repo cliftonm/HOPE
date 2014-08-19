@@ -33,6 +33,7 @@ namespace FeedReaderReceptor
 		public FeedReader(IReceptorSystem rsys)
 			: base(rsys)
 		{
+			AddReceiveProtocol("RSSFeedUrl", (Action<dynamic>)(s => ProcessUrl(s)));
 			AddEmitProtocol("RSSFeedItem");
 			AddEmitProtocol("Exception");
 		}
@@ -53,6 +54,22 @@ namespace FeedReaderReceptor
 		{
 			base.UserConfigurationUpdated();
 			AcquireFeed();
+		}
+
+		protected async void ProcessUrl(dynamic signal)
+		{
+			string feedUrl = signal.FeedUrl.Value;
+			int numItems = signal.MaxItems;
+
+			try
+			{
+				SyndicationFeed feed = await GetFeedAsync(feedUrl);
+				EmitFeedItems(feed, numItems);
+			}
+			catch (Exception ex)
+			{
+				EmitException(ex);
+			}
 		}
 
 		/// <summary>
@@ -94,9 +111,12 @@ namespace FeedReaderReceptor
 		/// <summary>
 		/// Emits only new feed items for display.
 		/// </summary>
-		protected void EmitFeedItems(SyndicationFeed feed)
+		protected void EmitFeedItems(SyndicationFeed feed, int maxItems = Int32.MaxValue)
 		{
-			feed.Items.ForEach(item =>
+			// Allow -1 to also represent max items.
+			int max = (maxItems == -1 ? Int32.MaxValue : maxItems);
+
+			feed.Items.ForEachWithIndexUntil((item, idx) =>
 				{
 					CreateCarrier("RSSFeedItem", signal =>
 						{
@@ -108,7 +128,7 @@ namespace FeedReaderReceptor
 							signal.Categories = String.Join(", ", item.Categories.Select(c => c.Name).ToArray());
 							signal.PubDate = item.PublishDate.LocalDateTime;
 						});
-				});
+				}, ((item, idx) => idx >= max));
 		}
 /*
 		protected void EmitFeedItemUrl(SyndicationFeed feed, string feedItemID)

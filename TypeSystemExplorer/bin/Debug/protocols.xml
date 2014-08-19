@@ -36,6 +36,13 @@
 
     <SemanticTypeDecl OfType="Noun">
       <AttributeValues>
+        <Attribute Name="Name" Value="FeedUrl"/>
+        <Attribute Name="Value"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
         <Attribute Name="Name" Value="ImageFilename"/>
         <Attribute Name="Value"/>
       </AttributeValues>
@@ -90,6 +97,12 @@
     </SemanticTypeStruct>
 
     <SemanticTypeStruct DeclType="URL">
+      <Attributes>
+        <NativeType Name="Value" ImplementingType="string"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+    <SemanticTypeStruct DeclType="FeedUrl">
       <Attributes>
         <NativeType Name="Value" ImplementingType="string"/>
       </Attributes>
@@ -954,14 +967,28 @@
       <Attributes>
         <NativeType Name="FeedName" ImplementingType="string"/>
         <NativeType Name="Title" ImplementingType="string"/>
-        <SemanticElement Name="URL"/> <!-- the link -->
+        <SemanticElement Name="URL"/> <!-- the link TODO: This should be an RSSFeedUrl SE to give it full semantic meaning.-->
         <NativeType Name="Description" ImplementingType="string"/>
         <NativeType Name="Authors" ImplementingType="string"/>
         <NativeType Name="Categories" ImplementingType="string"/>
         <NativeType Name="PubDate" ImplementingType="DateTime"/>
       </Attributes>
     </SemanticTypeStruct>
-    
+
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="RSSFeedUrl"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="RSSFeedUrl">
+      <Attributes>
+        <SemanticElement Name="FeedUrl"/>
+        <NativeType Name="MaxItems" ImplementingType="int"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
+
     <!-- Alchemy Schema -->
 
     <SemanticTypeDecl OfType="Noun">

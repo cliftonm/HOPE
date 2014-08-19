@@ -15,24 +15,50 @@ namespace DayGreeterReceptor
 		public override string Name { get { return "Day Greeter"; } }
 		public override string ConfigurationUI { get { return "DayGreeterConfig.xml"; } }
 
+		protected string greeterText;
+
 		[UserConfigurableProperty("Greeter Text:")]
-		public string GreeterText { get; set; }
+		public string GreeterText 
+		{
+			get { return greeterText; }
+			set
+			{
+				greeterText = value;
+
+				if (systemInitialized)
+				{
+					ProcessGreeterText();
+				}
+			}
+		}
 
 		public DayGreeter(IReceptorSystem rsys)						   
 			: base(rsys)
 		{
 			AddEmitProtocol("Text");
+			AddEmitProtocol("RSSFeedUrl");
+			AddReceiveProtocol("RSSFeedItem", (Action<dynamic>)(s => ProcessFeedItem(s)));
 		}
 
 		public override void EndSystemInit()
 		{
 			base.EndSystemInit();
+			ProcessGreeterText();
+		}
 
+		protected void ProcessGreeterText()
+		{
 			if (!String.IsNullOrEmpty(GreeterText))
 			{
 				string msg = Parse(GreeterText);
 				CreateCarrier("TextToSpeech", signal => signal.Text = msg);
 			}
+		}
+
+		protected void ProcessFeedItem(dynamic signal)
+		{
+			string title = signal.Title;
+			CreateCarrier("TextToSpeech", outsig => outsig.Text = title);
 		}
 
 		// Tokens we know about so far:
@@ -43,6 +69,7 @@ namespace DayGreeterReceptor
 		// [hour12] 12 hour format hour of now.
 		// [minute] the minute of now.
 		// [ampm] "AM" or "PM" text.
+		// [feed:url,5] to parse a feed with optional items.
 		protected string Parse(string text)
 		{
 			StringBuilder sb = new StringBuilder();
@@ -54,7 +81,8 @@ namespace DayGreeterReceptor
 				string tokenValue = "";
 				DateTime now = DateTime.Now;
 
-				switch (token.ToLower())
+				// token is stripped of optional parameters that follow after the ':'
+				switch (token.ToLower().LeftOf(':'))
 				{
 					case "dayperiod":
 						if (now.Hour < 12)
@@ -95,6 +123,25 @@ namespace DayGreeterReceptor
 					case "ampm":
 						tokenValue = ((now.Hour >=12) ? "PM" : "AM");
 						break;
+
+					case "feed":
+						{
+							// left of ','
+							string url = token.RightOf(':').LeftOf(',');
+							int numItems = Int32.MaxValue;
+							
+							if (token.Contains(","))
+							{
+								numItems = Convert.ToInt32(token.RightOf(','));
+								CreateCarrier("RSSFeedUrl", signal =>
+									{
+										signal.FeedUrl.Value = url;
+										signal.MaxItems = numItems;
+									});
+							}
+
+							break;
+						}
 				}
 
 				sb.Append(left);

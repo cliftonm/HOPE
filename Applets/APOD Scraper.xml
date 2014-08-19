@@ -14,7 +14,11 @@
               <ixm:Receptors>
                 <ixm:ReceptorDef Name="SQLite Persistor" AssemblyName="PersistenceReceptor.dll" Enabled="True" Location="503, 511" />
                 <ixm:ReceptorDef Name="APOD" AssemblyName="APODScraperReceptor.dll" Enabled="True" Location="605, 444" />
-                <ixm:ReceptorDef Name="Thumbnail Converter" AssemblyName="ThumbnailCreatorReceptor.dll" Enabled="True" Location="581, 275" />
+                <ixm:ReceptorDef Name="Thumbnail Converter" AssemblyName="ThumbnailCreatorReceptor.dll" Enabled="True" Location="581, 275">
+                  <ixm:UserConfigs>
+                    <ixm:UserConfig Name="MaxSize" Value="320" />
+                  </ixm:UserConfigs>
+                </ixm:ReceptorDef>
                 <ixm:ReceptorDef Name="Image Viewer" AssemblyName="ImageViewerReceptor.dll" Enabled="True" Location="752, 317" />
                 <ixm:ReceptorDef Name="Webpage Scraper" AssemblyName="WebPageScraperReceptor.dll" Enabled="True" Location="698, 556" />
                 <ixm:ReceptorDef Name="Interval Timer" AssemblyName="TimerReceptor.dll" Enabled="True" Location="457, 330" />
