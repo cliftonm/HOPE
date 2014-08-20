@@ -1,4 +1,6 @@
-﻿using System;
+﻿//#define SIMULATED
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
@@ -60,11 +62,12 @@ namespace FeedReaderReceptor
 		{
 			string feedUrl = signal.FeedUrl.Value;
 			int numItems = signal.MaxItems;
+			string tag = signal.Tag;
 
 			try
 			{
 				SyndicationFeed feed = await GetFeedAsync(feedUrl);
-				EmitFeedItems(feed, numItems);
+				EmitFeedItems(feed, numItems, tag);
 			}
 			catch (Exception ex)
 			{
@@ -96,6 +99,9 @@ namespace FeedReaderReceptor
 		/// </summary>
 		protected async Task<SyndicationFeed> GetFeedAsync(string feedUrl)
 		{
+#if SIMULATED
+			return null;
+#else
 			SyndicationFeed feed = await Task.Run(() =>
 				{
 					XmlReader xr = XmlReader.Create(feedUrl);
@@ -106,17 +112,34 @@ namespace FeedReaderReceptor
 				});
 
 			return feed;
+#endif
 		}
 
 		/// <summary>
 		/// Emits only new feed items for display.
 		/// </summary>
-		protected void EmitFeedItems(SyndicationFeed feed, int maxItems = Int32.MaxValue)
+		protected void EmitFeedItems(SyndicationFeed feed, int maxItems = Int32.MaxValue, string tag = "")
 		{
+#if SIMULATED
+			CreateCarrier("RSSFeedItem", signal =>
+				{
+					signal.FeedName = FeedName;
+					signal.Title = "Test Title";
+					signal.URL.Value = "http://test";
+					signal.Description = "Test Description";
+					signal.Authors = "";
+					signal.Categories = "";
+					signal.PubDate = DateTime.Now;
+					signal.Tag = tag;
+					signal.MofN.M = 1;
+					signal.MofN.N = 1;
+				});
+#else
 			// Allow -1 to also represent max items.
-			int max = (maxItems == -1 ? Int32.MaxValue : maxItems);
+			int max = (maxItems == -1 ? feed.Items.Count() : maxItems);
+			max = Math.Min(max, feed.Items.Count());		// Which ever is less.
 
-			feed.Items.ForEachWithIndexUntil((item, idx) =>
+			feed.Items.ForEachWithIndexOrUntil((item, idx) =>
 				{
 					CreateCarrier("RSSFeedItem", signal =>
 						{
@@ -127,8 +150,12 @@ namespace FeedReaderReceptor
 							signal.Authors = String.Join(", ", item.Authors.Select(a => a.Name).ToArray());
 							signal.Categories = String.Join(", ", item.Categories.Select(c => c.Name).ToArray());
 							signal.PubDate = item.PublishDate.LocalDateTime;
+							signal.Tag = tag;
+							signal.MofN.M = idx + 1;
+							signal.MofN.N = max;
 						});
 				}, ((item, idx) => idx >= max));
+#endif
 		}
 /*
 		protected void EmitFeedItemUrl(SyndicationFeed feed, string feedItemID)

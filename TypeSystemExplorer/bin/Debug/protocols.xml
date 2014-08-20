@@ -963,6 +963,19 @@
       </AttributeValues>
     </SemanticTypeDecl>
 
+    <SemanticTypeDecl OfType="Noun">
+      <AttributeValues>
+        <Attribute Name="Name" Value="MofN"/>
+      </AttributeValues>
+    </SemanticTypeDecl>
+
+    <SemanticTypeStruct DeclType="MofN">
+      <Attributes>
+        <NativeType Name="M" ImplementingType="int"/>
+        <NativeType Name="N" ImplementingType="int"/>
+      </Attributes>
+    </SemanticTypeStruct>
+
     <SemanticTypeStruct DeclType="RSSFeedItem">
       <Attributes>
         <NativeType Name="FeedName" ImplementingType="string"/>
@@ -972,6 +985,8 @@
         <NativeType Name="Authors" ImplementingType="string"/>
         <NativeType Name="Categories" ImplementingType="string"/>
         <NativeType Name="PubDate" ImplementingType="DateTime"/>
+        <NativeType Name="Tag" ImplementingType="string"/>
+        <SemanticElement Name="MofN"/>
       </Attributes>
     </SemanticTypeStruct>
 
@@ -985,6 +1000,7 @@
       <Attributes>
         <SemanticElement Name="FeedUrl"/>
         <NativeType Name="MaxItems" ImplementingType="int"/>
+        <NativeType Name="Tag" ImplementingType="string"/>
       </Attributes>
     </SemanticTypeStruct>
 

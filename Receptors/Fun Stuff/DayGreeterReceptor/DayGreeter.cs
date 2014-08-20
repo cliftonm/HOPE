@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 
@@ -16,6 +17,8 @@ namespace DayGreeterReceptor
 		public override string ConfigurationUI { get { return "DayGreeterConfig.xml"; } }
 
 		protected string greeterText;
+		// Handles responses that should be grouped together and not emitted until all responses have been received.
+		protected Dictionary<string, StringBuilder> groups;
 
 		[UserConfigurableProperty("Greeter Text:")]
 		public string GreeterText 
@@ -38,6 +41,8 @@ namespace DayGreeterReceptor
 			AddEmitProtocol("Text");
 			AddEmitProtocol("RSSFeedUrl");
 			AddReceiveProtocol("RSSFeedItem", (Action<dynamic>)(s => ProcessFeedItem(s)));
+
+			groups = new Dictionary<string, StringBuilder>();
 		}
 
 		public override void EndSystemInit()
@@ -58,7 +63,26 @@ namespace DayGreeterReceptor
 		protected void ProcessFeedItem(dynamic signal)
 		{
 			string title = signal.Title;
-			CreateCarrier("TextToSpeech", outsig => outsig.Text = title);
+			string tag = signal.Tag;
+
+			if (groups.ContainsKey(tag))
+			{
+				groups[tag].Append(title);
+				groups[tag].Append("\r\n");
+				int m = signal.MofN.M;
+				int n = signal.MofN.N;
+
+				// Have all items been received for this feed?
+				if (m == n)
+				{
+					CreateCarrier("TextToSpeech", outsig => outsig.Text = groups[tag].ToString());
+					groups.Remove(tag);
+				}
+			}
+			else
+			{
+				CreateCarrier("TextToSpeech", outsig => outsig.Text = title);
+			}
 		}
 
 		// Tokens we know about so far:
@@ -73,6 +97,9 @@ namespace DayGreeterReceptor
 		protected string Parse(string text)
 		{
 			StringBuilder sb = new StringBuilder();
+			StringBuilder sbGroup = null;
+			bool inGroup = false;
+			Guid groupGuid = Guid.Empty;
 
 			while (text.Contains("["))
 			{
@@ -112,12 +139,37 @@ namespace DayGreeterReceptor
 						break;
 
 					case "hour12":
-						int h = now.Hour % 12;
-						tokenValue = NumWordsWrapper(h);
+						int h = now.Hour;
+
+						if (h == 0)
+						{
+							// midnight to 0:59 is, for example "oh thirty" for 0:30
+							tokenValue = "oh";
+						}
+						else if (h == 12)
+						{
+							// specific case for noon to 12:59.
+							tokenValue = "twelve";
+						}
+						else
+						{
+							// Otherwise, back to 1-11.
+							tokenValue = NumWordsWrapper(h % 12);
+						}
 						break;
 
 					case "minute":
-						tokenValue = NumWordsWrapper(now.Minute);
+						if (now.Minute > 0)
+						{
+							tokenValue = NumWordsWrapper(now.Minute);
+
+							// No minutes reported at all if exactly 0, example: nine AM for 9:00
+							if (now.Minute < 10)
+							{
+								// oh-five, so we output, for example: "nine oh five" for 9:05.
+								tokenValue = "oh " + tokenValue;
+							}
+						}
 						break;
 
 					case "ampm":
@@ -137,15 +189,39 @@ namespace DayGreeterReceptor
 									{
 										signal.FeedUrl.Value = url;
 										signal.MaxItems = numItems;
+										signal.Tag = groupGuid.ToString();
 									});
 							}
 
 							break;
 						}
+					
+					case "group":
+						// Everything in this section will be rendered once the request (which we don't know what it is, but there needs to be one)
+						// is completed.
+						inGroup = true;
+						groupGuid = Guid.NewGuid();
+						sbGroup = new StringBuilder();
+						break;
+
+					case "/group":
+						left = left.Trim();			// Remove any CRLF's.  TODO: Kludgy!  
+						inGroup = false;
+						groups[groupGuid.ToString()] = sbGroup;
+						break;
 				}
 
-				sb.Append(left);
-				sb.Append(tokenValue);
+				if (inGroup)
+				{
+					sbGroup.Append(left);
+					sbGroup.Append(tokenValue);
+				}
+				else
+				{
+					sb.Append(left);
+					sb.Append(tokenValue);
+				}
+
 				text = text.RightOf("]");
 			}
 
@@ -160,17 +236,19 @@ namespace DayGreeterReceptor
 			string words = "";
 			double intPart;
 			double decPart = 0;
+			
 			if (n == 0)
+			{
 				return "zero";
-			try
-			{
-				string[] splitter = n.ToString().Split('.');
-				intPart = double.Parse(splitter[0]);
-				decPart = double.Parse(splitter[1]);
 			}
-			catch
+
+			string[] splitter = n.ToString().Split('.');
+			intPart = double.Parse(splitter[0]);
+
+			if (splitter.Length == 2)
 			{
-				intPart = n;
+				// We have a fractional component.
+				decPart = double.Parse(splitter[1]);
 			}
 
 			words = NumWords(intPart);
@@ -211,6 +289,7 @@ namespace DayGreeterReceptor
 
 			int power = (suffixesArr.Length + 1) * 3;
 
+			// TODO: Clean this up - it should be resolvable without resorting to a while loop!
 			while (power > 3)
 			{
 				double pow = Math.Pow(10, power);
@@ -228,8 +307,10 @@ namespace DayGreeterReceptor
 				}
 				power -= 3;
 			}
+
 			if (n >= 1000)
 			{
+				// TODO: Gross.  this should be cleaner.
 				if (n % 1000 > 0) words += NumWords(Math.Floor(n / 1000)) + " thousand, ";
 				else words += NumWords(Math.Floor(n / 1000)) + " thousand";
 				n %= 1000;
@@ -241,6 +322,9 @@ namespace DayGreeterReceptor
 					words += NumWords(Math.Floor(n / 100)) + " hundred";
 					n %= 100;
 				}
+
+				// TODO: Why no "and" here if we say "five hundred [and] ..."
+
 				if ((int)n / 10 > 1)
 				{
 					if (words != "")
@@ -250,7 +334,7 @@ namespace DayGreeterReceptor
 					n %= 10;
 				}
 
-				if (n < 20)
+				if ( (n < 20) && (n > 0) )		// 20, 30, 40, 50, etc... do not have further components.
 				{
 					if (words != "" && tens == false)
 						words += " ";

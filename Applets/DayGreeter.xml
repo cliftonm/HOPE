@@ -6,18 +6,18 @@
           <ixm:Receptors>
             <ixm:ReceptorDef Name="Day Greeter" AssemblyName="DayGreeterReceptor.dll" Enabled="True" Location="98, 138">
               <ixm:UserConfigs>
-                <ixm:UserConfig Name="GreeterText" Value="Good [dayperiod].  Today is [dayofweek], [month] [dateofmonth], [hour12] [minute] [ampm].&#xD;&#xA;World News:&#xD;&#xA;[feed:http://www.npr.org/rss/rss.php?id=1004,5]&#xD;&#xA;&#xD;&#xA;US News:&#xD;&#xA;[feed:http://www.npr.org/rss/rss.php?id=1003,5]&#xD;&#xA;&#xD;&#xA;Space:&#xD;&#xA;[feed:http://www.npr.org/rss/rss.php?id=1026,5]&#xD;&#xA;&#xD;&#xA;Technology:&#xD;&#xA;[feed:http://feeds.arstechnica.com/arstechnica/index,10]&#xD;&#xA;" />
+                <ixm:UserConfig Name="GreeterText" Value="Good [dayperiod].  Today is [dayofweek], [month] [dateofmonth], [hour12] [minute] [ampm].&#xD;&#xA;[group]&#xD;&#xA;&#xD;&#xA;World News:&#xD;&#xA;[feed:http://www.npr.org/rss/rss.php?id=1004,5]&#xD;&#xA;[/group][group]&#xD;&#xA;&#xD;&#xA;US News:&#xD;&#xA;[feed:http://www.npr.org/rss/rss.php?id=1003,5]&#xD;&#xA;[/group][group]&#xD;&#xA;&#xD;&#xA;Space:&#xD;&#xA;[feed:http://www.npr.org/rss/rss.php?id=1026,5]&#xD;&#xA;[/group][group]&#xD;&#xA;&#xD;&#xA;Technology:&#xD;&#xA;[feed:http://feeds.arstechnica.com/arstechnica/index,10]&#xD;&#xA;[/group]" />
               </ixm:UserConfigs>
             </ixm:ReceptorDef>
-            <ixm:ReceptorDef Name="Text Display" AssemblyName="TextDisplayReceptor.dll" Enabled="True" Location="311, 103" />
-            <ixm:ReceptorDef Name="Text To Speech" AssemblyName="TextToSpeechReceptor.dll" Enabled="True" Location="221, 207" />
+            <ixm:ReceptorDef Name="Text Display" AssemblyName="TextDisplayReceptor.dll" Enabled="True" Location="425, 51" />
+            <ixm:ReceptorDef Name="Text To Speech" AssemblyName="TextToSpeechReceptor.dll" Enabled="True" Location="264, 136" />
             <ixm:ReceptorDef Name="Zip Code Service" AssemblyName="ZipCodeReceptor.dll" Enabled="True" Location="467, 315" />
-            <ixm:ReceptorDef Name="Weather Service" AssemblyName="WeatherServiceReceptor.dll" Enabled="True" Location="425, 212">
+            <ixm:ReceptorDef Name="Weather Service" AssemblyName="WeatherServiceReceptor.dll" Enabled="False" Location="376, 204">
               <ixm:UserConfigs>
                 <ixm:UserConfig Name="Zipcode" Value="12565" />
               </ixm:UserConfigs>
             </ixm:ReceptorDef>
-            <ixm:ReceptorDef Name="Weather Info" AssemblyName="WeatherInfoReceptor.dll" Enabled="True" Location="328, 312" />
+            <ixm:ReceptorDef Name="Weather Info" AssemblyName="WeatherInfoReceptor.dll" Enabled="True" Location="510, 154" />
             <ixm:ReceptorDef Name="Thumbnail Converter" AssemblyName="ThumbnailCreatorReceptor.dll" Enabled="True" Location="270, 406">
               <ixm:UserConfigs>
                 <ixm:UserConfig Name="MaxSize" Value="320" />
@@ -25,13 +25,14 @@
             </ixm:ReceptorDef>
             <ixm:ReceptorDef Name="Thumbnail Viewer" AssemblyName="ThumbnailViewerReceptor.dll" Enabled="True" Location="390, 409" />
             <ixm:ReceptorDef Name="Feed Reader" AssemblyName="FeedReaderReceptor.dll" Enabled="True" Location="76, 232" />
-            <ixm:ReceptorDef Name="Exceptions" AssemblyName="ExceptionReceptor.dll" Enabled="True" Location="150, 300" />
+            <ixm:ReceptorDef Name="Exceptions" AssemblyName="ExceptionReceptor.dll" Enabled="True" Location="254, 287" />
           </ixm:Receptors>
           <ixm:Permeabilities>
             <ixm:PermeabilityDef Protocol="Text" Direction="Out" Permeable="False" />
             <ixm:PermeabilityDef Protocol="RSSFeedUrl" Direction="Out" Permeable="False" />
             <ixm:PermeabilityDef Protocol="FeedUrl" Direction="Out" Permeable="False" />
             <ixm:PermeabilityDef Protocol="Location" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="Exception" Direction="Out" Permeable="False" />
             <ixm:PermeabilityDef Protocol="Zipcode" Direction="Out" Permeable="False" />
             <ixm:PermeabilityDef Protocol="TextToSpeech" Direction="Out" Permeable="False" />
             <ixm:PermeabilityDef Protocol="WeatherInfo" Direction="Out" Permeable="False" />
@@ -42,7 +43,7 @@
             <ixm:PermeabilityDef Protocol="GetImageMetadata" Direction="Out" Permeable="False" />
             <ixm:PermeabilityDef Protocol="RSSFeedItem" Direction="Out" Permeable="False" />
             <ixm:PermeabilityDef Protocol="URL" Direction="Out" Permeable="False" />
-            <ixm:PermeabilityDef Protocol="Exception" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="MofN" Direction="Out" Permeable="False" />
           </ixm:Permeabilities>
         </ixm:MembraneDef>
       </ixm:Membranes>

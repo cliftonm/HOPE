@@ -84,34 +84,37 @@ namespace ZipCodeReceptor
 		{
 			AddReceiveProtocol("Zipcode");
 			AddEmitProtocol("Location");
+			AddEmitProtocol("Exception");
 		}
 
 		public override async void ProcessCarrier(ICarrier carrier)
 		{
-			Tuple<string, string> location = await Task.Run(() =>
+			try
+			{
+				Tuple<string, string> location = await Task.Run(() =>
 				{
 					string city = String.Empty;
 					string stateAbbr = String.Empty;
 
-					try
-					{
 						string zipcode = carrier.Signal.Value;
 						USZip zip = new USZip();
 						XmlNode node = zip.GetInfoByZIP(zipcode);
 						XDocument zxdoc = XDocument.Parse(node.InnerXml);
 						city = zxdoc.Element("Table").Element("CITY").Value;
 						stateAbbr = zxdoc.Element("Table").Element("STATE").Value;
-					}
-					catch (Exception ex)
-					{
-						// TODO: Log exception.
-						// Occasionally this web service will crash.
-					}
+						return new Tuple<string, string>(city, stateAbbr);
 
-					return new Tuple<string, string>(city, stateAbbr);
 				});
 
-			Emit(carrier.Signal.Value, location.Item1, location.Item2);
+				Emit(carrier.Signal.Value, location.Item1, location.Item2);
+			}
+			catch (Exception ex)
+			{
+				// Catch must happen on the main thread so that when we emit the exception, it is handled on the main thread.
+				// TODO: Carriers should be able to be on their own threads and receceptors should indicate whether the 
+				// action needs to be marshalled onto the main application thread.
+				EmitException(ex);
+			}
 		}
 
 		protected void Emit(string zipCode, string city, string stateAbbr)

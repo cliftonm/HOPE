@@ -176,7 +176,7 @@ namespace Clifton.ExtensionMethods
 			}
 		}
 
-		public static void ForEachWithIndexUntil<T>(this IEnumerable<T> collection, Action<T, int> action, Func<T, int, bool> until)
+		public static void ForEachWithIndexOrUntil<T>(this IEnumerable<T> collection, Action<T, int> action, Func<T, int, bool> until)
 		{
 			int n = 0;
 

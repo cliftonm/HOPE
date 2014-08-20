@@ -42,6 +42,7 @@ namespace WeatherServiceReceptor
 			AddEmitProtocol("Zipcode");			// We also emit a zipcode because we may be configured to process a zipcode on startup, in which case we need to initiate getting the city, state.
 			AddEmitProtocol("TextToSpeech");
 			AddEmitProtocol("WeatherInfo");
+			AddEmitProtocol("Exception");
 		}
 
 		public override void EndSystemInit()
@@ -91,14 +92,14 @@ namespace WeatherServiceReceptor
 			}
 			catch (Exception ex)
 			{
-				Say("We're sorry, there's a problem with response from NOAA.");
+				EmitException(ex);
 				
 				return;
 			}
 
 			if (xdoc == null)
 			{
-				Say("Bad zip code.");
+				EmitException(new Exception("Bad zipcode: "+zipcode));
 			}
 
 			ISemanticTypeStruct outProtocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct("WeatherInfo");
@@ -147,7 +148,7 @@ namespace WeatherServiceReceptor
 			}
 			catch (Exception ex)
 			{
-				Say("We're sorry, there's a problem with response from NOAA.");
+				EmitException(ex);
 
 				return;
 			}
