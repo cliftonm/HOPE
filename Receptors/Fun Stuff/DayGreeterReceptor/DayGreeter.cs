@@ -68,7 +68,7 @@ namespace DayGreeterReceptor
 			if (groups.ContainsKey(tag))
 			{
 				groups[tag].Append(title);
-				groups[tag].Append("\r\n");
+				groups[tag].Append(".\r\n");
 				int m = signal.MofN.M;
 				int n = signal.MofN.N;
 

@@ -23,7 +23,7 @@ namespace TextToSpeech
 		{
 			speechSynth = new SpeechSynthesizer();
 			speechSynth.SpeakCompleted += OnSpeakCompleted;
-			speechSynth.Rate = 0; // -4;
+			speechSynth.Rate = -2; // -4;
 			speechQueue = new Queue<string>();
 
 			AddReceiveProtocol("TextToSpeech");
