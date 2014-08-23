@@ -1,0 +1,148 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Hope by cliftonm</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1 class="header">Hope</h1>
+        <p class="header">Higher-Order Programming Environment</p>
+
+        <ul>
+          <li class="download"><a class="buttons" href="https://github.com/cliftonm/HOPE/zipball/master">Download ZIP</a></li>
+          <li class="download"><a class="buttons" href="https://github.com/cliftonm/HOPE/tarball/master">Download TAR</a></li>
+          <li><a class="buttons github" href="https://github.com/cliftonm/HOPE">View On GitHub</a></li>
+        </ul>
+
+        <p class="header">This project is maintained by <a class="header name" href="https://github.com/cliftonm">cliftonm</a></p>
+
+
+      </header>
+      <section>
+        <h1>
+<a name="higher-order-programming-environment" class="anchor" href="#higher-order-programming-environment"><span class="octicon octicon-link"></span></a>Higher Order Programming Environment</h1>
+
+<h2>
+<a name="the-higher-order-programming-environment-concept" class="anchor" href="#the-higher-order-programming-environment-concept"><span class="octicon octicon-link"></span></a>The Higher Order Programming Environment Concept</h2>
+
+<p>The Higher Order Programming Environment is an architectural template for implementing end-user processes as finite automata (FA) in a 
+distributed computing space.  FA's inter-communicate with semanticized data, enabling the end-user to create unique and custom 
+computational stacks out of FA building blocks, called "receptors", which self-wire based on the semantic "interest" of each receptor 
+in the semantic information emitted by other receptors (similar to a pub-sub architecture.)  Applications developed in the HOPE architecture 
+are continually emergent in that new semantic types (and therefore concrete meaning) can be created from existing data and new computational 
+stacks can be constructed from existing and/or new receptors to work with new meaning (information.)  Unique ways of rendering information 
+can be immediately plugged into an existing computation stack, as rending, being just another kind of computation, is implemented as a receptor.<br>
+Text-to-speech, 2D and 3D modeling, language translation, charting, these are all ways that a user can dynamically create specialized user 
+interfaces for their individual needs.</p>
+
+<h2>
+<a name="hope-application-development" class="anchor" href="#hope-application-development"><span class="octicon octicon-link"></span></a>HOPE Application Development</h2>
+
+<p>Application development occurs in several tiers.  The underlying framework is open sourced, whereas receptor development can be either 
+contributed to the open source community or the receptor assembly sold commercially or held privately by individuals or corporations for their 
+proprietary use.  The framework and receptors are developed in the traditional software development process with programmers.  Conversely, 
+many HOPE application stacks can be implemented by users with little training, although complex stacks often utilize specialized application 
+stack consultants.  Being an open architecture, the end-user can also contract or hire in-house receptor developers, either for commercial 
+purposes or for propriety in-house algorithms.  Regardless, all communities can draw on the growing number of open-source receptors either 
+to use directly or to customize for their own purposes.</p>
+
+<h2>
+<a name="hope-receptors" class="anchor" href="#hope-receptors"><span class="octicon octicon-link"></span></a>HOPE Receptors</h2>
+
+<p>Receptors are semantic finite automata.  As in a pub-sub architecture, receptors inform a broker of semantic data in which the 
+receptor has interest.  Semantic information that is published by a receptor is automatically distributed to subscribing receptors.<br>
+However, the receptor can qualify acceptance of the information using non-static filters (dynamic filtering allows receptors to adjust for 
+overall internal and external system state.)  Furthermore, the broker can "emit" sub-components of a semantic structure to interested 
+subscriber receptors when the sub-component is itself semantic (as opposed to a native computer type.)  This enables unique computational stacks 
+on semantic subsets without having to specifically break apart the semantic structure into its components. </p>
+
+<h2>
+<a name="screenshots" class="anchor" href="#screenshots"><span class="octicon octicon-link"></span></a>Screenshots</h2>
+
+<ul>
+<li>An APOD website scraper applet:</li>
+</ul><p><img src="http://www.codeproject.com/KB/cs/781135/M33.png" alt="APOD Viewer"></p>
+
+<ul>
+<li>Membrane Computing (release 6-9-2014):</li>
+</ul><p><img src="https://marcclifton.files.wordpress.com/2014/06/membranes.png" alt="Membrane Computing"></p>
+
+<ul>
+<li>Natural Language Processing of RSS Feeds</li>
+</ul><p><img src="http://www.codeproject.com/KB/cs/797457/filter3.png" alt="NLP"></p>
+
+<h2>
+<a name="demos" class="anchor" href="#demos"><span class="octicon octicon-link"></span></a>Demos</h2>
+
+<p>Watch the videos:</p>
+
+<ul>
+<li><a href="http://youtu.be/O1V4XSYYNxs">Introduction</a></li>
+<li><a href="http://youtu.be/NdapAL2tt7w">An APOD Website Scraper</a></li>
+<li><a href="http://youtu.be/XoQSTJcrEj8">Membrane Computing Video</a></li>
+<li><a href="https://www.youtube.com/watch?v=llRUw9pX7bQ&amp;feature=youtu.be">Hunt the Wumpus Video</a></li>
+</ul><h2>
+<a name="for-programmers" class="anchor" href="#for-programmers"><span class="octicon octicon-link"></span></a>For Programmers</h2>
+
+<p>Read the articles:</p>
+
+<ul>
+<li><a href="http://www.codeproject.com/Articles/777843/HOPE-Higher-Order-Programming-Environment">Introductory Article</a></li>
+<li>
+<a href="http://www.codeproject.com/Articles/781135/APOD-Website-Scraper-a-HOPE-demonstration">APOD Scraper Article</a> </li>
+<li><a href="http://www.codeproject.com/Articles/786118/Hunt-the-Wumpus">Hunt the Wumpus</a></li>
+<li><a href="http://www.codeproject.com/Articles/797457/The-Semantic-Web-and-Natural-Language-Processing">Semantic Web and Natural Language Processing</a></li>
+</ul><h2>
+<a name="to-contribute" class="anchor" href="#to-contribute"><span class="octicon octicon-link"></span></a>To Contribute</h2>
+
+<p>We are actively looking for developers interested in:</p>
+
+<ol>
+<li>Expanding our library of receptors.  Some ideas: Email "reader", stock quotes reader, news feed, etc.</li>
+<li>Porting HOPE to a web application supporting both desktop and mobile devices</li>
+<li>Improving on visualizations</li>
+<li>Developing applets from receptors</li>
+</ol><h2>
+<a name="marketing--funding" class="anchor" href="#marketing--funding"><span class="octicon octicon-link"></span></a>Marketing / Funding</h2>
+
+<p>We are actively seeking to create interest in a variety of markets, including education, finance, presentation, and information management.  We are also seeking investors for both the open source implementation and in the development of the commercial, revenue-generating arm.</p>
+
+<h2>
+<a name="workshops--training-tools" class="anchor" href="#workshops--training-tools"><span class="octicon octicon-link"></span></a>Workshops / Training Tools</h2>
+
+<p>Workshops will be schelued and specific training tools will available after the initial development cycle is complete.</p>
+
+<h2>
+<a name="license" class="anchor" href="#license"><span class="octicon octicon-link"></span></a>License</h2>
+
+<p>MIT</p>
+      </section>
+      <footer>
+        <p><small>Hosted on <a href="http://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+		          <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-95328-4");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
