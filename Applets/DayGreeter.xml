@@ -12,7 +12,7 @@
             <ixm:ReceptorDef Name="Text Display" AssemblyName="TextDisplayReceptor.dll" Enabled="True" Location="425, 51" />
             <ixm:ReceptorDef Name="Text To Speech" AssemblyName="TextToSpeechReceptor.dll" Enabled="True" Location="264, 136" />
             <ixm:ReceptorDef Name="Zip Code Service" AssemblyName="ZipCodeReceptor.dll" Enabled="True" Location="467, 315" />
-            <ixm:ReceptorDef Name="Weather Service" AssemblyName="WeatherServiceReceptor.dll" Enabled="False" Location="376, 204">
+            <ixm:ReceptorDef Name="Weather Service" AssemblyName="WeatherServiceReceptor.dll" Enabled="True" Location="376, 204">
               <ixm:UserConfigs>
                 <ixm:UserConfig Name="Zipcode" Value="12565" />
               </ixm:UserConfigs>
