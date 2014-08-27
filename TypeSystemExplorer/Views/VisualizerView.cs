@@ -336,6 +336,9 @@ namespace TypeSystemExplorer.Views
 
 		protected Brush blackBrush;
 		protected Brush whiteBrush;
+		protected Brush surfaceBrush;
+		protected Brush textBrush;
+		protected Color surfaceColor;
 		protected Pen pen;
 		protected Pen whitePen;
 		protected Point origin = new Point(0, 0);
@@ -373,7 +376,7 @@ namespace TypeSystemExplorer.Views
 		protected int shakeCount;
 		protected bool shakeOK;			// Used to stop further "pops".
 
-		protected Pen receptorLineColor = new Pen(Color.Cyan); // new Pen(Color.FromArgb(40, 40, 60));
+		protected Pen receptorLineColor = new Pen(Color.Blue); // new Pen(Color.FromArgb(40, 40, 60));
 		protected Pen receptorLineColor2 = new Pen(Color.Orange); // new Pen(Color.FromArgb(40, 40, 60));
 		protected Pen receptorLineColor3 = new Pen(Color.Pink); // new Pen(Color.FromArgb(40, 40, 60));
 
@@ -381,6 +384,11 @@ namespace TypeSystemExplorer.Views
 		{
 			blackBrush = new SolidBrush(Color.Black);
 			whiteBrush = new SolidBrush(Color.White);
+			
+			surfaceColor = Color.White;
+			surfaceBrush = new SolidBrush(surfaceColor);
+			textBrush = blackBrush;
+
 			font = new Font(FontFamily.GenericSansSerif, 8);
 			pen = new Pen(Color.LightBlue);
 			whitePen = new Pen(Color.White);
@@ -1898,7 +1906,7 @@ namespace TypeSystemExplorer.Views
 			{
 				Control ctrl = (Control)sender;
 
-				e.Graphics.FillRectangle(blackBrush, new Rectangle(Location, Size));
+				e.Graphics.FillRectangle(surfaceBrush, new Rectangle(Location, Size));
 				e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
 				e.Graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
@@ -1921,7 +1929,7 @@ namespace TypeSystemExplorer.Views
 						b.Positions = new float[] { 0, .1f, 1 };
 						pgb.Blend = b;
 						// pgb.CenterPoint = m.Center;
-						pgb.CenterColor = Color.Black;
+						pgb.CenterColor = surfaceColor;
 						pgb.SurroundColors = new Color[] { Color.LightSlateGray };
 						e.Graphics.FillPath(pgb, gp);
 						pgb.Dispose();
@@ -1934,7 +1942,7 @@ namespace TypeSystemExplorer.Views
 						pgb = new PathGradientBrush(gp);
 						pgb.CenterPoint = SurfaceOffsetAdjust(m.Center);
 						pgb.CenterColor = Color.LightSlateGray;
-						pgb.SurroundColors = new Color[] { Color.Black };
+						pgb.SurroundColors = new Color[] { surfaceColor };
 						e.Graphics.FillPath(pgb, gp);
 						pgb.Dispose();
 						gp.Dispose();
@@ -2022,20 +2030,20 @@ namespace TypeSystemExplorer.Views
 						// Name
 						SizeF strSize = e.Graphics.MeasureString(kvp.Key.Instance.Name, font);
 						Point center = Point.Subtract(bottomCenter, new Size((int)strSize.Width / 2, 0));
-						e.Graphics.DrawString(kvp.Key.Name, font, whiteBrush, center);
+						e.Graphics.DrawString(kvp.Key.Name, font, textBrush, center);
 
 						// Subname
 						if (!String.IsNullOrEmpty(kvp.Key.Instance.Subname))
 						{
 							strSize = e.Graphics.MeasureString(kvp.Key.Instance.Subname, font);
 							center = Point.Subtract(bottomCenter, new Size((int)strSize.Width / 2, -15));
-							e.Graphics.DrawString(kvp.Key.Instance.Subname, font, whiteBrush, center);
+							e.Graphics.DrawString(kvp.Key.Instance.Subname, font, textBrush, center);
 						}
 					});
 
 				flyouts.ForEach(f =>
 					{
-						e.Graphics.DrawString(f.Text, font, whiteBrush, SurfaceOffsetAdjust(f.Location));
+						e.Graphics.DrawString(f.Text, font, textBrush, SurfaceOffsetAdjust(f.Location));
 					});
 
 				// Show carriers with targets.
@@ -2151,7 +2159,7 @@ namespace TypeSystemExplorer.Views
 							int sizeZ = (int)((160 - 10) * (1.0 - (0.25 + Math.Sin(imageSizeStep * idx) * 3 / 4)));
 							Rectangle rect = new Rectangle(new Point(ip.X - sizeZ/2 , ip.Y), new Size(sizeZ, sizeZ * img.Height / img.Width));
 							e.Graphics.DrawImage(img, rect);
-							e.Graphics.DrawString(idx.ToString(), font, whiteBrush, rect);
+							e.Graphics.DrawString(idx.ToString(), font, textBrush, rect);
 						}
 					});
 
@@ -2184,7 +2192,7 @@ namespace TypeSystemExplorer.Views
 					{
 						Rectangle region = new Rectangle(location.X, y, location.Width, MetadataHeight);
 						string data = meta.Name + ": " + meta.Value;
-						e.Graphics.DrawString(data, font, whiteBrush, region);
+						e.Graphics.DrawString(data, font, textBrush, region);
 						y += MetadataHeight;
 					});
 				});
@@ -2250,7 +2258,7 @@ namespace TypeSystemExplorer.Views
 					{
 						Rectangle region = new Rectangle(location.X, y, location.Width, MetadataHeight);
 						string data = meta.Name + ": " + meta.Value;
-						e.Graphics.DrawString(data, font, whiteBrush, region);
+						e.Graphics.DrawString(data, font, textBrush, region);
 						y += MetadataHeight;
 					});
 
