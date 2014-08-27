@@ -339,6 +339,7 @@ namespace TypeSystemExplorer.Views
 		protected Brush surfaceBrush;
 		protected Brush textBrush;
 		protected Color surfaceColor;
+		protected Pen carrierPen = new Pen(Color.Red);
 		protected Pen pen;
 		protected Pen whitePen;
 		protected Point origin = new Point(0, 0);
@@ -2069,7 +2070,7 @@ namespace TypeSystemExplorer.Views
 						SurfaceOffsetAdjust(new Point(a.StartPosition.X + idx, a.StartPosition.Y + idy)), 
 					};
 
-						e.Graphics.DrawLines(penColors[3], triangle);
+						e.Graphics.DrawLines(carrierPen, triangle);
 					});
 
 				// Show carriers without targets.

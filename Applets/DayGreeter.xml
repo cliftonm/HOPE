@@ -26,6 +26,8 @@
             <ixm:ReceptorDef Name="Thumbnail Viewer" AssemblyName="ThumbnailViewerReceptor.dll" Enabled="True" Location="390, 409" />
             <ixm:ReceptorDef Name="Feed Reader" AssemblyName="FeedReaderReceptor.dll" Enabled="True" Location="76, 232" />
             <ixm:ReceptorDef Name="Exceptions" AssemblyName="ExceptionReceptor.dll" Enabled="True" Location="254, 287" />
+            <ixm:ReceptorDef Name="Thumbnail Image Writer" AssemblyName="ImageWriterReceptor.dll" Enabled="True" Location="337, 504" />
+            <ixm:ReceptorDef Name="Image Viewer" AssemblyName="ImageViewerReceptor.dll" Enabled="True" Location="436, 488" />
           </ixm:Receptors>
           <ixm:Permeabilities>
             <ixm:PermeabilityDef Protocol="Text" Direction="Out" Permeable="False" />
