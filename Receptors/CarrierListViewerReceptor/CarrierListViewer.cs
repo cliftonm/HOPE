@@ -160,8 +160,17 @@ namespace CarrierListViewerReceptor
 				ISemanticTypeStruct st = rsys.SemanticTypeSystem.GetSemanticTypeStruct(ProtocolName);
 				st.AllTypes.ForEach(t =>
 					{
-						DataColumn dc = new DataColumn(t.Name, t.GetImplementingType(rsys.SemanticTypeSystem));
-						dt.Columns.Add(dc);
+						try
+						{
+							// TODO: MofN has two native types, which causes an error when getting the implementing type (can only have one native type.)
+							// What we need here is the ability to have sub-table of child native types for the current semantic type.
+							// Right now, we're just ignoring the problem.
+							DataColumn dc = new DataColumn(t.Name, t.GetImplementingType(rsys.SemanticTypeSystem));
+							dt.Columns.Add(dc);
+						}
+						catch(Exception ex)
+						{
+						}
 					});
 
 				dvSignals = new DataView(dt);

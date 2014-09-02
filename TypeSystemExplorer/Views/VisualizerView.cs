@@ -1,4 +1,6 @@
 ﻿#define VIVEK
+#define BLACK_BACKGROUND
+//#define WHITE_BACKGROUND
 // #define REMOVE_EMPTY_MEMBRANES
 
 using System;
@@ -339,7 +341,6 @@ namespace TypeSystemExplorer.Views
 		protected Brush surfaceBrush;
 		protected Brush textBrush;
 		protected Color surfaceColor;
-		protected Pen carrierPen = new Pen(Color.Red);
 		protected Pen pen;
 		protected Pen whitePen;
 		protected Point origin = new Point(0, 0);
@@ -377,7 +378,15 @@ namespace TypeSystemExplorer.Views
 		protected int shakeCount;
 		protected bool shakeOK;			// Used to stop further "pops".
 
+#if WHITE_BACKGROUND
 		protected Pen receptorLineColor = new Pen(Color.Blue); // new Pen(Color.FromArgb(40, 40, 60));
+		protected Pen carrierPen = new Pen(Color.Yellow);
+#endif
+#if BLACK_BACKGROUND
+		protected Pen receptorLineColor = new Pen(Color.Cyan); // new Pen(Color.FromArgb(40, 40, 60));
+		protected Pen carrierPen = new Pen(Color.Red);
+#endif
+
 		protected Pen receptorLineColor2 = new Pen(Color.Orange); // new Pen(Color.FromArgb(40, 40, 60));
 		protected Pen receptorLineColor3 = new Pen(Color.Pink); // new Pen(Color.FromArgb(40, 40, 60));
 
@@ -385,10 +394,18 @@ namespace TypeSystemExplorer.Views
 		{
 			blackBrush = new SolidBrush(Color.Black);
 			whiteBrush = new SolidBrush(Color.White);
-			
+
+#if WHITE_BACKGROUND
 			surfaceColor = Color.White;
 			surfaceBrush = new SolidBrush(surfaceColor);
 			textBrush = blackBrush;
+#endif
+
+#if BLACK_BACKGROUND
+			surfaceColor = Color.Black;
+			surfaceBrush = new SolidBrush(surfaceColor);
+			textBrush = whiteBrush;
+#endif
 
 			font = new Font(FontFamily.GenericSansSerif, 8);
 			pen = new Pen(Color.LightBlue);

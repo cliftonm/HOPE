@@ -1,0 +1,55 @@
+Read this:
+
+http://readwrite.com/2014/08/20/open-source-project-how-to
+
+Notes from:
+
+http://thechangelog.com/top-ten-reasons-why-i-wont-use-your-open-source-project/
+
+Readme:
+
+	Description: What the project is and why you should care
+
+	Installation Instructions:
+
+	Where to get help:
+
+	Contribution Guidelines:
+
+	Contributor List
+
+	Credits, Inspiration, Alternatives
+
+Tests / Specs / Features / Examples
+
+Project Home Page:
+
+	Create an attention-getting project home page. The GitHub Pages feature makes it dead simple to create simple project home page complete with custom domain support.
+
+Getting Design help:
+
+	If you’re not blessed with pixel-fu, find a designer who is and pay, trade, or barter with them to give your project an attractive brand and style. Stay away from contests and other “crowd sourcing” sites. Say no to spec work because you wouldn’t want to code a project for someone in hopes your code would be “selected.”
+
+Domain Name
+
+Twitter Account
+
+	You’re probably already using Twitter to spread the word about your projects, but have you considered a dedicated project account?
+
+License
+	
+	Include a license file section in the readme
+
+Reach out:
+
+	If your project is large enough, consider creating your own IRC channel. 
+
+	Twitter lets you follow people in your niche easily, but perhaps the greater power is the ability to follow a topic. Search for and follow the hashtags related to your project. 
+
+	Find people asking questions or expressing frustration with problems that your project aims to solve. 
+
+	If you want to grab the attention of potential users and contributors, submit a talk to conferences or meetups in your technology community. If you don’t get accepted, go anyway and organize a birds-of-a-feather session where you can meet personally with users, answer questions, and get feedback.
+
+	If you want to tell the world about your new open source code hotness, one of the best venues is this blog. 
+	
+	
