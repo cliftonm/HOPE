@@ -1,0 +1,46 @@
+<MycroXaml xmlns:ixm="TypeSystemExplorer.Models, TypeSystemExplorer" xmlns:def="def" xmlns:ref="ref" Name="Form">
+  <ixm:Applet>
+    <ixm:MembranesDef>
+      <ixm:Membranes>
+        <ixm:MembraneDef Name="Skin">
+          <ixm:Receptors>
+            <ixm:ReceptorDef Name="Alchemy" AssemblyName="AlchemyReceptor.dll" Enabled="True" Location="868, 367" />
+            <ixm:ReceptorDef Name="Filter" AssemblyName="FilterReceptor.dll" Enabled="True" Location="975, 368">
+              <ixm:UserConfigs>
+                <ixm:UserConfig Name="ProtocolFilters" Value="AlchemyEntity~Test" />
+              </ixm:UserConfigs>
+            </ixm:ReceptorDef>
+            <ixm:ReceptorDef Name="Feed Reader" AssemblyName="FeedReaderReceptor.dll" Enabled="True" Location="761, 367" />
+            <ixm:ReceptorDef Name="Carrier List Viewer" AssemblyName="CarrierListViewerReceptor.dll" Enabled="True" Location="1071, 369">
+              <ixm:UserConfigs>
+                <ixm:UserConfig Name="ProtocolName" Value="FilteredAlchemyEntity" />
+                <ixm:UserConfig Name="WindowName" Value="" />
+                <ixm:UserConfig Name="WindowX" Value="1405" />
+                <ixm:UserConfig Name="WindowY" Value="662" />
+                <ixm:UserConfig Name="WindowWidth" Value="0" />
+                <ixm:UserConfig Name="WindowHeight" Value="0" />
+              </ixm:UserConfigs>
+            </ixm:ReceptorDef>
+            <ixm:ReceptorDef Name="SQLite Persistor" AssemblyName="PersistenceReceptor.dll" Enabled="True" Location="969, 269" />
+          </ixm:Receptors>
+          <ixm:Permeabilities>
+            <ixm:PermeabilityDef Protocol="AlchemyEntity" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="URL" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="AlchemyKeyword" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="AlchemyConcept" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="Exception" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="RequireTable" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="RSSFeedItem" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="MofN" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="Recordset" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="IDReturn" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="FilteredAlchemyEntity" Direction="Out" Permeable="False" />
+          </ixm:Permeabilities>
+        </ixm:MembraneDef>
+      </ixm:Membranes>
+    </ixm:MembranesDef>
+    <ixm:CarriersDef>
+      <ixm:Carriers />
+    </ixm:CarriersDef>
+  </ixm:Applet>
+</MycroXaml>

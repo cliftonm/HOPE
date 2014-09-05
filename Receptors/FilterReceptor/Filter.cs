@@ -187,7 +187,8 @@ namespace FilterReceptor
 			{
 				string protocol = row[0].ToString();
 				AddReceiveProtocol(protocol);
-				AddEmitProtocol("Filtered" + protocol);
+				// TODO: REMOVE FALSE
+				AddEmitProtocol("Filtered" + protocol, false);
 			}
 		}
 

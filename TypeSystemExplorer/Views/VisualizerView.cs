@@ -1,6 +1,8 @@
 ﻿#define VIVEK
-#define BLACK_BACKGROUND
-//#define WHITE_BACKGROUND
+
+// #define BLACK_BACKGROUND
+#define WHITE_BACKGROUND
+
 // #define REMOVE_EMPTY_MEMBRANES
 
 using System;

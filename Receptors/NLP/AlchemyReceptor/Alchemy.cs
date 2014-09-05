@@ -33,6 +33,9 @@ namespace AlchemyReceptor
 			AddEmitProtocol("AlchemyConcept");
 			AddEmitProtocol("Exception");
 
+			// TODO: Temporary, for demo purposes only
+			AddEmitProtocol("RequireTable");
+
 			AddReceiveProtocol("URL",
 				// cast is required to resolve Func vs. Action in parameter list.
 				(Action<dynamic>)(signal => ParseUrl(signal)));

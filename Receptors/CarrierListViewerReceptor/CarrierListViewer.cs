@@ -194,7 +194,8 @@ namespace CarrierListViewerReceptor
 			// Add other semantic type emitters:
 			RemoveEmitProtocols();
 			ISemanticTypeStruct st = rsys.SemanticTypeSystem.GetSemanticTypeStruct(ProtocolName);
-			st.SemanticElements.ForEach(se => AddEmitProtocol(se.Name));
+			// TODO: REACTIVATE THIS
+			// st.SemanticElements.ForEach(se => AddEmitProtocol(se.Name));
 		}
 
 		/// <summary>
