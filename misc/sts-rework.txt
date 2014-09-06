@@ -1,0 +1,30 @@
+The STS sub-system rework is intended to:
+
+1. clean up the XML syntax that declares the semanantic and native types. 
+
+The current implementation is overly complex and the "semantic declaration" is actually unnecessary.
+
+2. Implement a schema editor for semantic types
+
+Using my previous generic XTree work, implement a pane in the IDE for editing ST's.  Serialize the ST in a format that is readable with the MycroParser rather than having to hand-code the XML deserialization.
+
+---------------
+
+Besides making ST definitions much more user accessible, the purpose of this rework is to also enable more complex concepts, such as defining what fields in an ST describe a unique key.
+
+And the purpose of THAT is so that we can have a completely general-purpose persistence engine, very similar (if not identical) in implementation to my prior work on Relationship Oriented Programming.
+
+Here's a straight forward example:
+
+Let's say I have an ST "street address", which is persisted as that ST in the database.  Let's say I also have a receptor that looks for street address ST's and geocodes them, adding a latlon ST.
+
+I can now persist and associate these two entries:
+
+Table 1: the street address
+
+Table 2: the street address and the lat-lon.
+
+An association can then be manually (and ideally automatically) made between the two tables, using the street address as the unique key qualifier.
+
+We can see the power of such a system, in that ST's can create a rich, spider web of assocations between otherwise dis-associated data.
+

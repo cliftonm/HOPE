@@ -194,6 +194,12 @@
     <Content Include="..\Applets\Weather Report.xml">
       <Link>Applets\Weather Report.xml</Link>
     </Content>
+    <Content Include="..\misc\marketing.txt">
+      <Link>marketing.txt</Link>
+    </Content>
+    <Content Include="..\misc\sts-rework.txt">
+      <Link>sts-rework.txt</Link>
+    </Content>
     <Content Include="bin\Debug\12565.xml" />
     <Content Include="bin\Debug\94306.xml" />
     <Content Include="bin\Debug\about.xml" />
