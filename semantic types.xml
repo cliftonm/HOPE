@@ -3,12 +3,6 @@
   <SemanticTypesContainer>
     <SemanticTypesContainer Name="Core Types">
       <SemanticTypes>
-        <SemanticType Name="Text">
-          <NativeTypes>
-            <NativeType Name="Value" ImplementingType="string" />
-          </NativeTypes>
-          <SubTypes />
-        </SemanticType>
         <SemanticType Name="Url">
           <NativeTypes>
             <NativeType Name="Value" ImplementingType="string" />
@@ -36,6 +30,18 @@
           <SubTypes />
         </SemanticType>
         <SemanticType Name="FileExtension">
+          <NativeTypes>
+            <NativeType Name="Value" ImplementingType="string" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
+        <SemanticType Name="TextMessage">
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="Text" />
+          </SubTypes>
+        </SemanticType>
+        <SemanticType Name="Text">
           <NativeTypes>
             <NativeType Name="Value" ImplementingType="string" />
           </NativeTypes>
