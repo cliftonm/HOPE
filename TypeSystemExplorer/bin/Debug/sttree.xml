@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RootNode Name="Root">
+  <Nodes>
+    <NodeDef Name="SemanticTree" Text="Semantic Tree" IsReadOnly="true" IsRequired="true" TypeName="XTreeController.GenericController`1[[TypeSystemExplorer.Models.Schema, TypeSystemExplorer, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], XTree">
+      <Nodes>
+        <NodeDef Name="SemanticTypes" Text="Semantic Types" IsReadOnly="true" IsRequired="true" TypeName="XTreeController.GenericController`1[[TypeSystemExplorer.Models.SemanticTypesContainer, TypeSystemExplorer, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], XTree">
+          <ParentPopupItems>
+            <Popup Text="Add New Semantic Types Collection" IsAdd="true" Tag="Add"/>
+          </ParentPopupItems>
+          <PopupItems>
+            <Popup Text="Delete Semantic Types Collection" IsRemove="true"/>
+          </PopupItems>
+          <Nodes>
+            <NodeDef Name="SemanticType" Text="Semantic Type" IsReadOnly="true" TypeName="XTreeController.GenericController`1[[TypeSystemExplorer.Models.SemanticType, TypeSystemExplorer, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], XTree">
+              <ParentPopupItems>
+                <Popup Text="Add New Semantic Type" IsAdd="true" Tag="Add"/>
+              </ParentPopupItems>
+              <PopupItems>
+                <Popup Text="Delete Semantic Type" IsRemove="true"/>
+              </PopupItems>
+            </NodeDef>
+          </Nodes>
+        </NodeDef>
+      </Nodes>
+    </NodeDef>
+  </Nodes>
+</RootNode>
