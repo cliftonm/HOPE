@@ -18,13 +18,27 @@
     <ixc:ApplicationFormController ref:Name="ApplicationFormController" SemanticTypeEditorController="{controller}"/>
     <ix:Controls>
       <ixv:SemanticTypeEditorView def:Name="semanticTypeEditorView"
-                               Dock="Fill"
-                               Model="{ApplicationModel}"
-                               ApplicationController="{ApplicationFormController}">
+                            Dock="Fill"
+                            Model="{ApplicationModel}"
+                            ApplicationController="{ApplicationFormController}">
         <ixv:Controls>
-          <cwf:XTree def:Name="stTree" Dock="Fill" TreeDefinitionFileName="sttree.xml" FullRowSelect="true" HideSelection="false"/>
+          <cwf:XTree def:Name="stTree" Dock="Fill" TreeDefinitionFileName="sttree.xml" FullRowSelect="true" HideSelection="false" AfterSelect="{controller.NodeSelected}"/>
         </ixv:Controls>
       </ixv:SemanticTypeEditorView>
+      <!-- menu must come after, so that docking mode Fill for the tree create a control starting below the menu -->
+      <wf:MenuStrip>
+        <wf:Items>
+          <wf:ToolStripMenuItem def:Name="mnuFile" Text="File">
+            <wf:DropDownItems>
+              <wf:ToolStripMenuItem Text="New Schema" Click="{controller.OnNew}"/>
+              <wf:ToolStripSeparator/>
+              <wf:ToolStripMenuItem Text="Load Schema" Click="{controller.OnOpen}"/>
+              <wf:ToolStripMenuItem Text="Save Schema" Click="{controller.OnSave}"/>
+              <wf:ToolStripMenuItem Text="Save Schema As" Click="{controller.OnSaveAs}"/>
+            </wf:DropDownItems>
+          </wf:ToolStripMenuItem>
+        </wf:Items>
+      </wf:MenuStrip>
     </ix:Controls>
     <ixc:SemanticTypeEditorController ref:Name="controller" View="{semanticTypeEditorView}"/>
     <ixv:SemanticTypeEditorView ref:Name="semanticTypeEditorView" TreeView="{stTree}" DockContent="{Container}" Opening="{controller.Opening}" Closing="{controller.Closing}"/>

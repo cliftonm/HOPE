@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <SemanticTypesContainer>
+    <SemanticTypesContainer Name="Core Types">
+      <SemanticTypes>
+        <SemanticType Name="Text">
+          <NativeTypes>
+            <NativeType Name="Value" ImplementingType="string" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
+        <SemanticType Name="Url">
+          <NativeTypes>
+            <NativeType Name="Value" ImplementingType="string" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
+        <SemanticType Name="Name">
+          <NativeTypes>
+            <NativeType Name="Value" ImplementingType="string" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
+        <SemanticType Name="Filename">
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="Path" />
+            <SubType Name="Name" />
+            <SubType Name="FileExtension" />
+          </SubTypes>
+        </SemanticType>
+        <SemanticType Name="Path">
+          <NativeTypes>
+            <NativeType Name="Value" ImplementingType="string" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
+        <SemanticType Name="FileExtension">
+          <NativeTypes>
+            <NativeType Name="Value" ImplementingType="string" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
+      </SemanticTypes>
+    </SemanticTypesContainer>
+  </SemanticTypesContainer>
+</Schema>

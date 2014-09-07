@@ -8,21 +8,74 @@ using System.Xml.Serialization;
 
 using XTreeInterfaces;
 
+/// *** DisplayName must be unique.  Annoyingly, the property grid change notifier doesn't give us the property name, it gives us the display name for the property being changed.
+
 namespace TypeSystemExplorer.Models
 {
-	public class SemanticType : IHasCollection
+	// References a semantic type.
+	public class SubType : IHasCollection
 	{
-		[Category("Name")]
+		[Category("References")]
 		[XmlAttribute()]
 		[TypeConverter(typeof(SemanticTypeNameConverter))]
+		[DisplayName("Semantic Type")]
 		public string Name { get; set; }
 
 		[XmlIgnore]
 		[Browsable(false)]
 		public Dictionary<string, dynamic> Collection { get { return null; } }
 
+		public SubType()
+		{
+		}
+	}
+
+	public class NativeType : IHasCollection
+	{
+		[Category("Native Type")]
+		[XmlAttribute()]
+		public string Name { get; set; }
+
+		[Category("Native Type")]
+		[XmlAttribute()]
+		[DisplayName("Native Type")]
+		[TypeConverter(typeof(ImplementingTypeNameConverter))]
+		public string ImplementingType { get; set; }
+
+		[XmlIgnore]
+		[Browsable(false)]
+		public Dictionary<string, dynamic> Collection { get {return null;}}
+
+		public NativeType()
+		{
+		}
+	}
+
+	public class SemanticType : IHasCollection
+	{
+		[Category("Name")]
+		[XmlAttribute()]
+		public string Name { get; set; }
+
+		[XmlIgnore]
+		[Browsable(false)]
+		public Dictionary<string, dynamic> Collection { get; protected set; }
+
+		// Serializable list.
+		[Browsable(false)]
+		public List<NativeType> NativeTypes { get; set; }
+		[Browsable(false)]
+		public List<SubType> SubTypes { get; set; }
+
 		public SemanticType()
 		{
+			NativeTypes = new List<NativeType>();
+			SubTypes = new List<SubType>();
+			Collection = new Dictionary<string, dynamic>()
+			{
+				{"Models.NativeType", NativeTypes},
+				{"Models.SubType", SubTypes},
+			};
 		}
 	}
 

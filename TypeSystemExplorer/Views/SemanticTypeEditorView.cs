@@ -34,18 +34,6 @@ namespace TypeSystemExplorer.Views
 			base.EndInit();
 		}
 
-		public void Clear()
-		{
-			TreeView.Clear();
-		}
-
-		public void Update(STS sts)
-		{
-			// TODO: Implement with the new TV schema stuff.
-//			Clear();
-//			PopulateTree(sts);
-		}
-
 		protected override void WhenHandleDestroyed(object sender, EventArgs e)
 		{
 			Closing.IfNotNull().Then(() => Closing());
@@ -58,27 +46,5 @@ namespace TypeSystemExplorer.Views
 
 			return node;
 		}
-/*
-		protected void PopulateTree(STS sts)
-		{
-			sts.SemanticTypes.ForEach(t =>
-			{
-				object tn = TreeView.AddNode(null, t.Key, t);
-				PopulateSTChildren(t.Value, tn);
-			});
-		}
-
-		protected void PopulateSTChildren(ISemanticType st, object parent)
-		{
-			TreeView.AddNode(parent, "decl", st.Decl);
-			TreeView.AddNode(parent, "struct", st.Struct);
-
-			st.Struct.SemanticElements.ForEach(elem =>
-			{
-				object tn = TreeView.AddNode(parent, elem.Name, elem);
-				PopulateSTChildren(elem.Element, tn);
-			});
-		}
-*/ 
 	}
 }

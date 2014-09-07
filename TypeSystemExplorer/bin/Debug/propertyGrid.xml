@@ -21,7 +21,7 @@
                                Model="{ApplicationModel}"
                                ApplicationController="{ApplicationFormController}">
         <ixv:Controls>
-          <wf:PropertyGrid def:Name="propertyGrid" Dock="Fill"/>
+          <wf:PropertyGrid def:Name="propertyGrid" Dock="Fill" PropertySort="NoSort" PropertyValueChanged="{controller.OnPropertyValueChanged}"/>
         </ixv:Controls>
       </ixv:PropertyGridView>
     </ix:Controls>

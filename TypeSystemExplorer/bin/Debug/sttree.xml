@@ -5,7 +5,7 @@
       <Nodes>
         <NodeDef Name="SemanticTypes" Text="Semantic Types" IsReadOnly="true" IsRequired="true" TypeName="XTreeController.GenericController`1[[TypeSystemExplorer.Models.SemanticTypesContainer, TypeSystemExplorer, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], XTree">
           <ParentPopupItems>
-            <Popup Text="Add New Semantic Types Collection" IsAdd="true" Tag="Add"/>
+            <Popup Text="Add Semantic Types Collection" IsAdd="true" Tag="Add"/>
           </ParentPopupItems>
           <PopupItems>
             <Popup Text="Delete Semantic Types Collection" IsRemove="true"/>
@@ -13,11 +13,29 @@
           <Nodes>
             <NodeDef Name="SemanticType" Text="Semantic Type" IsReadOnly="true" TypeName="XTreeController.GenericController`1[[TypeSystemExplorer.Models.SemanticType, TypeSystemExplorer, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], XTree">
               <ParentPopupItems>
-                <Popup Text="Add New Semantic Type" IsAdd="true" Tag="Add"/>
+                <Popup Text="Add Semantic Type" IsAdd="true" Tag="Add"/>
               </ParentPopupItems>
               <PopupItems>
                 <Popup Text="Delete Semantic Type" IsRemove="true"/>
               </PopupItems>
+              <Nodes>
+                <NodeDef Name="NativeType" Text="Native Type" IsReadOnly="true" TypeName="XTreeController.GenericController`1[[TypeSystemExplorer.Models.NativeType, TypeSystemExplorer, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], XTree">
+                  <ParentPopupItems>
+                    <Popup Text="Add Native Type" IsAdd="true" Tag="Add"/>
+                  </ParentPopupItems>
+                  <PopupItems>
+                    <Popup Text="Delete Native Type" IsRemove="true"/>
+                  </PopupItems>
+                </NodeDef>
+                <NodeDef Name="SubType" Text="Semantic Type" IsReadOnly="true" TypeName="XTreeController.GenericController`1[[TypeSystemExplorer.Models.SubType, TypeSystemExplorer, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], XTree">
+                  <ParentPopupItems>
+                    <Popup Text="Add Semantic Type" IsAdd="true" Tag="Add"/>
+                  </ParentPopupItems>
+                  <PopupItems>
+                    <Popup Text="Delete Semantic Type" IsRemove="true"/>
+                  </PopupItems>
+                </NodeDef>
+              </Nodes>
             </NodeDef>
           </Nodes>
         </NodeDef>

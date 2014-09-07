@@ -60,7 +60,8 @@ namespace TypeSystemExplorer.Controllers
 //		public OutputController OutputController { get; set; }
 //		public SymbolTableController SymbolTableController { get; set; }
 		public VisualizerController VisualizerController { get; set; }
-		public Schema Schema { get; protected set; }
+		public Schema Schema { get; set; }
+		public string SchemaFilename { get; set; }
 
 		protected string xmlSchema;
 		protected Applet applet;
@@ -174,7 +175,7 @@ namespace TypeSystemExplorer.Controllers
 			{
 				// Speak("System reset.");
 				// SemanticTypeTreeController.IfNotNull(c => c.View.Clear());
-				SemanticTypeEditorController.IfNotNull(c => c.View.Clear());
+				// SemanticTypeEditorController.IfNotNull(c => c.View.Clear());
 				PropertyGridController.IfNotNull(c => c.View.Clear());
 				// XmlEditorController.IfNotNull(c => c.View.Clear());
 				// OutputController.IfNotNull(c => c.View.Clear());
@@ -502,7 +503,8 @@ namespace TypeSystemExplorer.Controllers
 */
 				if (SemanticTypeEditorController != null)
 				{
-					SemanticTypeEditorController.View.Update(Program.SemanticTypeSystem);
+					// TODO: Do we need this?
+					// SemanticTypeEditorController.View.Update(Program.SemanticTypeSystem);
 				}
 			}
 			catch (Exception ex)
@@ -1074,7 +1076,9 @@ namespace TypeSystemExplorer.Controllers
 			if (SemanticTypeEditorController != null)
 			{
 				SemanticTypeEditorController.View.AddNode(sc, null);
+				PropertyGridController.View.ShowObject(Schema);
 			}
+
 			// rootNode = sdTree.AddNode(sc, null);
 			// pgProperties.SelectedObject = schemaDef;
 
