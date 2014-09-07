@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <SemanticTypesContainer>
+    <SemanticTypesContainer Name="Core Types">
+      <SemanticTypes>
+        <SemanticType Name="Url">
+          <NativeTypes>
+            <NativeType Name="Value" ImplementingType="string" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
+        <SemanticType Name="Name">
+          <NativeTypes>
+            <NativeType Name="Value" ImplementingType="string" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
+        <SemanticType Name="Filename">
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="Path" />
+            <SubType Name="Name" />
+            <SubType Name="FileExtension" />
+          </SubTypes>
+        </SemanticType>
+        <SemanticType Name="Path">
+          <NativeTypes>
+            <NativeType Name="Value" ImplementingType="string" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
+        <SemanticType Name="FileExtension">
+          <NativeTypes>
+            <NativeType Name="Value" ImplementingType="string" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
+        <SemanticType Name="TextMessage">
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="Text" />
+          </SubTypes>
+        </SemanticType>
+        <SemanticType Name="Text">
+          <NativeTypes>
+            <NativeType Name="Value" ImplementingType="string" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
+      </SemanticTypes>
+    </SemanticTypesContainer>
+    <SemanticTypesContainer Name="Message Types">
+      <SemanticTypes>
+        <SemanticType Name="DebugMessage">
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="TextMessage" />
+          </SubTypes>
+        </SemanticType>
+        <SemanticType Name="LoggerMessage">
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="TextMessage" />
+          </SubTypes>
+        </SemanticType>
+        <SemanticType Name="ErrorMessage">
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="TextMessage" />
+          </SubTypes>
+        </SemanticType>
+        <SemanticType Name="ExceptionMessage">
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="TextMessage" />
+          </SubTypes>
+        </SemanticType>
+        <SemanticType Name="SystemMessage">
+          <NativeTypes>
+            <NativeType Name="Action" ImplementingType="string" />
+            <NativeType Name="Data" ImplementingType="Object" />
+            <NativeType Name="Source" ImplementingType="Object" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
+      </SemanticTypes>
+    </SemanticTypesContainer>
+    <SemanticTypesContainer Name="Visualizer Types">
+      <SemanticTypes>
+        <SemanticType Name="CarrierAnimation">
+          <NativeTypes>
+            <NativeType Name="Process" ImplementingType="Action" />
+            <NativeType Name="From" ImplementingType="IReceptorInstance" />
+            <NativeType Name="To" ImplementingType="IReceptorInstance" />
+            <NativeType Name="Carrier" ImplementingType="ICarrier" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
+      </SemanticTypes>
+    </SemanticTypesContainer>
+  </SemanticTypesContainer>
+</Schema>
