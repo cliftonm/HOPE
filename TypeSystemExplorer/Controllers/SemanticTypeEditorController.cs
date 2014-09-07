@@ -27,6 +27,11 @@ namespace TypeSystemExplorer.Controllers
 	{
 		protected TreeNode currentNode;
 
+		public void UpdateView()
+		{
+			PopulateTree();
+		}
+
 		public void UpdateNodeText(string text)
 		{
 			if (currentNode != null)
@@ -113,11 +118,7 @@ namespace TypeSystemExplorer.Controllers
 
 		protected void Load()
 		{
-			XmlSerializer xs = new XmlSerializer(typeof(Schema));
-			StreamReader sr = new StreamReader(ApplicationController.SchemaFilename);
-			ApplicationController.Schema = (Schema)xs.Deserialize(sr);
-			// ((GenericController<Schema>)((NodeInstance)rootNode.Tag).Instance).Instance = ApplicationController.Schema;
-			sr.Close();
+			ApplicationController.LoadSchema();
 			PopulateTree();
 		}
 

@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Schema;
+using System.Xml.Serialization;
 using System.Windows.Forms;
 
 using WeifenLuo.WinFormsUI.Docking;
@@ -47,11 +48,11 @@ namespace TypeSystemExplorer.Controllers
 			protected set { ApplicationModel.Filename = value; }
 		}
 
-		public string CurrentXmlFilename
-		{
-			get { return ApplicationModel.XmlFilename; }
-			protected set { ApplicationModel.XmlFilename = value; }
-		}
+		//public string CurrentXmlFilename
+		//{
+		//	get { return ApplicationModel.XmlFilename; }
+		//	protected set { ApplicationModel.XmlFilename = value; }
+		//}
 
 //		public SemanticTypeTreeController SemanticTypeTreeController { get; protected set; }
 		public SemanticTypeEditorController SemanticTypeEditorController { get; protected set; }
@@ -60,7 +61,22 @@ namespace TypeSystemExplorer.Controllers
 //		public OutputController OutputController { get; set; }
 //		public SymbolTableController SymbolTableController { get; set; }
 		public VisualizerController VisualizerController { get; set; }
-		public Schema Schema { get; set; }
+
+		protected Schema schema;
+
+		public GenericController<Schema> schemaController;
+
+		public Schema Schema 
+		{
+			get { return schema; }
+			set 
+			{ 
+				schema = value;
+				schemaController.Instance = Schema;
+				// ((Schema)((GenericController<Schema>)sc).Instance) = Schema;
+			}
+		}
+
 		public string SchemaFilename { get; set; }
 
 		protected string xmlSchema;
@@ -140,14 +156,25 @@ namespace TypeSystemExplorer.Controllers
 		{
 		}
 
+		public void LoadSchema()
+		{
+			XmlSerializer xs = new XmlSerializer(typeof(Schema));
+			StreamReader sr = new StreamReader(SchemaFilename);
+			Schema = (Schema)xs.Deserialize(sr);
+			// ((GenericController<Schema>)((NodeInstance)rootNode.Tag).Instance).Instance = ApplicationController.Schema;
+			sr.Close();
+		}
+
 		public void LoadXml(string filename)
 		{
-			xmlSchema = File.ReadAllText(filename);
+			// xmlSchema = File.ReadAllText(filename);
 			// XmlEditorController.IfNull(() => NewDocument("xmlEditor.xml"));
 			// XmlEditorController.View.Editor.LoadFile(filename);
-			CurrentXmlFilename = filename;
+			// CurrentXmlFilename = filename;
 			// SetCaption(filename);
 
+			SchemaFilename = filename;
+			LoadSchema();
 			CreateTypes(this, EventArgs.Empty);
 			GenerateCode(this, EventArgs.Empty);
 			Compile(this, EventArgs.Empty);
@@ -190,9 +217,10 @@ namespace TypeSystemExplorer.Controllers
 			finally
 			{
 				CreateRootNode();
-				LoadXml("protocols.xml");
+				LoadXml("semantic types.xml");
 				Program.Skin.RegisterReceptor("System", this);
 				Program.Skin.RegisterReceptor("DropReceptor", Program.DropReceptor);
+				SemanticTypeEditorController.IfNotNull(ctrl => ctrl.UpdateView());
 			}
 		}
 
@@ -283,13 +311,15 @@ namespace TypeSystemExplorer.Controllers
 		}
 
 		/// <summary>
-		/// The first time the form is displayed, try loading the last opened deck.
+		/// The first time the form is displayed, try loading the last opened type.
 		/// </summary>
 		protected void Shown(object sender, EventArgs args)
 		{
 			// Because I get tired of doing this manually.
 			CreateRootNode();
-			LoadXml("protocols.xml");
+			// LoadXml("protocols.xml");
+			LoadXml("semantic types.xml");
+			SemanticTypeEditorController.IfNotNull(ctrl => ctrl.UpdateView());
 			// LoadApplet();
 		}
 
@@ -494,7 +524,42 @@ namespace TypeSystemExplorer.Controllers
 		{
 			try
 			{
-				Program.SemanticTypeSystem.Parse(xmlSchema);
+				List<SemanticTypeDecl> decls = new List<SemanticTypeDecl>();
+				List<SemanticTypeStruct> structs = new List<SemanticTypeStruct>();
+
+				// Reflective noun necessary for self-referential definition.
+				SemanticTypeDecl decl = new SemanticTypeDecl() { OfTypeName = "Noun" };
+				decl.AttributeValues.Add(new AttributeValue() { Name = "Name", Value = "Noun" });
+				decls.Add(decl);
+
+				SemanticTypeStruct sts = new SemanticTypeStruct() { DeclTypeName = "Noun" };
+				sts.NativeTypes.Add(new Clifton.SemanticTypeSystem.NativeType() { Name = "Name", ImplementingType = "string" });
+				structs.Add(sts);
+
+				foreach (Models.SemanticTypesContainer stc in Schema.SemanticTypesContainer)
+				{
+					foreach (Models.SemanticType st in stc.SemanticTypes)
+					{
+						decl = new SemanticTypeDecl() { OfTypeName = "Noun" };
+						decl.AttributeValues.Add(new AttributeValue() { Name = "Name", Value = st.Name });
+						sts = new SemanticTypeStruct() { DeclTypeName = st.Name };
+
+						foreach (Models.NativeType nt in st.NativeTypes)
+						{
+							sts.NativeTypes.Add(new Clifton.SemanticTypeSystem.NativeType() { Name = nt.Name, ImplementingType = nt.ImplementingType });
+						}
+
+						foreach (Models.SubType subt in st.SubTypes)
+						{
+							sts.SemanticElements.Add(new Clifton.SemanticTypeSystem.SemanticElement() { Name = subt.Name });
+						}
+
+						decls.Add(decl);
+						structs.Add(sts);
+					}
+				}
+
+				Program.SemanticTypeSystem.Parse(decls, structs);
 /*
 				if (SemanticTypeTreeController != null)
 				{
@@ -1065,17 +1130,17 @@ namespace TypeSystemExplorer.Controllers
 
 		protected void CreateRootNode()
 		{
-			IXtreeNode sc = new GenericController<Schema>();
+			schemaController = new GenericController<Schema>();
 
 			//schemaDef = (SchemaDef)((GenericController<SchemaDef>)sc).Instance;
 			//rootNode = sdTree.AddNode(sc, null);
 			//pgProperties.SelectedObject = schemaDef;
 
-			Schema = (Schema)((GenericController<Schema>)sc).Instance;
+			Schema = (Schema)schemaController.Instance;
 
 			if (SemanticTypeEditorController != null)
 			{
-				SemanticTypeEditorController.View.AddNode(sc, null);
+				SemanticTypeEditorController.View.AddNode(schemaController, null);
 				PropertyGridController.View.ShowObject(Schema);
 			}
 

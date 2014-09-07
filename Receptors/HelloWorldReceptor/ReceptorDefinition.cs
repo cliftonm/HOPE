@@ -38,10 +38,7 @@ namespace HelloWorldReceptor
 
 		protected void SayHello(object sender, EventArgs args)
 		{
-			ISemanticTypeStruct protocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct("DebugMessage");
-			dynamic signal = rsys.SemanticTypeSystem.Create("DebugMessage");
-			signal.Message = "Hello World!";
-			rsys.CreateCarrier(this, protocol, signal);
+			CreateCarrier("LoggerMessage", signal => signal.TextMessage.Text.Value = "Hello world!");
 		}
     }
 }

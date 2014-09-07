@@ -16,7 +16,7 @@ namespace TypeSystemExplorer.Models
 
 		public override TypeConverter.StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
 		{
-			List<string> names = new List<string>() { "char", "string", "bool", "int", "long", "float", "double", "decimal", "DateTime"};
+			List<string> names = new List<string>() { "char", "string", "bool", "int", "long", "float", "double", "decimal", "DateTime", "Object"};
 			// Schema.Instance.SemanticTypesContainer.ForEach(t => t.SemanticTypes.ForEach(a => names.Add(a.Name)));
 			names.Sort();
 

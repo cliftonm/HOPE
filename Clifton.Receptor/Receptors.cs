@@ -431,13 +431,16 @@ namespace Clifton.Receptor
 
 					// Currently, we can only do this if the subelement contains one and only one native or SE element.
 					// TODO: Fix this, as it ends up throwing an exception, see SemanticElement.cs, GetValue "Getting a value on a semantic type requires that the semantic type defines one and only one native type or child semantic type in order to resolve the native type property whose value is to be set."
-					if (semStruct.NativeTypes.Count + semStruct.SemanticElements.Count == 1)
-					{
-						dynamic subsignal = SemanticTypeSystem.Create(se.Name);
-						object val = se.GetValue(SemanticTypeSystem, signal);
-						se.SetValue(SemanticTypeSystem, subsignal, val);
-						CreateCarrierIfReceiver(from, semStruct, subsignal);
-					}
+					
+					// TODO: Fix this, as the implementation is actually wrong.  To recreate the problem, use the HelloWorld receptor and figure out how to correctly create signals for sub-st's.
+
+					//if (semStruct.NativeTypes.Count + semStruct.SemanticElements.Count == 1)
+					//{
+					//	dynamic subsignal = SemanticTypeSystem.Create(se.Name);
+					//	object val = se.GetValue(SemanticTypeSystem, signal);
+					//	se.SetValue(SemanticTypeSystem, subsignal, val);
+					//	CreateCarrierIfReceiver(from, semStruct, subsignal);
+					//}
 				});
 		}
 

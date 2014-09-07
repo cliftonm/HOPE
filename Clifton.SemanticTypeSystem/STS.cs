@@ -109,10 +109,10 @@ namespace Clifton.SemanticTypeSystem
 		/// Parse an XML string, updating the ST symbol table.
 		/// Duplicate definitions will result in an exception (yes, we want this behavior.)
 		/// </summary>
-		public void Parse(string xml)
+		public void Parse(List<SemanticTypeDecl> decls, List<SemanticTypeStruct> structs)
 		{
-			List<SemanticTypeDecl> decls = Parser.ParseDeclarations(xml);
-			List<SemanticTypeStruct> structs = Parser.ParseStructs(xml);
+//			List<SemanticTypeDecl> decls = Parser.ParseDeclarations(xml);
+			//List<SemanticTypeStruct> structs = Parser.ParseStructs(xml);
 			Dictionary<string, ISemanticType> stDict = Parser.BuildSemanticTypes(decls, structs);
 			SemanticTypes = SemanticTypes.Merge(stDict);
 		}
