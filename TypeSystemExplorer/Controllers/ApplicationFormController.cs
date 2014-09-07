@@ -25,6 +25,11 @@ using Clifton.SemanticTypeSystem.Interfaces;
 using Clifton.Tools.Data;
 using Clifton.Tools.Strings;
 using Clifton.Tools.Strings.Extensions;
+using Clifton.Windows.Forms;
+using Clifton.Windows.Forms.XmlTree;
+
+using XTreeController;
+using XTreeInterfaces;
 
 using TypeSystemExplorer.Actions;
 using TypeSystemExplorer.Models;
@@ -48,13 +53,16 @@ namespace TypeSystemExplorer.Controllers
 			protected set { ApplicationModel.XmlFilename = value; }
 		}
 
-		public SemanticTypeTreeController SemanticTypeTreeController { get; protected set; }
+//		public SemanticTypeTreeController SemanticTypeTreeController { get; protected set; }
+		public SemanticTypeEditorController SemanticTypeEditorController { get; protected set; }
 		public PropertyGridController PropertyGridController { get; protected set; }
-		public XmlEditorController XmlEditorController { get; set; }		// The active editor.
-		public OutputController OutputController { get; set; }
-		public SymbolTableController SymbolTableController { get; set; }
+//		public XmlEditorController XmlEditorController { get; set; }		// The active editor.
+//		public OutputController OutputController { get; set; }
+//		public SymbolTableController SymbolTableController { get; set; }
 		public VisualizerController VisualizerController { get; set; }
+		public Schema Schema { get; protected set; }
 
+		protected string xmlSchema;
 		protected Applet applet;
 
 		public ApplicationFormController()
@@ -133,8 +141,9 @@ namespace TypeSystemExplorer.Controllers
 
 		public void LoadXml(string filename)
 		{
-			XmlEditorController.IfNull(() => NewDocument("xmlEditor.xml"));
-			XmlEditorController.View.Editor.LoadFile(filename);
+			xmlSchema = File.ReadAllText(filename);
+			// XmlEditorController.IfNull(() => NewDocument("xmlEditor.xml"));
+			// XmlEditorController.View.Editor.LoadFile(filename);
 			CurrentXmlFilename = filename;
 			// SetCaption(filename);
 
@@ -164,11 +173,12 @@ namespace TypeSystemExplorer.Controllers
 			try
 			{
 				// Speak("System reset.");
-				SemanticTypeTreeController.IfNotNull(c => c.View.Clear());
+				// SemanticTypeTreeController.IfNotNull(c => c.View.Clear());
+				SemanticTypeEditorController.IfNotNull(c => c.View.Clear());
 				PropertyGridController.IfNotNull(c => c.View.Clear());
 				// XmlEditorController.IfNotNull(c => c.View.Clear());
-				OutputController.IfNotNull(c => c.View.Clear());
-				SymbolTableController.IfNotNull(c => c.View.Clear());
+				// OutputController.IfNotNull(c => c.View.Clear());
+				// SymbolTableController.IfNotNull(c => c.View.Clear());
 				InternalReset();
 			}
 			catch (Exception ex)
@@ -178,6 +188,7 @@ namespace TypeSystemExplorer.Controllers
 			}
 			finally
 			{
+				CreateRootNode();
 				LoadXml("protocols.xml");
 				Program.Skin.RegisterReceptor("System", this);
 				Program.Skin.RegisterReceptor("DropReceptor", Program.DropReceptor);
@@ -196,12 +207,12 @@ namespace TypeSystemExplorer.Controllers
 			Form form = MycroParser.InstantiateFromFile<Form>("about.xml", null);
 			form.ShowDialog();
 		}
-
+/*
 		protected void NewXml(object sender, EventArgs args)
 		{
 			if (CheckDirtyModel())
 			{
-				XmlEditorController.IfNotNull(t => t.View.Editor.Document.TextContent = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\r\n");
+				// XmlEditorController.IfNotNull(t => t.View.Editor.Document.TextContent = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\r\n");
 				CurrentXmlFilename = String.Empty;
 			}
 		}
@@ -234,7 +245,7 @@ namespace TypeSystemExplorer.Controllers
 			}
 			else
 			{
-				XmlEditorController.View.Editor.SaveFile(CurrentXmlFilename);
+				// XmlEditorController.View.Editor.SaveFile(CurrentXmlFilename);
 			}
 		}
 
@@ -250,12 +261,12 @@ namespace TypeSystemExplorer.Controllers
 			if (res == DialogResult.OK)
 			{
 				CurrentXmlFilename = sfd.FileName;
-				XmlEditorController.View.Editor.SaveFile(sfd.FileName);
+				// XmlEditorController.View.Editor.SaveFile(sfd.FileName);
 				// MruMenu.AddFile(sfd.FileName);
 				// SetCaption(sfd.FileName);
 			}
 		}
-
+*/
 		protected void Exit(object sender, EventArgs args)
 		{
 			CheckDirtyModel().Then(() => View.Close());
@@ -276,6 +287,7 @@ namespace TypeSystemExplorer.Controllers
 		protected void Shown(object sender, EventArgs args)
 		{
 			// Because I get tired of doing this manually.
+			CreateRootNode();
 			LoadXml("protocols.xml");
 			// LoadApplet();
 		}
@@ -390,6 +402,15 @@ namespace TypeSystemExplorer.Controllers
 			pane.Show(View.DockPanel);
 		}
 
+		protected void ShowSemanticTypeEditor(object sender, EventArgs args)
+		{
+			SemanticTypeEditorController.IfNull(() =>
+			{
+				NewPane("semanticTypeEditor.xml");
+			});
+		}
+
+/*
 		protected void ShowSemanticTypeTree(object sender, EventArgs args)
 		{
 			SemanticTypeTreeController.IfNull(() =>
@@ -413,7 +434,7 @@ namespace TypeSystemExplorer.Controllers
 				NewDocument("symbolTable.xml");
 			});
 		}
-
+*/
 		protected void ShowVisualizer(object sender, EventArgs args)
 		{
 			VisualizerController.IfNull(() =>
@@ -429,7 +450,7 @@ namespace TypeSystemExplorer.Controllers
 				NewDocument("propertyGrid.xml");
 			});
 		}
-
+/*
 		protected void ShowOutput(object sender, EventArgs args)
 		{
 			OutputController.IfNull(() =>
@@ -437,7 +458,7 @@ namespace TypeSystemExplorer.Controllers
 					NewDocument("output.xml");
 				});
 		}
-
+*/
 		public void SetMenuCheckedState(string menuName, bool state)
 		{
 			View.SetMenuCheckState(menuName, state);
@@ -450,11 +471,15 @@ namespace TypeSystemExplorer.Controllers
 
 		public void PaneClosed(PaneView pane)
 		{
-			if (pane is SemanticTypeTreeView)
+			// if (pane is SemanticTypeTreeView)
+			//{
+			//	SemanticTypeTreeController = null;
+			//}
+			if (pane is SemanticTypeEditorView)
 			{
-				SemanticTypeTreeController = null;
+				SemanticTypeEditorController = null;
 			}
-			else if (pane is PropertyGridView)
+			if (pane is PropertyGridView)
 			{
 				PropertyGridController = null;
 			}
@@ -468,11 +493,16 @@ namespace TypeSystemExplorer.Controllers
 		{
 			try
 			{
-				Program.SemanticTypeSystem.Parse(XmlEditorController.View.Editor.Document.TextContent);
-
+				Program.SemanticTypeSystem.Parse(xmlSchema);
+/*
 				if (SemanticTypeTreeController != null)
 				{
 					SemanticTypeTreeController.View.Update(Program.SemanticTypeSystem);
+				}
+*/
+				if (SemanticTypeEditorController != null)
+				{
+					SemanticTypeEditorController.View.Update(Program.SemanticTypeSystem);
 				}
 			}
 			catch (Exception ex)
@@ -489,7 +519,7 @@ namespace TypeSystemExplorer.Controllers
 			}
 
 			string result = Program.SemanticTypeSystem.GenerateCode();
-			OutputController.View.Editor.Document.TextContent = result;
+			// OutputController.View.Editor.Document.TextContent = result;
 		}
 
 		public void Compile(object sender, EventArgs args)
@@ -500,7 +530,7 @@ namespace TypeSystemExplorer.Controllers
 			}
 
 			string result = Program.SemanticTypeSystem.GenerateCode();
-			OutputController.View.Editor.Document.TextContent = result;
+			// OutputController.View.Editor.Document.TextContent = result;
 
 			try
 			{
@@ -1029,6 +1059,26 @@ namespace TypeSystemExplorer.Controllers
 						break;
 					}
 			}
+		}
+
+		protected void CreateRootNode()
+		{
+			IXtreeNode sc = new GenericController<Schema>();
+
+			//schemaDef = (SchemaDef)((GenericController<SchemaDef>)sc).Instance;
+			//rootNode = sdTree.AddNode(sc, null);
+			//pgProperties.SelectedObject = schemaDef;
+
+			Schema = (Schema)((GenericController<Schema>)sc).Instance;
+
+			if (SemanticTypeEditorController != null)
+			{
+				SemanticTypeEditorController.View.AddNode(sc, null);
+			}
+			// rootNode = sdTree.AddNode(sc, null);
+			// pgProperties.SelectedObject = schemaDef;
+
+			// sdTree.SelectedNode = sdTree.Nodes[0];
 		}
 	}
 }

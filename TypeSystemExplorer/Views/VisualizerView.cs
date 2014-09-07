@@ -382,11 +382,11 @@ namespace TypeSystemExplorer.Views
 
 #if WHITE_BACKGROUND
 		protected Pen receptorLineColor = new Pen(Color.Blue); // new Pen(Color.FromArgb(40, 40, 60));
-		protected Pen carrierPen = new Pen(Color.Yellow);
+		protected Pen carrierPen = new Pen(Color.Red);
 #endif
 #if BLACK_BACKGROUND
 		protected Pen receptorLineColor = new Pen(Color.Cyan); // new Pen(Color.FromArgb(40, 40, 60));
-		protected Pen carrierPen = new Pen(Color.Red);
+		protected Pen carrierPen = new Pen(Color.Yellow);
 #endif
 
 		protected Pen receptorLineColor2 = new Pen(Color.Orange); // new Pen(Color.FromArgb(40, 40, 60));
