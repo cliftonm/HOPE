@@ -40,6 +40,11 @@ namespace TypeSystemExplorer.Views
 			base.WhenHandleDestroyed(sender, e);
 		}
 
+		public void Clear()
+		{
+			TreeView.Clear();
+		}
+
 		public TreeNode AddNode(IXtreeNode inst, TreeNode parent)
 		{
 			TreeNode node = TreeView.AddNode(inst, parent);

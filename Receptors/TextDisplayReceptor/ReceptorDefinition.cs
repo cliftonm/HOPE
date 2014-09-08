@@ -5,7 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml;
 
+using Clifton.MycroParser;
 using Clifton.Receptor.Interfaces;
 using Clifton.SemanticTypeSystem.Interfaces;
 using Clifton.Tools.Strings.Extensions;
@@ -20,8 +22,23 @@ namespace TextDisplayReceptor
 
 		public ReceptorDefinition(IReceptorSystem rsys) : base(rsys)
 		{
-			AddReceiveProtocol("Text");
-			AddReceiveProtocol("TextToSpeech");
+			InitializeViewer();
+			AddReceiveProtocol("Text", (Action<dynamic>)(signal =>
+				{
+					string text = signal.Value;
+
+					if (form == null)
+					{
+						// again!
+						InitializeViewer();
+					}
+
+					if (!String.IsNullOrEmpty(text))
+					{
+						tb.AppendText(text.StripHtml());
+						tb.AppendText("\r\n");
+					}
+				}));
 		}
 
 		public override void Terminate()
@@ -35,48 +52,22 @@ namespace TextDisplayReceptor
 			}
 		}
 
-		public override void ProcessCarrier(ICarrier carrier)
+		protected void InitializeViewer()
 		{
-			// Create the textbox if it doesn't exist.
-			if (tb == null)
-			{
-				form = new Form();
-				form.Text = "Text Output";
-				form.Location = new Point(100, 100);
-				form.Size = new Size(400, 400);
-				form.StartPosition = FormStartPosition.Manual;
-				tb = new TextBox();
-				tb.Multiline = true;
-				tb.WordWrap = true;
-				tb.ReadOnly = true;
-				tb.ScrollBars = ScrollBars.Vertical;
-				form.Controls.Add(tb);
-				tb.Dock = DockStyle.Fill;
-				form.Show();
-				form.FormClosing += WhenFormClosing;
-			}
-
-			string text = String.Empty;
-
-			if (carrier.Protocol.DeclTypeName == "Text")
-			{
-				text = carrier.Signal.Value;
-			}
-			else
-			{
-				text = carrier.Signal.Text;
-			}
-
-			if (!String.IsNullOrEmpty(text))
-			{
-				tb.AppendText(text.StripHtml());
-				tb.AppendText("\r\n");
-			}
+			MycroParser mp = new MycroParser();
+			XmlDocument doc = new XmlDocument();
+			doc.Load("TextViewer.xml");
+			mp.Load(doc, "Form", null);
+			form = (Form)mp.Process();
+			tb = (TextBox)mp.ObjectCollection["tbText"];
+			form.Show();
+			form.FormClosing += WhenFormClosing;
 		}
 
 		protected void WhenFormClosing(object sender, FormClosingEventArgs e)
 		{
 			// Will need to create a new form when new text arrives.
+			form = null;
 			tb = null;
 			e.Cancel = false;
 		}

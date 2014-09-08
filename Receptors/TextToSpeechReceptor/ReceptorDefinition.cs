@@ -26,28 +26,12 @@ namespace TextToSpeech
 			speechSynth.Rate = -2; // -4;
 			speechQueue = new Queue<string>();
 
-			AddReceiveProtocol("TextToSpeech");
-			AddReceiveProtocol("Text");
-		}
-
-		/// <summary>
-		/// Handles both "TextToSpeech" and "Text" protocols.
-		/// </summary>
-		public override void ProcessCarrier(ICarrier carrier)
-		{
-			string msg = String.Empty; ;
-
-			if (carrier.Protocol.DeclTypeName == "TextToSpeech")
-			{
-				msg = carrier.Signal.Text;
-			}
-			else if (carrier.Protocol.DeclTypeName == "Text")
-			{
-				msg = carrier.Signal.Value;
-				msg = msg.StripHtml();
-			}
-
-			Speak(msg);
+			AddReceiveProtocol("Text", (Action<dynamic>)(signal =>
+				{
+					string msg = signal.Value;
+					msg = msg.StripHtml();
+					Speak(msg);
+				}));
 		}
 
 		protected void OnSpeakCompleted(object sender, SpeakCompletedEventArgs e)
@@ -72,5 +56,3 @@ namespace TextToSpeech
 		}
 	}
 }
-
-

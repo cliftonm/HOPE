@@ -19,7 +19,7 @@ namespace HelloWorldReceptor
 		public ReceptorDefinition(IReceptorSystem rsys) : base(rsys)
 		{
 			InitializeRepeatedHelloEvent();
-			AddEmitProtocol("DebugMessage");
+			AddEmitProtocol("LoggerMessage");
 		}
 
 		public override void Terminate()

@@ -3,6 +3,8 @@
 // #define BLACK_BACKGROUND
 #define WHITE_BACKGROUND
 
+#define STRAIGHT_LINE_CONNECTIONS
+
 // #define REMOVE_EMPTY_MEMBRANES
 
 using System;
@@ -1994,9 +1996,19 @@ namespace TypeSystemExplorer.Views
 							pen = receptorLineColor;
 							break;
 					}
-					// Just a straight line:
-					// e.Graphics.DrawLine(receptorLineColor, SurfaceOffsetAdjust(line.P1), SurfaceOffsetAdjust(line.P2));
 
+#if STRAIGHT_LINE_CONNECTIONS
+					// Just a straight line:
+					// The source starting point of the line should be placed on the edge of the receptor.
+					double dx = line.P1.X - line.P2.X;
+					double dy = line.P1.Y - line.P2.Y;
+					double angle = Math.Atan2(dy, dx);
+					Point start = new Point((int)(line.P1.X - ReceptorSize.Width/2 * Math.Cos(angle)), (int)(line.P1.Y - ReceptorSize.Width/2 * Math.Sin(angle)));
+					e.Graphics.DrawLine(pen, SurfaceOffsetAdjust(start), SurfaceOffsetAdjust(line.P2));
+					// draw a small numb at the terminating point.
+					Point ctr = SurfaceOffsetAdjust(line.P2);
+					e.Graphics.FillEllipse(new SolidBrush(pen.Color), new Rectangle(ctr.X - 3, ctr.Y - 3, 6, 6));
+#else
 					// The source starting point of the line should be placed on the edge of the receptor.
 					double dx = line.P1.X - line.P2.X;
 					double dy = line.P1.Y - line.P2.Y;
@@ -2019,6 +2031,7 @@ namespace TypeSystemExplorer.Views
 						// draw a small numb at the terminating point.
 						e.Graphics.FillEllipse(new SolidBrush(pen.Color), new Rectangle(ctr.X - 3, ctr.Y - 3, 6, 6));
 					}
+#endif
 				});
 
 				// Draw receptors.

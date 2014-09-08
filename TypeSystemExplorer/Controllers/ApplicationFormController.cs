@@ -1130,6 +1130,7 @@ namespace TypeSystemExplorer.Controllers
 
 		protected void CreateRootNode()
 		{
+			SemanticTypeEditorController.IfNotNull(ctrl => ctrl.View.Clear());
 			schemaController = new GenericController<Schema>();
 
 			//schemaDef = (SchemaDef)((GenericController<SchemaDef>)sc).Instance;
@@ -1138,11 +1139,11 @@ namespace TypeSystemExplorer.Controllers
 
 			Schema = (Schema)schemaController.Instance;
 
-			if (SemanticTypeEditorController != null)
+			SemanticTypeEditorController.IfNotNull(ctrl =>
 			{
-				SemanticTypeEditorController.View.AddNode(schemaController, null);
+				ctrl.View.AddNode(schemaController, null);
 				PropertyGridController.View.ShowObject(Schema);
-			}
+			});
 
 			// rootNode = sdTree.AddNode(sc, null);
 			// pgProperties.SelectedObject = schemaDef;
