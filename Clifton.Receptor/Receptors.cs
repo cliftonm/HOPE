@@ -254,6 +254,12 @@ namespace Clifton.Receptor
 			{
 				CreateCarrier(from, protocol, signal);
 			}
+			else
+			{
+				// Recurse into SE's of the protocol and emit carriers for those as well, if a receiver exists.
+				// We do this even if there isn't a target for the top-level receptor.
+				CreateCarriersForSemanticElements(from, protocol, signal, false);
+			}
 		}
 
 		/// <summary>
@@ -427,20 +433,10 @@ namespace Clifton.Receptor
 		{
 			protocol.SemanticElements.ForEach(se =>
 				{
+					dynamic subsignal = SemanticTypeSystem.Clone(signal, se); // Clone the contents of the signal's semantic element into the subsignal.
 					ISemanticTypeStruct semStruct = SemanticTypeSystem.GetSemanticTypeStruct(se.Name);
-
-					// Currently, we can only do this if the subelement contains one and only one native or SE element.
-					// TODO: Fix this, as it ends up throwing an exception, see SemanticElement.cs, GetValue "Getting a value on a semantic type requires that the semantic type defines one and only one native type or child semantic type in order to resolve the native type property whose value is to be set."
-					
-					// TODO: Fix this, as the implementation is actually wrong.  To recreate the problem, use the HelloWorld receptor and figure out how to correctly create signals for sub-st's.
-
-					//if (semStruct.NativeTypes.Count + semStruct.SemanticElements.Count == 1)
-					//{
-					//	dynamic subsignal = SemanticTypeSystem.Create(se.Name);
-					//	object val = se.GetValue(SemanticTypeSystem, signal);
-					//	se.SetValue(SemanticTypeSystem, subsignal, val);
-					//	CreateCarrierIfReceiver(from, semStruct, subsignal);
-					//}
+					// Will result in recursive calls for all sub-semantic types.
+					CreateCarrierIfReceiver(from, semStruct, subsignal);
 				});
 		}
 

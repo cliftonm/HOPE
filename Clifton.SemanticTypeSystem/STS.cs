@@ -79,6 +79,38 @@ namespace Clifton.SemanticTypeSystem
 			return t;
 		}
 
+		/// <summary>
+		/// Clone the element of the source signal into the destination signal.
+		/// </summary>
+		/// <param name="destSignal"></param>
+		/// <param name="sourceSignal"></param>
+		/// <param name="elem"></param>
+		public dynamic Clone(dynamic sourceSignal, ISemanticElement elem)
+		{
+			dynamic subsignal = Create(elem.Name);										// Create the sub-signal
+			PropertyInfo pi = sourceSignal.GetType().GetProperty(elem.Name);			// Get the property of the source's sub-type, which will/must be a semantic element
+			object val = pi.GetValue(sourceSignal);										// Get the instance of the semantic element we are cloning.
+
+			ISemanticTypeStruct subSemStruct = GetSemanticTypeStruct(elem.Name);
+
+			foreach (INativeType nativeType in subSemStruct.NativeTypes)
+			{
+				// Copy any native types.
+				object ntVal = nativeType.GetValue(this, val);
+				nativeType.SetValue(this, subsignal, ntVal);
+			}
+
+			// Recurse drilling into semantic types of this type and copying any potential native types.
+			foreach (ISemanticElement semanticElem in subSemStruct.SemanticElements)
+			{
+				dynamic se = Clone((dynamic)val, semanticElem);								// Clone the sub-semantic type
+				PropertyInfo piSub = subsignal.GetType().GetProperty(semanticElem.Name);	// Get the PropertyInfo for this type.
+				piSub.SetValue(subsignal, se);												// Assign the instance of the created semantic type to the value for this property.
+			}
+
+			return subsignal;
+		}
+
 		public void FireCreationDone()
 		{
 			CreationDone.Fire(this, EventArgs.Empty);
