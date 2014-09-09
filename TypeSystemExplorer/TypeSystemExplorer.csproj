@@ -230,6 +230,7 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="bin\Debug\FilterConfig.xml" />
+    <Content Include="bin\Debug\ImageViewer.xml" />
     <Content Include="bin\Debug\mainform.xml">
       <SubType>Designer</SubType>
     </Content>

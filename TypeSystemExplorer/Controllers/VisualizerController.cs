@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -74,7 +75,7 @@ namespace TypeSystemExplorer.Controllers
 						droppedReceptor = dropInto.RegisterReceptor(fn);
 						receptorsRegistered = true;
 					}
-					else if (fn.ToLower().EndsWith(".jpg"))
+					else if (fn.ToLower().RightOfRightmostOf('.').ToLower().Contains(new string[] {"jpg", "png", "bmp"}) != String.Empty)
 					{
 						if (once)
 						{
@@ -85,7 +86,11 @@ namespace TypeSystemExplorer.Controllers
 						// Create carriers for each of our images.
 						ISemanticTypeStruct protocol = Program.SemanticTypeSystem.GetSemanticTypeStruct("ImageFilename");
 						dynamic signal = Program.SemanticTypeSystem.Create("ImageFilename");
-						signal.Filename = fn;
+						// TODO: We need to figure out how to do computed types, so that I can assign a fully qualified name and set the discrete sub-types Path, Name, and FileExtension.
+						// The reverse would also be nice, a "getter" on "FullyQualifiedName" would combine the Path, Name, and FileExtension.
+						signal.Filename.Path.Value = Path.GetDirectoryName(fn);
+						signal.Filename.Name.Value = Path.GetFileNameWithoutExtension(fn);
+						signal.Filename.FileExtension.Value = Path.GetExtension(fn);
 						dropInto.CreateCarrier(Program.Skin["DropReceptor"].Instance, protocol, signal);
 					}
 					else if (fn.ToLower().EndsWith(".xml"))

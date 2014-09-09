@@ -47,6 +47,12 @@
           </NativeTypes>
           <SubTypes />
         </SemanticType>
+        <SemanticType Name="ImageFilename">
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="Filename" />
+          </SubTypes>
+        </SemanticType>
       </SemanticTypes>
     </SemanticTypesContainer>
     <SemanticTypesContainer Name="Message Types">

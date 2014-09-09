@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
 
+using Clifton.ExtensionMethods;
 using Clifton.MycroParser;
 using Clifton.Receptor.Interfaces;
 using Clifton.SemanticTypeSystem.Interfaces;
@@ -22,16 +23,10 @@ namespace TextDisplayReceptor
 
 		public ReceptorDefinition(IReceptorSystem rsys) : base(rsys)
 		{
-			InitializeViewer();
 			AddReceiveProtocol("Text", (Action<dynamic>)(signal =>
 				{
+					form.IfNull(()=>InitializeViewer());
 					string text = signal.Value;
-
-					if (form == null)
-					{
-						// again!
-						InitializeViewer();
-					}
 
 					if (!String.IsNullOrEmpty(text))
 					{
@@ -45,7 +40,7 @@ namespace TextDisplayReceptor
 		{
 			try
 			{
-				form.Close();
+				form.IfNotNull(f => f.Close());
 			}
 			catch
 			{
@@ -54,12 +49,9 @@ namespace TextDisplayReceptor
 
 		protected void InitializeViewer()
 		{
-			MycroParser mp = new MycroParser();
-			XmlDocument doc = new XmlDocument();
-			doc.Load("TextViewer.xml");
-			mp.Load(doc, "Form", null);
-			form = (Form)mp.Process();
-			tb = (TextBox)mp.ObjectCollection["tbText"];
+			Tuple<Form, MycroParser> ret = InitializeViewer("TextViewer.xml");
+			form = ret.Item1;
+			tb = (TextBox)ret.Item2.ObjectCollection["tbText"];
 			form.Show();
 			form.FormClosing += WhenFormClosing;
 		}

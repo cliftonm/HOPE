@@ -47,7 +47,7 @@ namespace TypeSystemExplorer
 
 
 	// Register a "drop" receptor used exclusively for dropping messages onto a membrane.
-	// This allows us to have a separate receptor from "System" and therefore 
+	// This allows us to have a separate receptor from "System" and therefore (TODO: therefore what???)
 	public class DropReceptor : BaseReceptor
 	{
 		public override string Name { get { return "DropReceptor"; } }

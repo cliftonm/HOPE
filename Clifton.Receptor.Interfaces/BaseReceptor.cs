@@ -4,6 +4,8 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Xml;
 
 using Clifton.ExtensionMethods;
 using Clifton.MycroParser;
@@ -377,6 +379,17 @@ namespace Clifton.Receptor.Interfaces
 					// Recurse, adding semantic elements that are part of the parent protocol.
 					AddEmitProtocol(se.Name);
 				});
+		}
+
+		protected virtual Tuple<Form, Clifton.MycroParser.MycroParser> InitializeViewer(string formName)
+		{
+			Clifton.MycroParser.MycroParser mp = new Clifton.MycroParser.MycroParser();
+			XmlDocument doc = new XmlDocument();
+			doc.Load(formName);
+			mp.Load(doc, "Form", null);
+			Form form = (Form)mp.Process();
+
+			return new Tuple<Form, MycroParser.MycroParser>(form, mp);
 		}
 	}
 }
