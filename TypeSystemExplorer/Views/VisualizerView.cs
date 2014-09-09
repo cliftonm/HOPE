@@ -2052,13 +2052,13 @@ namespace TypeSystemExplorer.Views
 						e.Graphics.DrawEllipse(pen, new Rectangle(p, ReceptorSize));
 
 						// A double circle represents an edge receptor.
-						if (kvp.Key.Instance.IsEdgeReceptor)
-						{
-							p.Offset(3, 3);		// GDI draws from the UL corner.
-							Size s = Size.Subtract(ReceptorSize, new Size(6, 6));
-							e.Graphics.DrawEllipse(pen, new Rectangle(p, s));
-							e.Graphics.DrawEllipse(pen, new Rectangle(p, s));
-						}
+						//if (kvp.Key.Instance.IsEdgeReceptor)
+						//{
+						//	p.Offset(3, 3);		// GDI draws from the UL corner.
+						//	Size s = Size.Subtract(ReceptorSize, new Size(6, 6));
+						//	e.Graphics.DrawEllipse(pen, new Rectangle(p, s));
+						//	e.Graphics.DrawEllipse(pen, new Rectangle(p, s));
+						//}
 
 						// Name
 						SizeF strSize = e.Graphics.MeasureString(kvp.Key.Instance.Name, font);
