@@ -4,9 +4,9 @@
       <ixm:Membranes>
         <ixm:MembraneDef Name="Skin">
           <ixm:Receptors>
-            <ixm:ReceptorDef Name="Logger" AssemblyName="LoggingReceptor.dll" Enabled="True" Location="580, 404" />
-            <ixm:ReceptorDef Name="Heartbeat" AssemblyName="HelloWorldReceptor.dll" Enabled="True" Location="456, 327" />
-            <ixm:ReceptorDef Name="Text Display" AssemblyName="TextDisplayReceptor.dll" Enabled="True" Location="327, 225" />
+            <ixm:ReceptorDef Name="Logger" AssemblyName="LoggingReceptor.dll" Enabled="True" Location="261, 221" />
+            <ixm:ReceptorDef Name="Heartbeat" AssemblyName="HelloWorldReceptor.dll" Enabled="True" Location="182, 136" />
+            <ixm:ReceptorDef Name="Text Display" AssemblyName="TextDisplayReceptor.dll" Enabled="True" Location="109, 216" />
           </ixm:Receptors>
           <ixm:Permeabilities>
             <ixm:PermeabilityDef Protocol="LoggerMessage" Direction="Out" Permeable="False" />
