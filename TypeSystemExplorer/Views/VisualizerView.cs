@@ -562,7 +562,7 @@ namespace TypeSystemExplorer.Views
 				// Disable the receptor -- too many images.
 				// TODO: Better way of indicating this to the user.
 				// TODO: We want to limit the total number of images across all viewers.
-				r.Enabled = false;
+				r.Instance.Enabled = false;
 				Invalidate(true);
 			}
 		}
@@ -1456,7 +1456,7 @@ namespace TypeSystemExplorer.Views
 					}
 					else
 					{
-						receptor.Enabled ^= true;
+						receptor.Instance.Enabled ^= true;
 						Invalidate(true);
 					}
 
@@ -1493,7 +1493,7 @@ namespace TypeSystemExplorer.Views
 			object ckEnabled;
 			if (mp.ObjectCollection.TryGetValue("ckEnabled", out ckEnabled))
 			{
-				((CheckBox)ckEnabled).Checked = r.Enabled;
+				((CheckBox)ckEnabled).Checked = r.Instance.Enabled;
 			}
 		}
 
@@ -1529,7 +1529,7 @@ namespace TypeSystemExplorer.Views
 			object ckEnabled;
 			if (ci.Parser.ObjectCollection.TryGetValue("ckEnabled", out ckEnabled))
 			{
-				ci.Receptor.Enabled = ((CheckBox)ckEnabled).Checked;
+				ci.Receptor.Instance.Enabled = ((CheckBox)ckEnabled).Checked;
 				Invalidate(true);
 			}
 
@@ -2039,7 +2039,7 @@ namespace TypeSystemExplorer.Views
 				receptorLocation.ForEach(kvp =>
 					{
 						// red for disabled receptors, green for enabled.
-						Pen pen = kvp.Key.Enabled ? penColors[1] : penColors[0];
+						Pen pen = kvp.Key.Instance.Enabled ? penColors[1] : penColors[0];
 						Point p = SurfaceOffsetAdjust(kvp.Value);
 						p.Offset(-ReceptorSize.Width / 2, -ReceptorSize.Height / 2);
 						Point bottom = p;
@@ -2126,7 +2126,7 @@ namespace TypeSystemExplorer.Views
 						SurfaceOffsetAdjust(new Point(a.StartPosition.X + idx, a.StartPosition.Y + idy)), 
 					};
 
-						e.Graphics.DrawLines(penColors[3], triangle);
+						e.Graphics.DrawLines(carrierPen, triangle);
 					});
 // Rework Idea:
 /*

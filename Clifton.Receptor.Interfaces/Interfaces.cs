@@ -38,6 +38,7 @@ namespace Clifton.Receptor.Interfaces
 		string Subname { get; }
 		bool IsEdgeReceptor { get; }
 		bool IsHidden { get; }
+		bool Enabled { get; set; }
 		string ConfigurationUI { get; }
 
 		// The receptor system must be reset when a receptor moves to a different membrane,
@@ -102,7 +103,6 @@ namespace Clifton.Receptor.Interfaces
 		string Name { get; }
 		string AssemblyName { get; }
 		IReceptorInstance Instance { get; }
-		bool Enabled { get; set; }
 	}
 
 	/// <summary>

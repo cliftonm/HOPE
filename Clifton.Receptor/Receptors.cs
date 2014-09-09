@@ -451,13 +451,13 @@ namespace Clifton.Receptor
 			if (MasterReceptorConnectionList.TryGetValue(from, out targets))
 			{
 				// We're only interested in enabled receptors.
-				ret = targets.Any(r => r != from && r.Enabled && r.Instance.GetReceiveProtocols().Select(rp=>rp.Protocol).Contains(protocol.DeclTypeName));
+				ret = targets.Any(r => r != from && r.Instance.Enabled && r.Instance.GetReceiveProtocols().Select(rp=>rp.Protocol).Contains(protocol.DeclTypeName));
 			}
 
 			if (!ret)
 			{
 				// check protocol map for receivers that are not the issuing receptor:
-				ret = protocolReceptorMap.Any(kvp => (kvp.Key == protocol.DeclTypeName) && kvp.Value.Any(r => (r != from) && (r.Enabled))); // .ContainsKey(protocol.DeclTypeName);
+				ret = protocolReceptorMap.Any(kvp => (kvp.Key == protocol.DeclTypeName) && kvp.Value.Any(r => (r != from) && (r.Instance.Enabled))); // .ContainsKey(protocol.DeclTypeName);
 			}
 
 			return ret;
@@ -479,7 +479,7 @@ namespace Clifton.Receptor
 			}
 
 			// Only enabled receptors and receptors that are not the source of the carrier.
-			List<IReceptor> filteredTargets = targets.Where(r => r != from && r.Enabled && r.Instance.GetReceiveProtocols().Select(rq => rq.Protocol).Contains(protocol.DeclTypeName)).ToList();
+			List<IReceptor> filteredTargets = targets.Where(r => r != from && r.Instance.Enabled && r.Instance.GetReceiveProtocols().Select(rq => rq.Protocol).Contains(protocol.DeclTypeName)).ToList();
 
 			// Will have a count of 0 if the receptor is the system receptor, ie, carrier animations or other protocols.
 			// TODO: This seems kludgy, is there a better way of working with this?
@@ -491,14 +491,14 @@ namespace Clifton.Receptor
 				// When the try fails, it sets targets to null.
 				if (protocolReceptorMap.TryGetValue(protocol.DeclTypeName, out targets))
 				{
-					filteredTargets = targets.Where(r => r.Enabled && (r != from)).ToList();
+					filteredTargets = targets.Where(r => r.Instance.Enabled && (r != from)).ToList();
 				}
 			}
 
 			// Lastly, filter the list by qualified receptors that are not the source of the carrier.
 			List<IReceptor> newTargets = new List<IReceptor>();
 
-			filteredTargets.Where(r=>r != from && r.Enabled).ForEach(t =>
+			filteredTargets.Where(r=>r != from && r.Instance.Enabled).ForEach(t =>
 				{
 					// Get the list of receive actions and filters for the specific protocol.
 					var receiveList = t.Instance.GetReceiveProtocols().Where(rp => rp.Protocol == protocol.DeclTypeName);

@@ -53,7 +53,7 @@ namespace TypeSystemExplorer.Controllers
 			bool receptorsRegistered = false;
 			View.DropPoint = View.NegativeSurfaceOffsetAdjust(new Point(args.X, args.Y));
 			View.StartDrop = true;
-			IMembrane dropInto = View.FindInnermostSelectedMembrane(View.DropPoint, Program.Skin);
+			IMembrane dropInto = View.FindInnermostSelectedMembrane(View.DropPoint, Program.Skin, false);
 			dropInto.IfNull(() => dropInto = Program.Skin);
 			IReceptor droppedReceptor = null;
 

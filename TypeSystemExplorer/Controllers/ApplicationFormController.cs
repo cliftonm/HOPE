@@ -755,7 +755,7 @@ namespace TypeSystemExplorer.Controllers
 					receptors.AppendChild(rNode);
 					AddAttribute(rNode, "Name", r.Name);
 					AddAttribute(rNode, "AssemblyName", r.AssemblyName);
-					AddAttribute(rNode, "Enabled", r.Enabled.ToString());
+					AddAttribute(rNode, "Enabled", r.Instance.Enabled.ToString());
 
 					if (!r.Instance.IsHidden)
 					{
@@ -902,7 +902,7 @@ namespace TypeSystemExplorer.Controllers
 				{
 					IReceptor r = membrane.RegisterReceptor(n.Name, n.AssemblyName);
 					receptorLocationMap[r] = n.Location;
-					r.Enabled = n.Enabled;
+					r.Instance.Enabled = n.Enabled;
 					configs[r] = n.UserConfigs;
 				});
 
@@ -1047,6 +1047,7 @@ namespace TypeSystemExplorer.Controllers
 		public string Subname { get { return String.Empty; } }
 		public bool IsEdgeReceptor { get { return false; } }
 		public bool IsHidden { get { return true; } }
+		public bool Enabled { get { return true; } set { } }
 		public string ConfigurationUI { get { return null; } }
 
 		public IReceptorSystem ReceptorSystem

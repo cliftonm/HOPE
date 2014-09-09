@@ -12,7 +12,7 @@ namespace HelloWorldReceptor
 {
     public class ReceptorDefinition : BaseReceptor
     {
-		public override string Name { get { return "Heartbeat"; } }
+		public override string Name { get { return "Hello World"; } }
 
 		protected Timer timer;
 
@@ -38,7 +38,10 @@ namespace HelloWorldReceptor
 
 		protected void SayHello(object sender, EventArgs args)
 		{
-			CreateCarrier("LoggerMessage", signal => signal.TextMessage.Text.Value = "Hello world!");
+			if (Enabled)
+			{
+				CreateCarrier("LoggerMessage", signal => signal.TextMessage.Text.Value = "Hello world!");
+			}
 		}
     }
 }

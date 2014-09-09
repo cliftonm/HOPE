@@ -55,6 +55,7 @@ namespace Clifton.Receptor.Interfaces
 		public virtual string Subname { get { return String.Empty; } }
 		public virtual bool IsEdgeReceptor { get { return false; } }
 		public virtual bool IsHidden { get { return false; } }
+		public virtual bool Enabled { get; set; }
 
 		/// <summary>
 		/// Allows a receptor to specify a MyXaml (MycroXaml) form UI for configuring the receptor.
@@ -85,6 +86,7 @@ namespace Clifton.Receptor.Interfaces
 			emitProtocols = new List<string>();
 			gates = new Dictionary<string, Gate>();
 			compositeGates = new Dictionary<string, CompositeGate>();
+			Enabled = true;
 		}
 
 		/// <summary>
