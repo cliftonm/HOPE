@@ -7,6 +7,7 @@ using System.Text;
 using Clifton.Assertions;
 using Clifton.ExtensionMethods;
 using Clifton.SemanticTypeSystem.Interfaces;
+using Clifton.Tools.Strings.Extensions;
 
 namespace Clifton.SemanticTypeSystem
 {
@@ -18,6 +19,14 @@ namespace Clifton.SemanticTypeSystem
 		{
 			Type = newType;
 		}
+	}
+
+	public class FullyQualifiedNativeType : IFullyQualifiedNativeType
+	{
+		public string Name { get { return FullyQualifiedName.RightOfRightmostOf('.'); } }
+		public string FullyQualifiedName { get; set; }
+		public INativeType NativeType { get; set; }
+		public object Value { get; set; }				// Only used when getting FQNT's for an associated signal.
 	}
 
 	public class STS : ISemanticTypeSystem
@@ -80,18 +89,16 @@ namespace Clifton.SemanticTypeSystem
 		}
 
 		/// <summary>
-		/// Clone the element of the source signal into the destination signal.
+		/// Clone the element of the source signal into a new destination signal.  
+		/// This does NOT clone the signal--it is designed to clone the specific child semantic element of the supplied signal.
 		/// </summary>
-		/// <param name="destSignal"></param>
-		/// <param name="sourceSignal"></param>
-		/// <param name="elem"></param>
-		public dynamic Clone(dynamic sourceSignal, ISemanticElement elem)
+		public dynamic Clone(dynamic sourceSignal, ISemanticElement childElem)
 		{
-			dynamic subsignal = Create(elem.Name);										// Create the sub-signal
-			PropertyInfo pi = sourceSignal.GetType().GetProperty(elem.Name);			// Get the property of the source's sub-type, which will/must be a semantic element
+			dynamic subsignal = Create(childElem.Name);										// Create the sub-signal
+			PropertyInfo pi = sourceSignal.GetType().GetProperty(childElem.Name);			// Get the property of the source's sub-type, which will/must be a semantic element
 			object val = pi.GetValue(sourceSignal);										// Get the instance of the semantic element we are cloning.
 
-			ISemanticTypeStruct subSemStruct = GetSemanticTypeStruct(elem.Name);
+			ISemanticTypeStruct subSemStruct = GetSemanticTypeStruct(childElem.Name);
 
 			foreach (INativeType nativeType in subSemStruct.NativeTypes)
 			{
@@ -109,6 +116,72 @@ namespace Clifton.SemanticTypeSystem
 			}
 
 			return subsignal;
+		}
+
+		// Returns a list of fully qualified (full path) type names for the final implementing native types.
+		public List<IFullyQualifiedNativeType> GetFullyQualifiedNativeTypes(string protocolName)
+		{
+			List<IFullyQualifiedNativeType> ret = new List<IFullyQualifiedNativeType>();
+			string stack = protocolName;
+			ISemanticTypeStruct st = GetSemanticTypeStruct(protocolName);
+			RecurseGetFullyQualifiedNativeTypes(st, stack, ret);
+
+			return ret;
+		}
+
+		public List<IFullyQualifiedNativeType> GetFullyQualifiedNativeTypeValues(dynamic signal, string protocolName)
+		{
+			List<IFullyQualifiedNativeType> ret = new List<IFullyQualifiedNativeType>();
+			string stack = protocolName;
+			ISemanticTypeStruct st = GetSemanticTypeStruct(protocolName);
+			RecurseGetFullyQualifiedNativeTypeValues(signal, st, stack, ret);
+
+			return ret;
+		}
+
+		protected void RecurseGetFullyQualifiedNativeTypes(ISemanticTypeStruct st, string stack, List<IFullyQualifiedNativeType> fqntList)
+		{
+			foreach (INativeType nativeType in st.NativeTypes)
+			{
+				fqntList.Add(new FullyQualifiedNativeType() { FullyQualifiedName = stack + "." + nativeType.Name, NativeType = nativeType });
+			}
+
+			foreach (ISemanticElement childElem in st.SemanticElements)
+			{
+				stack = stack + "." + childElem.Name;			// push
+				ISemanticTypeStruct stChild = GetSemanticTypeStruct(childElem.Name);
+				RecurseGetFullyQualifiedNativeTypes(stChild, stack, fqntList);
+				stack = stack.LeftOfRightmostOf('.');			// pop
+			}
+		}
+
+		protected void RecurseGetFullyQualifiedNativeTypeValues(object signal, ISemanticTypeStruct st, string stack, List<IFullyQualifiedNativeType> fqntList)
+		{
+			foreach (INativeType nativeType in st.NativeTypes)
+			{
+				// Acquire value through reflection.
+				PropertyInfo pi = signal.GetType().GetProperty(nativeType.Name);
+				object val = pi.GetValue(signal);
+
+				fqntList.Add(new FullyQualifiedNativeType() 
+				{ 
+					FullyQualifiedName = stack + "." + nativeType.Name, 
+					NativeType = nativeType,
+					Value = val
+				});
+			}
+
+			foreach (ISemanticElement childElem in st.SemanticElements)
+			{
+				// Acquire child SE through reflection:
+				PropertyInfo piSub = signal.GetType().GetProperty(childElem.Name);
+				object childSignal = piSub.GetValue(signal);
+
+				stack = stack + "." + childElem.Name;			// push
+				ISemanticTypeStruct stChild = GetSemanticTypeStruct(childElem.Name);
+				RecurseGetFullyQualifiedNativeTypeValues(childSignal, stChild, stack, fqntList);
+				stack = stack.LeftOfRightmostOf('.');			// pop
+			}
 		}
 
 		public void FireCreationDone()

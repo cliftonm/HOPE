@@ -126,5 +126,15 @@ namespace Clifton.SemanticTypeSystem.Interfaces
 		ISemanticTypeStruct GetSemanticTypeStruct(string typeName);
 		Dictionary<string, ISemanticType> SemanticTypes { get;}
 		dynamic Clone(dynamic sourceSignal, ISemanticElement se);
+		List<IFullyQualifiedNativeType> GetFullyQualifiedNativeTypes(string protocolName);
+		List<IFullyQualifiedNativeType> GetFullyQualifiedNativeTypeValues(dynamic signal, string protocolName);
+	}
+
+	public interface IFullyQualifiedNativeType
+	{
+		string Name { get; }
+		string FullyQualifiedName { get;}
+		INativeType NativeType { get;}
+		object Value { get; }
 	}
 }

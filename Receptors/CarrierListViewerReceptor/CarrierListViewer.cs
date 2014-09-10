@@ -157,20 +157,12 @@ namespace CarrierListViewerReceptor
 			if (!String.IsNullOrEmpty(ProtocolName))
 			{
 				DataTable dt = new DataTable();
-				ISemanticTypeStruct st = rsys.SemanticTypeSystem.GetSemanticTypeStruct(ProtocolName);
-				st.AllTypes.ForEach(t =>
+				List<IFullyQualifiedNativeType> columns = rsys.SemanticTypeSystem.GetFullyQualifiedNativeTypes(ProtocolName);
+
+				columns.ForEach(col =>
 					{
-						try
-						{
-							// TODO: MofN has two native types, which causes an error when getting the implementing type (can only have one native type.)
-							// What we need here is the ability to have sub-table of child native types for the current semantic type.
-							// Right now, we're just ignoring the problem.
-							DataColumn dc = new DataColumn(t.Name, t.GetImplementingType(rsys.SemanticTypeSystem));
-							dt.Columns.Add(dc);
-						}
-						catch(Exception ex)
-						{
-						}
+						DataColumn dc = new DataColumn(col.FullyQualifiedName, col.NativeType.GetImplementingType(rsys.SemanticTypeSystem));
+						dt.Columns.Add(dc);
 					});
 
 				dvSignals = new DataView(dt);
@@ -188,14 +180,16 @@ namespace CarrierListViewerReceptor
 				RemoveReceiveProtocol(oldProtocol);
 			}
 
-			oldProtocol = ProtocolName;
-			AddReceiveProtocol(ProtocolName, (Action<dynamic>)((signal) => ShowSignal(signal)));
+			if (!String.IsNullOrEmpty(ProtocolName))
+			{
+				oldProtocol = ProtocolName;
+				AddReceiveProtocol(ProtocolName, (Action<dynamic>)((signal) => ShowSignal(signal)));
 
-			// Add other semantic type emitters:
-			RemoveEmitProtocols();
-			ISemanticTypeStruct st = rsys.SemanticTypeSystem.GetSemanticTypeStruct(ProtocolName);
-			// TODO: REACTIVATE THIS
-			// st.SemanticElements.ForEach(se => AddEmitProtocol(se.Name));
+				// Add other semantic type emitters:
+				RemoveEmitProtocols();
+				ISemanticTypeStruct st = rsys.SemanticTypeSystem.GetSemanticTypeStruct(ProtocolName);
+				st.SemanticElements.ForEach(se => AddEmitProtocol(se.Name));
+			}
 		}
 
 		/// <summary>
@@ -204,18 +198,13 @@ namespace CarrierListViewerReceptor
 		/// <param name="signal"></param>
 		protected void ShowSignal(dynamic signal)
 		{
+			List<IFullyQualifiedNativeType> colValues = rsys.SemanticTypeSystem.GetFullyQualifiedNativeTypeValues(signal, ProtocolName);
+
 			try
 			{
 				DataTable dt = dvSignals.Table;
 				DataRow row = dt.NewRow();
-				ISemanticTypeStruct st = rsys.SemanticTypeSystem.GetSemanticTypeStruct(ProtocolName);
-
-				st.AllTypes.ForEach(t =>
-					{
-						object val = t.GetValue(rsys.SemanticTypeSystem, signal);
-						row[t.Name] = val;
-					});
-
+				colValues.ForEach(cv => row[cv.FullyQualifiedName] = cv.Value);
 				dt.Rows.Add(row);
 			}
 			catch (Exception ex)
