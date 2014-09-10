@@ -103,6 +103,9 @@ namespace Clifton.Receptor.Interfaces
 		string Name { get; }
 		string AssemblyName { get; }
 		IReceptorInstance Instance { get; }
+
+		// Used in deserialization only, passed on to the instance when the receptor's implementing instance is created.
+		bool Enabled { get; set; }
 	}
 
 	/// <summary>

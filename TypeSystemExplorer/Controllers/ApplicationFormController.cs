@@ -57,6 +57,7 @@ namespace TypeSystemExplorer.Controllers
 //		public SemanticTypeTreeController SemanticTypeTreeController { get; protected set; }
 		public SemanticTypeEditorController SemanticTypeEditorController { get; protected set; }
 		public PropertyGridController PropertyGridController { get; protected set; }
+		public ReceptorChooserController ReceptorChooserController { get; protected set; }
 //		public XmlEditorController XmlEditorController { get; set; }		// The active editor.
 //		public OutputController OutputController { get; set; }
 //		public SymbolTableController SymbolTableController { get; set; }
@@ -441,31 +442,39 @@ namespace TypeSystemExplorer.Controllers
 			});
 		}
 
-/*
-		protected void ShowSemanticTypeTree(object sender, EventArgs args)
+		protected void ShowReceptorChooser(object sender, EventArgs args)
 		{
-			SemanticTypeTreeController.IfNull(() =>
+			ReceptorChooserController.IfNull(() =>
 			{
-				NewPane("semanticTypeTree.xml");
+				NewPane("receptorChooser.xml");
 			});
 		}
 
-		protected void ShowXmlEditor(object sender, EventArgs args)
-		{
-			XmlEditorController.IfNull(() =>
-			{
-				NewDocument("xmlEditor.xml");
-			});
-		}
+		/*
+				protected void ShowSemanticTypeTree(object sender, EventArgs args)
+				{
+					SemanticTypeTreeController.IfNull(() =>
+					{
+						NewPane("semanticTypeTree.xml");
+					});
+				}
 
-		protected void ShowSymbolTable(object sender, EventArgs args)
-		{
-			SymbolTableController.IfNull(() =>
-			{
-				NewDocument("symbolTable.xml");
-			});
-		}
-*/
+				protected void ShowXmlEditor(object sender, EventArgs args)
+				{
+					XmlEditorController.IfNull(() =>
+					{
+						NewDocument("xmlEditor.xml");
+					});
+				}
+
+				protected void ShowSymbolTable(object sender, EventArgs args)
+				{
+					SymbolTableController.IfNull(() =>
+					{
+						NewDocument("symbolTable.xml");
+					});
+				}
+		*/
 		protected void ShowVisualizer(object sender, EventArgs args)
 		{
 			VisualizerController.IfNull(() =>
@@ -510,9 +519,13 @@ namespace TypeSystemExplorer.Controllers
 			{
 				SemanticTypeEditorController = null;
 			}
-			if (pane is PropertyGridView)
+			else if (pane is PropertyGridView)
 			{
 				PropertyGridController = null;
+			}
+			else if (pane is ReceptorChooserView)
+			{
+				ReceptorChooserController = null;
 			}
 			else
 			{
@@ -902,7 +915,7 @@ namespace TypeSystemExplorer.Controllers
 				{
 					IReceptor r = membrane.RegisterReceptor(n.Name, n.AssemblyName);
 					receptorLocationMap[r] = n.Location;
-					r.Instance.Enabled = n.Enabled;
+					r.Enabled = n.Enabled;
 					configs[r] = n.UserConfigs;
 				});
 

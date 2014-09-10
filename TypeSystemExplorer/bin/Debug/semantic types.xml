@@ -58,25 +58,34 @@
     <SemanticTypesContainer Name="Message Types">
       <SemanticTypes>
         <SemanticType Name="DebugMessage">
-          <NativeTypes />
+          <NativeTypes>
+            <NativeType Name="MessageTime" ImplementingType="DateTime" />
+          </NativeTypes>
           <SubTypes>
             <SubType Name="TextMessage" />
           </SubTypes>
         </SemanticType>
         <SemanticType Name="LoggerMessage">
-          <NativeTypes />
+          <NativeTypes>
+            <NativeType Name="MessageTime" ImplementingType="DateTime" />
+          </NativeTypes>
           <SubTypes>
             <SubType Name="TextMessage" />
           </SubTypes>
         </SemanticType>
         <SemanticType Name="ErrorMessage">
-          <NativeTypes />
+          <NativeTypes>
+            <NativeType Name="MessageTime" ImplementingType="DateTime" />
+          </NativeTypes>
           <SubTypes>
             <SubType Name="TextMessage" />
           </SubTypes>
         </SemanticType>
         <SemanticType Name="ExceptionMessage">
-          <NativeTypes />
+          <NativeTypes>
+            <NativeType Name="MessageTime" ImplementingType="DateTime" />
+            <NativeType Name="ReceptorName" ImplementingType="string" />
+          </NativeTypes>
           <SubTypes>
             <SubType Name="TextMessage" />
           </SubTypes>

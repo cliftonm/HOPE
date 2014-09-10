@@ -40,7 +40,12 @@ namespace HelloWorldReceptor
 		{
 			if (Enabled)
 			{
-				CreateCarrier("LoggerMessage", signal => signal.TextMessage.Text.Value = "Hello world!");
+				CreateCarrier("LoggerMessage", signal =>
+					{
+						// TODO: We need "calculated" fields, ones that automatically populate with a constant (much like computed fields, which perform a computation.)
+						signal.MessageTime = DateTime.Now;
+						signal.TextMessage.Text.Value = "Hello world!";
+					});
 			}
 		}
     }

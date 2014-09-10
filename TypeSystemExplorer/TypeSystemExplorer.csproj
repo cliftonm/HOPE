@@ -64,6 +64,7 @@
     <Compile Include="Actions\SetDocumentText.cs" />
     <Compile Include="Controllers\ApplicationFormController.cs" />
     <Compile Include="Controllers\PropertyGridController.cs" />
+    <Compile Include="Controllers\ReceptorChooserController.cs" />
     <Compile Include="Controllers\SemanticTypeEditorController.cs" />
     <Compile Include="Controllers\VisualizerController.cs" />
     <Compile Include="Controls\DataGridViewControl.cs">
@@ -114,6 +115,9 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Views\PropertyGridView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\ReceptorChooserView.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Views\SemanticTypeEditorView.cs">
@@ -248,6 +252,7 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="bin\Debug\r-test4.xml" />
+    <Content Include="bin\Debug\ReceptorChooser.xml" />
     <Content Include="bin\Debug\Receptors.xml" />
     <Content Include="bin\Debug\Receptors2.xml">
       <SubType>Designer</SubType>

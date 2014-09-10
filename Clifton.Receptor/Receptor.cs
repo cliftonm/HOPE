@@ -161,6 +161,7 @@ namespace Clifton.Receptor
 			{
 				Instance = Activator.CreateInstance(impType, new object[] { rsys }) as IReceptorInstance;
 				Name = Instance.Name;
+				Instance.Enabled = Enabled;
 			}
 			catch
 			{

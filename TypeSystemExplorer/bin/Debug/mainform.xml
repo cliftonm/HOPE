@@ -53,6 +53,7 @@
               -->
               <wf:ToolStripMenuItem def:Name="mnuSemanticTypeEditor" Text="&amp;Semantic Type Editor" Click="{controller.ShowSemanticTypeEditor}"/>
               <wf:ToolStripMenuItem def:Name="mnuPropertyGrid" Text="&amp;Property Grid" Click="{controller.ShowPropertyGrid}"/>
+              <wf:ToolStripMenuItem def:Name="mnuReceptorChooser" Text="&amp;Receptor Chooser" Click="{controller.ShowReceptorChooser}"/>
               <!-- removed 10/06/2014 
               <wf:ToolStripMenuItem def:Name="mnuOutput" Text="&amp;Output" Click="{controller.ShowOutput}"/>
               <wf:ToolStripMenuItem def:Name="mnuSymbolTable" Text="S&amp;ymbol Table" Click="{controller.ShowSymbolTable}"/>

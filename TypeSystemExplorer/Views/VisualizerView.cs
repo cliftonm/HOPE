@@ -325,7 +325,7 @@ namespace TypeSystemExplorer.Views
 		}
 
 		/// <summary>
-		/// Sets the dropp point given a client coordinate.
+		/// Sets the drop point given a client coordinate.
 		/// </summary>
 		public Point ClientDropPoint
 		{
@@ -347,6 +347,7 @@ namespace TypeSystemExplorer.Views
 		protected Color surfaceColor;
 		protected Pen pen;
 		protected Pen whitePen;
+		protected Pen rubberBandPen;
 		protected Point origin = new Point(0, 0);
 		protected Font font;
 
@@ -403,12 +404,14 @@ namespace TypeSystemExplorer.Views
 			surfaceColor = Color.White;
 			surfaceBrush = new SolidBrush(surfaceColor);
 			textBrush = blackBrush;
+			rubberBandPen = new Pen(Color.Cyan);
 #endif
 
 #if BLACK_BACKGROUND
 			surfaceColor = Color.Black;
 			surfaceBrush = new SolidBrush(surfaceColor);
 			textBrush = whiteBrush;
+			rubberBandPen = new Pen(Color.White);
 #endif
 
 			font = new Font(FontFamily.GenericSansSerif, 8);
@@ -2360,7 +2363,7 @@ namespace TypeSystemExplorer.Views
 				if (rubberBand)
 				{
 					Rectangle r = Rectangle.FromLTRB(Math.Min(mouseStart.X, mousePosition.X), Math.Min(mouseStart.Y, mousePosition.Y), Math.Max(mouseStart.X, mousePosition.X), Math.Max(mouseStart.Y, mousePosition.Y));
-					e.Graphics.DrawRectangle(whitePen, r);
+					e.Graphics.DrawRectangle(rubberBandPen, r);
 				}
 			}
 			catch (Exception ex)
