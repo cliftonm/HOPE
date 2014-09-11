@@ -362,5 +362,13 @@ namespace Clifton.ExtensionMethods
 		{
 			control.BeginInvoke((Delegate)action);
 		}
+
+		public static void UncheckAllItems(this CheckedListBox clb)
+		{
+			while (clb.CheckedIndices.Count > 0)
+			{
+				clb.SetItemChecked(clb.CheckedIndices[0], false);
+			}
+		}
 	}
 }

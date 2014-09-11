@@ -70,6 +70,13 @@ namespace TypeSystemExplorer.Controllers
 
 			receptors.ForEach(r => r.Instance.EndSystemInit());
 			ApplicationController.VisualizerController.View.StartDrop = false;
+
+			View.ReceptorList.UncheckAllItems();
+		}
+
+		protected void OnClear(object sender, EventArgs args)
+		{
+			View.ReceptorList.UncheckAllItems();
 		}
 
 		protected void InitializeReceptorEntriesList()
