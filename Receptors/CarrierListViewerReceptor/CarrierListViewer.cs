@@ -213,6 +213,8 @@ namespace CarrierListViewerReceptor
 			}
 		}
 
+		// TODO: This is actually a more complicated problem.  Do we emit the parent protocol, or just child SE's, or do we look at the column
+		// clicked on and determine the sub-SE for that specific set of data?
 		/// <summary>
 		/// Emit a semantic protocol with the value in the selected row and the column determined by the semantic element name.
 		/// </summary>

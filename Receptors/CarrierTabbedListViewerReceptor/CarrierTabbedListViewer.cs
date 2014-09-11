@@ -190,8 +190,10 @@ namespace CarrierTabbedListViewerReceptor
 				{
 					AddReceiveProtocol(protocol);
 					// Add emitters for semantic elements in the receive protocol that we can emit when the user double-clicks.
-					ISemanticTypeStruct st = rsys.SemanticTypeSystem.GetSemanticTypeStruct(protocol);
-					st.SemanticElements.ForEach(se => AddEmitProtocol(se.Name));
+					// TODO: Do we add just the protocol as being emitted, or recursive sub-SE protocols as well?
+					// Note this is the same issue on the CarrierListViewer as well.
+					// ISemanticTypeStruct st = rsys.SemanticTypeSystem.GetSemanticTypeStruct(protocol);
+					// st.SemanticElements.ForEach(se => AddEmitProtocol(se.Name));
 
 					// Create the tab page.
 					TabPage tabPage = CreateTabPage(row[0].ToString(), protocol);
@@ -253,17 +255,21 @@ namespace CarrierTabbedListViewerReceptor
 		/// </summary>
 		protected void InitializeConfigTable()
 		{
-			string[] tpArray = ProtocolTabs.Split(';');
-			dt = InitializeDataTable();			
+			dt = InitializeDataTable();
 
-			foreach (string tp in tpArray)
+			if (!String.IsNullOrEmpty(ProtocolTabs))
 			{
-				string tabName = tp.LeftOf(',');
-				string protocolName = tp.RightOf(',');
-				DataRow row = dt.NewRow();
-				row[0] = tabName;
-				row[1] = protocolName;
-				dt.Rows.Add(row);
+				string[] tpArray = ProtocolTabs.Split(';');
+
+				foreach (string tp in tpArray)
+				{
+					string tabName = tp.LeftOf(',');
+					string protocolName = tp.RightOf(',');
+					DataRow row = dt.NewRow();
+					row[0] = tabName;
+					row[1] = protocolName;
+					dt.Rows.Add(row);
+				}
 			}
 		}
 
@@ -273,11 +279,11 @@ namespace CarrierTabbedListViewerReceptor
 		protected void CreateViewerTable(TabPage tabPage, string protocolName)
 		{
 			DataTable dt = new DataTable();
-			ISemanticTypeStruct st = rsys.SemanticTypeSystem.GetSemanticTypeStruct(protocolName);
+			List<IFullyQualifiedNativeType> columns = rsys.SemanticTypeSystem.GetFullyQualifiedNativeTypes(protocolName);
 
-			st.AllTypes.ForEach(t =>
+			columns.ForEach(col =>
 			{
-				DataColumn dc = new DataColumn(t.Name, t.GetImplementingType(rsys.SemanticTypeSystem));
+				DataColumn dc = new DataColumn(col.FullyQualifiedName, col.NativeType.GetImplementingType(rsys.SemanticTypeSystem));
 				dt.Columns.Add(dc);
 			});
 
@@ -307,14 +313,8 @@ namespace CarrierTabbedListViewerReceptor
 			{
 				DataTable dt = ((DataView)protocolGridMap[protocol].DataSource).Table;
 				DataRow row = dt.NewRow();
-				ISemanticTypeStruct st = rsys.SemanticTypeSystem.GetSemanticTypeStruct(protocol);
-
-				st.AllTypes.ForEach(t =>
-				{
-					object val = t.GetValue(rsys.SemanticTypeSystem, signal);
-					row[t.Name] = val;
-				});
-
+				List<IFullyQualifiedNativeType> colValues = rsys.SemanticTypeSystem.GetFullyQualifiedNativeTypeValues(signal, protocol);
+				colValues.ForEach(cv => row[cv.FullyQualifiedName] = cv.Value);
 				dt.Rows.Add(row);
 			}
 			catch (Exception ex)
