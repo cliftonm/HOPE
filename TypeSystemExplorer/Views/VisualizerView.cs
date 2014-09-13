@@ -1525,18 +1525,26 @@ namespace TypeSystemExplorer.Views
 			ConfigurationInfo ci = (ConfigurationInfo)form.Tag;
 			SaveValues(ci.Receptor.Instance, ci.Parser);
 			// Notify instance that the configuration has been updated.
-			ci.Receptor.Instance.UserConfigurationUpdated();
+			bool ok = ci.Receptor.Instance.UserConfigurationUpdated();
 
-			// Special handling for "enabled."
-			// TODO: Fix this by moving Enabled into IReceptorInstance and BaseReceptor
-			object ckEnabled;
-			if (ci.Parser.ObjectCollection.TryGetValue("ckEnabled", out ckEnabled))
+			if (ok)
 			{
-				ci.Receptor.Instance.Enabled = ((CheckBox)ckEnabled).Checked;
-				Invalidate(true);
-			}
+				// Special handling for "enabled."
+				// TODO: Fix this by moving Enabled into IReceptorInstance and BaseReceptor
+				object ckEnabled;
 
-			form.Close();
+				if (ci.Parser.ObjectCollection.TryGetValue("ckEnabled", out ckEnabled))
+				{
+					ci.Receptor.Instance.Enabled = ((CheckBox)ckEnabled).Checked;
+					Invalidate(true);
+				}
+
+				form.Close();
+			}
+			else
+			{
+				MessageBox.Show(ci.Receptor.Instance.ConfigurationError, "Please correct...", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
 		}
 
 		protected void OnReceptorConfigCancel(object sender, EventArgs args)

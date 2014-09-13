@@ -8,7 +8,7 @@
     <wf:Controls>
       <wf:Label Text="Window Name:" Location="20, 23" Size="100, 15"/>
       <wf:TextBox def:Name="tbWindowName" Location="125, 20" Size="200, 20"/>
-      <wf:Label Text="Protocol Name:" Location="20, 48" Size="100, 15"/>
+      <wf:Label Text="Semantic Type:" Location="20, 48" Size="100, 15"/>
       <wf:TextBox def:Name="tbProtocolName" Location="125, 45" Size="200, 20"/>
       <wf:CheckBox def:Name="ckEnabled" Text="Enabled?" Location="20, 75" Size="80, 25"/>
       <wf:Button Text="Save" Location="360, 10" Size="80, 25" Click="OnReceptorConfigOK"/>

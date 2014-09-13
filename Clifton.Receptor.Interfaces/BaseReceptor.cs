@@ -62,6 +62,11 @@ namespace Clifton.Receptor.Interfaces
 		/// The default (null) means "no configuration UI."
 		/// </summary>
 		public virtual string ConfigurationUI { get { return null; } }
+		
+		/// <summary>
+		/// Receptors set this value to provide a message to the user when a configuration error occurs.
+		/// </summary>
+		public string ConfigurationError { get; protected set; }
 
 		protected List<ReceiveQualifier> receiveProtocols;
 		protected List<string> emitProtocols;
@@ -138,8 +143,9 @@ namespace Clifton.Receptor.Interfaces
 		/// <summary>
 		/// Called when the user configurable items in a receptor instance have been updated by user or other action.
 		/// </summary>
-		public virtual void UserConfigurationUpdated()
+		public virtual bool UserConfigurationUpdated()
 		{
+			return true;
 		}
 
 		/// <summary>

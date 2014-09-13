@@ -67,13 +67,25 @@ namespace CarrierListViewerReceptor
 
 		/// <summary>
 		/// When the user configuration fields have been updated, reset the protocol we are listening for.
+		/// Return false if configuration is invalid.
 		/// </summary>
-		public override void UserConfigurationUpdated()
+		public override bool UserConfigurationUpdated()
 		{
 			base.UserConfigurationUpdated();
-			CreateViewerTable();
-			ListenForProtocol();
-			UpdateCaption();
+			bool ret = rsys.SemanticTypeSystem.VerifyProtocolExists(ProtocolName);
+
+			if (ret)
+			{
+				CreateViewerTable();
+				ListenForProtocol();
+				UpdateCaption();
+			}
+			else
+			{
+				ConfigurationError = "The semantic type '"+ProtocolName+"' is not defined.";
+			}
+
+			return ret;
 		}
 
 		public override void Terminate()
@@ -86,7 +98,7 @@ namespace CarrierListViewerReceptor
 		{
 			if (!String.IsNullOrEmpty(WindowName))
 			{
-				form.Text = WindowName;
+				form.Text= WindowName;
 			}
 			else
 			{
@@ -95,6 +107,10 @@ namespace CarrierListViewerReceptor
 					string updatedText = form.Text.LeftOf('-');
 					updatedText = updatedText + " - " + ProtocolName;
 					form.Text = updatedText;
+				}
+				else
+				{
+					form.Text = String.Empty;
 				}
 			}
 		}
@@ -116,6 +132,13 @@ namespace CarrierListViewerReceptor
 			// finishes initialization.
 			form.LocationChanged += OnLocationChanged;
 			form.SizeChanged += OnSizeChanged;
+		}
+
+		/// <summary>
+		/// Verify the protocol exists before we let the user close the dialog.
+		/// </summary>
+		protected void OnFormClosing(object sender, FormClosingEventArgs e)
+		{
 		}
 
 		// TODO: This stuff on window location and size changing and setting needs to be moved
@@ -182,7 +205,6 @@ namespace CarrierListViewerReceptor
 
 			if (!String.IsNullOrEmpty(ProtocolName))
 			{
-				oldProtocol = ProtocolName;
 				AddReceiveProtocol(ProtocolName, (Action<dynamic>)((signal) => ShowSignal(signal)));
 
 				// Add other semantic type emitters:
@@ -190,6 +212,8 @@ namespace CarrierListViewerReceptor
 				ISemanticTypeStruct st = rsys.SemanticTypeSystem.GetSemanticTypeStruct(ProtocolName);
 				st.SemanticElements.ForEach(se => AddEmitProtocol(se.Name));
 			}
+
+			oldProtocol = ProtocolName;
 		}
 
 		/// <summary>

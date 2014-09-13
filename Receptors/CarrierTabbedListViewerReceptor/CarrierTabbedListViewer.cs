@@ -101,11 +101,38 @@ namespace CarrierTabbedListViewerReceptor
 		/// <summary>
 		/// Update the received protocols given the new configuration.
 		/// </summary>
-		public override void UserConfigurationUpdated()
+		public override bool UserConfigurationUpdated()
 		{
-			UpdateReceivedProtocolsAndTabs();
-			UpdateTabProtocolProperty();
-			UpdateCaption();
+			bool ret = true;
+			List<string> badProtocols = new List<string>();
+
+			// TODO: Most of this (verifying a list of protocols) is probaby a rather common thing to do.  Move into STS as "VerifyProtocolsExist".
+
+			(from row in dt.AsEnumerable()
+			 where ((row[1] != null) && (!String.IsNullOrEmpty(row[1].ToString())))
+			 select row[1].ToString()).ForEach(p =>
+				 {
+					 bool exists = rsys.SemanticTypeSystem.VerifyProtocolExists(p);
+
+					 if (!exists)
+					 {
+						 badProtocols.Add(p);
+						 ret = false;
+					 }
+				 });
+
+			if (ret)
+			{
+				UpdateReceivedProtocolsAndTabs();
+				UpdateTabProtocolProperty();
+				UpdateCaption();
+			}
+			else
+			{
+				ConfigurationError="The semantic type(s):\r\n"+String.Join("\r\n", badProtocols)+"\r\n do not exist.";
+			}
+
+			return ret;
 		}
 
 		protected void UpdateCaption()
@@ -186,21 +213,24 @@ namespace CarrierTabbedListViewerReceptor
 			{
 				string protocol = row[1].ToString();
 
-				if (!protocolsToBeRemoved.Contains(protocol))			// does it currently exist or not?
+				if (!String.IsNullOrEmpty(protocol))
 				{
-					AddReceiveProtocol(protocol);
-					// Add emitters for semantic elements in the receive protocol that we can emit when the user double-clicks.
-					// TODO: Do we add just the protocol as being emitted, or recursive sub-SE protocols as well?
-					// Note this is the same issue on the CarrierListViewer as well.
-					// ISemanticTypeStruct st = rsys.SemanticTypeSystem.GetSemanticTypeStruct(protocol);
-					// st.SemanticElements.ForEach(se => AddEmitProtocol(se.Name));
+					if (!protocolsToBeRemoved.Contains(protocol))			// does it currently exist or not?
+					{
+						AddReceiveProtocol(protocol);
+						// Add emitters for semantic elements in the receive protocol that we can emit when the user double-clicks.
+						// TODO: Do we add just the protocol as being emitted, or recursive sub-SE protocols as well?
+						// Note this is the same issue on the CarrierListViewer as well.
+						// ISemanticTypeStruct st = rsys.SemanticTypeSystem.GetSemanticTypeStruct(protocol);
+						// st.SemanticElements.ForEach(se => AddEmitProtocol(se.Name));
 
-					// Create the tab page.
-					TabPage tabPage = CreateTabPage(row[0].ToString(), protocol);
-					CreateViewerTable(tabPage, protocol);
+						// Create the tab page.
+						TabPage tabPage = CreateTabPage(row[0].ToString(), protocol);
+						CreateViewerTable(tabPage, protocol);
+					}
+
+					protocolsToBeRemoved.Remove(protocol);		 // nope, we don't remove this one.
 				}
-
-				protocolsToBeRemoved.Remove(protocol);		 // nope, we don't remove this one.
 			}
 
 			protocolsToBeRemoved.ForEach(p =>

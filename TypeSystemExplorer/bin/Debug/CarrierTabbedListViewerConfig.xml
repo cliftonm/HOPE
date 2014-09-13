@@ -8,7 +8,7 @@
     <wf:Controls>
       <wf:Label Text="Window Name:" Location="20, 23" Size="80, 15"/>
       <wf:TextBox def:Name="tbWindowName" Location="105, 20" Size="200, 20"/>
-      <wf:Label Text="Tabs and their protocols:" Location="20, 45" Size="250, 15" TextAlign="BottomLeft"/>
+      <wf:Label Text="Tabs and their semantic types:" Location="20, 45" Size="250, 15" TextAlign="BottomLeft"/>
       <wf:DataGridView def:Name="dgvTabs"
                         AllowUserToAddRows="true"
                         AllowUserToDeleteRows="true"

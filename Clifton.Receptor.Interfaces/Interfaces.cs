@@ -40,6 +40,7 @@ namespace Clifton.Receptor.Interfaces
 		bool IsHidden { get; }
 		bool Enabled { get; set; }
 		string ConfigurationUI { get; }
+		string ConfigurationError { get; }
 
 		// The receptor system must be reset when a receptor moves to a different membrane,
 		// that is, to another receptor system.
@@ -71,7 +72,7 @@ namespace Clifton.Receptor.Interfaces
 		/// <summary>
 		/// Called when the user configurable items in a receptor instance have been updated by user or other action.
 		/// </summary>
-		void UserConfigurationUpdated();
+		bool UserConfigurationUpdated();
 
 		/// <summary>
 		/// Called before the controls are populated, to give the receptor instance a chance to do other initialization 

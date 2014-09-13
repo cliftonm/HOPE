@@ -72,6 +72,11 @@ namespace Clifton.SemanticTypeSystem
 			return SemanticTypes[typeName].Struct;
 		}
 
+		public bool VerifyProtocolExists(string protocol)
+		{
+			return SemanticTypes.ContainsKey(protocol);
+		}
+
 		/// <summary>
 		/// Create an instance of the specified type, adding it to the Instances collection.
 		/// </summary>
@@ -118,7 +123,10 @@ namespace Clifton.SemanticTypeSystem
 			return subsignal;
 		}
 
-		// Returns a list of fully qualified (full path) type names for the final implementing native types.
+		// TODO: Ordinality (which still needs to be implemented as a property of NT's and SE's) needs to be preserved.
+		/// <summary>
+		/// Returns a list of fully qualified (full path) type names for the final implementing native types.
+		/// </summary>
 		public List<IFullyQualifiedNativeType> GetFullyQualifiedNativeTypes(string protocolName)
 		{
 			List<IFullyQualifiedNativeType> ret = new List<IFullyQualifiedNativeType>();
@@ -129,6 +137,10 @@ namespace Clifton.SemanticTypeSystem
 			return ret;
 		}
 
+		// TODO: Ordinality (which still needs to be implemented as a property of NT's and SE's) needs to be preserved.
+		/// <summary>
+		/// Returns a list of fully qualified (full path) type names for the final implementing native types and their values, given the provided source signal.
+		/// </summary>
 		public List<IFullyQualifiedNativeType> GetFullyQualifiedNativeTypeValues(dynamic signal, string protocolName)
 		{
 			List<IFullyQualifiedNativeType> ret = new List<IFullyQualifiedNativeType>();

@@ -1062,6 +1062,7 @@ namespace TypeSystemExplorer.Controllers
 		public bool IsHidden { get { return true; } }
 		public bool Enabled { get { return true; } set { } }
 		public string ConfigurationUI { get { return null; } }
+		public string ConfigurationError { get { return String.Empty; } }
 
 		public IReceptorSystem ReceptorSystem
 		{
@@ -1090,8 +1091,9 @@ namespace TypeSystemExplorer.Controllers
 		{
 		}
 
-		public void UserConfigurationUpdated()
+		public bool UserConfigurationUpdated()
 		{
+			return true;
 		}
 
 		public void PrepopulateConfig(MycroParser mp)

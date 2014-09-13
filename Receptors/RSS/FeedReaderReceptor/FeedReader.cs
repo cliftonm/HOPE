@@ -52,10 +52,12 @@ namespace FeedReaderReceptor
 		/// <summary>
 		/// When the user configuration fields have been updated, re-acquire the feed.
 		/// </summary>
-		public override void UserConfigurationUpdated()
+		public override bool UserConfigurationUpdated()
 		{
 			base.UserConfigurationUpdated();
 			AcquireFeed();
+
+			return true;
 		}
 
 		protected async void ProcessUrl(dynamic signal)

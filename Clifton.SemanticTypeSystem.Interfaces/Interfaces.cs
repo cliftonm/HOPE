@@ -128,6 +128,7 @@ namespace Clifton.SemanticTypeSystem.Interfaces
 		dynamic Clone(dynamic sourceSignal, ISemanticElement se);
 		List<IFullyQualifiedNativeType> GetFullyQualifiedNativeTypes(string protocolName);
 		List<IFullyQualifiedNativeType> GetFullyQualifiedNativeTypeValues(dynamic signal, string protocolName);
+		bool VerifyProtocolExists(string protocol);
 	}
 
 	public interface IFullyQualifiedNativeType
