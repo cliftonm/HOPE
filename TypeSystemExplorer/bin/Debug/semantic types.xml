@@ -47,12 +47,6 @@
           </NativeTypes>
           <SubTypes />
         </SemanticType>
-        <SemanticType Name="ImageFilename">
-          <NativeTypes />
-          <SubTypes>
-            <SubType Name="Filename" />
-          </SubTypes>
-        </SemanticType>
       </SemanticTypes>
     </SemanticTypesContainer>
     <SemanticTypesContainer Name="Message Types">
@@ -90,14 +84,6 @@
             <SubType Name="TextMessage" />
           </SubTypes>
         </SemanticType>
-        <SemanticType Name="SystemMessage">
-          <NativeTypes>
-            <NativeType Name="Action" ImplementingType="string" />
-            <NativeType Name="Data" ImplementingType="Object" />
-            <NativeType Name="Source" ImplementingType="Object" />
-          </NativeTypes>
-          <SubTypes />
-        </SemanticType>
       </SemanticTypes>
     </SemanticTypesContainer>
     <SemanticTypesContainer Name="Visualizer Types">
@@ -110,6 +96,50 @@
             <NativeType Name="Carrier" ImplementingType="ICarrier" />
           </NativeTypes>
           <SubTypes />
+        </SemanticType>
+      </SemanticTypes>
+    </SemanticTypesContainer>
+    <SemanticTypesContainer Name="Image Types">
+      <SemanticTypes>
+        <SemanticType Name="ThumbnailImage">
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="ImageFilename" />
+            <SubType Name="Image" />
+          </SubTypes>
+        </SemanticType>
+        <SemanticType Name="ImageFilename">
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="Filename" />
+          </SubTypes>
+        </SemanticType>
+        <SemanticType Name="Image">
+          <NativeTypes>
+            <NativeType Name="Value" ImplementingType="Bitmap" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
+      </SemanticTypes>
+    </SemanticTypesContainer>
+    <SemanticTypesContainer Name="SystemTypes">
+      <SemanticTypes>
+        <SemanticType Name="SystemMessage">
+          <NativeTypes>
+            <NativeType Name="Action" ImplementingType="string" />
+            <NativeType Name="Data" ImplementingType="Object" />
+            <NativeType Name="Source" ImplementingType="Object" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
+        <SemanticType Name="SystemShowImage">
+          <NativeTypes>
+            <NativeType Name="From" ImplementingType="IReceptorInstance" />
+          </NativeTypes>
+          <SubTypes>
+            <SubType Name="Image" />
+            <SubType Name="Filename" />
+          </SubTypes>
         </SemanticType>
       </SemanticTypes>
     </SemanticTypesContainer>

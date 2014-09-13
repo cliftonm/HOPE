@@ -17,26 +17,26 @@ namespace ThumbnailViewerReceptor
 		
 		public ReceptorDefinition(IReceptorSystem rsys) : base(rsys)
 		{
-			AddReceiveProtocol("ThumbnailImage");
+			AddReceiveProtocol("ThumbnailImage", (Action<dynamic>)(signal => ShowImage(signal.Image.Value, signal.ImageFilename.Filename)));
 			AddEmitProtocol("SystemShowImage");
-			AddEmitProtocol("ViewImage", false);
-			AddEmitProtocol("GetImageMetadata", false);
+			AddEmitProtocol("ImageFilename", false);			// Currently, this is emitted by the visualizer.  See TODO below.
+			// AddEmitProtocol("GetImageMetadata", false);
 		}
 
-		public override void ProcessCarrier(ICarrier carrier)
+		// TODO: We should be able to implement this in the receptor itself given the proper interface and callback method, in which the visualizer
+		// has instruct the receptor to implement its specific rendering.  We would also need to pass along mouse/keyboard events as well.
+		/// <summary>
+		/// This is really nothing more than a pass-through to the visualizer to show images associated with this receptor in 
+		/// whatever way the visualizer wants to.
+		/// </summary>
+		protected void ShowImage(Bitmap image, dynamic filename)
 		{
-			Image image = carrier.Signal.Image;
-			ShowImage(image);
-		}
-
-		protected void ShowImage(Image image)
-		{
-			// All we do here is send a message to the system so that it displays our thumbnails as a carousel around or receptor.
-			ISemanticTypeStruct protocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct("SystemShowImage");
-			dynamic signal = rsys.SemanticTypeSystem.Create("SystemShowImage");
-			signal.From = this;
-			signal.Image = image;
-			rsys.CreateCarrier(this, protocol, signal);
+			CreateCarrier("SystemShowImage", signal =>
+				{
+					signal.From = this;
+					signal.Image.Value = image;
+					signal.Filename = filename;
+				});
 		}
 	}
 }

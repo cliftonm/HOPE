@@ -499,6 +499,11 @@ namespace TypeSystemExplorer.Controllers
 				});
 		}
 */
+		protected void SendToBack(object sender, EventArgs args)
+		{
+			View.SendToBack();
+		}
+
 		public void SetMenuCheckedState(string menuName, bool state)
 		{
 			View.SetMenuCheckState(menuName, state);
@@ -1131,8 +1136,9 @@ namespace TypeSystemExplorer.Controllers
 				case "SystemShowImage":
 					{
 						IReceptorInstance target = carrier.Signal.From;
-						Image image = carrier.Signal.Image;
-						VisualizerController.View.AddImage(target, image);
+						Bitmap image = carrier.Signal.Image.Value;
+						dynamic filename = carrier.Signal.Filename;
+						VisualizerController.View.AddImage(target, image, filename);
 						break;
 					}
 

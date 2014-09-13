@@ -541,10 +541,11 @@ namespace TypeSystemExplorer.Views
 			 */
 		}
 
-		public void AddImage(IReceptorInstance receptorInstance, Image image)
+		public void AddImage(IReceptorInstance receptorInstance, Bitmap image, dynamic filename)
 		{
 			IReceptor r = receptorLocation.Single(kvp => kvp.Key.Instance == receptorInstance).Key;
 			CarouselState cstate;
+			image.Tag = Path.Combine(filename.Path.Value, filename.Name.Value + filename.FileExtension.Value);
 
 			if (!carousels.TryGetValue(r, out cstate))
 			{
@@ -557,7 +558,7 @@ namespace TypeSystemExplorer.Views
 				ImageMetadata imeta = new ImageMetadata() { Image = image };
 				cstate.Images.Add(imeta);
 
-				GetImageMetadata(r, imeta);
+				// GetImageMetadata(r, imeta);
 				Invalidate(true);
 			}
 			else
@@ -677,6 +678,8 @@ namespace TypeSystemExplorer.Views
 				});
 		}
 
+		// TODO: The way image metadata is recovered is going to have to be handled completely differently.
+/*
 		protected void GetImageMetadata(IReceptor r, ImageMetadata imeta)
 		{
 			Image img = imeta.Image;
@@ -687,7 +690,7 @@ namespace TypeSystemExplorer.Views
 			// signal.ResponseProtocol = "HaveImageMetadata";
 			GetReceptorMembrane(r).CreateCarrierIfReceiver(r.Instance, protocol, signal);
 		}
-
+*/
 		protected void OnTimerTick(object sender, EventArgs e)
 		{
 			if (!paused)
@@ -1360,9 +1363,12 @@ namespace TypeSystemExplorer.Views
 			if (cstate != null)
 			{
 				string imageFile = cstate.ActiveImageFilename;
-				ISemanticTypeStruct protocol = Program.SemanticTypeSystem.GetSemanticTypeStruct("ViewImage");
-				dynamic signal = Program.SemanticTypeSystem.Create("ViewImage");
-				signal.ImageFilename.Filename = imageFile.Surrounding("-thumbnail");
+				ISemanticTypeStruct protocol = Program.SemanticTypeSystem.GetSemanticTypeStruct("ImageFilename");
+				dynamic signal = Program.SemanticTypeSystem.Create("ImageFilename");
+
+				signal.Filename.Path.Value = Path.GetDirectoryName(imageFile);
+				signal.Filename.Name.Value = Path.GetFileNameWithoutExtension(imageFile);
+				signal.Filename.FileExtension.Value = Path.GetExtension(imageFile);
 
 				IMembrane m = Program.Skin.GetMembraneContaining(r);
 				m.CreateCarrier(r.Instance, protocol, signal);

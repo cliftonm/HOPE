@@ -89,6 +89,8 @@ namespace TypeSystemExplorer.Controllers
 			receptors.Add(new ReceptorEntry() { Name = "Image Viewer", Filename = "ImageViewerReceptor.dll" });
 			receptors.Add(new ReceptorEntry() { Name = "Carrier List Viewer", Filename = "CarrierListViewerReceptor.dll" });		// TODO: "Carrier" or "Signal" ?  What's the difference ?
 			receptors.Add(new ReceptorEntry() { Name = "Tabbed Carrier List Viewer", Filename = "CarrierTabbedListViewerReceptor.dll" });		// TODO: "Carrier" or "Signal" ?  What's the difference ?
+			receptors.Add(new ReceptorEntry() { Name = "Thumbnail Creator", Filename = "ThumbnailCreatorReceptor.dll" });
+			receptors.Add(new ReceptorEntry() { Name = "Thumbnail Viewer", Filename = "ThumbnailViewerReceptor.dll" });
 
 			receptors.Sort((r1, r2) => r1.Name.CompareTo(r2.Name));
 		}

@@ -28,26 +28,22 @@ namespace ThumbnailCreatorReceptor
 		public ReceptorDefinition(IReceptorSystem rsys) : base(rsys)
 		{
 			this.rsys = rsys;
-			AddReceiveProtocol("ImageFilename");
-			AddEmitProtocol("DebugMessage");
+			AddReceiveProtocol("ImageFilename", (Action<dynamic>)(signal => ProcessImage(signal.Filename)));
 			AddEmitProtocol("ThumbnailImage", false);
 			MaxSize = 320;
 		}
 
-		protected void ProcessImage(object state)
+		protected void ProcessImage(dynamic filename)
 		{
-			string fn = (string)state;
-
+			string fn = Path.Combine(filename.Path.Value, filename.Name.Value + filename.FileExtension.Value);
 			Bitmap bitmap = new Bitmap(fn);
-			// Reduce the size of the image.  If we don't do this, scrolling and rendering of scaled images is horrifically slow.
-			Image image = new Bitmap(bitmap, MaxSize, MaxSize * bitmap.Height / bitmap.Width);
+			// Resize image to the specified max width, proportionally scaling the image.
+			Bitmap image = new Bitmap(bitmap, MaxSize, MaxSize * bitmap.Height / bitmap.Width);
 			image.Tag = fn;
 			bitmap.Dispose();
-
-			((Control)Application.OpenForms[0]).BeginInvoke(() => OutputImage(fn, image));
-			Thread.Sleep(100);
+			OutputImage(filename, image);
 		}
-
+/*
 		public override async void ProcessCarrier(ICarrier carrier)
 		{
 			if (carrier.Signal.Filename != null)
@@ -81,14 +77,14 @@ namespace ThumbnailCreatorReceptor
 
 					// This is fast enough we don't need to run this as a separate thread unless these files are perhaps coming from a slow network.
 					// - no, we can leverage multiple cores when we're processing a whole swarm of images 
-					/*
-					Bitmap bitmap = new Bitmap(fn);
-					// Reduce the size of the image.  If we don't do this, scrolling and rendering of scaled images is horrifically slow.
-					Image image = new Bitmap(bitmap, 256, 256 * bitmap.Height / bitmap.Width);
-					image.Tag = fn;
-					bitmap.Dispose();
-					OutputImage(fn, image);
-					*/
+					
+					//Bitmap bitmap = new Bitmap(fn);
+					//// Reduce the size of the image.  If we don't do this, scrolling and rendering of scaled images is horrifically slow.
+					//Image image = new Bitmap(bitmap, 256, 256 * bitmap.Height / bitmap.Width);
+					//image.Tag = fn;
+					//bitmap.Dispose();
+					//OutputImage(fn, image);
+					
 				}
 				else
 				{
@@ -116,16 +112,14 @@ namespace ThumbnailCreatorReceptor
 			signal.Message = "Thumbnail Converter: No image filename was provided.";
 			rsys.CreateCarrier(this, protocol, signal);
 		}
-
-		protected void OutputImage(string filename, Image image)
+*/
+		protected void OutputImage(dynamic inputFilename, Bitmap image)
 		{
-			ISemanticTypeStruct protocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct("ThumbnailImage");
-			dynamic signal = rsys.SemanticTypeSystem.Create("ThumbnailImage");
-			// Insert "-thumbnail" into the filename.
-			signal.ImageFilename.Filename = filename.LeftOfRightmostOf('.') + "-thumbnail." + filename.RightOfRightmostOf('.');
-			image.Tag = signal.ImageFilename.Filename;
-			signal.Image = image;
-			rsys.CreateCarrier(this, protocol, signal);
+			CreateCarrier("ThumbnailImage", signal =>
+				{
+					signal.ImageFilename.Filename = inputFilename;
+					signal.Image.Value = image;
+				});
 		}
 	}
 }
