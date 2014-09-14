@@ -61,6 +61,8 @@
               <wf:ToolStripMenuItem def:Name="mnuVisualizer" Text="&amp;Visualizer" Click="{controller.ShowVisualizer}"/>
               <wf:ToolStripSeparator/>
               <wf:ToolStripMenuItem def:Name="mnuSendToBack" Text="Send To Back" Click="{controller.SendToBack}"/>
+              <wf:ToolStripSeparator/>
+              <wf:ToolStripMenuItem def:Name="mnuShowProtocolOnPath" Text="Show Semantics" Click="{controller.ShowProtocolOnPath}"/>
             </wf:DropDownItems>
           </wf:ToolStripMenuItem>
           <!-- removed 10/06/2014 

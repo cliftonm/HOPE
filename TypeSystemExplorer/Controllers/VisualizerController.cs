@@ -75,7 +75,7 @@ namespace TypeSystemExplorer.Controllers
 						droppedReceptor = dropInto.RegisterReceptor(fn);
 						receptorsRegistered = true;
 					}
-					else if (fn.ToLower().RightOfRightmostOf('.').ToLower().Contains(new string[] {"jpg", "png", "bmp"}) != String.Empty)
+					else if (fn.ToLower().RightOfRightmostOf('.').ToLower().Contains(new string[] {"jpg", "png", "bmp", "gif"}) != String.Empty)
 					{
 						if (once)
 						{

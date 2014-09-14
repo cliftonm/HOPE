@@ -14,6 +14,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Drawing.Text;
 using System.Dynamic;
 using System.IO;
 using System.Linq;
@@ -332,6 +333,12 @@ namespace TypeSystemExplorer.Views
 			set { dropPoint = value; }
 		}
 
+		// TODO: Maybe clean this up at some point.
+		/// <summary>
+		/// Use ShowProtocols for the setter.
+		/// </summary>
+		public bool ShowSemantics { get { return showProtocols; } }
+
 		protected Dictionary<IReceptor, Point> receptorLocation;
 		protected Dictionary<IMembrane, Circle> membraneLocation;
 
@@ -375,6 +382,7 @@ namespace TypeSystemExplorer.Views
 
 		protected int orbitCount = 0;
 		protected bool paused;
+		protected bool showProtocols;
 
 		// When the membrane is being moved, keeps a short of list of mouse offsets
 		// to determine whether the membrane is being "shaken" left-right.
@@ -624,6 +632,12 @@ namespace TypeSystemExplorer.Views
 			}
 
 			return ret;
+		}
+
+		public void ShowProtocols(bool state)
+		{
+			showProtocols = state;
+			Invalidate(true);
 		}
 
 		// This is complex piece of code.
@@ -2021,7 +2035,29 @@ namespace TypeSystemExplorer.Views
 					double dy = line.P1.Y - line.P2.Y;
 					double angle = Math.Atan2(dy, dx);
 					Point start = new Point((int)(line.P1.X - ReceptorSize.Width/2 * Math.Cos(angle)), (int)(line.P1.Y - ReceptorSize.Width/2 * Math.Sin(angle)));
-					e.Graphics.DrawLine(pen, SurfaceOffsetAdjust(start), SurfaceOffsetAdjust(line.P2));
+
+					if (showProtocols)
+					{
+						// Save current settings
+						CompositingQuality q = e.Graphics.CompositingQuality;
+						TextRenderingHint h = e.Graphics.TextRenderingHint;
+						e.Graphics.SmoothingMode = SmoothingMode.HighQuality;
+						e.Graphics.CompositingQuality = CompositingQuality.HighQuality;
+						e.Graphics.TextRenderingHint = TextRenderingHint.AntiAlias;
+
+						DrawTextOnPath.Draw(e, SurfaceOffsetAdjust(start), SurfaceOffsetAdjust(line.P2), conn.Protocol);
+
+						// restore previous settings.
+						e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+						e.Graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+						e.Graphics.CompositingQuality = q;
+						e.Graphics.TextRenderingHint = h;
+					}
+					else
+					{
+						e.Graphics.DrawLine(pen, SurfaceOffsetAdjust(start), SurfaceOffsetAdjust(line.P2));
+					}
+
 					// draw a small numb at the terminating point.
 					Point ctr = SurfaceOffsetAdjust(line.P2);
 					e.Graphics.FillEllipse(new SolidBrush(pen.Color), new Rectangle(ctr.X - 3, ctr.Y - 3, 6, 6));

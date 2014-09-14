@@ -123,6 +123,7 @@
     <Compile Include="Views\SemanticTypeEditorView.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Views\TextOnPath.cs" />
     <Compile Include="Views\VisualizerView.cs">
       <SubType>UserControl</SubType>
     </Compile>

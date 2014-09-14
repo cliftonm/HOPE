@@ -61,7 +61,18 @@ namespace TypeSystemExplorer.Controllers
 //		public XmlEditorController XmlEditorController { get; set; }		// The active editor.
 //		public OutputController OutputController { get; set; }
 //		public SymbolTableController SymbolTableController { get; set; }
-		public VisualizerController VisualizerController { get; set; }
+
+		protected VisualizerController visualizerController;
+
+		public VisualizerController VisualizerController 
+		{
+			get { return visualizerController; }
+			set
+			{
+				visualizerController = value;
+				InitializeStates();
+			}
+		}
 
 		protected Schema schema;
 
@@ -133,6 +144,7 @@ namespace TypeSystemExplorer.Controllers
 							new State("W", View.Size.Width),
 							new State("H", View.Size.Height),
 							new State("WindowState", View.WindowState.ToString()),
+							new State("ShowSemantics", VisualizerController.View.ShowSemantics.ToString()),
 							// new State("Last Opened", CurrentFilename),
 						};
 
@@ -144,6 +156,7 @@ namespace TypeSystemExplorer.Controllers
 					Assert.SilentTry(() => View.Location = new Point(state.Single(t => t.Key == "X").Value.to_i(), state.Single(t => t.Key == "Y").Value.to_i()));
 					Assert.SilentTry(() => View.Size = new Size(state.Single(t => t.Key == "W").Value.to_i(), state.Single(t => t.Key == "H").Value.to_i()));
 					Assert.SilentTry(() => View.WindowState = state.Single(t => t.Key == "WindowState").Value.ToEnum<FormWindowState>());
+					Assert.SilentTry(() => View.ShowProtocols = Convert.ToBoolean(state.Single(t => t.Key == "ShowSemantics").Value));
 					// Assert.SilentTry(() => CurrentFilename = state.Single(t => t.Key == "Last Opened").Value);
 				});
 		}
@@ -151,6 +164,14 @@ namespace TypeSystemExplorer.Controllers
 		public override void EndInit()
 		{
 			Assert.SilentTry(() => Program.AppState.RestoreState("Form"));
+		}
+
+		// Do this once the visualizer controller has been initialized.  TODO: This is a really poor workaround for dealing with the system initialization sequence.
+		protected void InitializeStates()
+		{
+			VisualizerController.View.ShowProtocols(View.ShowProtocols);
+			// TODO: Yuck.  Fix hardcoded symbol name.
+			((ToolStripMenuItem)View.ObjectCollection["mnuShowProtocolOnPath"]).Checked = View.ShowProtocols;
 		}
 
 		public void EndSystemInit()
@@ -502,6 +523,12 @@ namespace TypeSystemExplorer.Controllers
 		protected void SendToBack(object sender, EventArgs args)
 		{
 			View.SendToBack();
+		}
+
+		protected void ShowProtocolOnPath(object sender, EventArgs args)
+		{
+			((ToolStripMenuItem)sender).Checked ^= true;
+			VisualizerController.View.ShowProtocols(((ToolStripMenuItem)sender).Checked);
 		}
 
 		public void SetMenuCheckedState(string menuName, bool state)

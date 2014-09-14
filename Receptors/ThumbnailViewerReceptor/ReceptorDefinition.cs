@@ -17,7 +17,7 @@ namespace ThumbnailViewerReceptor
 		
 		public ReceptorDefinition(IReceptorSystem rsys) : base(rsys)
 		{
-			AddReceiveProtocol("ThumbnailImage", (Action<dynamic>)(signal => ShowImage(signal.Image.Value, signal.ImageFilename.Filename)));
+			AddReceiveProtocol("ThumbnailImage", (Action<dynamic>)(signal => ShowImage(signal.Image.Value, signal.SourceImageFilename.Filename)));
 			AddEmitProtocol("SystemShowImage");
 			AddEmitProtocol("ImageFilename", false);			// Currently, this is emitted by the visualizer.  See TODO below.
 			// AddEmitProtocol("GetImageMetadata", false);

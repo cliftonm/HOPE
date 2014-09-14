@@ -104,7 +104,7 @@
         <SemanticType Name="ThumbnailImage">
           <NativeTypes />
           <SubTypes>
-            <SubType Name="ImageFilename" />
+            <SubType Name="SourceImageFilename" />
             <SubType Name="Image" />
           </SubTypes>
         </SemanticType>
@@ -119,6 +119,12 @@
             <NativeType Name="Value" ImplementingType="Bitmap" />
           </NativeTypes>
           <SubTypes />
+        </SemanticType>
+        <SemanticType Name="SourceImageFilename">
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="Filename" />
+          </SubTypes>
         </SemanticType>
       </SemanticTypes>
     </SemanticTypesContainer>

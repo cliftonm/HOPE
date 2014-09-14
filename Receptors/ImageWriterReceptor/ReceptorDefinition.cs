@@ -14,35 +14,23 @@ namespace ImageWriterReceptor
 {
 	public class ReceptorDefinition : BaseReceptor
 	{
-		public override string Name { get { return "Thumbnail Image Writer"; } }
+		public override string Name { get { return "Image Writer"; } }
 		public override bool IsEdgeReceptor { get { return true; } }
 
 		public ReceptorDefinition(IReceptorSystem rsys) : base(rsys)
 		{
-			AddReceiveProtocol("ThumbnailImage");
+			// Other protocols might be added in the future.
+			AddReceiveProtocol("ThumbnailImage", (Action<dynamic>)(signal => SaveImage(signal.Image.Value, signal.SourceImageFilename.Filename)));
 		}
 
-		public override void ProcessCarrier(ICarrier carrier)
+		protected void SaveImage(Bitmap image, dynamic filename)
 		{
-			string fn = carrier.Signal.ImageFilename.Filename;
+			// TODO: The addition "-thumbnail" extension should be configurable.
+			string fn = Path.Combine(filename.Path.Value, filename.Name.Value + "-thumbnail" + filename.FileExtension.Value);
 
-			// Only save the file if it doesn't already exists.  
-			// In actual usage, with this receptor online, we can write a lot of duplicate thumbnails!
 			if (!File.Exists(fn))
 			{
-				Image img = carrier.Signal.Image;
-
-				// Can't do this because it results in the visualizer throwing an "object is in use elsewhere" exception.
-				//Task.Run(() =>
-				//	{
-				//		lock (img)
-				//		{
-				//			img.Save(fn);
-				//		}
-				//	});
-
-				// TODO: Make sure we save the image in the filename specified by the extension.
-				img.Save(fn, ImageFormat.Jpeg);
+				image.Save(fn);
 			}
 		}
 	}

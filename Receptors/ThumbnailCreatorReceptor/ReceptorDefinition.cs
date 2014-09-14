@@ -117,7 +117,7 @@ namespace ThumbnailCreatorReceptor
 		{
 			CreateCarrier("ThumbnailImage", signal =>
 				{
-					signal.ImageFilename.Filename = inputFilename;
+					signal.SourceImageFilename.Filename = inputFilename;
 					signal.Image.Value = image;
 				});
 		}

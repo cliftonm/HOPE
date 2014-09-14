@@ -32,6 +32,7 @@ namespace TypeSystemExplorer.Views
 		public ApplicationModel Model { get; protected set; }
 		public Dictionary<string, object> ObjectCollection { get; set; }
 		public StatusBarPanel BrowserStatus { get; protected set; }
+		public bool ShowProtocols { get; set; }
 
 		public ApplicationFormView()
 		{
