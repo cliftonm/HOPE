@@ -276,10 +276,25 @@ namespace TypeSystemExplorer.Views
 		public int Radius { get; set; }
 	}
 
-	public struct Connection
+	public class Connection
 	{
 		public string Protocol { get; set; }
 		public Line Line { get; set; }
+		public IReceptor R1 { get; set; }
+		public IReceptor R2 { get; set; }
+
+		/// <summary>
+		/// False: connection is from R1 to R2
+		/// True: connection is from R2 to R1
+		/// This flag is used when constructing the protocol labels for connections.
+		/// </summary>
+		public bool Reverse { get; set; }
+	}
+
+	public struct ReceptorPair
+	{
+		public IReceptor R1 { get; set; }
+		public IReceptor R2 { get; set; }
 	}
 
 	public class VisualizerView : UserControl
@@ -1732,13 +1747,8 @@ namespace TypeSystemExplorer.Views
 						// Then these two receptors are connected.
 						// P1 is always the emitter, P2 is always the receiver.
 						Line l = new Line() { P1 = rPoint, P2 = kvp2.Value };
-
-						// TODO: Yuck - there must be a better way of dealing with duplicates.
-						Connection conn = new Connection() { Protocol = prot1, Line = l };
-						if (!receptorConnections.Any(rc => rc.Line == l))
-						{
-							receptorConnections.Add(conn);
-						}
+						Connection conn = new Connection() { Protocol = prot1, Line = l, R1=r, R2=kvp2.Key};
+						receptorConnections.Add(conn);
 
 						// Add this to the master connection list.
 						// TODO: THIS SHOULD NOT BE COMPUTED IN THE VISUALIZER!!!!
@@ -1748,7 +1758,7 @@ namespace TypeSystemExplorer.Views
 						}
 
 						// TODO: Yuck - there must be a better way of dealing with duplicates.
-						if (!Program.MasterReceptorConnectionList[r].Contains(kvp2.Key))
+//						if (!Program.MasterReceptorConnectionList[r].Contains(kvp2.Key))
 						{
 							Program.MasterReceptorConnectionList[r].Add(kvp2.Key);
 						}
@@ -1955,6 +1965,8 @@ namespace TypeSystemExplorer.Views
 
 		protected void OnVisualizerPaint(object sender, PaintEventArgs e)
 		{
+			Dictionary<ReceptorPair, List<Connection>> receptorConnectionList = new Dictionary<ReceptorPair, List<Connection>>();
+
 			try
 			{
 				Control ctrl = (Control)sender;
@@ -2011,9 +2023,7 @@ namespace TypeSystemExplorer.Views
 
 				receptorConnections.ForEach(conn =>
 				{
-					Line line = conn.Line;
-					Pen pen;
-
+/*
 					switch (conn.Protocol)
 					{
 						case "Text":
@@ -2027,40 +2037,99 @@ namespace TypeSystemExplorer.Views
 							pen = receptorLineColor;
 							break;
 					}
-
+*/
 #if STRAIGHT_LINE_CONNECTIONS
-					// Just a straight line:
-					// The source starting point of the line should be placed on the edge of the receptor.
-					double dx = line.P1.X - line.P2.X;
-					double dy = line.P1.Y - line.P2.Y;
-					double angle = Math.Atan2(dy, dx);
-					Point start = new Point((int)(line.P1.X - ReceptorSize.Width/2 * Math.Cos(angle)), (int)(line.P1.Y - ReceptorSize.Width/2 * Math.Sin(angle)));
+					ReceptorPair rp1 = new ReceptorPair() { R1 = conn.R1, R2 = conn.R2 };
+					ReceptorPair rp2 = new ReceptorPair() { R1 = conn.R2, R2 = conn.R1 };
 
-					if (showProtocols)
+					if (receptorConnectionList.ContainsKey(rp1))
 					{
-						// Save current settings
-						CompositingQuality q = e.Graphics.CompositingQuality;
-						TextRenderingHint h = e.Graphics.TextRenderingHint;
-						e.Graphics.SmoothingMode = SmoothingMode.HighQuality;
-						e.Graphics.CompositingQuality = CompositingQuality.HighQuality;
-						e.Graphics.TextRenderingHint = TextRenderingHint.AntiAlias;
-
-						DrawTextOnPath.Draw(e, SurfaceOffsetAdjust(start), SurfaceOffsetAdjust(line.P2), conn.Protocol);
-
-						// restore previous settings.
-						e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-						e.Graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
-						e.Graphics.CompositingQuality = q;
-						e.Graphics.TextRenderingHint = h;
+						// We have an identical forward connection.
+						receptorConnectionList[rp1].Add(conn);
+					}
+					else if (receptorConnectionList.ContainsKey(rp2))
+					{
+						// We have a reverse connection.
+						conn.Reverse = true;
+						receptorConnectionList[rp2].Add(conn);
 					}
 					else
 					{
-						e.Graphics.DrawLine(pen, SurfaceOffsetAdjust(start), SurfaceOffsetAdjust(line.P2));
+						receptorConnectionList[rp1]=new List<Connection>();
+						receptorConnectionList[rp1].Add(conn);
 					}
+				});
 
-					// draw a small numb at the terminating point.
-					Point ctr = SurfaceOffsetAdjust(line.P2);
-					e.Graphics.FillEllipse(new SolidBrush(pen.Color), new Rectangle(ctr.X - 3, ctr.Y - 3, 6, 6));
+				// Save current settings
+				CompositingQuality cq = e.Graphics.CompositingQuality;
+				TextRenderingHint trh = e.Graphics.TextRenderingHint;
+				e.Graphics.SmoothingMode = SmoothingMode.HighQuality;
+				e.Graphics.CompositingQuality = CompositingQuality.HighQuality;
+				e.Graphics.TextRenderingHint = TextRenderingHint.AntiAlias;
+
+				foreach (KeyValuePair<ReceptorPair, List<Connection>> kvp in receptorConnectionList)
+				{
+					int protocolLabelOffset = 2;
+
+					foreach (Connection conn in kvp.Value)
+					{
+						Line line = conn.Line;
+						Pen pen = receptorLineColor;
+
+						// Just a straight line:
+						// The source starting point of the line should be placed on the edge of the receptor.
+						double dx = line.P1.X - line.P2.X;
+						double dy = line.P1.Y - line.P2.Y;
+						double angle = Math.Atan2(dy, dx);
+						Point start = new Point((int)(line.P1.X - ReceptorSize.Width / 2 * Math.Cos(angle)), (int)(line.P1.Y - ReceptorSize.Width / 2 * Math.Sin(angle)));
+
+						if (showProtocols)
+						{
+							string protocolName = conn.Protocol;
+
+							if (kvp.Value.Count > 1)
+							{
+								// TODO: This needs further testing of the reverse flag and the actual match between the connection's concept of R1 and R2 and the receptor pair connection being drawn.
+								if (conn.Reverse)
+								{
+									if (kvp.Key.R1 != conn.R1)
+									{
+										protocolName = protocolName + " -->";
+									}
+									else
+									{
+										protocolName = "<-- " + protocolName;
+									}
+								}
+								else
+								{
+									if (kvp.Key.R1 != conn.R1)
+									{
+										protocolName = protocolName + " -->";
+									}
+									else
+									{
+										protocolName = "<-- " + protocolName;
+									}
+								}
+							}
+							else
+							{
+								protocolName = protocolName + " -->";
+							}
+
+							DrawTextOnPath.Draw(e, SurfaceOffsetAdjust(start), SurfaceOffsetAdjust(line.P2), protocolName, protocolLabelOffset);
+						}
+						else
+						{
+							e.Graphics.DrawLine(pen, SurfaceOffsetAdjust(start), SurfaceOffsetAdjust(line.P2));
+						}
+
+						// draw a small numb at the terminating point.
+						Point ctr = SurfaceOffsetAdjust(line.P2);
+						e.Graphics.FillEllipse(new SolidBrush(pen.Color), new Rectangle(ctr.X - 3, ctr.Y - 3, 6, 6));
+
+						protocolLabelOffset += 15;
 #else
 					// The source starting point of the line should be placed on the edge of the receptor.
 					double dx = line.P1.X - line.P2.X;
@@ -2085,7 +2154,15 @@ namespace TypeSystemExplorer.Views
 						e.Graphics.FillEllipse(new SolidBrush(pen.Color), new Rectangle(ctr.X - 3, ctr.Y - 3, 6, 6));
 					}
 #endif
-				});
+					}
+				}
+
+
+				// Restore previous settings.
+				e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+				e.Graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+				e.Graphics.CompositingQuality = cq;
+				e.Graphics.TextRenderingHint = trh;
 
 				// Draw receptors.
 

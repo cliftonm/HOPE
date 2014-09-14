@@ -19,7 +19,7 @@ namespace ThumbnailCreatorReceptor
 {
 	public class ReceptorDefinition : BaseReceptor
 	{
-		public override string Name { get { return "Thumbnail Converter"; } }
+		public override string Name { get { return "Thumbnail Creator"; } }
 		public override string ConfigurationUI { get { return "ThumbnailConverterConfig.xml"; } }
 
 		[UserConfigurableProperty("Max Size:")]

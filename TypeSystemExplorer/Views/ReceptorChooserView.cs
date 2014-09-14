@@ -31,8 +31,11 @@ namespace TypeSystemExplorer.Views
 
 		public override void EndInit()
 		{
-			Opening.IfNotNull().Then(() => Opening());
 			base.EndInit();
+			Opening.IfNotNull().Then(() => Opening());
+
+			// Set the width to the containing view.
+			ReceptorList.Width = Width;
 		}
 
 		protected override void WhenHandleDestroyed(object sender, EventArgs e)

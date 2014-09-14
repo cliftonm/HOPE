@@ -22,14 +22,14 @@
                             Model="{ApplicationModel}"
                             ApplicationController="{ApplicationFormController}">
         <ixv:Controls>
-          <wf:CheckedListBox def:Name="lvReceptors" Anchor="Left, Top, Bottom, Right" Location ="0, 30" CheckOnClick="true"/>
+          <wf:CheckedListBox def:Name="clbReceptors" Anchor="Left, Top, Bottom, Right" Location ="0, 30" CheckOnClick="true"/>
           <wf:Button Text="Add" Location="0, 3" Size="60, 25" Anchor="Top, Left" Click="{controller.OnAddReceptors}"/>
           <wf:Button Text="Clear" Location="65, 3" Size="60, 25" Anchor="Top, Left" Click="{controller.OnClear}"/>
         </ixv:Controls>
       </ixv:ReceptorChooserView>
     </ix:Controls>
     <ixc:ReceptorChooserController ref:Name="controller" View="{receptorChooserView}"/>
-    <ixv:ReceptorChooserView ref:Name="receptorChooserView" DockContent="{Container}" ReceptorList="{lvReceptors}"/>
+    <ixv:ReceptorChooserView ref:Name="receptorChooserView" DockContent="{Container}" ReceptorList="{clbReceptors}"/>
     <!-- context menu gets assigned here if there was one -->
     <!-- <ixa:AssociatePopup Control="{treeView}" ContextMenu="{tocContextMenu}"/> -->
   </ix:GenericPane>

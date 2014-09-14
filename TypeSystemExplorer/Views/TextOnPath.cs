@@ -10,6 +10,7 @@ using System.Windows.Forms;
 
 // The code for this came from a CodeProject article, one of the readers had posted a C# solution in the comments.
 // http://www.codeproject.com/Articles/13864/Text-on-Path-with-VB-NET?msg=3114196#xx3114196xx
+// TODO: Clean up this code to bring it up to spec with the latest version of C#, and also see what else can be improved.
 
 namespace TypeSystemExplorer.Views
 {
@@ -29,7 +30,7 @@ namespace TypeSystemExplorer.Views
 
 	public class DrawTextOnPath
 	{
-		public static void Draw(PaintEventArgs e, Point start, Point end, string text)
+		public static void Draw(PaintEventArgs e, Point start, Point end, string text, int vOffset)
 		{
 			if (start.X > end.X)
 			{
@@ -57,14 +58,14 @@ namespace TypeSystemExplorer.Views
 			int fontSize = 10;
 			int letterSpacing = 100;
 
-			System.Drawing.RectangleF[] regions = e.Graphics.MeasureString(text, new Font(FontFamily.GenericSansSerif, fontSize, FontStyle.Regular), new SolidBrush(textColor), TextPathAlign.Center, TextPathPosition.OverPath, letterSpacing, 0, myPath);
+			System.Drawing.RectangleF[] regions = e.Graphics.MeasureString(text, new Font(FontFamily.GenericSansSerif, fontSize, FontStyle.Regular), new SolidBrush(textColor), TextPathAlign.Center, TextPathPosition.OverPath, letterSpacing, 0, myPath, vOffset);
 
 			foreach (var region in regions)
 			{
 				e.Graphics.FillRectangle(new SolidBrush(Color.White), region);
 			}
 
-			e.Graphics.DrawString(text, new Font(FontFamily.GenericSansSerif, fontSize, FontStyle.Regular), new SolidBrush(textColor), TextPathAlign.Center, TextPathPosition.OverPath, letterSpacing, 0, myPath);
+			e.Graphics.DrawString(text, new Font(FontFamily.GenericSansSerif, fontSize, FontStyle.Regular), new SolidBrush(textColor), TextPathAlign.Center, TextPathPosition.OverPath, letterSpacing, 0, myPath, vOffset);
 		}
 	}
 
@@ -72,37 +73,37 @@ namespace TypeSystemExplorer.Views
 	{
 		private static readonly TextOnPath TEXT_ON_PATH = new TextOnPath();
 
-		public static RectangleF[] MeasureString(this Graphics graphics, string s, Font font, Brush brush, GraphicsPath graphicsPath)
+		public static RectangleF[] MeasureString(this Graphics graphics, string s, Font font, Brush brush, GraphicsPath graphicsPath, int vOffset)
 		{
-			return MeasureString(graphics, s, font, brush, TextPathAlign.Left, TextPathPosition.CenterPath, 100, graphicsPath);
+			return MeasureString(graphics, s, font, brush, TextPathAlign.Left, TextPathPosition.CenterPath, 100, graphicsPath, vOffset);
 		}
 
-		public static RectangleF[] MeasureString(this Graphics graphics, string s, Font font, Brush brush, TextPathAlign textPathAlign, TextPathPosition textPathPosition, GraphicsPath graphicsPath)
+		public static RectangleF[] MeasureString(this Graphics graphics, string s, Font font, Brush brush, TextPathAlign textPathAlign, TextPathPosition textPathPosition, GraphicsPath graphicsPath, int vOffset)
 		{
-			return MeasureString(graphics, s, font, brush, textPathAlign, textPathPosition, 100, graphicsPath);
+			return MeasureString(graphics, s, font, brush, textPathAlign, textPathPosition, 100, graphicsPath, vOffset);
 		}
 
-		public static void DrawString(this Graphics graphics, string s, Font font, Brush brush, GraphicsPath graphicsPath)
+		public static void DrawString(this Graphics graphics, string s, Font font, Brush brush, GraphicsPath graphicsPath, int vOffset)
 		{
-			DrawString(graphics, s, font, brush, TextPathAlign.Left, TextPathPosition.CenterPath, 100, graphicsPath);
+			DrawString(graphics, s, font, brush, TextPathAlign.Left, TextPathPosition.CenterPath, 100, graphicsPath, vOffset);
 		}
 
-		public static void DrawString(this Graphics graphics, string s, Font font, Brush brush, TextPathAlign textPathAlign, TextPathPosition textPathPosition, GraphicsPath graphicsPath)
+		public static void DrawString(this Graphics graphics, string s, Font font, Brush brush, TextPathAlign textPathAlign, TextPathPosition textPathPosition, GraphicsPath graphicsPath, int vOffset)
 		{
-			DrawString(graphics, s, font, brush, textPathAlign, textPathPosition, 100, graphicsPath);
+			DrawString(graphics, s, font, brush, textPathAlign, textPathPosition, 100, graphicsPath, vOffset);
 		}
 
-		public static RectangleF[] MeasureString(this Graphics graphics, string s, Font font, Brush brush, TextPathAlign textPathAlign, TextPathPosition textPathPosition, int letterSpace, GraphicsPath graphicsPath)
+		public static RectangleF[] MeasureString(this Graphics graphics, string s, Font font, Brush brush, TextPathAlign textPathAlign, TextPathPosition textPathPosition, int letterSpace, GraphicsPath graphicsPath, int vOffset)
 		{
-			return MeasureString(graphics, s, font, brush, textPathAlign, textPathPosition, 100, 0, graphicsPath);
+			return MeasureString(graphics, s, font, brush, textPathAlign, textPathPosition, 100, 0, graphicsPath, vOffset);
 		}
 
-		public static void DrawString(this Graphics graphics, string s, Font font, Brush brush, TextPathAlign textPathAlign, TextPathPosition textPathPosition, int letterSpace, GraphicsPath graphicsPath)
+		public static void DrawString(this Graphics graphics, string s, Font font, Brush brush, TextPathAlign textPathAlign, TextPathPosition textPathPosition, int letterSpace, GraphicsPath graphicsPath, int vOffset)
 		{
-			DrawString(graphics, s, font, brush, textPathAlign, textPathPosition, 100, 0, graphicsPath);
+			DrawString(graphics, s, font, brush, textPathAlign, textPathPosition, 100, 0, graphicsPath, vOffset);
 		}
 
-		public static RectangleF[] MeasureString(this Graphics graphics, string s, Font font, Brush brush, TextPathAlign textPathAlign, TextPathPosition textPathPosition, int letterSpace, float rotateDegree, GraphicsPath graphicsPath)
+		public static RectangleF[] MeasureString(this Graphics graphics, string s, Font font, Brush brush, TextPathAlign textPathAlign, TextPathPosition textPathPosition, int letterSpace, float rotateDegree, GraphicsPath graphicsPath, int vOffset)
 		{
 			TEXT_ON_PATH.Text = s;
 			TEXT_ON_PATH.Font = font;
@@ -115,11 +116,12 @@ namespace TypeSystemExplorer.Views
 			TEXT_ON_PATH._graphicsPath = graphicsPath;
 			TEXT_ON_PATH._measureString = true;
 			TEXT_ON_PATH._rotateDegree = rotateDegree;
+			TEXT_ON_PATH.VerticalOffset = vOffset;
 			TEXT_ON_PATH.DrawTextOnPath();
 			return TEXT_ON_PATH._regionList.ToArray();
 		}
 
-		public static void DrawString(this Graphics graphics, string s, Font font, Brush brush, TextPathAlign textPathAlign, TextPathPosition textPathPosition, int letterSpace, float rotateDegree, GraphicsPath graphicsPath)
+		public static void DrawString(this Graphics graphics, string s, Font font, Brush brush, TextPathAlign textPathAlign, TextPathPosition textPathPosition, int letterSpace, float rotateDegree, GraphicsPath graphicsPath, int vOffset)
 		{
 			TEXT_ON_PATH.Text = s;
 			TEXT_ON_PATH.Font = font;
@@ -132,6 +134,7 @@ namespace TypeSystemExplorer.Views
 			TEXT_ON_PATH._graphicsPath = graphicsPath;
 			TEXT_ON_PATH._measureString = false;
 			TEXT_ON_PATH._rotateDegree = rotateDegree;
+			TEXT_ON_PATH.VerticalOffset = vOffset;
 			TEXT_ON_PATH.DrawTextOnPath();
 		}
 	}
@@ -198,7 +201,10 @@ namespace TypeSystemExplorer.Views
 			get { return _letterspacepercentage; }
 			set { _letterspacepercentage = value; }
 		}
-		public void DrawTextOnPath(PathData pathdata, string text, Font font, Color color, Brush fillcolor, int letterspacepercentage)
+
+		public int VerticalOffset { get; set; }
+
+		public void DrawTextOnPath(PathData pathdata, string text, Font font, Color color, Brush fillcolor, int letterspacepercentage, int vOffset)
 		{
 
 			_pathdata = pathdata;
@@ -207,6 +213,7 @@ namespace TypeSystemExplorer.Views
 			_color = color;
 			_fillBrush = fillcolor;
 			_letterspacepercentage = letterspacepercentage;
+			VerticalOffset = vOffset;
 
 			DrawTextOnPath();
 		}
@@ -408,13 +415,13 @@ namespace TypeSystemExplorer.Views
 			switch (TextPathPathPosition)
 			{
 				case TextPathPosition.OverPath:
-					graphicsPath.AddString(text, _font.FontFamily, (int)_font.Style, _font.Size, new Point(x, (int)(y - _font.Size - 2)), stringFormat);
+					graphicsPath.AddString(text, _font.FontFamily, (int)_font.Style, _font.Size, new Point(x, (int)(y - _font.Size - VerticalOffset)), stringFormat);
 					break;
 				case TextPathPosition.CenterPath:
 					graphicsPath.AddString(text, _font.FontFamily, (int)_font.Style, _font.Size, new Point(x, (int)(y - _font.Size / 2)), stringFormat);
 					break;
 				case TextPathPosition.UnderPath:
-					graphicsPath.AddString(text, _font.FontFamily, (int)_font.Style, _font.Size, new Point(x, y + 2), stringFormat);
+					graphicsPath.AddString(text, _font.FontFamily, (int)_font.Style, _font.Size, new Point(x, y + VerticalOffset), stringFormat);
 					break;
 			}
 
