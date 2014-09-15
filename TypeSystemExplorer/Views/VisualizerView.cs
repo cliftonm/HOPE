@@ -1,4 +1,5 @@
-﻿#define VIVEK
+﻿// #define VIVEK
+#define MINE
 
 // #define BLACK_BACKGROUND
 #define WHITE_BACKGROUND
@@ -2442,19 +2443,47 @@ namespace TypeSystemExplorer.Views
 						{
 							Image img = imeta.Image;
 							int idxReal = (idx + offset) % images;
-							Point ip = p;
-							double dx = 200 * Math.Cos((2 * Math.PI * 1 / 4) + 2 * Math.PI * idxReal / images);
-							double dy = 100 * Math.Sin((2 * Math.PI * 1 / 4) + 2 * Math.PI * idxReal / images);
-							ip.Offset((int)dx, (int)dy);
-							int sizer = (int)(100 * (0.25 + ((1.0 + Math.Sin((2 * Math.PI * 1 / 4) + 2 * Math.PI * idxReal / images) / 2) * 3 / 4)));
 
+							// idxReal of 0 is the bottom-most image, which we draw larger than the images on the carousel itself.
 							if (idxReal == 0)
 							{
 								idx0 = idx;
 							}
 							else
 							{
-								e.Graphics.DrawImage(img, new Rectangle(new Point(ip.X - 50, ip.Y - 50 * img.Height / img.Width), new Size(sizer, sizer * img.Height / img.Width)));
+								Point ip = p;		// Receptor center
+
+								// Calculate our location along an ellipse.  idxReal of 0 gives us the bottom-most coordinate.
+								double dx = 150 * Math.Cos((2 * Math.PI * 1 / 4) + 2 * Math.PI * idxReal / images);
+								double dy = 75 * Math.Sin((2 * Math.PI * 1 / 4) + 2 * Math.PI * idxReal / images);
+
+								// Our image center:
+								ip.Offset((int)dx, (int)dy);
+
+								// Scale the image so that the image at the top of the ellipse is the smallest.
+								// We want the scaling to be a factor from 0.25 to 1
+								// This gives us a value on a sin curve from 1..-1..1
+								double calc = Math.Sin((2 * Math.PI * 1 / 4) + 2 * Math.PI * idxReal / images);
+								// We shift this to 2..0..2
+								calc = calc + 1;
+								// We divide by 2, giving us 1..0..1
+								calc = calc / 2;
+								// We take 1/2 of this 
+								calc = calc / 2;
+								// Add back 1/2 as our minimum width range, so now our range is 0.5 to 1.0, multiplied by our width factor, and we get 50..100
+								int width = (int)(100 * (0.50 + calc));
+								// We want the height to always be 75% of the width.
+								int height = width * 3 / 4;	
+
+								System.Diagnostics.Debug.WriteLine("IdxReal = " + idxReal.ToString());
+								System.Diagnostics.Debug.WriteLine("      dx = " + dx.ToString());
+								System.Diagnostics.Debug.WriteLine("      dy = " + dy.ToString());
+								System.Diagnostics.Debug.WriteLine("    Calc = " + calc.ToString());
+								System.Diagnostics.Debug.WriteLine("   Width = " + width.ToString());
+
+								// Even though it'll distort our image, we always want a 100 x 75 image.
+								// e.Graphics.DrawImage(img, new Rectangle(new Point(ip.X - 50, ip.Y - 50 * img.Height / img.Width), new Size(sizer, sizer * img.Height / img.Width)));
+								e.Graphics.DrawImage(img, new Rectangle(new Point(ip.X - width/2, ip.Y - height/2), new Size(width, height)));
 							}
 						});
 
