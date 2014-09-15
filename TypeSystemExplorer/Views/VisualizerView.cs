@@ -2474,13 +2474,13 @@ namespace TypeSystemExplorer.Views
 								int width = (int)(100 * (0.50 + calc));
 								// We want the height to always be 75% of the width.
 								int height = width * 3 / 4;	
-
+/*
 								System.Diagnostics.Debug.WriteLine("IdxReal = " + idxReal.ToString());
 								System.Diagnostics.Debug.WriteLine("      dx = " + dx.ToString());
 								System.Diagnostics.Debug.WriteLine("      dy = " + dy.ToString());
 								System.Diagnostics.Debug.WriteLine("    Calc = " + calc.ToString());
 								System.Diagnostics.Debug.WriteLine("   Width = " + width.ToString());
-
+*/
 								// Even though it'll distort our image, we always want a 100 x 75 image.
 								// e.Graphics.DrawImage(img, new Rectangle(new Point(ip.X - 50, ip.Y - 50 * img.Height / img.Width), new Size(sizer, sizer * img.Height / img.Width)));
 								e.Graphics.DrawImage(img, new Rectangle(new Point(ip.X - width/2, ip.Y - height/2), new Size(width, height)));
