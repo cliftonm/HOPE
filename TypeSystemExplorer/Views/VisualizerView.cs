@@ -2120,7 +2120,21 @@ namespace TypeSystemExplorer.Views
 							}
 							else
 							{
-								protocolName = protocolName + " -->";
+								// Orient the directional arrow based on how the text is being drawn, which
+								// is determined by whether dx < 1 or > 1, or 1.
+								if (dx < 1)
+								{
+									protocolName = protocolName + " -->";
+								}
+								else if (dx > 1)
+								{
+									protocolName = "<-- " + protocolName;
+								}
+								else
+								{
+									// A flip along the vertical line occurs at -1 and 0, then corrects itself again at >= 1
+									protocolName = protocolName + " -->";
+								}
 							}
 
 							DrawTextOnPath.Draw(e, SurfaceOffsetAdjust(start), SurfaceOffsetAdjust(line.P2), protocolName, protocolLabelOffset);

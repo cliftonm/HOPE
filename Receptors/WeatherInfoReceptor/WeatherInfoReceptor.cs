@@ -28,41 +28,49 @@ namespace WeatherInfoReceptor
 		{
 			zipcodeInfoMap = new Dictionary<string, FullInfo>();
 			AddReceiveProtocol("WeatherInfo");
-			AddReceiveProtocol("Location");
+			AddReceiveProtocol("USLocation");
 			AddEmitProtocol("Text");
+			AddEmitProtocol("ExceptionMessage");
 		}
 
 		public override void ProcessCarrier(ICarrier carrier)
 		{
-			FullInfo fullInfo;
-
-			// Duck-typing!
-			if (!zipcodeInfoMap.TryGetValue(carrier.Signal.Zipcode, out fullInfo))
+			try
 			{
-				fullInfo = new FullInfo();
-				zipcodeInfoMap[carrier.Signal.Zipcode] = fullInfo;
+				FullInfo fullInfo;
+
+				// Duck-typing! -- Both USLocation and WeatherInfo have a Zip5 member.
+				if (!zipcodeInfoMap.TryGetValue(carrier.Signal.Zip5.Value, out fullInfo))
+				{
+					fullInfo = new FullInfo();
+					zipcodeInfoMap[carrier.Signal.Zip5.Value] = fullInfo;
+				}
+
+				if (carrier.Protocol.DeclTypeName == "WeatherInfo")
+				{
+					fullInfo.WeatherInfo = carrier.Signal;
+				}
+
+				if (carrier.Protocol.DeclTypeName == "USLocation")
+				{
+					fullInfo.LocationInfo = carrier.Signal;
+				}
+
+				if (fullInfo.Completed)
+				{
+					string conditions = ProcessConditions(fullInfo.WeatherInfo);
+					string hazards = ProcessHazards(fullInfo.WeatherInfo);
+					Say("Here is the weather for " + fullInfo.LocationInfo.City.Value + " " + fullInfo.LocationInfo.USState.Value + ". ");
+					Say("The low is " + fullInfo.WeatherInfo.Low + ".");
+					Say("The high is " + fullInfo.WeatherInfo.High + ".");
+					Say("The weather is: " + fullInfo.WeatherInfo.Summary + ".");
+					Say(conditions);
+					Say(hazards);
+				}
 			}
-
-			if (carrier.Protocol.DeclTypeName == "WeatherInfo")
+			catch (Exception ex)
 			{
-				fullInfo.WeatherInfo = carrier.Signal;				
-			}
-
-			if (carrier.Protocol.DeclTypeName == "Location")
-			{
-				fullInfo.LocationInfo = carrier.Signal;
-			}
-
-			if (fullInfo.Completed)
-			{
-				string conditions = ProcessConditions(fullInfo.WeatherInfo);
-				string hazards = ProcessHazards(fullInfo.WeatherInfo);
-				Say("Here is the weather for " + fullInfo.LocationInfo.City + " " + fullInfo.LocationInfo.State + ". ");
-				Say("The low is " + fullInfo.WeatherInfo.Low + ".");
-				Say("The high is " + fullInfo.WeatherInfo.High + ".");
-				Say("The weather is: " + fullInfo.WeatherInfo.Summary + ".");
-				Say(conditions);
-				Say(hazards);
+				EmitException(ex);
 			}
 		}
 
@@ -151,9 +159,9 @@ namespace WeatherInfoReceptor
 		// TODO: Duplicate code.
 		protected void Say(string msg)
 		{
-			ISemanticTypeStruct protocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct("TextToSpeech");
-			dynamic signal = rsys.SemanticTypeSystem.Create("TextToSpeech");
-			signal.Text = msg;
+			ISemanticTypeStruct protocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct("Text");
+			dynamic signal = rsys.SemanticTypeSystem.Create("Text");
+			signal.Value = msg;
 			rsys.CreateCarrier(this, protocol, signal);
 		}
 	}

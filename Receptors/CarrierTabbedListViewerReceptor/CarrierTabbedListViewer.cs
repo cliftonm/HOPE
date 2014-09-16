@@ -52,6 +52,7 @@ namespace CarrierTabbedListViewerReceptor
 		public CarrierTabbedListViewer(IReceptorSystem rsys)
 			: base(rsys)
 		{
+			AddEmitProtocol("ExceptionMessage");
 			protocolTabPageMap = new Dictionary<string, TabPage>();
 			protocolGridMap = new Dictionary<string, DataGridView>();
 		}
@@ -206,6 +207,9 @@ namespace CarrierTabbedListViewerReceptor
 		/// </summary>
 		protected void UpdateReceivedProtocolsAndTabs()
 		{
+			// TODO: There's something fishy here, because in the CarrierListViewer, we are also clearing all the emitted protocols when we change protocol names.  
+			// Why aren't we doing that here?  If we do this, don't forget to add back in the ExceptionMessage protocol.
+
 			// Assume we will remove all protocols.
 			List<string> protocolsToBeRemoved = new List<string>(receiveProtocols.Select(p => p.Protocol).ToList());
 
@@ -353,7 +357,18 @@ namespace CarrierTabbedListViewerReceptor
 				DataTable dt = ((DataView)protocolGridMap[protocol].DataSource).Table;
 				DataRow row = dt.NewRow();
 				List<IFullyQualifiedNativeType> colValues = rsys.SemanticTypeSystem.GetFullyQualifiedNativeTypeValues(signal, protocol);
-				colValues.ForEach(cv => row[cv.FullyQualifiedName] = cv.Value);
+				colValues.ForEach(cv =>
+					{
+						try
+						{
+							row[cv.FullyQualifiedName] = cv.Value;
+						}
+						catch
+						{
+							// Ignore columns we can't handle.
+							// TODO: Fix this at some point.  WeatherInfo protocol is a good example.
+						}
+					});
 				dt.Rows.Add(row);
 			}
 			catch (Exception ex)

@@ -48,6 +48,7 @@ namespace CarrierListViewerReceptor
 		public CarrierListViewer(IReceptorSystem rsys)
 		  : base(rsys)
 		{
+			AddEmitProtocol("ExceptionMessage");
 		}
 
 		public override void Initialize()
@@ -193,6 +194,8 @@ namespace CarrierListViewerReceptor
 						{
 							// If the implementing type is not known by the native type system (for example, List<dynamic> used in the WeatherInfo protocol, we ignore it.
 							// TODO: We need a way to support implementing lists and displaying them in the viewer as a sub-collection.
+							// WeatherInfo protocol is a good example.
+
 						}
 					});
 
@@ -217,6 +220,7 @@ namespace CarrierListViewerReceptor
 
 				// Add other semantic type emitters:
 				RemoveEmitProtocols();
+				AddEmitProtocol("ExceptionMessage");
 				ISemanticTypeStruct st = rsys.SemanticTypeSystem.GetSemanticTypeStruct(ProtocolName);
 				st.SemanticElements.ForEach(se => AddEmitProtocol(se.Name));
 			}
@@ -236,7 +240,18 @@ namespace CarrierListViewerReceptor
 			{
 				DataTable dt = dvSignals.Table;
 				DataRow row = dt.NewRow();
-				colValues.ForEach(cv => row[cv.FullyQualifiedName] = cv.Value);
+				colValues.ForEach(cv =>
+					{
+						try
+						{
+							row[cv.FullyQualifiedName] = cv.Value;
+						}
+						catch
+						{
+							// Ignore columns we can't handle.
+							// TODO: Fix this at some point.  WeatherInfo protocol is a good example.
+						}
+					});
 				dt.Rows.Add(row);
 			}
 			catch (Exception ex)

@@ -200,7 +200,7 @@
         </SemanticType>
       </SemanticTypes>
     </SemanticTypesContainer>
-    <SemanticTypesContainer Name="Service Types">
+    <SemanticTypesContainer Name="Weather Service Types">
       <SemanticTypes>
         <SemanticType Name="WeatherInfo">
           <NativeTypes>
