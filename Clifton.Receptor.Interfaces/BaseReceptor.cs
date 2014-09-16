@@ -354,7 +354,7 @@ namespace Clifton.Receptor.Interfaces
 			{
 				signal.ReceptorName = Name;
 				signal.MessageTime = DateTime.Now;
-				signal.TextMessage.Text.Value = "Hello world!";
+				signal.TextMessage.Text.Value = ex.Message;
 			});
 		}
 

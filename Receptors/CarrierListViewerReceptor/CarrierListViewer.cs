@@ -184,8 +184,16 @@ namespace CarrierListViewerReceptor
 
 				columns.ForEach(col =>
 					{
-						DataColumn dc = new DataColumn(col.FullyQualifiedName, col.NativeType.GetImplementingType(rsys.SemanticTypeSystem));
-						dt.Columns.Add(dc);
+						try
+						{
+							DataColumn dc = new DataColumn(col.FullyQualifiedName, col.NativeType.GetImplementingType(rsys.SemanticTypeSystem));
+							dt.Columns.Add(dc);
+						}
+						catch
+						{
+							// If the implementing type is not known by the native type system (for example, List<dynamic> used in the WeatherInfo protocol, we ignore it.
+							// TODO: We need a way to support implementing lists and displaying them in the viewer as a sub-collection.
+						}
 					});
 
 				dvSignals = new DataView(dt);

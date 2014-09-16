@@ -128,7 +128,7 @@
         </SemanticType>
       </SemanticTypes>
     </SemanticTypesContainer>
-    <SemanticTypesContainer Name="SystemTypes">
+    <SemanticTypesContainer Name="System Types">
       <SemanticTypes>
         <SemanticType Name="SystemMessage">
           <NativeTypes>
@@ -146,6 +146,90 @@
             <SubType Name="Image" />
             <SubType Name="Filename" />
           </SubTypes>
+        </SemanticType>
+      </SemanticTypes>
+    </SemanticTypesContainer>
+    <SemanticTypesContainer Name="Locational Types">
+      <SemanticTypes>
+        <SemanticType Name="USZipCode">
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="Zip5" />
+            <SubType Name="Zip4" />
+          </SubTypes>
+        </SemanticType>
+        <SemanticType Name="Zip5">
+          <NativeTypes>
+            <NativeType Name="Value" ImplementingType="string" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
+        <SemanticType Name="Zip4">
+          <NativeTypes>
+            <NativeType Name="Value" ImplementingType="string" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
+        <SemanticType Name="USLocation">
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="Zip5" />
+            <SubType Name="Zip4" />
+            <SubType Name="City" />
+            <SubType Name="USState" />
+            <SubType Name="USStateAbbreviation" />
+          </SubTypes>
+        </SemanticType>
+        <SemanticType Name="City">
+          <NativeTypes>
+            <NativeType Name="Value" ImplementingType="string" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
+        <SemanticType Name="USState">
+          <NativeTypes>
+            <NativeType Name="Value" ImplementingType="string" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
+        <SemanticType Name="USStateAbbreviation">
+          <NativeTypes>
+            <NativeType Name="Value" ImplementingType="string" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
+      </SemanticTypes>
+    </SemanticTypesContainer>
+    <SemanticTypesContainer Name="Service Types">
+      <SemanticTypes>
+        <SemanticType Name="WeatherInfo">
+          <NativeTypes>
+            <NativeType Name="Summary" ImplementingType="string" />
+            <NativeType Name="High" ImplementingType="string" />
+            <NativeType Name="Low" ImplementingType="string" />
+            <NativeType Name="Conditions" ImplementingType="List&lt;dynamic&gt;" />
+            <NativeType Name="Hazards" ImplementingType="List&lt;dynamic&gt;" />
+          </NativeTypes>
+          <SubTypes>
+            <SubType Name="Zip5" />
+          </SubTypes>
+        </SemanticType>
+        <SemanticType Name="WeatherCondition">
+          <NativeTypes>
+            <NativeType Name="Additive" ImplementingType="string" />
+            <NativeType Name="Coverage" ImplementingType="string" />
+            <NativeType Name="Intensity" ImplementingType="string" />
+            <NativeType Name="WeatherType" ImplementingType="string" />
+            <NativeType Name="Qualifier" ImplementingType="string" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
+        <SemanticType Name="WeatherHazard">
+          <NativeTypes>
+            <NativeType Name="Phenomena" ImplementingType="string" />
+            <NativeType Name="Significance" ImplementingType="string" />
+          </NativeTypes>
+          <SubTypes />
         </SemanticType>
       </SemanticTypes>
     </SemanticTypesContainer>

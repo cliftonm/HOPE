@@ -1737,31 +1737,35 @@ namespace TypeSystemExplorer.Views
 			// Iterate through receptors with a second search.
 			receptorLocation.ForEach(kvp2 =>
 			{
-				Membrane m2 = GetReceptorMembrane(kvp2.Key);
-
-				// Receptors must be in the same membrane.
-				if (m1 == m2)
+				// We do not send the same protocol to ourselves.
+				if (r != kvp2.Key)
 				{
-					// If any match the receive protocols of kvp2...
-					if (kvp2.Key.Instance.GetReceiveProtocols().Select(rp=>rp.Protocol).Contains(prot1))
+					Membrane m2 = GetReceptorMembrane(kvp2.Key);
+
+					// Receptors must be in the same membrane.
+					if (m1 == m2)
 					{
-						// Then these two receptors are connected.
-						// P1 is always the emitter, P2 is always the receiver.
-						Line l = new Line() { P1 = rPoint, P2 = kvp2.Value };
-						Connection conn = new Connection() { Protocol = prot1, Line = l, R1=r, R2=kvp2.Key};
-						receptorConnections.Add(conn);
-
-						// Add this to the master connection list.
-						// TODO: THIS SHOULD NOT BE COMPUTED IN THE VISUALIZER!!!!
-						if (!Program.MasterReceptorConnectionList.ContainsKey(r))
+						// If any match the receive protocols of kvp2...
+						if (kvp2.Key.Instance.GetReceiveProtocols().Select(rp => rp.Protocol).Contains(prot1))
 						{
-							Program.MasterReceptorConnectionList[r] = new List<IReceptor>();
-						}
+							// Then these two receptors are connected.
+							// P1 is always the emitter, P2 is always the receiver.
+							Line l = new Line() { P1 = rPoint, P2 = kvp2.Value };
+							Connection conn = new Connection() { Protocol = prot1, Line = l, R1 = r, R2 = kvp2.Key };
+							receptorConnections.Add(conn);
 
-						// TODO: Yuck - there must be a better way of dealing with duplicates.
-//						if (!Program.MasterReceptorConnectionList[r].Contains(kvp2.Key))
-						{
-							Program.MasterReceptorConnectionList[r].Add(kvp2.Key);
+							// Add this to the master connection list.
+							// TODO: THIS SHOULD NOT BE COMPUTED IN THE VISUALIZER!!!!
+							if (!Program.MasterReceptorConnectionList.ContainsKey(r))
+							{
+								Program.MasterReceptorConnectionList[r] = new List<IReceptor>();
+							}
+
+							// TODO: Yuck - there must be a better way of dealing with duplicates.
+							// if (!Program.MasterReceptorConnectionList[r].Contains(kvp2.Key))
+							{
+								Program.MasterReceptorConnectionList[r].Add(kvp2.Key);
+							}
 						}
 					}
 				}
@@ -2553,7 +2557,7 @@ namespace TypeSystemExplorer.Views
 		protected Rectangle CircleToBoundingRectangle(Point ctr, int radius)
 		{
 			return new Rectangle(ctr.X - radius, ctr.Y - radius, radius * 2, radius * 2);
-		}		
+		}
 		
 		/// <summary>
 		/// Returns a point adjusted (adding) for the surface offset.
