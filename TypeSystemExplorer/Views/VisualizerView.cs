@@ -1,6 +1,9 @@
 ﻿// #define VIVEK
 #define MINE
 
+// "zip demo 2" applet is a good test case for getting arrows right (or wrong).
+// #define DEBUG_SEMANTIC_LABELS
+
 // #define BLACK_BACKGROUND
 #define WHITE_BACKGROUND
 
@@ -2055,6 +2058,7 @@ namespace TypeSystemExplorer.Views
 					else if (receptorConnectionList.ContainsKey(rp2))
 					{
 						// We have a reverse connection.
+						// TODO: This flag seems pointless.
 						conn.Reverse = true;
 						receptorConnectionList[rp2].Add(conn);
 					}
@@ -2094,27 +2098,67 @@ namespace TypeSystemExplorer.Views
 
 							if (kvp.Value.Count > 1)
 							{
-								// TODO: This needs further testing of the reverse flag and the actual match between the connection's concept of R1 and R2 and the receptor pair connection being drawn.
+								// TODO: Does the reverse flag actually affect our logic here?  It does not seem so.
+								// TODO: There remains an issue when dx==0 and possibly 1 or -1.  
+								// It also seems like only dx needs to be inspected, not conn.Reverse.
 								if (conn.Reverse)
 								{
 									if (kvp.Key.R1 != conn.R1)
 									{
-										protocolName = protocolName + " -->";
+										if (dx > 0)
+										{
+#if DEBUG_SEMANTIC_LABELS
+											protocolName = protocolName + " <--A";
+#else
+											protocolName = "<-- " + protocolName;
+#endif
+										}
+										else
+										{
+#if DEBUG_SEMANTIC_LABELS
+											protocolName = protocolName + " E-->";
+#else
+											protocolName = protocolName + " -->";
+#endif
+										}
 									}
 									else
 									{
+#if DEBUG_SEMANTIC_LABELS
+										protocolName = "<--B " + protocolName;
+#else
 										protocolName = "<-- " + protocolName;
+#endif
 									}
 								}
 								else
 								{
 									if (kvp.Key.R1 != conn.R1)
 									{
+#if DEBUG_SEMANTIC_LABELS
+										protocolName = protocolName + " C-->";
+#else
 										protocolName = protocolName + " -->";
+#endif
 									}
 									else
 									{
-										protocolName = "<-- " + protocolName;
+										if (dx < 0)
+										{
+#if DEBUG_SEMANTIC_LABELS
+											protocolName = " D-->" + protocolName;
+#else
+											protocolName = protocolName + " -->";
+#endif
+										}
+										else
+										{
+#if DEBUG_SEMANTIC_LABELS
+											protocolName = protocolName + " <--F";
+#else
+											protocolName = "<-- " + protocolName;
+#endif
+										}
 									}
 								}
 							}
