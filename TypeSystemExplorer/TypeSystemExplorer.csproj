@@ -266,7 +266,9 @@
     <Content Include="bin\Debug\semanticTypeTree.xml">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="bin\Debug\sttree.xml" />
+    <Content Include="bin\Debug\sttree.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="bin\Debug\symbolTable.xml" />
     <Content Include="bin\Debug\test types with line.xml" />
     <Content Include="bin\Debug\TextViewer.xml" />
