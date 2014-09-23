@@ -254,6 +254,7 @@
     </Content>
     <Content Include="bin\Debug\r-test4.xml" />
     <Content Include="bin\Debug\ReceptorChooser.xml" />
+    <Content Include="bin\Debug\ReceptorProtocolConfig.xml" />
     <Content Include="bin\Debug\Receptors.xml" />
     <Content Include="bin\Debug\Receptors2.xml">
       <SubType>Designer</SubType>

@@ -14,6 +14,7 @@ namespace Clifton.Receptor.Interfaces
 		public string Protocol { get; set; }
 		public Func<dynamic, bool> Qualifier { get; set; }
 		public Action<dynamic> Action { get; set; }
+		public bool Enabled { get; set; }
 
 		/// <summary>
 		/// Default constructor creates an always true qualifier.
@@ -22,6 +23,7 @@ namespace Clifton.Receptor.Interfaces
 		{
 			Qualifier = (_) => true;
 			Action = (_) => { };
+			Enabled = true;
 		}
 
 		/// <summary>
@@ -32,6 +34,7 @@ namespace Clifton.Receptor.Interfaces
 			Protocol = protocol;
 			Qualifier = (_) => true;
 			Action = (_) => { };
+			Enabled = true;
 		}
 
 		/// <summary>
@@ -42,6 +45,7 @@ namespace Clifton.Receptor.Interfaces
 			Protocol = protocol;
 			Qualifier = (_) => true;
 			Action = action;
+			Enabled = true;
 		}
 
 		/// <summary>
@@ -52,6 +56,7 @@ namespace Clifton.Receptor.Interfaces
 			Protocol = protocol;
 			Qualifier = qualifier;
 			Action = (_) => { };
+			Enabled = true;
 		}
 
 		/// <summary>
@@ -62,6 +67,7 @@ namespace Clifton.Receptor.Interfaces
 			Protocol = protocol;
 			Qualifier = qualifier;
 			Action = action;
+			Enabled = true;
 		}
 	}
 }

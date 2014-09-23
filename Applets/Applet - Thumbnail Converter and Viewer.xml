@@ -1,0 +1,48 @@
+<MycroXaml xmlns:ixm="TypeSystemExplorer.Models, TypeSystemExplorer" xmlns:def="def" xmlns:ref="ref" Name="Form">
+  <ixm:Applet>
+    <ixm:MembranesDef>
+      <ixm:Membranes>
+        <ixm:MembraneDef Name="Skin">
+          <ixm:Receptors>
+            <ixm:ReceptorDef Name="Thumbnail Viewer" AssemblyName="ThumbnailViewerReceptor.dll" Enabled="True" Location="360, 193" />
+            <ixm:ReceptorDef Name="Image Viewer" AssemblyName="ImageViewerReceptor.dll" Enabled="True" Location="520, 131" />
+            <ixm:ReceptorDef Name="Image Writer" AssemblyName="ImageWriterReceptor.dll" Enabled="True" Location="318, 51" />
+          </ixm:Receptors>
+          <ixm:Permeabilities>
+            <ixm:PermeabilityDef Protocol="SystemShowImage" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="Image" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="Filename" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="Path" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="Name" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="FileExtension" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="ImageFilename" Direction="Out" Permeable="False" />
+          </ixm:Permeabilities>
+          <ixm:Membranes>
+            <ixm:MembraneDef Name="">
+              <ixm:Receptors>
+                <ixm:ReceptorDef Name="Thumbnail Creator" AssemblyName="ThumbnailCreatorReceptor.dll" Enabled="True" Location="143, 193">
+                  <ixm:UserConfigs>
+                    <ixm:UserConfig Name="MaxSize" Value="320" />
+                  </ixm:UserConfigs>
+                </ixm:ReceptorDef>
+              </ixm:Receptors>
+              <ixm:Permeabilities>
+                <ixm:PermeabilityDef Protocol="SystemShowImage" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Image" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Filename" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Path" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Name" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="FileExtension" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="ImageFilename" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="ThumbnailImage" Direction="Out" Permeable="True" />
+              </ixm:Permeabilities>
+            </ixm:MembraneDef>
+          </ixm:Membranes>
+        </ixm:MembraneDef>
+      </ixm:Membranes>
+    </ixm:MembranesDef>
+    <ixm:CarriersDef>
+      <ixm:Carriers />
+    </ixm:CarriersDef>
+  </ixm:Applet>
+</MycroXaml>

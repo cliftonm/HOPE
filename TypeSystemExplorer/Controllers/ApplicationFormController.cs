@@ -1110,9 +1110,19 @@ namespace TypeSystemExplorer.Controllers
 			return ret;
 		}
 
-		public List<string> GetEmittedProtocols()
+		public List<ReceiveQualifier> GetEnabledReceiveProtocols()
 		{
-			return new List<string>();
+			return GetReceiveProtocols();
+		}
+
+		public List<EmittedProtocol> GetEmittedProtocols()
+		{
+			return new List<EmittedProtocol>();
+		}
+
+		public List<EmittedProtocol> GetEnabledEmittedProtocols()
+		{
+			return new List<EmittedProtocol>();
 		}
 
 		public void Initialize()

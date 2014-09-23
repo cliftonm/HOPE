@@ -47,7 +47,9 @@ namespace Clifton.Receptor.Interfaces
 		IReceptorSystem ReceptorSystem { get; set; }
 
 		List<ReceiveQualifier> GetReceiveProtocols();
-		List<string> GetEmittedProtocols();
+		List<EmittedProtocol> GetEmittedProtocols();
+		List<ReceiveQualifier> GetEnabledReceiveProtocols();
+		List<EmittedProtocol> GetEnabledEmittedProtocols();
 		void ProcessCarrier(ICarrier carrier);
 
 		/// <summary>

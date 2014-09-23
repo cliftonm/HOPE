@@ -301,6 +301,12 @@ namespace TypeSystemExplorer.Views
 		public IReceptor R2 { get; set; }
 	}
 
+	public class ReceptorProtocolConfig
+	{
+		public MycroParser MycroParser { get; set; }
+		public IReceptor Receptor { get; set; }
+	}
+
 	public class VisualizerView : UserControl
 	{
 		const int RenderTime = 120;
@@ -1360,27 +1366,141 @@ namespace TypeSystemExplorer.Views
 		protected void MouseDoubleClickEvent(object sender, MouseEventArgs args)
 		{
 			Point p = args.Location;			// Mouse position
-			// view the active image?
-			// The selected image location is already adjusted for the surface offset.
-			bool match = TestCarouselActiveImageDoubleClick(p);
+			bool match;
 
-			if (!match)
+			if (args.Button == MouseButtons.Left)
 			{
-				// Select image metadata?
+				// view the active image?
 				// The selected image location is already adjusted for the surface offset.
-				match = TestImageMetadataDoubleClick(p);
-			}
+				match = TestCarouselActiveImageDoubleClick(p);
 
-			if (!match)
-			{
-				// Enable/disable receptor?
-				match = TestReceptorDoubleClick(NegativeSurfaceOffsetAdjust(p));
-			}
+				if (!match)
+				{
+					// Select image metadata?
+					// The selected image location is already adjusted for the surface offset.
+					match = TestImageMetadataDoubleClick(p);
+				}
 
-			if (!match)
-			{
-				match = TestMembraneDoubleClick(NegativeSurfaceOffsetAdjust(p));
+				if (!match)
+				{
+					// Enable/disable receptor?
+					IReceptor receptor;
+					match = TestReceptorDoubleClick(NegativeSurfaceOffsetAdjust(p), out receptor);
+
+					if (match)
+					{
+						if (receptor.Instance.ConfigurationUI != null)
+						{
+							MycroParser mp = new MycroParser();
+							Form form = mp.Load<Form>(receptor.Instance.ConfigurationUI, this);
+							form.Tag = new ConfigurationInfo() { Receptor = receptor, Parser = mp };
+							PopulateControls(receptor, mp);
+							form.ShowDialog();
+						}
+						else
+						{
+							receptor.Instance.Enabled ^= true;
+							Invalidate(true);
+						}
+					}
+				}
+
+				if (!match)
+				{
+					match = TestMembraneDoubleClick(NegativeSurfaceOffsetAdjust(p));
+				}
 			}
+			else if (args.Button == MouseButtons.Right)
+			{
+				IReceptor receptor;
+				match = TestReceptorDoubleClick(NegativeSurfaceOffsetAdjust(p), out receptor);
+
+				if (match)
+				{
+					// TODO: Move this all out of the visualizer!
+					MycroParser mp = new MycroParser();
+					Form form = mp.Load<Form>("ReceptorProtocolConfig.xml", this);
+					// form.Tag = new ConfigurationInfo() { Receptor = receptor, Parser = mp };
+					// PopulateControls(receptor, mp);
+
+					// Initialize the tables and views:
+					DataTable dtReceive = new DataTable();
+					dtReceive.Columns.Add(new DataColumn("Protocol", typeof(string)));
+					dtReceive.Columns.Add(new DataColumn("Enabled", typeof(bool)));
+
+					DataTable dtTransmit = new DataTable();
+					dtTransmit.Columns.Add(new DataColumn("Protocol", typeof(string)));
+					dtTransmit.Columns.Add(new DataColumn("Enabled", typeof(bool)));
+
+					receptor.Instance.GetReceiveProtocols().ForEach(rq =>
+						{
+							DataRow row = dtReceive.NewRow();
+							row[0] = rq.Protocol;
+							row[1] = rq.Enabled;
+							dtReceive.Rows.Add(row);
+						});
+
+					receptor.Instance.GetEmittedProtocols().ForEach(ep =>
+						{
+							DataRow row = dtTransmit.NewRow();
+							row[0] = ep.Protocol;
+							row[1] = ep.Enabled;
+							dtTransmit.Rows.Add(row);
+						});
+
+					// For use in event handler.
+					form.Tag = new ReceptorProtocolConfig() { MycroParser = mp, Receptor = receptor };
+
+					// Setup the data source.
+					DataView dvReceive = new DataView(dtReceive);
+					((DataGridView)mp.ObjectCollection["dgvReceiveProtocols"]).DataSource = dvReceive;
+
+					DataView dvTransmit = new DataView(dtTransmit);
+					((DataGridView)mp.ObjectCollection["dgvTransmitProtocols"]).DataSource = dvTransmit;
+
+					((Button)mp.ObjectCollection["btnOK"]).Click += OnReceptorProtocolConfigOK;
+					((Button)mp.ObjectCollection["btnCancel"]).Click += OnReceptorProtocolConfigCancel;
+					form.ShowDialog();
+				}
+			}
+		}
+
+		protected void OnReceptorProtocolConfigOK(object sender, EventArgs e)
+		{
+			Form form = (Form)((Control)sender).Parent;
+			MycroParser mp = ((ReceptorProtocolConfig)form.Tag).MycroParser;
+			IReceptor receptor = ((ReceptorProtocolConfig)form.Tag).Receptor;
+			DataGridView dgvTransmit = ((DataGridView)mp.ObjectCollection["dgvTransmitProtocols"]);
+			DataGridView dgvReceive = ((DataGridView)mp.ObjectCollection["dgvReceiveProtocols"]);
+			dgvTransmit.EndEdit();
+			dgvReceive.EndEdit();
+			DataView dvTransmit = (DataView)dgvTransmit.DataSource;
+			DataView dvReceive = (DataView)dgvReceive.DataSource;
+			dvTransmit.Table.AcceptChanges();
+			dvReceive.Table.AcceptChanges();
+
+			// Save any changes the user made to emitted protocols.
+			dvTransmit.ForEach(row =>
+			{
+				string protocol = (string)row[0];
+				bool enabled = (bool)row[1];
+				receptor.Instance.GetEmittedProtocols().Single(p => p.Protocol == protocol).Enabled = enabled;
+			});
+
+			// Save any changes the user made to received protocols.
+			dvReceive.ForEach(row =>
+				{
+					string protocol = (string)row[0];
+					bool enabled = (bool)row[1];
+					receptor.Instance.GetReceiveProtocols().Single(p => p.Protocol == protocol).Enabled = enabled;
+				});
+
+			CreateReceptorConnections();
+			Invalidate(true);
+		}
+
+		protected void OnReceptorProtocolConfigCancel(object sender, EventArgs e)
+		{
 		}
 
 		protected bool TestCarouselActiveImageDoubleClick(Point p)
@@ -1473,9 +1593,10 @@ namespace TypeSystemExplorer.Views
 		/// <summary>
 		/// Enable or disable the receptor being double-clicked.
 		/// </summary>
-		protected bool TestReceptorDoubleClick(Point p)
+		protected bool TestReceptorDoubleClick(Point p, out IReceptor receptor)
 		{
 			bool match = false;
+			receptor = null;
 
 			foreach (var kvp in receptorLocation)
 			{
@@ -1486,22 +1607,7 @@ namespace TypeSystemExplorer.Views
 				if (r.Contains(p))
 				{
 					match = true;
-					IReceptor receptor = kvp.Key;
-
-					if (receptor.Instance.ConfigurationUI != null)
-					{
-						MycroParser mp = new MycroParser();
-						Form form = mp.Load<Form>(receptor.Instance.ConfigurationUI, this);
-						form.Tag = new ConfigurationInfo() { Receptor = receptor, Parser = mp };
-						PopulateControls(receptor, mp);
-						form.ShowDialog();
-					}
-					else
-					{
-						receptor.Instance.Enabled ^= true;
-						Invalidate(true);
-					}
-
+					receptor = kvp.Key;
 					break;
 				}
 			}
@@ -1634,6 +1740,7 @@ namespace TypeSystemExplorer.Views
 
 				// Setup the data source.
 				DataView dv = new DataView(dt);
+				// TODO: Ugh.  Hardcoded index array.  Replace with the MycroParser object collection.
 				((DataGridView)form.Controls[0]).DataSource = dv;
 				form.FormClosing += OnPermeabilityFormClosing;
 				
@@ -1643,7 +1750,7 @@ namespace TypeSystemExplorer.Views
 			return match;
 		}
 
-		void OnPermeabilityFormClosing(object sender, FormClosingEventArgs e)
+		protected void OnPermeabilityFormClosing(object sender, FormClosingEventArgs e)
 		{
 			Form form = (Form)sender;
 			DataGridView dgv = (DataGridView)form.Controls[0];
@@ -1720,9 +1827,9 @@ namespace TypeSystemExplorer.Views
 					Membrane m1 = GetReceptorMembrane(kvp1.Key);
 
 					// Get the emitted protocols of this receptor.
-					kvp1.Key.Instance.GetEmittedProtocols().ForEach(prot1 =>
+					kvp1.Key.Instance.GetEnabledEmittedProtocols().ForEach(prot1 =>
 						{
-							FindConnectionsWith(kvp1.Key, m1, prot1, kvp1.Value);
+							FindConnectionsWith(kvp1.Key, m1, prot1.Protocol, kvp1.Value);
 						});
 				});
 
@@ -1749,7 +1856,7 @@ namespace TypeSystemExplorer.Views
 					if (m1 == m2)
 					{
 						// If any match the receive protocols of kvp2...
-						if (kvp2.Key.Instance.GetReceiveProtocols().Select(rp => rp.Protocol).Contains(prot1))
+						if (kvp2.Key.Instance.GetEnabledReceiveProtocols().Select(rp => rp.Protocol).Contains(prot1))
 						{
 							// Then these two receptors are connected.
 							// P1 is always the emitter, P2 is always the receiver.

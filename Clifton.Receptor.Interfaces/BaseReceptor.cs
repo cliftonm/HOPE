@@ -69,7 +69,7 @@ namespace Clifton.Receptor.Interfaces
 		public string ConfigurationError { get; protected set; }
 
 		protected List<ReceiveQualifier> receiveProtocols;
-		protected List<string> emitProtocols;
+		protected List<EmittedProtocol> emitProtocols;
 		protected Dictionary<string, Gate> gates;
 		protected Dictionary<string, CompositeGate> compositeGates;
 
@@ -88,7 +88,7 @@ namespace Clifton.Receptor.Interfaces
 		{
 			this.rsys = rsys;
 			receiveProtocols = new List<ReceiveQualifier>();
-			emitProtocols = new List<string>();
+			emitProtocols = new List<EmittedProtocol>();
 			gates = new Dictionary<string, Gate>();
 			compositeGates = new Dictionary<string, CompositeGate>();
 			Enabled = true;
@@ -111,14 +111,37 @@ namespace Clifton.Receptor.Interfaces
 		{
 		}
 
+		/// <summary>
+		/// Return all receive protocols.
+		/// </summary>
 		public virtual List<ReceiveQualifier> GetReceiveProtocols()
 		{
 			return receiveProtocols;
 		}
 
-		public virtual List<string> GetEmittedProtocols()
+		/// <summary>
+		/// Returns all emitted protocols.
+		/// </summary>
+		/// <returns></returns>
+		public virtual List<EmittedProtocol> GetEmittedProtocols()
 		{
 			return emitProtocols;
+		}
+
+		/// <summary>
+		/// Returns only enabled receive protocols.
+		/// </summary>
+		public virtual List<ReceiveQualifier> GetEnabledReceiveProtocols()
+		{
+			return receiveProtocols.Where(p => p.Enabled).ToList();
+		}
+
+		/// <summary>
+		/// Returns only enabled emitted protocols.
+		/// </summary>
+		public virtual List<EmittedProtocol> GetEnabledEmittedProtocols()
+		{
+			return emitProtocols.Where(p => p.Enabled).ToList();
 		}
 
 		/// <summary>
@@ -256,11 +279,11 @@ namespace Clifton.Receptor.Interfaces
 		/// <summary>
 		/// Add protocol that this receptor emits.
 		/// </summary>
-		protected virtual void AddEmitProtocol(string p, bool processInternalSemanticElements = true)
+		protected virtual void AddEmitProtocol(string protocolName, bool processInternalSemanticElements = true)
 		{
-			if (!emitProtocols.Contains(p))
+			if (!emitProtocols.Exists(p=>p.Protocol==protocolName))
 			{
-				emitProtocols.Add(p);
+				emitProtocols.Add(new EmittedProtocol() { Protocol = protocolName });
 				EmitProtocolsChanged.Fire(this, EventArgs.Empty);
 
 				// Kludge to allow a receptor to specify that internal semantic elements of a protocol
@@ -270,7 +293,7 @@ namespace Clifton.Receptor.Interfaces
 				// as part of the SE's ViewImage and GetImageMetadata 
 				if (processInternalSemanticElements)
 				{
-					AddInternalSemanticElements(p);
+					AddInternalSemanticElements(protocolName);
 				}
 			}
 		}
@@ -278,9 +301,9 @@ namespace Clifton.Receptor.Interfaces
 		/// <summary>
 		/// Remove a specific emit protocol.
 		/// </summary>
-		protected virtual void RemoveEmitProtocol(string p)
+		protected virtual void RemoveEmitProtocol(string protocolName)
 		{
-			emitProtocols.Remove(p);
+			emitProtocols.Remove(emitProtocols.Single(p => p.Protocol == protocolName));
 			EmitProtocolsChanged.Fire(this, EventArgs.Empty);
 		}
 
