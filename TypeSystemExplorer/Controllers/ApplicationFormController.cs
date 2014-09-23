@@ -1191,7 +1191,7 @@ namespace TypeSystemExplorer.Controllers
 			SemanticTypeEditorController.IfNotNull(ctrl =>
 			{
 				ctrl.View.AddNode(schemaController, null);
-				PropertyGridController.View.ShowObject(Schema);
+				PropertyGridController.IfNotNull(pgrid => pgrid.View.ShowObject(Schema));
 			});
 
 			// rootNode = sdTree.AddNode(sc, null);
