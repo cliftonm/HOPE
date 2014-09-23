@@ -1,0 +1,72 @@
+<MycroXaml xmlns:ixm="TypeSystemExplorer.Models, TypeSystemExplorer" xmlns:def="def" xmlns:ref="ref" Name="Form">
+  <ixm:Applet>
+    <ixm:MembranesDef>
+      <ixm:Membranes>
+        <ixm:MembraneDef Name="Skin">
+          <ixm:Receptors>
+            <ixm:ReceptorDef Name="Carrier List Viewer" AssemblyName="CarrierListViewerReceptor.dll" Enabled="True" Location="139, 235">
+              <ixm:UserConfigs>
+                <ixm:UserConfig Name="ProtocolName" Value="ExceptionMessage" />
+                <ixm:UserConfig Name="WindowName" Value="Exceptions" />
+                <ixm:UserConfig Name="WindowX" Value="143" />
+                <ixm:UserConfig Name="WindowY" Value="465" />
+                <ixm:UserConfig Name="WindowWidth" Value="712" />
+                <ixm:UserConfig Name="WindowHeight" Value="176" />
+              </ixm:UserConfigs>
+            </ixm:ReceptorDef>
+            <ixm:ReceptorDef Name="Weather Service" AssemblyName="WeatherServiceReceptor.dll" Enabled="True" Location="268, 81">
+              <ixm:UserConfigs>
+                <ixm:UserConfig Name="Zipcode" Value="" />
+              </ixm:UserConfigs>
+            </ixm:ReceptorDef>
+            <ixm:ReceptorDef Name="Zip Code Service" AssemblyName="ZipCodeReceptor.dll" Enabled="True" Location="180, 494" />
+            <ixm:ReceptorDef Name="Weather Info" AssemblyName="WeatherInfoReceptor.dll" Enabled="True" Location="43, 130" />
+            <ixm:ReceptorDef Name="Text Display" AssemblyName="TextDisplayReceptor.dll" Enabled="True" Location="426, 281">
+              <ixm:UserConfigs>
+                <ixm:UserConfig Name="WindowX" Value="0" />
+                <ixm:UserConfig Name="WindowY" Value="767" />
+                <ixm:UserConfig Name="WindowWidth" Value="513" />
+                <ixm:UserConfig Name="WindowHeight" Value="246" />
+              </ixm:UserConfigs>
+            </ixm:ReceptorDef>
+            <ixm:ReceptorDef Name="Carrier List Viewer" AssemblyName="CarrierListViewerReceptor.dll" Enabled="True" Location="570, 53">
+              <ixm:UserConfigs>
+                <ixm:UserConfig Name="ProtocolName" Value="WeatherInfo" />
+                <ixm:UserConfig Name="WindowName" Value="Weather Info" />
+                <ixm:UserConfig Name="WindowX" Value="151" />
+                <ixm:UserConfig Name="WindowY" Value="221" />
+                <ixm:UserConfig Name="WindowWidth" Value="528" />
+                <ixm:UserConfig Name="WindowHeight" Value="204" />
+              </ixm:UserConfigs>
+            </ixm:ReceptorDef>
+            <ixm:ReceptorDef Name="Carrier List Viewer" AssemblyName="CarrierListViewerReceptor.dll" Enabled="True" Location="665, 415">
+              <ixm:UserConfigs>
+                <ixm:UserConfig Name="ProtocolName" Value="USLocation" />
+                <ixm:UserConfig Name="WindowName" Value="Location" />
+                <ixm:UserConfig Name="WindowX" Value="148" />
+                <ixm:UserConfig Name="WindowY" Value="0" />
+                <ixm:UserConfig Name="WindowWidth" Value="664" />
+                <ixm:UserConfig Name="WindowHeight" Value="201" />
+              </ixm:UserConfigs>
+            </ixm:ReceptorDef>
+          </ixm:Receptors>
+          <ixm:Permeabilities>
+            <ixm:PermeabilityDef Protocol="ExceptionMessage" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="TextMessage" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="Text" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="Zip5" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="WeatherInfo" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="USLocation" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="Zip4" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="City" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="USState" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="USStateAbbreviation" Direction="Out" Permeable="False" />
+          </ixm:Permeabilities>
+        </ixm:MembraneDef>
+      </ixm:Membranes>
+    </ixm:MembranesDef>
+    <ixm:CarriersDef>
+      <ixm:Carriers />
+    </ixm:CarriersDef>
+  </ixm:Applet>
+</MycroXaml>
