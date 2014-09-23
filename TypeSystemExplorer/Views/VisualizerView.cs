@@ -834,7 +834,10 @@ namespace TypeSystemExplorer.Views
 
 			if (!StartDrop)
 			{
-				p = GetRandomLocation();
+				if (!e.Receptor.Instance.IsHidden)
+				{
+					p = GetRandomLocation();
+				}
 			}
 
 			if (!e.Receptor.Instance.IsHidden)
