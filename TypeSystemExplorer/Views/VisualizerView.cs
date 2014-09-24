@@ -961,16 +961,69 @@ namespace TypeSystemExplorer.Views
 			}
 			else if (args.Button == MouseButtons.Right)
 			{
-				// If no membrane is selected, move the entire surface.
-				var selectedMembranes = membraneLocation.Where(kvp => PointInCircle(SurfaceOffsetAdjust(kvp.Value.Center), MembraneNubRadius, testPoint));
+				IReceptor receptor;
+				bool match = TestForReceptorAt(testPoint, out receptor);
 
-				// Only move the surface if no membrane is selected.  
-				// TODO: Do we really need to do this?
-				if (selectedMembranes.Count() == 0)
+				if (match)
 				{
-					dragSurface = true;
-					mouseStart = NegativeSurfaceOffsetAdjust(args.Location);
-					mousePosition = NegativeSurfaceOffsetAdjust(args.Location);
+					// TODO: Move this all out of the visualizer!
+					MycroParser mp = new MycroParser();
+					Form form = mp.Load<Form>("ReceptorProtocolConfig.xml", this);
+					// form.Tag = new ConfigurationInfo() { Receptor = receptor, Parser = mp };
+					// PopulateControls(receptor, mp);
+
+					// Initialize the tables and views:
+					DataTable dtReceive = new DataTable();
+					dtReceive.Columns.Add(new DataColumn("Protocol", typeof(string)));
+					dtReceive.Columns.Add(new DataColumn("Enabled", typeof(bool)));
+
+					DataTable dtTransmit = new DataTable();
+					dtTransmit.Columns.Add(new DataColumn("Protocol", typeof(string)));
+					dtTransmit.Columns.Add(new DataColumn("Enabled", typeof(bool)));
+
+					receptor.Instance.GetReceiveProtocols().ForEach(rq =>
+					{
+						DataRow row = dtReceive.NewRow();
+						row[0] = rq.Protocol;
+						row[1] = rq.Enabled;
+						dtReceive.Rows.Add(row);
+					});
+
+					receptor.Instance.GetEmittedProtocols().ForEach(ep =>
+					{
+						DataRow row = dtTransmit.NewRow();
+						row[0] = ep.Protocol;
+						row[1] = ep.Enabled;
+						dtTransmit.Rows.Add(row);
+					});
+
+					// For use in event handler.
+					form.Tag = new ReceptorProtocolConfig() { MycroParser = mp, Receptor = receptor };
+
+					// Setup the data source.
+					DataView dvReceive = new DataView(dtReceive);
+					((DataGridView)mp.ObjectCollection["dgvReceiveProtocols"]).DataSource = dvReceive;
+
+					DataView dvTransmit = new DataView(dtTransmit);
+					((DataGridView)mp.ObjectCollection["dgvTransmitProtocols"]).DataSource = dvTransmit;
+
+					((Button)mp.ObjectCollection["btnOK"]).Click += OnReceptorProtocolConfigOK;
+					((Button)mp.ObjectCollection["btnCancel"]).Click += OnReceptorProtocolConfigCancel;
+					form.ShowDialog();
+				}
+				else if (args.Button == MouseButtons.Right)
+				{
+					// If no membrane is selected, move the entire surface.
+					var selectedMembranes = membraneLocation.Where(kvp => PointInCircle(SurfaceOffsetAdjust(kvp.Value.Center), MembraneNubRadius, testPoint));
+
+					// Only move the surface if no membrane is selected.  
+					// TODO: Do we really need to do this?
+					if (selectedMembranes.Count() == 0)
+					{
+						dragSurface = true;
+						mouseStart = NegativeSurfaceOffsetAdjust(args.Location);
+						mousePosition = NegativeSurfaceOffsetAdjust(args.Location);
+					}
 				}
 			}
 		}
@@ -1388,7 +1441,7 @@ namespace TypeSystemExplorer.Views
 				{
 					// Enable/disable receptor?
 					IReceptor receptor;
-					match = TestReceptorDoubleClick(NegativeSurfaceOffsetAdjust(p), out receptor);
+					match = TestForReceptorAt(NegativeSurfaceOffsetAdjust(p), out receptor);
 
 					if (match)
 					{
@@ -1411,59 +1464,6 @@ namespace TypeSystemExplorer.Views
 				if (!match)
 				{
 					match = TestMembraneDoubleClick(NegativeSurfaceOffsetAdjust(p));
-				}
-			}
-			else if (args.Button == MouseButtons.Right)
-			{
-				IReceptor receptor;
-				match = TestReceptorDoubleClick(NegativeSurfaceOffsetAdjust(p), out receptor);
-
-				if (match)
-				{
-					// TODO: Move this all out of the visualizer!
-					MycroParser mp = new MycroParser();
-					Form form = mp.Load<Form>("ReceptorProtocolConfig.xml", this);
-					// form.Tag = new ConfigurationInfo() { Receptor = receptor, Parser = mp };
-					// PopulateControls(receptor, mp);
-
-					// Initialize the tables and views:
-					DataTable dtReceive = new DataTable();
-					dtReceive.Columns.Add(new DataColumn("Protocol", typeof(string)));
-					dtReceive.Columns.Add(new DataColumn("Enabled", typeof(bool)));
-
-					DataTable dtTransmit = new DataTable();
-					dtTransmit.Columns.Add(new DataColumn("Protocol", typeof(string)));
-					dtTransmit.Columns.Add(new DataColumn("Enabled", typeof(bool)));
-
-					receptor.Instance.GetReceiveProtocols().ForEach(rq =>
-						{
-							DataRow row = dtReceive.NewRow();
-							row[0] = rq.Protocol;
-							row[1] = rq.Enabled;
-							dtReceive.Rows.Add(row);
-						});
-
-					receptor.Instance.GetEmittedProtocols().ForEach(ep =>
-						{
-							DataRow row = dtTransmit.NewRow();
-							row[0] = ep.Protocol;
-							row[1] = ep.Enabled;
-							dtTransmit.Rows.Add(row);
-						});
-
-					// For use in event handler.
-					form.Tag = new ReceptorProtocolConfig() { MycroParser = mp, Receptor = receptor };
-
-					// Setup the data source.
-					DataView dvReceive = new DataView(dtReceive);
-					((DataGridView)mp.ObjectCollection["dgvReceiveProtocols"]).DataSource = dvReceive;
-
-					DataView dvTransmit = new DataView(dtTransmit);
-					((DataGridView)mp.ObjectCollection["dgvTransmitProtocols"]).DataSource = dvTransmit;
-
-					((Button)mp.ObjectCollection["btnOK"]).Click += OnReceptorProtocolConfigOK;
-					((Button)mp.ObjectCollection["btnCancel"]).Click += OnReceptorProtocolConfigCancel;
-					form.ShowDialog();
 				}
 			}
 		}
@@ -1498,12 +1498,16 @@ namespace TypeSystemExplorer.Views
 					receptor.Instance.GetReceiveProtocols().Single(p => p.Protocol == protocol).Enabled = enabled;
 				});
 
+			form.Close();
+
 			CreateReceptorConnections();
 			Invalidate(true);
 		}
 
 		protected void OnReceptorProtocolConfigCancel(object sender, EventArgs e)
 		{
+			Form form = (Form)((Control)sender).Parent;
+			form.Close();
 		}
 
 		protected bool TestCarouselActiveImageDoubleClick(Point p)
@@ -1596,7 +1600,7 @@ namespace TypeSystemExplorer.Views
 		/// <summary>
 		/// Enable or disable the receptor being double-clicked.
 		/// </summary>
-		protected bool TestReceptorDoubleClick(Point p, out IReceptor receptor)
+		protected bool TestForReceptorAt(Point p, out IReceptor receptor)
 		{
 			bool match = false;
 			receptor = null;

@@ -808,6 +808,7 @@ namespace TypeSystemExplorer.Controllers
 						AddAttribute(rNode, "Location", p.X + ", " + p.Y);
 					}
 
+					SerializeReceptorProtocolStates(rNode, r);
 					SerializeReceptorUserConfigurableProperties(rNode, r);
 				}
 			});
@@ -833,6 +834,40 @@ namespace TypeSystemExplorer.Controllers
 					SerializeMembrane(membraneDefNode, innerMembrane);
 				});
 			
+		}
+
+		/// <summary>
+		/// Save the enabled/disabled state of each emitted and received protocol of the receptor.
+		/// </summary>
+		protected void SerializeReceptorProtocolStates(XmlNode rNode, IReceptor r)
+		{
+			if (r.Instance.GetReceiveProtocols().Count > 0)
+			{
+				XmlNode rpNodes = rNode.OwnerDocument.CreateElement("ixm", "ReceiveProtocols", "TypeSystemExplorer.Models, TypeSystemExplorer");
+				rNode.AppendChild(rpNodes);
+
+				r.Instance.GetReceiveProtocols().ForEach(rp =>
+					{
+						XmlNode rpNode = rNode.OwnerDocument.CreateElement("ixm", "ReceiveProtocol", "TypeSystemExplorer.Models, TypeSystemExplorer");
+						AddAttribute(rpNode, "Protocol", rp.Protocol);
+						AddAttribute(rpNode, "Enabled", rp.Enabled.ToString());
+						rpNodes.AppendChild(rpNode);
+					});
+			}
+
+			if (r.Instance.GetEmittedProtocols().Count > 0)
+			{
+				XmlNode epNodes = rNode.OwnerDocument.CreateElement("ixm", "EmitProtocols", "TypeSystemExplorer.Models, TypeSystemExplorer");
+				rNode.AppendChild(epNodes);
+
+				r.Instance.GetEmittedProtocols().ForEach(ep =>
+				{
+					XmlNode epNode = rNode.OwnerDocument.CreateElement("ixm", "EmitProtocol", "TypeSystemExplorer.Models, TypeSystemExplorer");
+					AddAttribute(epNode, "Protocol", ep.Protocol);
+					AddAttribute(epNode, "Enabled", ep.Enabled.ToString());
+					epNodes.AppendChild(epNode);
+				});
+			}
 		}
 
 		/// <summary>
@@ -940,6 +975,8 @@ namespace TypeSystemExplorer.Controllers
 		{
 			Dictionary<IReceptor, Point> receptorLocationMap = new Dictionary<IReceptor, Point>();
 			Dictionary<IReceptor, List<UserConfig>> configs = new Dictionary<IReceptor, List<UserConfig>>();
+			Dictionary<IReceptor, List<EmitProtocol>> emitProtocols = new Dictionary<IReceptor, List<EmitProtocol>>();
+			Dictionary<IReceptor, List<ReceiveProtocol>> receiveProtocols = new Dictionary<IReceptor, List<ReceiveProtocol>>();
 			Point noLocation = new Point(-1, -1);
 			membrane.Name = membraneDef.Name;
 
@@ -949,12 +986,38 @@ namespace TypeSystemExplorer.Controllers
 					receptorLocationMap[r] = n.Location;
 					r.Enabled = n.Enabled;
 					configs[r] = n.UserConfigs;
+					emitProtocols[r] = n.EmitProtocols;
+					receiveProtocols[r] = n.ReceiveProtocols;
 				});
 
 			// After registration, but before the NewReceptor fire event, set the drop point.
 			// Load all the receptors defined in this membrane first.
 			membrane.LoadReceptors((rec) =>
 			{
+				List<EmitProtocol> eprotocols;
+				List<ReceiveProtocol> rprotocols;
+
+				// Set the enabled state of each received and emitted protocol.
+				// We try to find the matching protocol name in the receptor.  If we can't find it, no error occurs.  This handles
+				// cases when we change a receptor during development and the serialized protocol no longer matches.
+				// Emitted protocols.
+				if (emitProtocols.TryGetValue(rec, out eprotocols))
+				{
+					eprotocols.ForEach(ep =>
+						{
+							rec.Instance.GetEmittedProtocols().SingleOrDefault(p => p.Protocol == ep.Protocol).IfNotNull(p => p.Enabled = ep.Enabled);
+						});
+				}
+
+				// Received protocols.
+				if (receiveProtocols.TryGetValue(rec, out rprotocols))
+				{
+					rprotocols.ForEach(rp =>
+						{
+							rec.Instance.GetReceiveProtocols().SingleOrDefault(p => p.Protocol == rp.Protocol).IfNotNull(p => p.Enabled = rp.Enabled);
+						});
+				}
+
 				// Restore any user configuration values.
 				List<UserConfig> configList;
 
@@ -970,18 +1033,19 @@ namespace TypeSystemExplorer.Controllers
 						});
 				}
 
-				Point p;
+				// Receptor location which we use as the drop point for the visualizer.
+				Point rloc;
 
 				// Internal receptors, like ourselves, will not be in this deserialized collection.
-				if (receptorLocationMap.TryGetValue(rec, out p))
+				if (receptorLocationMap.TryGetValue(rec, out rloc))
 				{
-					if (p == noLocation)
+					if (rloc == noLocation)
 					{
 						VisualizerController.View.ClientDropPoint = VisualizerController.View.GetRandomLocation();
 					}
 					else
 					{
-						VisualizerController.View.ClientDropPoint = p;
+						VisualizerController.View.ClientDropPoint = rloc;
 					}
 				}
 			});

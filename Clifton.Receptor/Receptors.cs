@@ -250,14 +250,22 @@ namespace Clifton.Receptor
 		/// <param name="signal">The signal in the protocol's format.</param>
 		public void CreateCarrierIfReceiver(IReceptorInstance from, ISemanticTypeStruct protocol, dynamic signal)
 		{
-			if (TargetReceptorExistsFor(ReceptorFromInstance(from), protocol))
+			if (from.GetEnabledEmittedProtocols().Any(p => p.Protocol == protocol.DeclTypeName))
 			{
-				CreateCarrier(from, protocol, signal);
+				if (TargetReceptorExistsFor(ReceptorFromInstance(from), protocol))
+				{
+					// This call will recurse for us.
+					CreateCarrier(from, protocol, signal);
+				}
+				else
+				{
+					// Recurse into SE's of the protocol and emit carriers for those as well, if a receiver exists.
+					// We do this even if there isn't a target for the top-level receptor.
+					CreateCarriersForSemanticElements(from, protocol, signal, false);
+				}
 			}
 			else
 			{
-				// Recurse into SE's of the protocol and emit carriers for those as well, if a receiver exists.
-				// We do this even if there isn't a target for the top-level receptor.
 				CreateCarriersForSemanticElements(from, protocol, signal, false);
 			}
 		}
@@ -411,17 +419,25 @@ namespace Clifton.Receptor
 		/// <summary>
 		/// Internal carrier creation.  This includes the "stopRecursion" flag to prevent wildcard receptors from receiving ad-infinitum their own emissions.
 		/// </summary>
-		protected ICarrier CreateCarrier(IReceptorInstance from, ISemanticTypeStruct protocol, dynamic signal, bool stopRecursion)
+		protected ICarrier CreateCarrier(IReceptorInstance from, ISemanticTypeStruct protocol, dynamic signal, bool stopRecursion, bool isSystemMessage = false)
 		{
-			Carrier carrier = new Carrier(protocol, signal);
-			NewCarrier.Fire(this, new NewCarrierEventArgs(from, carrier));
+			Carrier carrier = null;
 
-			// We pass along the stopRecursion flag to prevent wild-card carrier receptor from receiving their own emissions, which would result in a new carrier,
-			// ad-infinitum.
-			ProcessReceptors(from, carrier, stopRecursion);
+			if (from.GetEnabledEmittedProtocols().Any(p => p.Protocol == protocol.DeclTypeName) || isSystemMessage)
+			{
+				carrier = new Carrier(protocol, signal);
+				NewCarrier.Fire(this, new NewCarrierEventArgs(from, carrier));
+
+				// We pass along the stopRecursion flag to prevent wild-card carrier receptor from receiving their own emissions, which would result in a new carrier,
+				// ad-infinitum.
+				ProcessReceptors(from, carrier, stopRecursion);
+			}
 
 			// Recurse into SE's of the protocol and emit carriers for those as well, if a receiver exists.
-			CreateCarriersForSemanticElements(from, protocol, signal, stopRecursion);
+			if (!isSystemMessage)
+			{
+				CreateCarriersForSemanticElements(from, protocol, signal, stopRecursion);
+			}
 
 			return carrier;
 		}
@@ -451,7 +467,7 @@ namespace Clifton.Receptor
 			if (MasterReceptorConnectionList.TryGetValue(from, out targets))
 			{
 				// We're only interested in enabled receptors.
-				ret = targets.Any(r => r != from && r.Instance.Enabled && r.Instance.GetReceiveProtocols().Select(rp=>rp.Protocol).Contains(protocol.DeclTypeName));
+				ret = targets.Any(r => r != from && r.Instance.Enabled && r.Instance.GetEnabledReceiveProtocols().Select(rp=>rp.Protocol).Contains(protocol.DeclTypeName));
 			}
 
 			if (!ret)
@@ -479,7 +495,7 @@ namespace Clifton.Receptor
 			}
 
 			// Only enabled receptors and receptors that are not the source of the carrier.
-			List<IReceptor> filteredTargets = targets.Where(r => r != from && r.Instance.Enabled && r.Instance.GetReceiveProtocols().Select(rq => rq.Protocol).Contains(protocol.DeclTypeName)).ToList();
+			List<IReceptor> filteredTargets = targets.Where(r => r != from && r.Instance.Enabled && r.Instance.GetEnabledReceiveProtocols().Select(rq => rq.Protocol).Contains(protocol.DeclTypeName)).ToList();
 
 			// Will have a count of 0 if the receptor is the system receptor, ie, carrier animations or other protocols.
 			// TODO: This seems kludgy, is there a better way of working with this?
@@ -501,7 +517,7 @@ namespace Clifton.Receptor
 			filteredTargets.Where(r=>r != from && r.Instance.Enabled).ForEach(t =>
 				{
 					// Get the list of receive actions and filters for the specific protocol.
-					var receiveList = t.Instance.GetReceiveProtocols().Where(rp => rp.Protocol == protocol.DeclTypeName);
+					var receiveList = t.Instance.GetEnabledReceiveProtocols().Where(rp => rp.Protocol == protocol.DeclTypeName);
 					receiveList.ForEach(r =>
 						{
 							// If qualified, add to the final target list.
@@ -604,7 +620,8 @@ namespace Clifton.Receptor
 							signal.To = receptor.Instance;
 							signal.Carrier = carrier;
 							// Simulate coming from the system, as it IS a system message.
-							CreateCarrier(from, protocol, signal, receptor.Instance.GetReceiveProtocols().Select(rp=>rp.Protocol).Contains("*"));
+							// Also note that the "stop recursion" flag is set to true on a receptor defining "receives everything" ("*").
+							CreateCarrier(from, protocol, signal, receptor.Instance.GetEnabledReceiveProtocols().Select(rp=>rp.Protocol).Contains("*"), true);
 						}
 					});
 				});
