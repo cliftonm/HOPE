@@ -236,7 +236,8 @@ namespace Clifton.Receptor
 			// This calls the internal method with recursion set to false.  We don't want to expose this 
 			// flag, so this method is a public front, as receptors should never set the "stop recursion" flag
 			// to true when creating carriers.
-			ICarrier carrier = CreateCarrier(from, protocol, signal, false, protocol.DeclTypeName=="SystemMessage");
+			// TODO: Improve these "is it a system message" tests -- figure out how to get rid of these hardcoded string.
+			ICarrier carrier = CreateCarrier(from, protocol, signal, false, protocol.DeclTypeName=="SystemMessage" || from.Name=="DropReceptor");
 
 			return carrier;
 		}
