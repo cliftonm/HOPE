@@ -236,7 +236,7 @@ namespace Clifton.Receptor
 			// This calls the internal method with recursion set to false.  We don't want to expose this 
 			// flag, so this method is a public front, as receptors should never set the "stop recursion" flag
 			// to true when creating carriers.
-			ICarrier carrier = CreateCarrier(from, protocol, signal, false);
+			ICarrier carrier = CreateCarrier(from, protocol, signal, false, protocol.DeclTypeName=="SystemMessage");
 
 			return carrier;
 		}
@@ -426,7 +426,10 @@ namespace Clifton.Receptor
 			if (from.GetEnabledEmittedProtocols().Any(p => p.Protocol == protocol.DeclTypeName) || isSystemMessage)
 			{
 				carrier = new Carrier(protocol, signal);
-				NewCarrier.Fire(this, new NewCarrierEventArgs(from, carrier));
+				// ************ MOVED TO A: **************
+				// The reason this was moved is so that we fire NewCarrier only for actual receptors with protocols enabled for that receptor.
+				// TODO: However, this means that we no longer queue protocols for which we have no receptors.  Not sure if we actually want this particular feature.
+				// NewCarrier.Fire(this, new NewCarrierEventArgs(from, carrier));
 
 				// We pass along the stopRecursion flag to prevent wild-card carrier receptor from receiving their own emissions, which would result in a new carrier,
 				// ad-infinitum.
@@ -507,7 +510,9 @@ namespace Clifton.Receptor
 				// When the try fails, it sets targets to null.
 				if (protocolReceptorMap.TryGetValue(protocol.DeclTypeName, out targets))
 				{
-					filteredTargets = targets.Where(r => r.Instance.Enabled && (r != from)).ToList();
+					filteredTargets = targets.Where(r => r.Instance.Enabled && (r != from) && true).ToList();
+					// Remove disabled receive protocols.
+					filteredTargets = filteredTargets.Where(r => r.Instance.GetReceiveProtocols().Exists(p => p.Protocol == protocol.DeclTypeName && p.Enabled)).ToList();
 				}
 			}
 
@@ -601,6 +606,8 @@ namespace Clifton.Receptor
 					{
 						// The action is "ProcessCarrier".
 						// TODO: *** Pass in the carrier, not the carrier's fields!!! ***
+						// ************* A: MOVED HERE ************
+						NewCarrier.Fire(this, new NewCarrierEventArgs(from, carrier));
 						Action process = new Action(() => receptor.Instance.ProcessCarrier(carrier));
 
 						// TODO: This flag is tied in with the visualizer, we should extricate this flag and logic.
