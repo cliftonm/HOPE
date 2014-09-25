@@ -8,12 +8,18 @@ namespace Clifton.Receptor.Interfaces
 {
 	public class EmittedProtocol
 	{
+		protected bool enabled;
+
 		public string Protocol { get; set; }
-		public bool Enabled { get; set; }
+		public bool Enabled
+		{
+			get { return enabled; }
+			set { enabled = value; }
+		}
 
 		public EmittedProtocol()
 		{
-			Enabled = true;
+			enabled = true;
 		}
 	}
 }

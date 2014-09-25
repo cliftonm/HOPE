@@ -70,6 +70,9 @@ namespace Clifton.Receptor.Interfaces
 
 		protected List<ReceiveQualifier> receiveProtocols;
 		protected List<EmittedProtocol> emitProtocols;
+		protected Dictionary<string, bool> cachedReceiveProtocolConfig;
+		protected Dictionary<string, bool> cachedEmitProtocolConfig;
+
 		protected Dictionary<string, Gate> gates;
 		protected Dictionary<string, CompositeGate> compositeGates;
 
@@ -89,9 +92,27 @@ namespace Clifton.Receptor.Interfaces
 			this.rsys = rsys;
 			receiveProtocols = new List<ReceiveQualifier>();
 			emitProtocols = new List<EmittedProtocol>();
+			cachedEmitProtocolConfig = new Dictionary<string, bool>();
+			cachedReceiveProtocolConfig = new Dictionary<string, bool>();
 			gates = new Dictionary<string, Gate>();
 			compositeGates = new Dictionary<string, CompositeGate>();
 			Enabled = true;
+		}
+
+		/// <summary>
+		/// We cache the persisted enable state of the emit protocols for receptors that register emit protocols after initialization.
+		/// </summary>
+		public void CacheEmitProtocol(string protocolName, bool enabled)
+		{
+			cachedEmitProtocolConfig[protocolName] = enabled;
+		}
+
+		/// <summary>
+		/// We cache the persisted enable state of the receive protocols for receptors that register receive protocols after initialization.
+		/// </summary>
+		public void CacheReceiveProtocol(string protocolName, bool enabled)
+		{
+			cachedReceiveProtocolConfig[protocolName] = enabled;
 		}
 
 		/// <summary>
@@ -227,7 +248,9 @@ namespace Clifton.Receptor.Interfaces
 		/// </summary>
 		protected virtual void AddReceiveProtocol(string p)
 		{
-			receiveProtocols.Add(new ReceiveQualifier(p));
+			bool cachedEnableState;
+			cachedReceiveProtocolConfig.TryGetValue(p, out cachedEnableState).Else(() => cachedEnableState = true);
+			receiveProtocols.Add(new ReceiveQualifier(p) { Enabled = cachedEnableState });
 			ReceiveProtocolsChanged.Fire(this, EventArgs.Empty);
 		}
 
@@ -236,7 +259,9 @@ namespace Clifton.Receptor.Interfaces
 		/// </summary>
 		protected virtual void AddReceiveProtocol(string p, Action<dynamic> a)
 		{
-			receiveProtocols.Add(new ReceiveQualifier(p, a));
+			bool cachedEnableState;
+			cachedReceiveProtocolConfig.TryGetValue(p, out cachedEnableState).Else(() => cachedEnableState = true);
+			receiveProtocols.Add(new ReceiveQualifier(p, a) { Enabled = cachedEnableState });
 			ReceiveProtocolsChanged.Fire(this, EventArgs.Empty);
 		}
 
@@ -245,7 +270,9 @@ namespace Clifton.Receptor.Interfaces
 		/// </summary>
 		protected virtual void AddReceiveProtocol(string p, Func<dynamic, bool> q)
 		{
-			receiveProtocols.Add(new ReceiveQualifier(p, q));
+			bool cachedEnableState;
+			cachedReceiveProtocolConfig.TryGetValue(p, out cachedEnableState).Else(() => cachedEnableState = true);
+			receiveProtocols.Add(new ReceiveQualifier(p, q) { Enabled = cachedEnableState });
 			ReceiveProtocolsChanged.Fire(this, EventArgs.Empty);
 		}
 
@@ -254,7 +281,9 @@ namespace Clifton.Receptor.Interfaces
 		/// </summary>
 		protected virtual void AddReceiveProtocol(string p, Func<dynamic, bool> q, Action<dynamic> a)
 		{
-			receiveProtocols.Add(new ReceiveQualifier(p, q, a));
+			bool cachedEnableState;
+			cachedReceiveProtocolConfig.TryGetValue(p, out cachedEnableState).Else(() => cachedEnableState = true);
+			receiveProtocols.Add(new ReceiveQualifier(p, q, a) { Enabled = cachedEnableState });
 			ReceiveProtocolsChanged.Fire(this, EventArgs.Empty);
 		}
 
@@ -281,9 +310,12 @@ namespace Clifton.Receptor.Interfaces
 		/// </summary>
 		protected virtual void AddEmitProtocol(string protocolName, bool processInternalSemanticElements = true)
 		{
+			// We can encounter the same protocol when we recurse into the internal semantics, so ignore repeats.
 			if (!emitProtocols.Exists(p=>p.Protocol==protocolName))
 			{
-				emitProtocols.Add(new EmittedProtocol() { Protocol = protocolName });
+				bool cachedEnableState;
+				cachedEmitProtocolConfig.TryGetValue(protocolName, out cachedEnableState).Else(() => cachedEnableState = true);
+				emitProtocols.Add(new EmittedProtocol() { Protocol = protocolName, Enabled=cachedEnableState });
 				EmitProtocolsChanged.Fire(this, EventArgs.Empty);
 
 				// Kludge to allow a receptor to specify that internal semantic elements of a protocol

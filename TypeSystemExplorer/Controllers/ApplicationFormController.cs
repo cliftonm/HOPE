@@ -1005,6 +1005,8 @@ namespace TypeSystemExplorer.Controllers
 				{
 					eprotocols.ForEach(ep =>
 						{
+							// Kludgy, but we need to cache the emit protocol enable states for receptors that dynamically register emit protocols based on user configuration or other info.
+							rec.Instance.CacheEmitProtocol(ep.Protocol, ep.Enabled);
 							rec.Instance.GetEmittedProtocols().SingleOrDefault(p => p.Protocol == ep.Protocol).IfNotNull(p => p.Enabled = ep.Enabled);
 						});
 				}
@@ -1014,6 +1016,8 @@ namespace TypeSystemExplorer.Controllers
 				{
 					rprotocols.ForEach(rp =>
 						{
+							// Kludgy, but we need to cache the receive protocol enable states for receptors that dynamically register receive protocols based on user configuration or other info.
+							rec.Instance.CacheReceiveProtocol(rp.Protocol, rp.Enabled);
 							rec.Instance.GetReceiveProtocols().SingleOrDefault(p => p.Protocol == rp.Protocol).IfNotNull(p => p.Enabled = rp.Enabled);
 						});
 				}
@@ -1173,6 +1177,9 @@ namespace TypeSystemExplorer.Controllers
 
 			return ret;
 		}
+		
+		// TODO: I think all these stubs could be removed if we had a base interface for system receptors and a more comprehensive interface for non-system receptors.
+		// But I'm not sure what effect this would have on the rest of the code -- seems like a lot of casting to the non-base interface would become necessary.
 
 		public List<ReceiveQualifier> GetEnabledReceiveProtocols()
 		{
@@ -1194,6 +1201,14 @@ namespace TypeSystemExplorer.Controllers
 		}
 
 		public void Terminate()
+		{
+		}
+
+		public void CacheEmitProtocol(string protocolName, bool enabled)
+		{
+		}
+
+		public void CacheReceiveProtocol(string protocolName, bool enabled)
 		{
 		}
 

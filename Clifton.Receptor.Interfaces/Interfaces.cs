@@ -24,7 +24,7 @@ namespace Clifton.Receptor.Interfaces
 		{
 			this.prompt = prompt;
 		}
-	}	
+	}
 
 	/// <summary>
 	/// All receptors must implement this interface in order to be dynamically loaded at runtime.
@@ -50,6 +50,10 @@ namespace Clifton.Receptor.Interfaces
 		List<EmittedProtocol> GetEmittedProtocols();
 		List<ReceiveQualifier> GetEnabledReceiveProtocols();
 		List<EmittedProtocol> GetEnabledEmittedProtocols();
+
+		void CacheEmitProtocol(string protocolName, bool enabled);
+		void CacheReceiveProtocol(string protocolName, bool enabled);
+
 		void ProcessCarrier(ICarrier carrier);
 
 		/// <summary>
