@@ -1,14 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <SemanticTypesContainer>
-    <SemanticTypesContainer Name="Core Types">
+    <SemanticTypesContainer Name="Core">
       <SemanticTypes>
-        <SemanticType Name="Url">
-          <NativeTypes>
-            <NativeType Name="Value" ImplementingType="string" />
-          </NativeTypes>
-          <SubTypes />
-        </SemanticType>
         <SemanticType Name="Name">
           <NativeTypes>
             <NativeType Name="Value" ImplementingType="string" />
@@ -47,9 +41,21 @@
           </NativeTypes>
           <SubTypes />
         </SemanticType>
+        <SemanticType Name="Title">
+          <NativeTypes>
+            <NativeType Name="Value" ImplementingType="string" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
+        <SemanticType Name="Description">
+          <NativeTypes>
+            <NativeType Name="Value" ImplementingType="string" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
       </SemanticTypes>
     </SemanticTypesContainer>
-    <SemanticTypesContainer Name="Message Types">
+    <SemanticTypesContainer Name="Messages">
       <SemanticTypes>
         <SemanticType Name="DebugMessage">
           <NativeTypes>
@@ -86,7 +92,7 @@
         </SemanticType>
       </SemanticTypes>
     </SemanticTypesContainer>
-    <SemanticTypesContainer Name="Visualizer Types">
+    <SemanticTypesContainer Name="Visualizer">
       <SemanticTypes>
         <SemanticType Name="CarrierAnimation">
           <NativeTypes>
@@ -99,7 +105,7 @@
         </SemanticType>
       </SemanticTypes>
     </SemanticTypesContainer>
-    <SemanticTypesContainer Name="Image Types">
+    <SemanticTypesContainer Name="Image">
       <SemanticTypes>
         <SemanticType Name="ThumbnailImage">
           <NativeTypes />
@@ -128,7 +134,7 @@
         </SemanticType>
       </SemanticTypes>
     </SemanticTypesContainer>
-    <SemanticTypesContainer Name="System Types">
+    <SemanticTypesContainer Name="System">
       <SemanticTypes>
         <SemanticType Name="SystemMessage">
           <NativeTypes>
@@ -149,7 +155,7 @@
         </SemanticType>
       </SemanticTypes>
     </SemanticTypesContainer>
-    <SemanticTypesContainer Name="Locational Types">
+    <SemanticTypesContainer Name="Locational">
       <SemanticTypes>
         <SemanticType Name="USZipCode">
           <NativeTypes />
@@ -200,7 +206,7 @@
         </SemanticType>
       </SemanticTypes>
     </SemanticTypesContainer>
-    <SemanticTypesContainer Name="Weather Service Types">
+    <SemanticTypesContainer Name="Weather Service">
       <SemanticTypes>
         <SemanticType Name="WeatherInfo">
           <NativeTypes>
@@ -228,6 +234,74 @@
           <NativeTypes>
             <NativeType Name="Phenomena" ImplementingType="string" />
             <NativeType Name="Significance" ImplementingType="string" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
+      </SemanticTypes>
+    </SemanticTypesContainer>
+    <SemanticTypesContainer Name="RSS">
+      <SemanticTypes>
+        <SemanticType Name="RSSFeedItem">
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="RSSFeedName" />
+            <SubType Name="RSSFeedTitle" />
+            <SubType Name="RSSFeedUrl" />
+            <SubType Name="RSSFeedDescription" />
+            <SubType Name="RSSFeedPubDate" />
+            <SubType Name="RSSFeedAuthors" />
+            <SubType Name="RSSFeedCategories" />
+          </SubTypes>
+        </SemanticType>
+        <SemanticType Name="RSSFeedName">
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="Text" />
+          </SubTypes>
+        </SemanticType>
+        <SemanticType Name="RSSFeedTitle">
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="Text" />
+          </SubTypes>
+        </SemanticType>
+        <SemanticType Name="RSSFeedDescription">
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="Text" />
+          </SubTypes>
+        </SemanticType>
+        <SemanticType Name="RSSFeedPubDate">
+          <NativeTypes>
+            <NativeType Name="Value" ImplementingType="DateTime" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
+        <SemanticType Name="RSSFeedUrl">
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="Url" />
+          </SubTypes>
+        </SemanticType>
+        <SemanticType Name="RSSFeedAuthors">
+          <NativeTypes>
+            <NativeType Name="Value" ImplementingType="List&lt;string&gt;" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
+        <SemanticType Name="RSSFeedCategories">
+          <NativeTypes>
+            <NativeType Name="Value" ImplementingType="List&lt;string&gt;" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
+      </SemanticTypes>
+    </SemanticTypesContainer>
+    <SemanticTypesContainer Name="Web">
+      <SemanticTypes>
+        <SemanticType Name="Url">
+          <NativeTypes>
+            <NativeType Name="Value" ImplementingType="string" />
           </NativeTypes>
           <SubTypes />
         </SemanticType>

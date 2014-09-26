@@ -205,7 +205,9 @@
     <Content Include="bin\Debug\alchemyKeywordsTestResponse.xml">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="bin\Debug\appState.xml" />
+    <Content Include="bin\Debug\appState.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="bin\Debug\carrier-APODPAGE-1.xml">
       <SubType>Designer</SubType>
     </Content>
