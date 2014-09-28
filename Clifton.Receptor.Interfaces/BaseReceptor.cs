@@ -380,20 +380,6 @@ namespace Clifton.Receptor.Interfaces
 		}
 
 		/// <summary>
-		/// Instantiate a carrier of the specified protocol and passing in the signal initialization action.
-		/// Often used for instantiating carriers passed as the Row parameter to the persistence receptor.
-		/// </summary>
-		protected ICarrier InstantiateCarrier(string protocol, Action<dynamic> initializeSignal)
-		{
-			ISemanticTypeStruct semStruct = rsys.SemanticTypeSystem.GetSemanticTypeStruct(protocol);
-			dynamic signal = rsys.SemanticTypeSystem.Create(protocol);
-			initializeSignal(signal);
-			ICarrier rowCarrier = rsys.CreateInternalCarrier(semStruct, signal);
-
-			return rowCarrier;
-		}
-
-		/// <summary>
 		/// A helper method for no action.
 		/// </summary>
 		protected void NullAction()

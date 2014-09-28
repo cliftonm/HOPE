@@ -108,11 +108,6 @@ namespace Clifton.Receptor
 			receptorSystem.CreateCarrierIfReceiver(from, protocol, signal);
 		}
 
-		public ICarrier CreateInternalCarrier(ISemanticTypeStruct protocol, dynamic signal)
-		{
-			return receptorSystem.CreateInternalCarrier(protocol, signal);
-		}
-
 		public IReceptor RegisterReceptor(string fn)
 		{
 			IReceptor receptor = receptorSystem.RegisterReceptor(fn);

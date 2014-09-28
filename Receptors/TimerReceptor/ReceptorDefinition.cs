@@ -182,9 +182,12 @@ namespace TimerReceptor
 			ISemanticTypeStruct rowProtocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct("LastEventDateTime");
 			dynamic rowSignal = rsys.SemanticTypeSystem.Create("LastEventDateTime");
 			rowSignal.EventDateTime = LastEventTime;
-			ICarrier rowCarrier = rsys.CreateInternalCarrier(rowProtocol, rowSignal);
 
-			return rowCarrier;
+			// TODO: Fix this, as we're going to handle persistence completely differently than the initial implementation.
+			// ICarrier rowCarrier = rsys.CreateInternalCarrier(rowProtocol, rowSignal);
+			// return rowCarrier;
+
+			return null;
 		}
 
 		/// <summary>

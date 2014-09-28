@@ -50,11 +50,24 @@ namespace WeatherServiceReceptor
 
 			if (!String.IsNullOrEmpty(Zipcode))
 			{
-				// Send to zipcode service
-				CreateCarrier("Zip5", signal => signal.Value = Zipcode);
-				// We need to process the zipcode as well since we don't receive carriers that we also emit.
-				ProcessZipcode(Zipcode);
+				StartProcessing(Zipcode);
 			}
+		}
+
+		public override bool UserConfigurationUpdated()
+		{
+			StartProcessing(Zipcode);
+
+			// TODO: We might want to do some validation here!
+			return true;
+		}
+
+		protected void StartProcessing(string Zipcode)
+		{
+			// Send to zipcode service
+			CreateCarrier("Zip5", signal => signal.Value = Zipcode);
+			// We need to process the zipcode as well since we don't receive carriers that we also emit.
+			ProcessZipcode(Zipcode);
 		}
 
 		public override void ProcessCarrier(ICarrier carrier)

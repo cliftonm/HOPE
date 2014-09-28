@@ -91,12 +91,17 @@ namespace ZipCodeReceptor
 		{
 			try
 			{
-				string zipcode = carrier.Signal.Value;	// We only use the zip5 portion.
-
-				Tuple<string, string> location = await Task.Run(() =>
+				// TODO: Do we expose this configuration capability to the user?
+				// TODO: We don't really want this, but we need it to prevent the Weather Service receptor from triggering another "get the US Location for the zipcode"
+				// when it emits the WeatherInfo ST.  Fascinating stuff and is why Semtrex will be necessary.
+				if (carrier.ProtocolPath == "Zip5")
 				{
-					string city = String.Empty;
-					string stateAbbr = String.Empty;
+					string zipcode = carrier.Signal.Value;	// We only use the zip5 portion.
+
+					Tuple<string, string> location = await Task.Run(() =>
+					{
+						string city = String.Empty;
+						string stateAbbr = String.Empty;
 
 						USZip zip = new USZip();
 						XmlNode node = zip.GetInfoByZIP(zipcode);
@@ -105,9 +110,10 @@ namespace ZipCodeReceptor
 						stateAbbr = zxdoc.Element("Table").Element("STATE").Value;
 						return new Tuple<string, string>(city, stateAbbr);
 
-				});
+					});
 
-				Emit(zipcode, location.Item1, location.Item2);
+					Emit(zipcode, location.Item1, location.Item2);
+				}
 			}
 			catch (Exception ex)
 			{

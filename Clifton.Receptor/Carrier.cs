@@ -24,10 +24,16 @@ namespace Clifton.Receptor
 		/// </summary>
 		public dynamic Signal { get; set; }
 
-		public Carrier(ISemanticTypeStruct protocol, dynamic signal)
+		/// <summary>
+		/// The fully qualified path of this protocol, especially useful when recursing into child SE's when a carrier is emitted.
+		/// </summary>
+		public string ProtocolPath { get; set; }
+
+		public Carrier(ISemanticTypeStruct protocol, string protocolPath, dynamic signal)
 		{
 			Protocol = protocol;
 			Signal = signal;
+			ProtocolPath = protocolPath;
 		}
 	}
 }

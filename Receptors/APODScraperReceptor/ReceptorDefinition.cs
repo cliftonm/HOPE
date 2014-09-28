@@ -266,9 +266,12 @@ namespace APODScraperReceptor
 		{
 			ISemanticTypeStruct protocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct("APOD");
 			dynamic record = rsys.SemanticTypeSystem.Create("APOD");
-			ICarrier recordCarrier = rsys.CreateInternalCarrier(protocol, record);
 
-			return recordCarrier;
+			// TODO: Fix this, as we're going to handle persistence completely differently than the initial implementation.
+			// ICarrier recordCarrier = rsys.CreateInternalCarrier(protocol, record);
+			// return recordCarrier;
+
+			return null;
 		}
 
 		protected void GetImageMetadata(dynamic signal)
