@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <SemanticTypesContainer>
+    <SemanticTypesContainer Name="Core">
+      <SemanticTypes>
+        <SemanticType Name="Name">
+          <NativeTypes>
+            <NativeType Name="Value" ImplementingType="string" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
+        <SemanticType Name="Filename">
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="Path" />
+            <SubType Name="Name" />
+            <SubType Name="FileExtension" />
+          </SubTypes>
+        </SemanticType>
+        <SemanticType Name="Path">
+          <NativeTypes>
+            <NativeType Name="Value" ImplementingType="string" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
+        <SemanticType Name="FileExtension">
+          <NativeTypes>
+            <NativeType Name="Value" ImplementingType="string" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
+        <SemanticType Name="TextMessage" Alias="Message">
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="Text" />
+          </SubTypes>
+        </SemanticType>
+        <SemanticType Name="Text">
+          <NativeTypes>
+            <NativeType Name="Value" ImplementingType="string" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
+        <SemanticType Name="Title">
+          <NativeTypes>
+            <NativeType Name="Value" ImplementingType="string" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
+        <SemanticType Name="Description">
+          <NativeTypes>
+            <NativeType Name="Value" ImplementingType="string" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
+      </SemanticTypes>
+    </SemanticTypesContainer>
+    <SemanticTypesContainer Name="Messages">
+      <SemanticTypes>
+        <SemanticType Name="DebugMessage" Alias="Date/Time">
+          <NativeTypes>
+            <NativeType Name="MessageTime" ImplementingType="DateTime" />
+          </NativeTypes>
+          <SubTypes>
+            <SubType Name="TextMessage" />
+          </SubTypes>
+        </SemanticType>
+        <SemanticType Name="LoggerMessage">
+          <NativeTypes>
+            <NativeType Name="MessageTime" Alias="Date/Time" ImplementingType="DateTime" />
+          </NativeTypes>
+          <SubTypes>
+            <SubType Name="TextMessage" />
+          </SubTypes>
+        </SemanticType>
+        <SemanticType Name="ErrorMessage">
+          <NativeTypes>
+            <NativeType Name="MessageTime" Alias="Date/Time" ImplementingType="DateTime" />
+          </NativeTypes>
+          <SubTypes>
+            <SubType Name="TextMessage" />
+          </SubTypes>
+        </SemanticType>
+        <SemanticType Name="ExceptionMessage">
+          <NativeTypes>
+            <NativeType Name="MessageTime" Alias="Date/Time" ImplementingType="DateTime" />
+            <NativeType Name="ReceptorName" Alias="Receptor" ImplementingType="string" />
+          </NativeTypes>
+          <SubTypes>
+            <SubType Name="TextMessage" />
+          </SubTypes>
+        </SemanticType>
+      </SemanticTypes>
+    </SemanticTypesContainer>
+    <SemanticTypesContainer Name="Visualizer">
+      <SemanticTypes>
+        <SemanticType Name="CarrierAnimation">
+          <NativeTypes>
+            <NativeType Name="Process" ImplementingType="Action" />
+            <NativeType Name="From" ImplementingType="IReceptorInstance" />
+            <NativeType Name="To" ImplementingType="IReceptorInstance" />
+            <NativeType Name="Carrier" ImplementingType="ICarrier" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
+      </SemanticTypes>
+    </SemanticTypesContainer>
+    <SemanticTypesContainer Name="Image">
+      <SemanticTypes>
+        <SemanticType Name="ThumbnailImage">
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="SourceImageFilename" />
+            <SubType Name="Image" />
+          </SubTypes>
+        </SemanticType>
+        <SemanticType Name="ImageFilename">
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="Filename" />
+          </SubTypes>
+        </SemanticType>
+        <SemanticType Name="Image">
+          <NativeTypes>
+            <NativeType Name="Value" ImplementingType="Bitmap" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
+        <SemanticType Name="SourceImageFilename">
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="Filename" />
+          </SubTypes>
+        </SemanticType>
+      </SemanticTypes>
+    </SemanticTypesContainer>
+    <SemanticTypesContainer Name="System">
+      <SemanticTypes>
+        <SemanticType Name="SystemMessage">
+          <NativeTypes>
+            <NativeType Name="Action" ImplementingType="string" />
+            <NativeType Name="Data" ImplementingType="Object" />
+            <NativeType Name="Source" ImplementingType="Object" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
+        <SemanticType Name="SystemShowImage">
+          <NativeTypes>
+            <NativeType Name="From" ImplementingType="IReceptorInstance" />
+          </NativeTypes>
+          <SubTypes>
+            <SubType Name="Image" />
+            <SubType Name="Filename" />
+          </SubTypes>
+        </SemanticType>
+      </SemanticTypes>
+    </SemanticTypesContainer>
+    <SemanticTypesContainer Name="Locational">
+      <SemanticTypes>
+        <SemanticType Name="USZipCode">
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="Zip5" />
+            <SubType Name="Zip4" />
+          </SubTypes>
+        </SemanticType>
+        <SemanticType Name="Zip5">
+          <NativeTypes>
+            <NativeType Name="Value" ImplementingType="string" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
+        <SemanticType Name="Zip4">
+          <NativeTypes>
+            <NativeType Name="Value" ImplementingType="string" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
+        <SemanticType Name="USLocation">
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="Zip5" />
+            <SubType Name="Zip4" />
+            <SubType Name="City" />
+            <SubType Name="USState" />
+            <SubType Name="USStateAbbreviation" />
+          </SubTypes>
+        </SemanticType>
+        <SemanticType Name="City">
+          <NativeTypes>
+            <NativeType Name="Value" ImplementingType="string" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
+        <SemanticType Name="USState">
+          <NativeTypes>
+            <NativeType Name="Value" ImplementingType="string" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
+        <SemanticType Name="USStateAbbreviation">
+          <NativeTypes>
+            <NativeType Name="Value" ImplementingType="string" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
+        <SemanticType Name="latlon">
+          <NativeTypes>
+            <NativeType Name="lat" ImplementingType="float" />
+            <NativeType Name="lon" ImplementingType="float" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
+      </SemanticTypes>
+    </SemanticTypesContainer>
+    <SemanticTypesContainer Name="Weather Service">
+      <SemanticTypes>
+        <SemanticType Name="WeatherInfo">
+          <NativeTypes>
+            <NativeType Name="Summary" ImplementingType="string" />
+            <NativeType Name="High" ImplementingType="string" />
+            <NativeType Name="Low" ImplementingType="string" />
+            <NativeType Name="Conditions" ImplementingType="List&lt;dynamic&gt;" />
+            <NativeType Name="Hazards" ImplementingType="List&lt;dynamic&gt;" />
+          </NativeTypes>
+          <SubTypes>
+            <SubType Name="Zip5" />
+          </SubTypes>
+        </SemanticType>
+        <SemanticType Name="WeatherCondition">
+          <NativeTypes>
+            <NativeType Name="Additive" ImplementingType="string" />
+            <NativeType Name="Coverage" ImplementingType="string" />
+            <NativeType Name="Intensity" ImplementingType="string" />
+            <NativeType Name="WeatherType" ImplementingType="string" />
+            <NativeType Name="Qualifier" ImplementingType="string" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
+        <SemanticType Name="WeatherHazard">
+          <NativeTypes>
+            <NativeType Name="Phenomena" ImplementingType="string" />
+            <NativeType Name="Significance" ImplementingType="string" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
+      </SemanticTypes>
+    </SemanticTypesContainer>
+    <SemanticTypesContainer Name="RSS">
+      <SemanticTypes>
+        <SemanticType Name="RSSFeedItem">
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="RSSFeedName" Alias="" />
+            <SubType Name="RSSFeedTitle" Alias="" />
+            <SubType Name="RSSFeedUrl" Alias="" />
+            <SubType Name="RSSFeedDescription" Alias="" />
+            <SubType Name="RSSFeedPubDate" Alias="" />
+            <SubType Name="RSSFeedAuthors" Alias="" />
+            <SubType Name="RSSFeedCategories" Alias="" />
+          </SubTypes>
+        </SemanticType>
+        <SemanticType Name="RSSFeedName" Alias="Name">
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="Text" />
+          </SubTypes>
+        </SemanticType>
+        <SemanticType Name="RSSFeedTitle" Alias="Title">
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="Text" />
+          </SubTypes>
+        </SemanticType>
+        <SemanticType Name="RSSFeedDescription" Alias="Descr.">
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="Text" />
+          </SubTypes>
+        </SemanticType>
+        <SemanticType Name="RSSFeedPubDate" Alias="PubDate">
+          <NativeTypes>
+            <NativeType Name="Value" ImplementingType="DateTime" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
+        <SemanticType Name="RSSFeedUrl" Alias="Url">
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="Url" />
+          </SubTypes>
+        </SemanticType>
+        <SemanticType Name="RSSFeedAuthors">
+          <NativeTypes>
+            <NativeType Name="Value" ImplementingType="List&lt;string&gt;" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
+        <SemanticType Name="RSSFeedCategories">
+          <NativeTypes>
+            <NativeType Name="Value" ImplementingType="List&lt;string&gt;" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
+      </SemanticTypes>
+    </SemanticTypesContainer>
+    <SemanticTypesContainer Name="Web">
+      <SemanticTypes>
+        <SemanticType Name="Url">
+          <NativeTypes>
+            <NativeType Name="Value" ImplementingType="string" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
+      </SemanticTypes>
+    </SemanticTypesContainer>
+  </SemanticTypesContainer>
+</Schema>

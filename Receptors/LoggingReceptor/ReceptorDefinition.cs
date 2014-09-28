@@ -19,26 +19,7 @@ namespace LoggerReceptor
 
 		public ReceptorDefinition(IReceptorSystem rsys) : base(rsys)
 		{
-			AddReceiveProtocol("DebugMessage");
-			AddReceiveProtocol("Exception");
-			AddEmitProtocol("SystemMessage");
-		}
-
-		public override void ProcessCarrier(ICarrier carrier)
-		{
-			if (carrier.Protocol.DeclTypeName == "DebugMessage")
-			{
-				string msg = carrier.Signal.Message;
-				System.Diagnostics.Debug.WriteLine(msg);
-
-				Flyout(msg);
-			}
-			else if (carrier.Protocol.DeclTypeName == "Exception")
-			{
-				string m1 = carrier.Signal.ReceptorName;
-				string m2 = carrier.Signal.Message;
-				Flyout(m1+": "+m2);
-			}
+			AddReceiveProtocol("LoggerMessage", (Action<dynamic>)(signal => Flyout(signal.TextMessage.Text.Value)));
 		}
 
 		/// <summary>
@@ -47,12 +28,12 @@ namespace LoggerReceptor
 		/// <param name="msg"></param>
 		protected void Flyout(string msg)
 		{
-			ISemanticTypeStruct protocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct("SystemMessage");
-			dynamic signal = rsys.SemanticTypeSystem.Create("SystemMessage");
-			signal.Action = "Flyout";
-			signal.Data = msg;
-			signal.Source = this;
-			rsys.CreateCarrier(this, protocol, signal);
+			CreateCarrier("SystemMessage", signal =>
+				{
+					signal.Action = "Flyout";
+					signal.Data = msg;
+					signal.Source = this;
+				});
 		}
 	}
 }

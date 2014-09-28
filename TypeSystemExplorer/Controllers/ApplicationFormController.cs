@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Schema;
+using System.Xml.Serialization;
 using System.Windows.Forms;
 
 using WeifenLuo.WinFormsUI.Docking;
@@ -25,6 +26,11 @@ using Clifton.SemanticTypeSystem.Interfaces;
 using Clifton.Tools.Data;
 using Clifton.Tools.Strings;
 using Clifton.Tools.Strings.Extensions;
+using Clifton.Windows.Forms;
+using Clifton.Windows.Forms.XmlTree;
+
+using XTreeController;
+using XTreeInterfaces;
 
 using TypeSystemExplorer.Actions;
 using TypeSystemExplorer.Models;
@@ -42,19 +48,50 @@ namespace TypeSystemExplorer.Controllers
 			protected set { ApplicationModel.Filename = value; }
 		}
 
-		public string CurrentXmlFilename
+		//public string CurrentXmlFilename
+		//{
+		//	get { return ApplicationModel.XmlFilename; }
+		//	protected set { ApplicationModel.XmlFilename = value; }
+		//}
+
+//		public SemanticTypeTreeController SemanticTypeTreeController { get; protected set; }
+		public SemanticTypeEditorController SemanticTypeEditorController { get; protected set; }
+		public PropertyGridController PropertyGridController { get; protected set; }
+		public ReceptorChooserController ReceptorChooserController { get; protected set; }
+//		public XmlEditorController XmlEditorController { get; set; }		// The active editor.
+//		public OutputController OutputController { get; set; }
+//		public SymbolTableController SymbolTableController { get; set; }
+
+		protected VisualizerController visualizerController;
+
+		public VisualizerController VisualizerController 
 		{
-			get { return ApplicationModel.XmlFilename; }
-			protected set { ApplicationModel.XmlFilename = value; }
+			get { return visualizerController; }
+			set
+			{
+				visualizerController = value;
+				InitializeStates();
+			}
 		}
 
-		public SemanticTypeTreeController SemanticTypeTreeController { get; protected set; }
-		public PropertyGridController PropertyGridController { get; protected set; }
-		public XmlEditorController XmlEditorController { get; set; }		// The active editor.
-		public OutputController OutputController { get; set; }
-		public SymbolTableController SymbolTableController { get; set; }
-		public VisualizerController VisualizerController { get; set; }
+		protected Schema schema;
 
+		public GenericController<Schema> schemaController;
+
+		public Schema Schema 
+		{
+			get { return schema; }
+			set 
+			{ 
+				schema = value;
+				schemaController.Instance = Schema;
+				// ((Schema)((GenericController<Schema>)sc).Instance) = Schema;
+			}
+		}
+
+		public string SchemaFilename { get; set; }
+
+		protected string xmlSchema;
 		protected Applet applet;
 
 		public ApplicationFormController()
@@ -107,6 +144,7 @@ namespace TypeSystemExplorer.Controllers
 							new State("W", View.Size.Width),
 							new State("H", View.Size.Height),
 							new State("WindowState", View.WindowState.ToString()),
+							new State("ShowSemantics", VisualizerController.View.ShowSemantics.ToString()),
 							// new State("Last Opened", CurrentFilename),
 						};
 
@@ -118,6 +156,7 @@ namespace TypeSystemExplorer.Controllers
 					Assert.SilentTry(() => View.Location = new Point(state.Single(t => t.Key == "X").Value.to_i(), state.Single(t => t.Key == "Y").Value.to_i()));
 					Assert.SilentTry(() => View.Size = new Size(state.Single(t => t.Key == "W").Value.to_i(), state.Single(t => t.Key == "H").Value.to_i()));
 					Assert.SilentTry(() => View.WindowState = state.Single(t => t.Key == "WindowState").Value.ToEnum<FormWindowState>());
+					Assert.SilentTry(() => View.ShowProtocols = Convert.ToBoolean(state.Single(t => t.Key == "ShowSemantics").Value));
 					// Assert.SilentTry(() => CurrentFilename = state.Single(t => t.Key == "Last Opened").Value);
 				});
 		}
@@ -127,17 +166,37 @@ namespace TypeSystemExplorer.Controllers
 			Assert.SilentTry(() => Program.AppState.RestoreState("Form"));
 		}
 
+		// Do this once the visualizer controller has been initialized.  TODO: This is a really poor workaround for dealing with the system initialization sequence.
+		protected void InitializeStates()
+		{
+			VisualizerController.View.ShowProtocols(View.ShowProtocols);
+			// TODO: Yuck.  Fix hardcoded symbol name.
+			((ToolStripMenuItem)View.ObjectCollection["mnuShowProtocolOnPath"]).Checked = View.ShowProtocols;
+		}
+
 		public void EndSystemInit()
 		{
 		}
 
+		public void LoadSchema()
+		{
+			XmlSerializer xs = new XmlSerializer(typeof(Schema));
+			StreamReader sr = new StreamReader(SchemaFilename);
+			Schema = (Schema)xs.Deserialize(sr);
+			// ((GenericController<Schema>)((NodeInstance)rootNode.Tag).Instance).Instance = ApplicationController.Schema;
+			sr.Close();
+		}
+
 		public void LoadXml(string filename)
 		{
-			XmlEditorController.IfNull(() => NewDocument("xmlEditor.xml"));
-			XmlEditorController.View.Editor.LoadFile(filename);
-			CurrentXmlFilename = filename;
+			// xmlSchema = File.ReadAllText(filename);
+			// XmlEditorController.IfNull(() => NewDocument("xmlEditor.xml"));
+			// XmlEditorController.View.Editor.LoadFile(filename);
+			// CurrentXmlFilename = filename;
 			// SetCaption(filename);
 
+			SchemaFilename = filename;
+			LoadSchema();
 			CreateTypes(this, EventArgs.Empty);
 			GenerateCode(this, EventArgs.Empty);
 			Compile(this, EventArgs.Empty);
@@ -164,11 +223,12 @@ namespace TypeSystemExplorer.Controllers
 			try
 			{
 				// Speak("System reset.");
-				SemanticTypeTreeController.IfNotNull(c => c.View.Clear());
+				// SemanticTypeTreeController.IfNotNull(c => c.View.Clear());
+				// SemanticTypeEditorController.IfNotNull(c => c.View.Clear());
 				PropertyGridController.IfNotNull(c => c.View.Clear());
 				// XmlEditorController.IfNotNull(c => c.View.Clear());
-				OutputController.IfNotNull(c => c.View.Clear());
-				SymbolTableController.IfNotNull(c => c.View.Clear());
+				// OutputController.IfNotNull(c => c.View.Clear());
+				// SymbolTableController.IfNotNull(c => c.View.Clear());
 				InternalReset();
 			}
 			catch (Exception ex)
@@ -178,9 +238,11 @@ namespace TypeSystemExplorer.Controllers
 			}
 			finally
 			{
-				LoadXml("protocols.xml");
+				CreateRootNode();
+				LoadXml("semantic types.xml");
 				Program.Skin.RegisterReceptor("System", this);
 				Program.Skin.RegisterReceptor("DropReceptor", Program.DropReceptor);
+				SemanticTypeEditorController.IfNotNull(ctrl => ctrl.UpdateView());
 			}
 		}
 
@@ -196,12 +258,12 @@ namespace TypeSystemExplorer.Controllers
 			Form form = MycroParser.InstantiateFromFile<Form>("about.xml", null);
 			form.ShowDialog();
 		}
-
+/*
 		protected void NewXml(object sender, EventArgs args)
 		{
 			if (CheckDirtyModel())
 			{
-				XmlEditorController.IfNotNull(t => t.View.Editor.Document.TextContent = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\r\n");
+				// XmlEditorController.IfNotNull(t => t.View.Editor.Document.TextContent = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\r\n");
 				CurrentXmlFilename = String.Empty;
 			}
 		}
@@ -234,7 +296,7 @@ namespace TypeSystemExplorer.Controllers
 			}
 			else
 			{
-				XmlEditorController.View.Editor.SaveFile(CurrentXmlFilename);
+				// XmlEditorController.View.Editor.SaveFile(CurrentXmlFilename);
 			}
 		}
 
@@ -250,12 +312,12 @@ namespace TypeSystemExplorer.Controllers
 			if (res == DialogResult.OK)
 			{
 				CurrentXmlFilename = sfd.FileName;
-				XmlEditorController.View.Editor.SaveFile(sfd.FileName);
+				// XmlEditorController.View.Editor.SaveFile(sfd.FileName);
 				// MruMenu.AddFile(sfd.FileName);
 				// SetCaption(sfd.FileName);
 			}
 		}
-
+*/
 		protected void Exit(object sender, EventArgs args)
 		{
 			CheckDirtyModel().Then(() => View.Close());
@@ -271,12 +333,15 @@ namespace TypeSystemExplorer.Controllers
 		}
 
 		/// <summary>
-		/// The first time the form is displayed, try loading the last opened deck.
+		/// The first time the form is displayed, try loading the last opened type.
 		/// </summary>
 		protected void Shown(object sender, EventArgs args)
 		{
 			// Because I get tired of doing this manually.
-			LoadXml("protocols.xml");
+			CreateRootNode();
+			// LoadXml("protocols.xml");
+			LoadXml("semantic types.xml");
+			SemanticTypeEditorController.IfNotNull(ctrl => ctrl.UpdateView());
 			// LoadApplet();
 		}
 
@@ -390,30 +455,47 @@ namespace TypeSystemExplorer.Controllers
 			pane.Show(View.DockPanel);
 		}
 
-		protected void ShowSemanticTypeTree(object sender, EventArgs args)
+		protected void ShowSemanticTypeEditor(object sender, EventArgs args)
 		{
-			SemanticTypeTreeController.IfNull(() =>
+			SemanticTypeEditorController.IfNull(() =>
 			{
-				NewPane("semanticTypeTree.xml");
+				NewPane("semanticTypeEditor.xml");
 			});
 		}
 
-		protected void ShowXmlEditor(object sender, EventArgs args)
+		protected void ShowReceptorChooser(object sender, EventArgs args)
 		{
-			XmlEditorController.IfNull(() =>
+			ReceptorChooserController.IfNull(() =>
 			{
-				NewDocument("xmlEditor.xml");
+				NewPane("receptorChooser.xml");
 			});
 		}
 
-		protected void ShowSymbolTable(object sender, EventArgs args)
-		{
-			SymbolTableController.IfNull(() =>
-			{
-				NewDocument("symbolTable.xml");
-			});
-		}
+		/*
+				protected void ShowSemanticTypeTree(object sender, EventArgs args)
+				{
+					SemanticTypeTreeController.IfNull(() =>
+					{
+						NewPane("semanticTypeTree.xml");
+					});
+				}
 
+				protected void ShowXmlEditor(object sender, EventArgs args)
+				{
+					XmlEditorController.IfNull(() =>
+					{
+						NewDocument("xmlEditor.xml");
+					});
+				}
+
+				protected void ShowSymbolTable(object sender, EventArgs args)
+				{
+					SymbolTableController.IfNull(() =>
+					{
+						NewDocument("symbolTable.xml");
+					});
+				}
+		*/
 		protected void ShowVisualizer(object sender, EventArgs args)
 		{
 			VisualizerController.IfNull(() =>
@@ -429,13 +511,24 @@ namespace TypeSystemExplorer.Controllers
 				NewDocument("propertyGrid.xml");
 			});
 		}
-
+/*
 		protected void ShowOutput(object sender, EventArgs args)
 		{
 			OutputController.IfNull(() =>
 				{
 					NewDocument("output.xml");
 				});
+		}
+*/
+		protected void SendToBack(object sender, EventArgs args)
+		{
+			View.SendToBack();
+		}
+
+		protected void ShowProtocolOnPath(object sender, EventArgs args)
+		{
+			((ToolStripMenuItem)sender).Checked ^= true;
+			VisualizerController.View.ShowProtocols(((ToolStripMenuItem)sender).Checked);
 		}
 
 		public void SetMenuCheckedState(string menuName, bool state)
@@ -450,13 +543,21 @@ namespace TypeSystemExplorer.Controllers
 
 		public void PaneClosed(PaneView pane)
 		{
-			if (pane is SemanticTypeTreeView)
+			// if (pane is SemanticTypeTreeView)
+			//{
+			//	SemanticTypeTreeController = null;
+			//}
+			if (pane is SemanticTypeEditorView)
 			{
-				SemanticTypeTreeController = null;
+				SemanticTypeEditorController = null;
 			}
 			else if (pane is PropertyGridView)
 			{
 				PropertyGridController = null;
+			}
+			else if (pane is ReceptorChooserView)
+			{
+				ReceptorChooserController = null;
 			}
 			else
 			{
@@ -468,11 +569,52 @@ namespace TypeSystemExplorer.Controllers
 		{
 			try
 			{
-				Program.SemanticTypeSystem.Parse(XmlEditorController.View.Editor.Document.TextContent);
+				List<SemanticTypeDecl> decls = new List<SemanticTypeDecl>();
+				List<SemanticTypeStruct> structs = new List<SemanticTypeStruct>();
 
+				// Reflective noun necessary for self-referential definition.
+				SemanticTypeDecl decl = new SemanticTypeDecl() { OfTypeName = "Noun" };
+				decl.AttributeValues.Add(new AttributeValue() { Name = "Name", Value = "Noun" });
+				decls.Add(decl);
+
+				SemanticTypeStruct sts = new SemanticTypeStruct() { DeclTypeName = "Noun" };
+				sts.NativeTypes.Add(new Clifton.SemanticTypeSystem.NativeType() { Name = "Name", ImplementingType = "string" });
+				structs.Add(sts);
+
+				foreach (Models.SemanticTypesContainer stc in Schema.SemanticTypesContainer)
+				{
+					foreach (Models.SemanticType st in stc.SemanticTypes)
+					{
+						decl = new SemanticTypeDecl() { OfTypeName = "Noun" };
+						decl.AttributeValues.Add(new AttributeValue() { Name = "Name", Value = st.Name });
+						sts = new SemanticTypeStruct() { DeclTypeName = st.Name, Alias = st.Alias };
+
+						foreach (Models.NativeType nt in st.NativeTypes)
+						{
+							sts.NativeTypes.Add(new Clifton.SemanticTypeSystem.NativeType() { Name = nt.Name, ImplementingType = nt.ImplementingType, Alias = nt.Alias });
+						}
+
+						foreach (Models.SubType subt in st.SubTypes)
+						{
+							sts.SemanticElements.Add(new Clifton.SemanticTypeSystem.SemanticElement() { Name = subt.Name, Alias = subt.Alias});
+						}
+
+						decls.Add(decl);
+						structs.Add(sts);
+					}
+				}
+
+				Program.SemanticTypeSystem.Parse(decls, structs);
+/*
 				if (SemanticTypeTreeController != null)
 				{
 					SemanticTypeTreeController.View.Update(Program.SemanticTypeSystem);
+				}
+*/
+				if (SemanticTypeEditorController != null)
+				{
+					// TODO: Do we need this?
+					// SemanticTypeEditorController.View.Update(Program.SemanticTypeSystem);
 				}
 			}
 			catch (Exception ex)
@@ -489,7 +631,7 @@ namespace TypeSystemExplorer.Controllers
 			}
 
 			string result = Program.SemanticTypeSystem.GenerateCode();
-			OutputController.View.Editor.Document.TextContent = result;
+			// OutputController.View.Editor.Document.TextContent = result;
 		}
 
 		public void Compile(object sender, EventArgs args)
@@ -500,7 +642,7 @@ namespace TypeSystemExplorer.Controllers
 			}
 
 			string result = Program.SemanticTypeSystem.GenerateCode();
-			OutputController.View.Editor.Document.TextContent = result;
+			// OutputController.View.Editor.Document.TextContent = result;
 
 			try
 			{
@@ -658,7 +800,7 @@ namespace TypeSystemExplorer.Controllers
 					receptors.AppendChild(rNode);
 					AddAttribute(rNode, "Name", r.Name);
 					AddAttribute(rNode, "AssemblyName", r.AssemblyName);
-					AddAttribute(rNode, "Enabled", r.Enabled.ToString());
+					AddAttribute(rNode, "Enabled", r.Instance.Enabled.ToString());
 
 					if (!r.Instance.IsHidden)
 					{
@@ -666,6 +808,7 @@ namespace TypeSystemExplorer.Controllers
 						AddAttribute(rNode, "Location", p.X + ", " + p.Y);
 					}
 
+					SerializeReceptorProtocolStates(rNode, r);
 					SerializeReceptorUserConfigurableProperties(rNode, r);
 				}
 			});
@@ -691,6 +834,40 @@ namespace TypeSystemExplorer.Controllers
 					SerializeMembrane(membraneDefNode, innerMembrane);
 				});
 			
+		}
+
+		/// <summary>
+		/// Save the enabled/disabled state of each emitted and received protocol of the receptor.
+		/// </summary>
+		protected void SerializeReceptorProtocolStates(XmlNode rNode, IReceptor r)
+		{
+			if (r.Instance.GetReceiveProtocols().Count > 0)
+			{
+				XmlNode rpNodes = rNode.OwnerDocument.CreateElement("ixm", "ReceiveProtocols", "TypeSystemExplorer.Models, TypeSystemExplorer");
+				rNode.AppendChild(rpNodes);
+
+				r.Instance.GetReceiveProtocols().ForEach(rp =>
+					{
+						XmlNode rpNode = rNode.OwnerDocument.CreateElement("ixm", "ReceiveProtocol", "TypeSystemExplorer.Models, TypeSystemExplorer");
+						AddAttribute(rpNode, "Protocol", rp.Protocol);
+						AddAttribute(rpNode, "Enabled", rp.Enabled.ToString());
+						rpNodes.AppendChild(rpNode);
+					});
+			}
+
+			if (r.Instance.GetEmittedProtocols().Count > 0)
+			{
+				XmlNode epNodes = rNode.OwnerDocument.CreateElement("ixm", "EmitProtocols", "TypeSystemExplorer.Models, TypeSystemExplorer");
+				rNode.AppendChild(epNodes);
+
+				r.Instance.GetEmittedProtocols().ForEach(ep =>
+				{
+					XmlNode epNode = rNode.OwnerDocument.CreateElement("ixm", "EmitProtocol", "TypeSystemExplorer.Models, TypeSystemExplorer");
+					AddAttribute(epNode, "Protocol", ep.Protocol);
+					AddAttribute(epNode, "Enabled", ep.Enabled.ToString());
+					epNodes.AppendChild(epNode);
+				});
+			}
 		}
 
 		/// <summary>
@@ -798,6 +975,8 @@ namespace TypeSystemExplorer.Controllers
 		{
 			Dictionary<IReceptor, Point> receptorLocationMap = new Dictionary<IReceptor, Point>();
 			Dictionary<IReceptor, List<UserConfig>> configs = new Dictionary<IReceptor, List<UserConfig>>();
+			Dictionary<IReceptor, List<EmitProtocol>> emitProtocols = new Dictionary<IReceptor, List<EmitProtocol>>();
+			Dictionary<IReceptor, List<ReceiveProtocol>> receiveProtocols = new Dictionary<IReceptor, List<ReceiveProtocol>>();
 			Point noLocation = new Point(-1, -1);
 			membrane.Name = membraneDef.Name;
 
@@ -807,12 +986,42 @@ namespace TypeSystemExplorer.Controllers
 					receptorLocationMap[r] = n.Location;
 					r.Enabled = n.Enabled;
 					configs[r] = n.UserConfigs;
+					emitProtocols[r] = n.EmitProtocols;
+					receiveProtocols[r] = n.ReceiveProtocols;
 				});
 
 			// After registration, but before the NewReceptor fire event, set the drop point.
 			// Load all the receptors defined in this membrane first.
 			membrane.LoadReceptors((rec) =>
 			{
+				List<EmitProtocol> eprotocols;
+				List<ReceiveProtocol> rprotocols;
+
+				// Set the enabled state of each received and emitted protocol.
+				// We try to find the matching protocol name in the receptor.  If we can't find it, no error occurs.  This handles
+				// cases when we change a receptor during development and the serialized protocol no longer matches.
+				// Emitted protocols.
+				if (emitProtocols.TryGetValue(rec, out eprotocols))
+				{
+					eprotocols.ForEach(ep =>
+						{
+							// Kludgy, but we need to cache the emit protocol enable states for receptors that dynamically register emit protocols based on user configuration or other info.
+							rec.Instance.CacheEmitProtocol(ep.Protocol, ep.Enabled);
+							rec.Instance.GetEmittedProtocols().SingleOrDefault(p => p.Protocol == ep.Protocol).IfNotNull(p => p.Enabled = ep.Enabled);
+						});
+				}
+
+				// Received protocols.
+				if (receiveProtocols.TryGetValue(rec, out rprotocols))
+				{
+					rprotocols.ForEach(rp =>
+						{
+							// Kludgy, but we need to cache the receive protocol enable states for receptors that dynamically register receive protocols based on user configuration or other info.
+							rec.Instance.CacheReceiveProtocol(rp.Protocol, rp.Enabled);
+							rec.Instance.GetReceiveProtocols().SingleOrDefault(p => p.Protocol == rp.Protocol).IfNotNull(p => p.Enabled = rp.Enabled);
+						});
+				}
+
 				// Restore any user configuration values.
 				List<UserConfig> configList;
 
@@ -828,18 +1037,19 @@ namespace TypeSystemExplorer.Controllers
 						});
 				}
 
-				Point p;
+				// Receptor location which we use as the drop point for the visualizer.
+				Point rloc;
 
 				// Internal receptors, like ourselves, will not be in this deserialized collection.
-				if (receptorLocationMap.TryGetValue(rec, out p))
+				if (receptorLocationMap.TryGetValue(rec, out rloc))
 				{
-					if (p == noLocation)
+					if (rloc == noLocation)
 					{
 						VisualizerController.View.ClientDropPoint = VisualizerController.View.GetRandomLocation();
 					}
 					else
 					{
-						VisualizerController.View.ClientDropPoint = p;
+						VisualizerController.View.ClientDropPoint = rloc;
 					}
 				}
 			});
@@ -950,7 +1160,9 @@ namespace TypeSystemExplorer.Controllers
 		public string Subname { get { return String.Empty; } }
 		public bool IsEdgeReceptor { get { return false; } }
 		public bool IsHidden { get { return true; } }
+		public bool Enabled { get { return true; } set { } }
 		public string ConfigurationUI { get { return null; } }
+		public string ConfigurationError { get { return String.Empty; } }
 
 		public IReceptorSystem ReceptorSystem
 		{
@@ -965,10 +1177,23 @@ namespace TypeSystemExplorer.Controllers
 
 			return ret;
 		}
+		
+		// TODO: I think all these stubs could be removed if we had a base interface for system receptors and a more comprehensive interface for non-system receptors.
+		// But I'm not sure what effect this would have on the rest of the code -- seems like a lot of casting to the non-base interface would become necessary.
 
-		public List<string> GetEmittedProtocols()
+		public List<ReceiveQualifier> GetEnabledReceiveProtocols()
 		{
-			return new List<string>();
+			return GetReceiveProtocols();
+		}
+
+		public List<EmittedProtocol> GetEmittedProtocols()
+		{
+			return new List<EmittedProtocol>();
+		}
+
+		public List<EmittedProtocol> GetEnabledEmittedProtocols()
+		{
+			return new List<EmittedProtocol>();
 		}
 
 		public void Initialize()
@@ -979,8 +1204,17 @@ namespace TypeSystemExplorer.Controllers
 		{
 		}
 
-		public void UserConfigurationUpdated()
+		public void CacheEmitProtocol(string protocolName, bool enabled)
 		{
+		}
+
+		public void CacheReceiveProtocol(string protocolName, bool enabled)
+		{
+		}
+
+		public bool UserConfigurationUpdated()
+		{
+			return true;
 		}
 
 		public void PrepopulateConfig(MycroParser mp)
@@ -1018,8 +1252,9 @@ namespace TypeSystemExplorer.Controllers
 				case "SystemShowImage":
 					{
 						IReceptorInstance target = carrier.Signal.From;
-						Image image = carrier.Signal.Image;
-						VisualizerController.View.AddImage(target, image);
+						Bitmap image = carrier.Signal.Image.Value;
+						dynamic filename = carrier.Signal.Filename;
+						VisualizerController.View.AddImage(target, image, filename);
 						break;
 					}
 
@@ -1029,6 +1264,29 @@ namespace TypeSystemExplorer.Controllers
 						break;
 					}
 			}
+		}
+
+		protected void CreateRootNode()
+		{
+			SemanticTypeEditorController.IfNotNull(ctrl => ctrl.View.Clear());
+			schemaController = new GenericController<Schema>();
+
+			//schemaDef = (SchemaDef)((GenericController<SchemaDef>)sc).Instance;
+			//rootNode = sdTree.AddNode(sc, null);
+			//pgProperties.SelectedObject = schemaDef;
+
+			Schema = (Schema)schemaController.Instance;
+
+			SemanticTypeEditorController.IfNotNull(ctrl =>
+			{
+				ctrl.View.AddNode(schemaController, null);
+				PropertyGridController.IfNotNull(pgrid => pgrid.View.ShowObject(Schema));
+			});
+
+			// rootNode = sdTree.AddNode(sc, null);
+			// pgProperties.SelectedObject = schemaDef;
+
+			// sdTree.SelectedNode = sdTree.Nodes[0];
 		}
 	}
 }

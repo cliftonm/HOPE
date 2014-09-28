@@ -38,11 +38,10 @@ namespace WeatherServiceReceptor
 
 		public ReceptorDefinition(IReceptorSystem rsys) : base(rsys)
 		{
-			AddReceiveProtocol("Zipcode");		// We can receive a zipcode from some external source.
-			AddEmitProtocol("Zipcode");			// We also emit a zipcode because we may be configured to process a zipcode on startup, in which case we need to initiate getting the city, state.
-			AddEmitProtocol("TextToSpeech");
+			AddReceiveProtocol("Zip5");		// We can receive a zipcode from some external source.
+			AddEmitProtocol("Zip5");		// We also emit a zipcode because we may be configured to process a zipcode on startup, in which case we need to initiate getting the city, state.
 			AddEmitProtocol("WeatherInfo");
-			AddEmitProtocol("Exception");
+			AddEmitProtocol("ExceptionMessage");
 		}
 
 		public override void EndSystemInit()
@@ -52,7 +51,7 @@ namespace WeatherServiceReceptor
 			if (!String.IsNullOrEmpty(Zipcode))
 			{
 				// Send to zipcode service
-				CreateCarrier("Zipcode", signal => signal.Value = Zipcode);
+				CreateCarrier("Zip5", signal => signal.Value = Zipcode);
 				// We need to process the zipcode as well since we don't receive carriers that we also emit.
 				ProcessZipcode(Zipcode);
 			}
@@ -107,7 +106,7 @@ namespace WeatherServiceReceptor
 
 			try
 			{
-				outSignal.Zipcode = zipcode;
+				outSignal.Zip5.Value = zipcode;
 				outSignal.Low = xdoc.Element("dwml").Element("data").Element("parameters").Elements("temperature").Where(el => el.Attribute("type").Value == "minimum").Single().Element("value").Value.Trim();
 				outSignal.High = xdoc.Element("dwml").Element("data").Element("parameters").Elements("temperature").Where(el => el.Attribute("type").Value == "maximum").Single().Element("value").Value.Trim();
 				outSignal.Summary = xdoc.Element("dwml").Element("data").Element("parameters").Element("weather").Element("weather-conditions").Attribute("weather-summary").Value;
@@ -154,15 +153,6 @@ namespace WeatherServiceReceptor
 			}
 
 			rsys.CreateCarrier(this, outProtocol, outSignal);
-		}
-
-		// TODO: Duplicate code.
-		protected void Say(string msg)
-		{
-			ISemanticTypeStruct protocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct("TextToSpeech");
-			dynamic signal = rsys.SemanticTypeSystem.Create("TextToSpeech");
-			signal.Text = msg;
-			rsys.CreateCarrier(this, protocol, signal);
 		}
 	}
 }

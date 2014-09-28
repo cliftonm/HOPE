@@ -47,14 +47,25 @@
               <!--  <wf:ToolStripMenuItem Text="&amp;Refresh TOC and Indices" Click="{controller.Refresh}"/>  -->
               <wf:ToolStripMenuItem Text="Restore &amp;Layout" Click="{controller.RestoreLayout}"/>
               <wf:ToolStripSeparator/>
+              <!-- removed 10/06/2014 
               <wf:ToolStripMenuItem def:Name="mnuSemanticTypeTree" Text="&amp;Semantic Types" Click="{controller.ShowSemanticTypeTree}"/>
               <wf:ToolStripMenuItem def:Name="mnuXmlEditor" Text="&amp;Xml Editor" Click="{controller.ShowXmlEditor}"/>
+              -->
+              <wf:ToolStripMenuItem def:Name="mnuSemanticTypeEditor" Text="&amp;Semantic Type Editor" Click="{controller.ShowSemanticTypeEditor}"/>
               <wf:ToolStripMenuItem def:Name="mnuPropertyGrid" Text="&amp;Property Grid" Click="{controller.ShowPropertyGrid}"/>
+              <wf:ToolStripMenuItem def:Name="mnuReceptorChooser" Text="&amp;Receptor Chooser" Click="{controller.ShowReceptorChooser}"/>
+              <!-- removed 10/06/2014 
               <wf:ToolStripMenuItem def:Name="mnuOutput" Text="&amp;Output" Click="{controller.ShowOutput}"/>
               <wf:ToolStripMenuItem def:Name="mnuSymbolTable" Text="S&amp;ymbol Table" Click="{controller.ShowSymbolTable}"/>
+              -->
               <wf:ToolStripMenuItem def:Name="mnuVisualizer" Text="&amp;Visualizer" Click="{controller.ShowVisualizer}"/>
+              <wf:ToolStripSeparator/>
+              <wf:ToolStripMenuItem def:Name="mnuSendToBack" Text="Send To Back" Click="{controller.SendToBack}"/>
+              <wf:ToolStripSeparator/>
+              <wf:ToolStripMenuItem def:Name="mnuShowProtocolOnPath" Text="Show Semantics" Click="{controller.ShowProtocolOnPath}"/>
             </wf:DropDownItems>
           </wf:ToolStripMenuItem>
+          <!-- removed 10/06/2014 
           <wf:ToolStripMenuItem Text="&amp;Types">
             <wf:DropDownItems>
               <wf:ToolStripMenuItem Text="&amp;Create" Click="{controller.CreateTypes}"/>
@@ -62,6 +73,7 @@
               <wf:ToolStripMenuItem Text="Com&amp;pile" Click="{controller.Compile}"/>
             </wf:DropDownItems>
           </wf:ToolStripMenuItem>
+          -->
           <wf:ToolStripMenuItem Text="A&amp;bout" Click="{controller.About}"/>
         </wf:Items>
       </wf:MenuStrip>

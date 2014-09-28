@@ -36,9 +36,9 @@ namespace HuntTheWumpus
 			AddReceiveProtocol("HW_YouAre", (signal) => signal.ID == id);
 			AddReceiveProtocol("HW_MoveTo", (signal) => signal.FromCaveNumber == caveNumber || signal.NewCaveNumber == caveNumber);
 			AddReceiveProtocol("HW_ShootInto", (signal) => signal.CaveNumber == caveNumber);
-			emitProtocols.Add("HW_WhereAmI");
-			emitProtocols.Add("HW_Player");
-			emitProtocols.Add("Text");
+			AddEmitProtocol("HW_WhereAmI");
+			AddEmitProtocol("HW_Player");
+			AddEmitProtocol("Text");
 			caveNeighbors = new int[3];
 			rnd = new Random();
 		}

@@ -95,7 +95,7 @@ namespace FilterReceptor
 		/// <summary>
 		/// Update the configuration property.
 		/// </summary>
-		public override void UserConfigurationUpdated()
+		public override bool UserConfigurationUpdated()
 		{
 			StringBuilder sb = new StringBuilder();
 			string and = String.Empty;
@@ -122,6 +122,8 @@ namespace FilterReceptor
 
 			ProtocolFilters = sb.ToString();
 			InitializeReceiveAndEmitProtocols();
+
+			return true;
 		}
 
 		/// <summary>

@@ -1,4 +1,4 @@
-﻿//#define SIMULATED
+﻿#define SIMULATED
 
 using System;
 using System.Collections.Generic;
@@ -37,7 +37,8 @@ namespace FeedReaderReceptor
 		{
 			AddReceiveProtocol("RSSFeedUrl", (Action<dynamic>)(s => ProcessUrl(s)));
 			AddEmitProtocol("RSSFeedItem");
-			AddEmitProtocol("Exception");
+			AddEmitProtocol("ExceptionMessage");
+			AddEmitProtocol("LoggerMessage");
 		}
 
 		/// <summary>
@@ -46,45 +47,36 @@ namespace FeedReaderReceptor
 		public override void EndSystemInit()
 		{
 			base.EndSystemInit();
-			AcquireFeed();
+			AcquireFeed(FeedUrl);
 		}
 
 		/// <summary>
 		/// When the user configuration fields have been updated, re-acquire the feed.
 		/// </summary>
-		public override void UserConfigurationUpdated()
+		public override bool UserConfigurationUpdated()
 		{
 			base.UserConfigurationUpdated();
-			AcquireFeed();
+			AcquireFeed(FeedUrl);
+
+			return true;
 		}
 
-		protected async void ProcessUrl(dynamic signal)
+		protected void ProcessUrl(dynamic signal)
 		{
-			string feedUrl = signal.FeedUrl.Value;
-			int numItems = signal.MaxItems;
-			string tag = signal.Tag;
-
-			try
-			{
-				SyndicationFeed feed = await GetFeedAsync(feedUrl);
-				EmitFeedItems(feed, numItems, tag);
-			}
-			catch (Exception ex)
-			{
-				EmitException(ex);
-			}
+			string feedUrl = signal.RSSFeedUrl.Url.Value;
+			AcquireFeed(feedUrl);
 		}
 
 		/// <summary>
 		/// Acquire the feed and emit the feed items. 
 		/// </summary>
-		protected async void AcquireFeed()
+		protected async void AcquireFeed(string feedUrl)
 		{
-			if (!String.IsNullOrEmpty(FeedUrl))
+			if (!String.IsNullOrEmpty(feedUrl))
 			{
 				try
 				{
-					SyndicationFeed feed = await GetFeedAsync(FeedUrl);
+					SyndicationFeed feed = await GetFeedAsync(feedUrl);
 					EmitFeedItems(feed);
 				}
 				catch (Exception ex)
@@ -102,6 +94,8 @@ namespace FeedReaderReceptor
 #if SIMULATED
 			return null;
 #else
+			CreateCarrier("LoggerMessage", signal => signal.TextMessage.Text.Value = "Acquiring feed " + feedUrl);
+
 			SyndicationFeed feed = await Task.Run(() =>
 				{
 					XmlReader xr = XmlReader.Create(feedUrl);
@@ -118,21 +112,18 @@ namespace FeedReaderReceptor
 		/// <summary>
 		/// Emits only new feed items for display.
 		/// </summary>
-		protected void EmitFeedItems(SyndicationFeed feed, int maxItems = Int32.MaxValue, string tag = "")
+		protected void EmitFeedItems(SyndicationFeed feed, int maxItems = Int32.MaxValue)
 		{
 #if SIMULATED
 			CreateCarrier("RSSFeedItem", signal =>
 				{
-					signal.FeedName = FeedName;
-					signal.Title = "Test Title";
-					signal.URL.Value = "http://test";
-					signal.Description = "Test Description";
-					signal.Authors = "";
-					signal.Categories = "";
-					signal.PubDate = DateTime.Now;
-					signal.Tag = tag;
-					signal.MofN.M = 1;
-					signal.MofN.N = 1;
+					signal.RSSFeedName.Text.Value = FeedName;
+					signal.RSSFeedTitle.Text.Value = "Test Title";
+					signal.RSSFeedUrl.Url.Value = "http://test";
+					signal.RSSFeedDescription.Text.Value = "Test Description";
+					signal.RSSFeedAuthors.Value = new List<string>();
+					signal.RSSFeedCategories.Value = new List<string>();
+					signal.RSSFeedPubDate.Value = DateTime.Now;
 				});
 #else
 			// Allow -1 to also represent max items.
@@ -143,16 +134,13 @@ namespace FeedReaderReceptor
 				{
 					CreateCarrier("RSSFeedItem", signal =>
 						{
-							signal.FeedName = FeedName;
-							signal.Title = item.Title.Text;
-							signal.URL.Value = item.Links[0].Uri.ToString();
-							signal.Description = item.Summary.Text;
-							signal.Authors = String.Join(", ", item.Authors.Select(a => a.Name).ToArray());
-							signal.Categories = String.Join(", ", item.Categories.Select(c => c.Name).ToArray());
-							signal.PubDate = item.PublishDate.LocalDateTime;
-							signal.Tag = tag;
-							signal.MofN.M = idx + 1;
-							signal.MofN.N = max;
+							signal.RSSFeedName.Text.Value = FeedName;
+							signal.RSSFeedTitle.Text.Value = item.Title.Text;
+							signal.RSSFeedUrl.Url.Value = item.Links[0].Uri.ToString();
+							signal.RSSFeedDescription.Text.Value = item.Summary.Text;
+							signal.RSSFeedAuthors.Value = new List<string>(item.Authors.Select(a => a.Name));
+							signal.RSSFeedCategories.Value = new List<string>(item.Categories.Select(c => c.Name));
+							signal.RSSFeedPubDate.Value = item.PublishDate.LocalDateTime;
 						});
 				}, ((item, idx) => idx >= max));
 #endif

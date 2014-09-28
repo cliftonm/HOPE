@@ -30,6 +30,7 @@ namespace Clifton.SemanticTypeSystem.Interfaces
 	public interface ISemanticTypeStruct
 	{
 		string DeclTypeName { get; }
+		string Alias { get; }
 		List<INativeType> NativeTypes { get; }
 		List<ISemanticElement> SemanticElements { get; }
 		List<IGetSetSemanticType> AllTypes { get; }
@@ -48,6 +49,7 @@ namespace Clifton.SemanticTypeSystem.Interfaces
 	public interface INativeType
 	{
 		string Name { get; }
+		string Alias { get; }
 		string ImplementingType { get; }
 
 		// sts parameter is not used for the native type setter/getter, but provides compatability with ISemanticElement.SetValue so we can have a common interface.
@@ -125,5 +127,20 @@ namespace Clifton.SemanticTypeSystem.Interfaces
 		IRuntimeSemanticType Create(string typeName, IRuntimeSemanticType parent = null);
 		ISemanticTypeStruct GetSemanticTypeStruct(string typeName);
 		Dictionary<string, ISemanticType> SemanticTypes { get;}
+		dynamic Clone(dynamic sourceSignal, ISemanticElement se);
+		List<IFullyQualifiedNativeType> GetFullyQualifiedNativeTypes(string protocolName);
+		List<IFullyQualifiedNativeType> GetFullyQualifiedNativeTypeValues(dynamic signal, string protocolName);
+		void SetFullyQualifiedNativeTypeValue(dynamic signal, string fqn, object val);
+		bool VerifyProtocolExists(string protocol);
+	}
+
+	public interface IFullyQualifiedNativeType
+	{
+		string Name { get; }
+		string Alias { get; }
+		string FullyQualifiedName { get;}
+		string FullyQualifiedNameSansRoot { get; }
+		INativeType NativeType { get;}
+		object Value { get; }
 	}
 }

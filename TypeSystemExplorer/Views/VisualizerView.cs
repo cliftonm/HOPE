@@ -1,7 +1,13 @@
-﻿#define VIVEK
+﻿// #define VIVEK
+#define MINE
+
+// "zip demo 2" applet is a good test case for getting arrows right (or wrong).
+// #define DEBUG_SEMANTIC_LABELS
 
 // #define BLACK_BACKGROUND
 #define WHITE_BACKGROUND
+
+#define STRAIGHT_LINE_CONNECTIONS
 
 // #define REMOVE_EMPTY_MEMBRANES
 
@@ -12,6 +18,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Drawing.Text;
 using System.Dynamic;
 using System.IO;
 using System.Linq;
@@ -273,10 +280,31 @@ namespace TypeSystemExplorer.Views
 		public int Radius { get; set; }
 	}
 
-	public struct Connection
+	public class Connection
 	{
 		public string Protocol { get; set; }
 		public Line Line { get; set; }
+		public IReceptor R1 { get; set; }
+		public IReceptor R2 { get; set; }
+
+		/// <summary>
+		/// False: connection is from R1 to R2
+		/// True: connection is from R2 to R1
+		/// This flag is used when constructing the protocol labels for connections.
+		/// </summary>
+		public bool Reverse { get; set; }
+	}
+
+	public struct ReceptorPair
+	{
+		public IReceptor R1 { get; set; }
+		public IReceptor R2 { get; set; }
+	}
+
+	public class ReceptorProtocolConfig
+	{
+		public MycroParser MycroParser { get; set; }
+		public IReceptor Receptor { get; set; }
 	}
 
 	public class VisualizerView : UserControl
@@ -323,12 +351,18 @@ namespace TypeSystemExplorer.Views
 		}
 
 		/// <summary>
-		/// Sets the dropp point given a client coordinate.
+		/// Sets the drop point given a client coordinate.
 		/// </summary>
 		public Point ClientDropPoint
 		{
 			set { dropPoint = value; }
 		}
+
+		// TODO: Maybe clean this up at some point.
+		/// <summary>
+		/// Use ShowProtocols for the setter.
+		/// </summary>
+		public bool ShowSemantics { get { return showProtocols; } }
 
 		protected Dictionary<IReceptor, Point> receptorLocation;
 		protected Dictionary<IMembrane, Circle> membraneLocation;
@@ -345,6 +379,7 @@ namespace TypeSystemExplorer.Views
 		protected Color surfaceColor;
 		protected Pen pen;
 		protected Pen whitePen;
+		protected Pen rubberBandPen;
 		protected Point origin = new Point(0, 0);
 		protected Font font;
 
@@ -372,6 +407,7 @@ namespace TypeSystemExplorer.Views
 
 		protected int orbitCount = 0;
 		protected bool paused;
+		protected bool showProtocols;
 
 		// When the membrane is being moved, keeps a short of list of mouse offsets
 		// to determine whether the membrane is being "shaken" left-right.
@@ -382,11 +418,11 @@ namespace TypeSystemExplorer.Views
 
 #if WHITE_BACKGROUND
 		protected Pen receptorLineColor = new Pen(Color.Blue); // new Pen(Color.FromArgb(40, 40, 60));
-		protected Pen carrierPen = new Pen(Color.Yellow);
+		protected Pen carrierPen = new Pen(Color.Red);
 #endif
 #if BLACK_BACKGROUND
 		protected Pen receptorLineColor = new Pen(Color.Cyan); // new Pen(Color.FromArgb(40, 40, 60));
-		protected Pen carrierPen = new Pen(Color.Red);
+		protected Pen carrierPen = new Pen(Color.Yellow);
 #endif
 
 		protected Pen receptorLineColor2 = new Pen(Color.Orange); // new Pen(Color.FromArgb(40, 40, 60));
@@ -401,12 +437,14 @@ namespace TypeSystemExplorer.Views
 			surfaceColor = Color.White;
 			surfaceBrush = new SolidBrush(surfaceColor);
 			textBrush = blackBrush;
+			rubberBandPen = new Pen(Color.Cyan);
 #endif
 
 #if BLACK_BACKGROUND
 			surfaceColor = Color.Black;
 			surfaceBrush = new SolidBrush(surfaceColor);
 			textBrush = whiteBrush;
+			rubberBandPen = new Pen(Color.White);
 #endif
 
 			font = new Font(FontFamily.GenericSansSerif, 8);
@@ -536,10 +574,11 @@ namespace TypeSystemExplorer.Views
 			 */
 		}
 
-		public void AddImage(IReceptorInstance receptorInstance, Image image)
+		public void AddImage(IReceptorInstance receptorInstance, Bitmap image, dynamic filename)
 		{
 			IReceptor r = receptorLocation.Single(kvp => kvp.Key.Instance == receptorInstance).Key;
 			CarouselState cstate;
+			image.Tag = Path.Combine(filename.Path.Value, filename.Name.Value + filename.FileExtension.Value);
 
 			if (!carousels.TryGetValue(r, out cstate))
 			{
@@ -552,7 +591,7 @@ namespace TypeSystemExplorer.Views
 				ImageMetadata imeta = new ImageMetadata() { Image = image };
 				cstate.Images.Add(imeta);
 
-				GetImageMetadata(r, imeta);
+				// GetImageMetadata(r, imeta);
 				Invalidate(true);
 			}
 			else
@@ -560,7 +599,7 @@ namespace TypeSystemExplorer.Views
 				// Disable the receptor -- too many images.
 				// TODO: Better way of indicating this to the user.
 				// TODO: We want to limit the total number of images across all viewers.
-				r.Enabled = false;
+				r.Instance.Enabled = false;
 				Invalidate(true);
 			}
 		}
@@ -620,6 +659,12 @@ namespace TypeSystemExplorer.Views
 			return ret;
 		}
 
+		public void ShowProtocols(bool state)
+		{
+			showProtocols = state;
+			Invalidate(true);
+		}
+
 		// This is complex piece of code.
 		/// <summary>
 		/// Gets the metadata tags reflectively, so that we have a general purpose function for display image metadata.
@@ -672,6 +717,8 @@ namespace TypeSystemExplorer.Views
 				});
 		}
 
+		// TODO: The way image metadata is recovered is going to have to be handled completely differently.
+/*
 		protected void GetImageMetadata(IReceptor r, ImageMetadata imeta)
 		{
 			Image img = imeta.Image;
@@ -682,7 +729,7 @@ namespace TypeSystemExplorer.Views
 			// signal.ResponseProtocol = "HaveImageMetadata";
 			GetReceptorMembrane(r).CreateCarrierIfReceiver(r.Instance, protocol, signal);
 		}
-
+*/
 		protected void OnTimerTick(object sender, EventArgs e)
 		{
 			if (!paused)
@@ -787,7 +834,10 @@ namespace TypeSystemExplorer.Views
 
 			if (!StartDrop)
 			{
-				p = GetRandomLocation();
+				if (!e.Receptor.Instance.IsHidden)
+				{
+					p = GetRandomLocation();
+				}
 			}
 
 			if (!e.Receptor.Instance.IsHidden)
@@ -911,16 +961,69 @@ namespace TypeSystemExplorer.Views
 			}
 			else if (args.Button == MouseButtons.Right)
 			{
-				// If no membrane is selected, move the entire surface.
-				var selectedMembranes = membraneLocation.Where(kvp => PointInCircle(SurfaceOffsetAdjust(kvp.Value.Center), MembraneNubRadius, testPoint));
+				IReceptor receptor;
+				bool match = TestForReceptorAt(testPoint, out receptor);
 
-				// Only move the surface if no membrane is selected.  
-				// TODO: Do we really need to do this?
-				if (selectedMembranes.Count() == 0)
+				if (match)
 				{
-					dragSurface = true;
-					mouseStart = NegativeSurfaceOffsetAdjust(args.Location);
-					mousePosition = NegativeSurfaceOffsetAdjust(args.Location);
+					// TODO: Move this all out of the visualizer!
+					MycroParser mp = new MycroParser();
+					Form form = mp.Load<Form>("ReceptorProtocolConfig.xml", this);
+					// form.Tag = new ConfigurationInfo() { Receptor = receptor, Parser = mp };
+					// PopulateControls(receptor, mp);
+
+					// Initialize the tables and views:
+					DataTable dtReceive = new DataTable();
+					dtReceive.Columns.Add(new DataColumn("Protocol", typeof(string)));
+					dtReceive.Columns.Add(new DataColumn("Enabled", typeof(bool)));
+
+					DataTable dtTransmit = new DataTable();
+					dtTransmit.Columns.Add(new DataColumn("Protocol", typeof(string)));
+					dtTransmit.Columns.Add(new DataColumn("Enabled", typeof(bool)));
+
+					receptor.Instance.GetReceiveProtocols().ForEach(rq =>
+					{
+						DataRow row = dtReceive.NewRow();
+						row[0] = rq.Protocol;
+						row[1] = rq.Enabled;
+						dtReceive.Rows.Add(row);
+					});
+
+					receptor.Instance.GetEmittedProtocols().ForEach(ep =>
+					{
+						DataRow row = dtTransmit.NewRow();
+						row[0] = ep.Protocol;
+						row[1] = ep.Enabled;
+						dtTransmit.Rows.Add(row);
+					});
+
+					// For use in event handler.
+					form.Tag = new ReceptorProtocolConfig() { MycroParser = mp, Receptor = receptor };
+
+					// Setup the data source.
+					DataView dvReceive = new DataView(dtReceive);
+					((DataGridView)mp.ObjectCollection["dgvReceiveProtocols"]).DataSource = dvReceive;
+
+					DataView dvTransmit = new DataView(dtTransmit);
+					((DataGridView)mp.ObjectCollection["dgvTransmitProtocols"]).DataSource = dvTransmit;
+
+					((Button)mp.ObjectCollection["btnOK"]).Click += OnReceptorProtocolConfigOK;
+					((Button)mp.ObjectCollection["btnCancel"]).Click += OnReceptorProtocolConfigCancel;
+					form.ShowDialog();
+				}
+				else if (args.Button == MouseButtons.Right)
+				{
+					// If no membrane is selected, move the entire surface.
+					var selectedMembranes = membraneLocation.Where(kvp => PointInCircle(SurfaceOffsetAdjust(kvp.Value.Center), MembraneNubRadius, testPoint));
+
+					// Only move the surface if no membrane is selected.  
+					// TODO: Do we really need to do this?
+					if (selectedMembranes.Count() == 0)
+					{
+						dragSurface = true;
+						mouseStart = NegativeSurfaceOffsetAdjust(args.Location);
+						mousePosition = NegativeSurfaceOffsetAdjust(args.Location);
+					}
 				}
 			}
 		}
@@ -1319,27 +1422,92 @@ namespace TypeSystemExplorer.Views
 		protected void MouseDoubleClickEvent(object sender, MouseEventArgs args)
 		{
 			Point p = args.Location;			// Mouse position
-			// view the active image?
-			// The selected image location is already adjusted for the surface offset.
-			bool match = TestCarouselActiveImageDoubleClick(p);
+			bool match;
 
-			if (!match)
+			if (args.Button == MouseButtons.Left)
 			{
-				// Select image metadata?
+				// view the active image?
 				// The selected image location is already adjusted for the surface offset.
-				match = TestImageMetadataDoubleClick(p);
-			}
+				match = TestCarouselActiveImageDoubleClick(p);
 
-			if (!match)
-			{
-				// Enable/disable receptor?
-				match = TestReceptorDoubleClick(NegativeSurfaceOffsetAdjust(p));
-			}
+				if (!match)
+				{
+					// Select image metadata?
+					// The selected image location is already adjusted for the surface offset.
+					match = TestImageMetadataDoubleClick(p);
+				}
 
-			if (!match)
-			{
-				match = TestMembraneDoubleClick(NegativeSurfaceOffsetAdjust(p));
+				if (!match)
+				{
+					// Enable/disable receptor?
+					IReceptor receptor;
+					match = TestForReceptorAt(NegativeSurfaceOffsetAdjust(p), out receptor);
+
+					if (match)
+					{
+						if (receptor.Instance.ConfigurationUI != null)
+						{
+							MycroParser mp = new MycroParser();
+							Form form = mp.Load<Form>(receptor.Instance.ConfigurationUI, this);
+							form.Tag = new ConfigurationInfo() { Receptor = receptor, Parser = mp };
+							PopulateControls(receptor, mp);
+							form.ShowDialog();
+						}
+						else
+						{
+							receptor.Instance.Enabled ^= true;
+							Invalidate(true);
+						}
+					}
+				}
+
+				if (!match)
+				{
+					match = TestMembraneDoubleClick(NegativeSurfaceOffsetAdjust(p));
+				}
 			}
+		}
+
+		protected void OnReceptorProtocolConfigOK(object sender, EventArgs e)
+		{
+			Form form = (Form)((Control)sender).Parent;
+			MycroParser mp = ((ReceptorProtocolConfig)form.Tag).MycroParser;
+			IReceptor receptor = ((ReceptorProtocolConfig)form.Tag).Receptor;
+			DataGridView dgvTransmit = ((DataGridView)mp.ObjectCollection["dgvTransmitProtocols"]);
+			DataGridView dgvReceive = ((DataGridView)mp.ObjectCollection["dgvReceiveProtocols"]);
+			dgvTransmit.EndEdit();
+			dgvReceive.EndEdit();
+			DataView dvTransmit = (DataView)dgvTransmit.DataSource;
+			DataView dvReceive = (DataView)dgvReceive.DataSource;
+			dvTransmit.Table.AcceptChanges();
+			dvReceive.Table.AcceptChanges();
+
+			// Save any changes the user made to emitted protocols.
+			dvTransmit.ForEach(row =>
+			{
+				string protocol = (string)row[0];
+				bool enabled = (bool)row[1];
+				receptor.Instance.GetEmittedProtocols().Single(p => p.Protocol == protocol).Enabled = enabled;
+			});
+
+			// Save any changes the user made to received protocols.
+			dvReceive.ForEach(row =>
+				{
+					string protocol = (string)row[0];
+					bool enabled = (bool)row[1];
+					receptor.Instance.GetReceiveProtocols().Single(p => p.Protocol == protocol).Enabled = enabled;
+				});
+
+			form.Close();
+
+			CreateReceptorConnections();
+			Invalidate(true);
+		}
+
+		protected void OnReceptorProtocolConfigCancel(object sender, EventArgs e)
+		{
+			Form form = (Form)((Control)sender).Parent;
+			form.Close();
 		}
 
 		protected bool TestCarouselActiveImageDoubleClick(Point p)
@@ -1355,9 +1523,12 @@ namespace TypeSystemExplorer.Views
 			if (cstate != null)
 			{
 				string imageFile = cstate.ActiveImageFilename;
-				ISemanticTypeStruct protocol = Program.SemanticTypeSystem.GetSemanticTypeStruct("ViewImage");
-				dynamic signal = Program.SemanticTypeSystem.Create("ViewImage");
-				signal.ImageFilename.Filename = imageFile.Surrounding("-thumbnail");
+				ISemanticTypeStruct protocol = Program.SemanticTypeSystem.GetSemanticTypeStruct("ImageFilename");
+				dynamic signal = Program.SemanticTypeSystem.Create("ImageFilename");
+
+				signal.Filename.Path.Value = Path.GetDirectoryName(imageFile);
+				signal.Filename.Name.Value = Path.GetFileNameWithoutExtension(imageFile);
+				signal.Filename.FileExtension.Value = Path.GetExtension(imageFile);
 
 				IMembrane m = Program.Skin.GetMembraneContaining(r);
 				m.CreateCarrier(r.Instance, protocol, signal);
@@ -1429,9 +1600,10 @@ namespace TypeSystemExplorer.Views
 		/// <summary>
 		/// Enable or disable the receptor being double-clicked.
 		/// </summary>
-		protected bool TestReceptorDoubleClick(Point p)
+		protected bool TestForReceptorAt(Point p, out IReceptor receptor)
 		{
 			bool match = false;
+			receptor = null;
 
 			foreach (var kvp in receptorLocation)
 			{
@@ -1442,22 +1614,7 @@ namespace TypeSystemExplorer.Views
 				if (r.Contains(p))
 				{
 					match = true;
-					IReceptor receptor = kvp.Key;
-
-					if (receptor.Instance.ConfigurationUI != null)
-					{
-						MycroParser mp = new MycroParser();
-						Form form = mp.Load<Form>(receptor.Instance.ConfigurationUI, this);
-						form.Tag = new ConfigurationInfo() { Receptor = receptor, Parser = mp };
-						PopulateControls(receptor, mp);
-						form.ShowDialog();
-					}
-					else
-					{
-						receptor.Enabled ^= true;
-						Invalidate(true);
-					}
-
+					receptor = kvp.Key;
 					break;
 				}
 			}
@@ -1491,7 +1648,7 @@ namespace TypeSystemExplorer.Views
 			object ckEnabled;
 			if (mp.ObjectCollection.TryGetValue("ckEnabled", out ckEnabled))
 			{
-				((CheckBox)ckEnabled).Checked = r.Enabled;
+				((CheckBox)ckEnabled).Checked = r.Instance.Enabled;
 			}
 		}
 
@@ -1520,18 +1677,26 @@ namespace TypeSystemExplorer.Views
 			ConfigurationInfo ci = (ConfigurationInfo)form.Tag;
 			SaveValues(ci.Receptor.Instance, ci.Parser);
 			// Notify instance that the configuration has been updated.
-			ci.Receptor.Instance.UserConfigurationUpdated();
+			bool ok = ci.Receptor.Instance.UserConfigurationUpdated();
 
-			// Special handling for "enabled."
-			// TODO: Fix this by moving Enabled into IReceptorInstance and BaseReceptor
-			object ckEnabled;
-			if (ci.Parser.ObjectCollection.TryGetValue("ckEnabled", out ckEnabled))
+			if (ok)
 			{
-				ci.Receptor.Enabled = ((CheckBox)ckEnabled).Checked;
-				Invalidate(true);
-			}
+				// Special handling for "enabled."
+				// TODO: Fix this by moving Enabled into IReceptorInstance and BaseReceptor
+				object ckEnabled;
 
-			form.Close();
+				if (ci.Parser.ObjectCollection.TryGetValue("ckEnabled", out ckEnabled))
+				{
+					ci.Receptor.Instance.Enabled = ((CheckBox)ckEnabled).Checked;
+					Invalidate(true);
+				}
+
+				form.Close();
+			}
+			else
+			{
+				MessageBox.Show(ci.Receptor.Instance.ConfigurationError, "Please correct...", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
 		}
 
 		protected void OnReceptorConfigCancel(object sender, EventArgs args)
@@ -1582,6 +1747,7 @@ namespace TypeSystemExplorer.Views
 
 				// Setup the data source.
 				DataView dv = new DataView(dt);
+				// TODO: Ugh.  Hardcoded index array.  Replace with the MycroParser object collection.
 				((DataGridView)form.Controls[0]).DataSource = dv;
 				form.FormClosing += OnPermeabilityFormClosing;
 				
@@ -1591,7 +1757,7 @@ namespace TypeSystemExplorer.Views
 			return match;
 		}
 
-		void OnPermeabilityFormClosing(object sender, FormClosingEventArgs e)
+		protected void OnPermeabilityFormClosing(object sender, FormClosingEventArgs e)
 		{
 			Form form = (Form)sender;
 			DataGridView dgv = (DataGridView)form.Controls[0];
@@ -1668,9 +1834,9 @@ namespace TypeSystemExplorer.Views
 					Membrane m1 = GetReceptorMembrane(kvp1.Key);
 
 					// Get the emitted protocols of this receptor.
-					kvp1.Key.Instance.GetEmittedProtocols().ForEach(prot1 =>
+					kvp1.Key.Instance.GetEnabledEmittedProtocols().ForEach(prot1 =>
 						{
-							FindConnectionsWith(kvp1.Key, m1, prot1, kvp1.Value);
+							FindConnectionsWith(kvp1.Key, m1, prot1.Protocol, kvp1.Value);
 						});
 				});
 
@@ -1688,36 +1854,35 @@ namespace TypeSystemExplorer.Views
 			// Iterate through receptors with a second search.
 			receptorLocation.ForEach(kvp2 =>
 			{
-				Membrane m2 = GetReceptorMembrane(kvp2.Key);
-
-				// Receptors must be in the same membrane.
-				if (m1 == m2)
+				// We do not send the same protocol to ourselves.
+				if (r != kvp2.Key)
 				{
-					// If any match the receive protocols of kvp2...
-					if (kvp2.Key.Instance.GetReceiveProtocols().Select(rp=>rp.Protocol).Contains(prot1))
+					Membrane m2 = GetReceptorMembrane(kvp2.Key);
+
+					// Receptors must be in the same membrane.
+					if (m1 == m2)
 					{
-						// Then these two receptors are connected.
-						// P1 is always the emitter, P2 is always the receiver.
-						Line l = new Line() { P1 = rPoint, P2 = kvp2.Value };
-
-						// TODO: Yuck - there must be a better way of dealing with duplicates.
-						Connection conn = new Connection() { Protocol = prot1, Line = l };
-						if (!receptorConnections.Any(rc => rc.Line == l))
+						// If any match the receive protocols of kvp2...
+						if (kvp2.Key.Instance.GetEnabledReceiveProtocols().Select(rp => rp.Protocol).Contains(prot1))
 						{
+							// Then these two receptors are connected.
+							// P1 is always the emitter, P2 is always the receiver.
+							Line l = new Line() { P1 = rPoint, P2 = kvp2.Value };
+							Connection conn = new Connection() { Protocol = prot1, Line = l, R1 = r, R2 = kvp2.Key };
 							receptorConnections.Add(conn);
-						}
 
-						// Add this to the master connection list.
-						// TODO: THIS SHOULD NOT BE COMPUTED IN THE VISUALIZER!!!!
-						if (!Program.MasterReceptorConnectionList.ContainsKey(r))
-						{
-							Program.MasterReceptorConnectionList[r] = new List<IReceptor>();
-						}
+							// Add this to the master connection list.
+							// TODO: THIS SHOULD NOT BE COMPUTED IN THE VISUALIZER!!!!
+							if (!Program.MasterReceptorConnectionList.ContainsKey(r))
+							{
+								Program.MasterReceptorConnectionList[r] = new List<IReceptor>();
+							}
 
-						// TODO: Yuck - there must be a better way of dealing with duplicates.
-						if (!Program.MasterReceptorConnectionList[r].Contains(kvp2.Key))
-						{
-							Program.MasterReceptorConnectionList[r].Add(kvp2.Key);
+							// TODO: Yuck - there must be a better way of dealing with duplicates.
+							// if (!Program.MasterReceptorConnectionList[r].Contains(kvp2.Key))
+							{
+								Program.MasterReceptorConnectionList[r].Add(kvp2.Key);
+							}
 						}
 					}
 				}
@@ -1922,6 +2087,8 @@ namespace TypeSystemExplorer.Views
 
 		protected void OnVisualizerPaint(object sender, PaintEventArgs e)
 		{
+			Dictionary<ReceptorPair, List<Connection>> receptorConnectionList = new Dictionary<ReceptorPair, List<Connection>>();
+
 			try
 			{
 				Control ctrl = (Control)sender;
@@ -1978,9 +2145,7 @@ namespace TypeSystemExplorer.Views
 
 				receptorConnections.ForEach(conn =>
 				{
-					Line line = conn.Line;
-					Pen pen;
-
+/*
 					switch (conn.Protocol)
 					{
 						case "Text":
@@ -1994,9 +2159,155 @@ namespace TypeSystemExplorer.Views
 							pen = receptorLineColor;
 							break;
 					}
-					// Just a straight line:
-					// e.Graphics.DrawLine(receptorLineColor, SurfaceOffsetAdjust(line.P1), SurfaceOffsetAdjust(line.P2));
+*/
+#if STRAIGHT_LINE_CONNECTIONS
+					ReceptorPair rp1 = new ReceptorPair() { R1 = conn.R1, R2 = conn.R2 };
+					ReceptorPair rp2 = new ReceptorPair() { R1 = conn.R2, R2 = conn.R1 };
 
+					if (receptorConnectionList.ContainsKey(rp1))
+					{
+						// We have an identical forward connection.
+						receptorConnectionList[rp1].Add(conn);
+					}
+					else if (receptorConnectionList.ContainsKey(rp2))
+					{
+						// We have a reverse connection.
+						// TODO: This flag seems pointless.
+						conn.Reverse = true;
+						receptorConnectionList[rp2].Add(conn);
+					}
+					else
+					{
+						receptorConnectionList[rp1]=new List<Connection>();
+						receptorConnectionList[rp1].Add(conn);
+					}
+				});
+
+				// Save current settings
+				CompositingQuality cq = e.Graphics.CompositingQuality;
+				TextRenderingHint trh = e.Graphics.TextRenderingHint;
+				e.Graphics.SmoothingMode = SmoothingMode.HighQuality;
+				e.Graphics.CompositingQuality = CompositingQuality.HighQuality;
+				e.Graphics.TextRenderingHint = TextRenderingHint.AntiAlias;
+
+				foreach (KeyValuePair<ReceptorPair, List<Connection>> kvp in receptorConnectionList)
+				{
+					int protocolLabelOffset = 2;
+
+					foreach (Connection conn in kvp.Value)
+					{
+						Line line = conn.Line;
+						Pen pen = receptorLineColor;
+
+						// Just a straight line:
+						// The source starting point of the line should be placed on the edge of the receptor.
+						double dx = line.P1.X - line.P2.X;
+						double dy = line.P1.Y - line.P2.Y;
+						double angle = Math.Atan2(dy, dx);
+						Point start = new Point((int)(line.P1.X - ReceptorSize.Width / 2 * Math.Cos(angle)), (int)(line.P1.Y - ReceptorSize.Width / 2 * Math.Sin(angle)));
+
+						if (showProtocols)
+						{
+							string protocolName = conn.Protocol;
+
+							if (kvp.Value.Count > 1)
+							{
+								// TODO: Does the reverse flag actually affect our logic here?  It does not seem so.
+								// TODO: There remains an issue when dx==0 and possibly 1 or -1.  
+								// It also seems like only dx needs to be inspected, not conn.Reverse.
+								if (conn.Reverse)
+								{
+									if (kvp.Key.R1 != conn.R1)
+									{
+										if (dx > 0)
+										{
+#if DEBUG_SEMANTIC_LABELS
+											protocolName = protocolName + " <--A";
+#else
+											protocolName = "<-- " + protocolName;
+#endif
+										}
+										else
+										{
+#if DEBUG_SEMANTIC_LABELS
+											protocolName = protocolName + " E-->";
+#else
+											protocolName = protocolName + " -->";
+#endif
+										}
+									}
+									else
+									{
+#if DEBUG_SEMANTIC_LABELS
+										protocolName = "<--B " + protocolName;
+#else
+										protocolName = "<-- " + protocolName;
+#endif
+									}
+								}
+								else
+								{
+									if (kvp.Key.R1 != conn.R1)
+									{
+#if DEBUG_SEMANTIC_LABELS
+										protocolName = protocolName + " C-->";
+#else
+										protocolName = protocolName + " -->";
+#endif
+									}
+									else
+									{
+										if (dx < 0)
+										{
+#if DEBUG_SEMANTIC_LABELS
+											protocolName = " D-->" + protocolName;
+#else
+											protocolName = protocolName + " -->";
+#endif
+										}
+										else
+										{
+#if DEBUG_SEMANTIC_LABELS
+											protocolName = protocolName + " <--F";
+#else
+											protocolName = "<-- " + protocolName;
+#endif
+										}
+									}
+								}
+							}
+							else
+							{
+								// Orient the directional arrow based on how the text is being drawn, which
+								// is determined by whether dx < 1 or > 1, or 1.
+								if (dx < 1)
+								{
+									protocolName = protocolName + " -->";
+								}
+								else if (dx > 1)
+								{
+									protocolName = "<-- " + protocolName;
+								}
+								else
+								{
+									// A flip along the vertical line occurs at -1 and 0, then corrects itself again at >= 1
+									protocolName = protocolName + " -->";
+								}
+							}
+
+							DrawTextOnPath.Draw(e, SurfaceOffsetAdjust(start), SurfaceOffsetAdjust(line.P2), protocolName, protocolLabelOffset);
+						}
+						else
+						{
+							e.Graphics.DrawLine(pen, SurfaceOffsetAdjust(start), SurfaceOffsetAdjust(line.P2));
+						}
+
+						// draw a small numb at the terminating point.
+						Point ctr = SurfaceOffsetAdjust(line.P2);
+						e.Graphics.FillEllipse(new SolidBrush(pen.Color), new Rectangle(ctr.X - 3, ctr.Y - 3, 6, 6));
+
+						protocolLabelOffset += 15;
+#else
 					// The source starting point of the line should be placed on the edge of the receptor.
 					double dx = line.P1.X - line.P2.X;
 					double dy = line.P1.Y - line.P2.Y;
@@ -2019,14 +2330,23 @@ namespace TypeSystemExplorer.Views
 						// draw a small numb at the terminating point.
 						e.Graphics.FillEllipse(new SolidBrush(pen.Color), new Rectangle(ctr.X - 3, ctr.Y - 3, 6, 6));
 					}
-				});
+#endif
+					}
+				}
+
+
+				// Restore previous settings.
+				e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+				e.Graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+				e.Graphics.CompositingQuality = cq;
+				e.Graphics.TextRenderingHint = trh;
 
 				// Draw receptors.
 
 				receptorLocation.ForEach(kvp =>
 					{
 						// red for disabled receptors, green for enabled.
-						Pen pen = kvp.Key.Enabled ? penColors[1] : penColors[0];
+						Pen pen = kvp.Key.Instance.Enabled ? penColors[1] : penColors[0];
 						Point p = SurfaceOffsetAdjust(kvp.Value);
 						p.Offset(-ReceptorSize.Width / 2, -ReceptorSize.Height / 2);
 						Point bottom = p;
@@ -2039,13 +2359,13 @@ namespace TypeSystemExplorer.Views
 						e.Graphics.DrawEllipse(pen, new Rectangle(p, ReceptorSize));
 
 						// A double circle represents an edge receptor.
-						if (kvp.Key.Instance.IsEdgeReceptor)
-						{
-							p.Offset(3, 3);		// GDI draws from the UL corner.
-							Size s = Size.Subtract(ReceptorSize, new Size(6, 6));
-							e.Graphics.DrawEllipse(pen, new Rectangle(p, s));
-							e.Graphics.DrawEllipse(pen, new Rectangle(p, s));
-						}
+						//if (kvp.Key.Instance.IsEdgeReceptor)
+						//{
+						//	p.Offset(3, 3);		// GDI draws from the UL corner.
+						//	Size s = Size.Subtract(ReceptorSize, new Size(6, 6));
+						//	e.Graphics.DrawEllipse(pen, new Rectangle(p, s));
+						//	e.Graphics.DrawEllipse(pen, new Rectangle(p, s));
+						//}
 
 						// Name
 						SizeF strSize = e.Graphics.MeasureString(kvp.Key.Instance.Name, font);
@@ -2113,7 +2433,7 @@ namespace TypeSystemExplorer.Views
 						SurfaceOffsetAdjust(new Point(a.StartPosition.X + idx, a.StartPosition.Y + idy)), 
 					};
 
-						e.Graphics.DrawLines(penColors[3], triangle);
+						e.Graphics.DrawLines(carrierPen, triangle);
 					});
 // Rework Idea:
 /*
@@ -2299,19 +2619,47 @@ namespace TypeSystemExplorer.Views
 						{
 							Image img = imeta.Image;
 							int idxReal = (idx + offset) % images;
-							Point ip = p;
-							double dx = 200 * Math.Cos((2 * Math.PI * 1 / 4) + 2 * Math.PI * idxReal / images);
-							double dy = 100 * Math.Sin((2 * Math.PI * 1 / 4) + 2 * Math.PI * idxReal / images);
-							ip.Offset((int)dx, (int)dy);
-							int sizer = (int)(100 * (0.25 + ((1.0 + Math.Sin((2 * Math.PI * 1 / 4) + 2 * Math.PI * idxReal / images) / 2) * 3 / 4)));
 
+							// idxReal of 0 is the bottom-most image, which we draw larger than the images on the carousel itself.
 							if (idxReal == 0)
 							{
 								idx0 = idx;
 							}
 							else
 							{
-								e.Graphics.DrawImage(img, new Rectangle(new Point(ip.X - 50, ip.Y - 50 * img.Height / img.Width), new Size(sizer, sizer * img.Height / img.Width)));
+								Point ip = p;		// Receptor center
+
+								// Calculate our location along an ellipse.  idxReal of 0 gives us the bottom-most coordinate.
+								double dx = 150 * Math.Cos((2 * Math.PI * 1 / 4) + 2 * Math.PI * idxReal / images);
+								double dy = 75 * Math.Sin((2 * Math.PI * 1 / 4) + 2 * Math.PI * idxReal / images);
+
+								// Our image center:
+								ip.Offset((int)dx, (int)dy);
+
+								// Scale the image so that the image at the top of the ellipse is the smallest.
+								// We want the scaling to be a factor from 0.25 to 1
+								// This gives us a value on a sin curve from 1..-1..1
+								double calc = Math.Sin((2 * Math.PI * 1 / 4) + 2 * Math.PI * idxReal / images);
+								// We shift this to 2..0..2
+								calc = calc + 1;
+								// We divide by 2, giving us 1..0..1
+								calc = calc / 2;
+								// We take 1/2 of this 
+								calc = calc / 2;
+								// Add back 1/2 as our minimum width range, so now our range is 0.5 to 1.0, multiplied by our width factor, and we get 50..100
+								int width = (int)(100 * (0.50 + calc));
+								// We want the height to always be 75% of the width.
+								int height = width * 3 / 4;	
+/*
+								System.Diagnostics.Debug.WriteLine("IdxReal = " + idxReal.ToString());
+								System.Diagnostics.Debug.WriteLine("      dx = " + dx.ToString());
+								System.Diagnostics.Debug.WriteLine("      dy = " + dy.ToString());
+								System.Diagnostics.Debug.WriteLine("    Calc = " + calc.ToString());
+								System.Diagnostics.Debug.WriteLine("   Width = " + width.ToString());
+*/
+								// Even though it'll distort our image, we always want a 100 x 75 image.
+								// e.Graphics.DrawImage(img, new Rectangle(new Point(ip.X - 50, ip.Y - 50 * img.Height / img.Width), new Size(sizer, sizer * img.Height / img.Width)));
+								e.Graphics.DrawImage(img, new Rectangle(new Point(ip.X - width/2, ip.Y - height/2), new Size(width, height)));
 							}
 						});
 
@@ -2347,7 +2695,7 @@ namespace TypeSystemExplorer.Views
 				if (rubberBand)
 				{
 					Rectangle r = Rectangle.FromLTRB(Math.Min(mouseStart.X, mousePosition.X), Math.Min(mouseStart.Y, mousePosition.Y), Math.Max(mouseStart.X, mousePosition.X), Math.Max(mouseStart.Y, mousePosition.Y));
-					e.Graphics.DrawRectangle(whitePen, r);
+					e.Graphics.DrawRectangle(rubberBandPen, r);
 				}
 			}
 			catch (Exception ex)
@@ -2381,7 +2729,7 @@ namespace TypeSystemExplorer.Views
 		protected Rectangle CircleToBoundingRectangle(Point ctr, int radius)
 		{
 			return new Rectangle(ctr.X - radius, ctr.Y - radius, radius * 2, radius * 2);
-		}		
+		}
 		
 		/// <summary>
 		/// Returns a point adjusted (adding) for the surface offset.

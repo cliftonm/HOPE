@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<MycroXaml Name="Form"
+  xmlns:wf="System.Windows.Forms, System.Windows.Forms, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"
+  xmlns:def="def"
+  xmlns:ref="ref">
+  <wf:Form Text="Receptor Protocol Configuration" Size="500, 530" StartPosition="CenterScreen" ShowInTaskbar="false" MinimizeBox="false" MaximizeBox="false">
+    <wf:Controls>
+      <wf:Label Location="10, 10" Size="350, 15" Text="Receiving Protocols:" TextAlign="BottomLeft"/>
+      <wf:DataGridView def:Name="dgvReceiveProtocols" Anchor="Left, Right" Location="10, 30" Size="350, 200"
+                       AllowUserToAddRows="false"
+                       AllowUserToDeleteRows="false"
+                       RowHeadersVisible="false"
+                       AutoSizeColumnsMode="Fill"/>
+      <wf:Label Location="10, 250" Size="350, 15" Text="Emitted Protocols:" TextAlign="BottomLeft"/>
+      <wf:DataGridView def:Name="dgvTransmitProtocols" Anchor="Left, Right" Location="10, 270" Size="350, 200"
+                       AllowUserToAddRows="false"
+                       AllowUserToDeleteRows="false"
+                       RowHeadersVisible="false"
+                       AutoSizeColumnsMode="Fill"/>
+      <wf:Button def:Name="btnOK" Location="380, 30" Size="80, 25" Text="OK" Anchor="Right"/>
+      <wf:Button def:Name="btnCancel" Location="380, 60" Size="80, 25" Text="Cancel" Anchor="Right"/>
+    </wf:Controls>
+  </wf:Form>
+</MycroXaml>
+
+

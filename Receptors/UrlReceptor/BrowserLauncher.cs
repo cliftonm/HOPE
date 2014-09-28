@@ -13,11 +13,11 @@ namespace UrlReceptor
 {
 	public class ReceptorDefinition : BaseReceptor
 	{
-		public override string Name { get { return "URL"; } }
+		public override string Name { get { return "Web Page Launcher"; } }
 		
 		public ReceptorDefinition(IReceptorSystem rsys) : base(rsys)
 		{
-			AddReceiveProtocol("URL");
+			AddReceiveProtocol("Url");
 		}
 
 		public override void ProcessCarrier(ICarrier carrier)

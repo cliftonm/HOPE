@@ -4,10 +4,23 @@
       <ixm:Membranes>
         <ixm:MembraneDef Name="Skin">
           <ixm:Receptors>
-            <ixm:ReceptorDef Name="Logger" AssemblyName="LoggingReceptor.dll" Enabled="True" Location="580, 404" />
-            <ixm:ReceptorDef Name="Heartbeat" AssemblyName="HelloWorldReceptor.dll" Enabled="True" Location="456, 327" />
+            <ixm:ReceptorDef Name="Logger" AssemblyName="LoggingReceptor.dll" Enabled="True" Location="359, 106">
+              <ixm:ReceiveProtocols>
+                <ixm:ReceiveProtocol Protocol="LoggerMessage" Enabled="True" />
+              </ixm:ReceiveProtocols>
+            </ixm:ReceptorDef>
+            <ixm:ReceptorDef Name="Hello World" AssemblyName="HelloWorldReceptor.dll" Enabled="True" Location="154, 106">
+              <ixm:EmitProtocols>
+                <ixm:EmitProtocol Protocol="LoggerMessage" Enabled="True" />
+                <ixm:EmitProtocol Protocol="TextMessage" Enabled="True" />
+                <ixm:EmitProtocol Protocol="Text" Enabled="True" />
+              </ixm:EmitProtocols>
+            </ixm:ReceptorDef>
           </ixm:Receptors>
           <ixm:Permeabilities>
+            <ixm:PermeabilityDef Protocol="LoggerMessage" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="TextMessage" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="Text" Direction="Out" Permeable="False" />
             <ixm:PermeabilityDef Protocol="SystemMessage" Direction="Out" Permeable="False" />
             <ixm:PermeabilityDef Protocol="DebugMessage" Direction="Out" Permeable="False" />
             <ixm:PermeabilityDef Protocol="DebugMessage" Direction="In" Permeable="False" />

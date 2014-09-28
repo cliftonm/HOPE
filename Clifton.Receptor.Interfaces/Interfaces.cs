@@ -24,7 +24,7 @@ namespace Clifton.Receptor.Interfaces
 		{
 			this.prompt = prompt;
 		}
-	}	
+	}
 
 	/// <summary>
 	/// All receptors must implement this interface in order to be dynamically loaded at runtime.
@@ -38,14 +38,22 @@ namespace Clifton.Receptor.Interfaces
 		string Subname { get; }
 		bool IsEdgeReceptor { get; }
 		bool IsHidden { get; }
+		bool Enabled { get; set; }
 		string ConfigurationUI { get; }
+		string ConfigurationError { get; }
 
 		// The receptor system must be reset when a receptor moves to a different membrane,
 		// that is, to another receptor system.
 		IReceptorSystem ReceptorSystem { get; set; }
 
 		List<ReceiveQualifier> GetReceiveProtocols();
-		List<string> GetEmittedProtocols();
+		List<EmittedProtocol> GetEmittedProtocols();
+		List<ReceiveQualifier> GetEnabledReceiveProtocols();
+		List<EmittedProtocol> GetEnabledEmittedProtocols();
+
+		void CacheEmitProtocol(string protocolName, bool enabled);
+		void CacheReceiveProtocol(string protocolName, bool enabled);
+
 		void ProcessCarrier(ICarrier carrier);
 
 		/// <summary>
@@ -70,7 +78,7 @@ namespace Clifton.Receptor.Interfaces
 		/// <summary>
 		/// Called when the user configurable items in a receptor instance have been updated by user or other action.
 		/// </summary>
-		void UserConfigurationUpdated();
+		bool UserConfigurationUpdated();
 
 		/// <summary>
 		/// Called before the controls are populated, to give the receptor instance a chance to do other initialization 
@@ -102,6 +110,8 @@ namespace Clifton.Receptor.Interfaces
 		string Name { get; }
 		string AssemblyName { get; }
 		IReceptorInstance Instance { get; }
+
+		// Used in deserialization only, passed on to the instance when the receptor's implementing instance is created.
 		bool Enabled { get; set; }
 	}
 

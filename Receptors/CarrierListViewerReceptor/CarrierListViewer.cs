@@ -48,6 +48,7 @@ namespace CarrierListViewerReceptor
 		public CarrierListViewer(IReceptorSystem rsys)
 		  : base(rsys)
 		{
+			AddEmitProtocol("ExceptionMessage");
 		}
 
 		public override void Initialize()
@@ -67,13 +68,25 @@ namespace CarrierListViewerReceptor
 
 		/// <summary>
 		/// When the user configuration fields have been updated, reset the protocol we are listening for.
+		/// Return false if configuration is invalid.
 		/// </summary>
-		public override void UserConfigurationUpdated()
+		public override bool UserConfigurationUpdated()
 		{
 			base.UserConfigurationUpdated();
-			CreateViewerTable();
-			ListenForProtocol();
-			UpdateCaption();
+			bool ret = rsys.SemanticTypeSystem.VerifyProtocolExists(ProtocolName);
+
+			if (ret)
+			{
+				CreateViewerTable();
+				ListenForProtocol();
+				UpdateCaption();
+			}
+			else
+			{
+				ConfigurationError = "The semantic type '"+ProtocolName+"' is not defined.";
+			}
+
+			return ret;
 		}
 
 		public override void Terminate()
@@ -86,7 +99,7 @@ namespace CarrierListViewerReceptor
 		{
 			if (!String.IsNullOrEmpty(WindowName))
 			{
-				form.Text = WindowName;
+				form.Text= WindowName;
 			}
 			else
 			{
@@ -95,6 +108,10 @@ namespace CarrierListViewerReceptor
 					string updatedText = form.Text.LeftOf('-');
 					updatedText = updatedText + " - " + ProtocolName;
 					form.Text = updatedText;
+				}
+				else
+				{
+					form.Text = String.Empty;
 				}
 			}
 		}
@@ -116,6 +133,13 @@ namespace CarrierListViewerReceptor
 			// finishes initialization.
 			form.LocationChanged += OnLocationChanged;
 			form.SizeChanged += OnSizeChanged;
+		}
+
+		/// <summary>
+		/// Verify the protocol exists before we let the user close the dialog.
+		/// </summary>
+		protected void OnFormClosing(object sender, FormClosingEventArgs e)
+		{
 		}
 
 		// TODO: This stuff on window location and size changing and setting needs to be moved
@@ -157,24 +181,34 @@ namespace CarrierListViewerReceptor
 			if (!String.IsNullOrEmpty(ProtocolName))
 			{
 				DataTable dt = new DataTable();
-				ISemanticTypeStruct st = rsys.SemanticTypeSystem.GetSemanticTypeStruct(ProtocolName);
-				st.AllTypes.ForEach(t =>
+				List<IFullyQualifiedNativeType> columns = rsys.SemanticTypeSystem.GetFullyQualifiedNativeTypes(ProtocolName);
+
+				columns.ForEach(col =>
 					{
 						try
 						{
-							// TODO: MofN has two native types, which causes an error when getting the implementing type (can only have one native type.)
-							// What we need here is the ability to have sub-table of child native types for the current semantic type.
-							// Right now, we're just ignoring the problem.
-							DataColumn dc = new DataColumn(t.Name, t.GetImplementingType(rsys.SemanticTypeSystem));
+							DataColumn dc = new DataColumn(col.FullyQualifiedName, col.NativeType.GetImplementingType(rsys.SemanticTypeSystem));
+
+							// If no alias, then use the FQN, skipping the root protocol name.
+							String.IsNullOrEmpty(col.Alias).Then(() => dc.Caption = col.FullyQualifiedName.RightOf('.')).Else(() => dc.Caption = col.Alias);
 							dt.Columns.Add(dc);
 						}
-						catch(Exception ex)
+						catch
 						{
+							// If the implementing type is not known by the native type system (for example, List<dynamic> used in the WeatherInfo protocol, we ignore it.
+							// TODO: We need a way to support implementing lists and displaying them in the viewer as a sub-collection.
+							// WeatherInfo protocol is a good example.
+
 						}
 					});
 
 				dvSignals = new DataView(dt);
 				dgvSignals.DataSource = dvSignals;
+
+				foreach(DataColumn dc in dt.Columns)
+				{
+					dgvSignals.Columns[dc.ColumnName].HeaderText = dc.Caption;
+				}
 			}
 		}
 
@@ -188,14 +222,18 @@ namespace CarrierListViewerReceptor
 				RemoveReceiveProtocol(oldProtocol);
 			}
 
-			oldProtocol = ProtocolName;
-			AddReceiveProtocol(ProtocolName, (Action<dynamic>)((signal) => ShowSignal(signal)));
+			if (!String.IsNullOrEmpty(ProtocolName))
+			{
+				AddReceiveProtocol(ProtocolName, (Action<dynamic>)((signal) => ShowSignal(signal)));
 
-			// Add other semantic type emitters:
-			RemoveEmitProtocols();
-			ISemanticTypeStruct st = rsys.SemanticTypeSystem.GetSemanticTypeStruct(ProtocolName);
-			// TODO: REACTIVATE THIS
-			// st.SemanticElements.ForEach(se => AddEmitProtocol(se.Name));
+				// Add other semantic type emitters:
+				RemoveEmitProtocols();
+				AddEmitProtocol("ExceptionMessage");
+				ISemanticTypeStruct st = rsys.SemanticTypeSystem.GetSemanticTypeStruct(ProtocolName);
+				st.SemanticElements.ForEach(se => AddEmitProtocol(se.Name));
+			}
+
+			oldProtocol = ProtocolName;
 		}
 
 		/// <summary>
@@ -204,18 +242,24 @@ namespace CarrierListViewerReceptor
 		/// <param name="signal"></param>
 		protected void ShowSignal(dynamic signal)
 		{
+			List<IFullyQualifiedNativeType> colValues = rsys.SemanticTypeSystem.GetFullyQualifiedNativeTypeValues(signal, ProtocolName);
+
 			try
 			{
 				DataTable dt = dvSignals.Table;
 				DataRow row = dt.NewRow();
-				ISemanticTypeStruct st = rsys.SemanticTypeSystem.GetSemanticTypeStruct(ProtocolName);
-
-				st.AllTypes.ForEach(t =>
+				colValues.ForEach(cv =>
 					{
-						object val = t.GetValue(rsys.SemanticTypeSystem, signal);
-						row[t.Name] = val;
+						try
+						{
+							row[cv.FullyQualifiedName] = cv.Value;
+						}
+						catch
+						{
+							// Ignore columns we can't handle.
+							// TODO: Fix this at some point.  WeatherInfo protocol is a good example.
+						}
 					});
-
 				dt.Rows.Add(row);
 			}
 			catch (Exception ex)
@@ -224,17 +268,32 @@ namespace CarrierListViewerReceptor
 			}
 		}
 
+		// TODO: This is actually a more complicated problem.  Do we emit the parent protocol, or just child SE's, or do we look at the column
+		// clicked on and determine the sub-SE for that specific set of data?
 		/// <summary>
 		/// Emit a semantic protocol with the value in the selected row and the column determined by the semantic element name.
 		/// </summary>
 		protected void OnCellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
 		{
 			ISemanticTypeStruct st = rsys.SemanticTypeSystem.GetSemanticTypeStruct(ProtocolName);
-
-			st.SemanticElements.ForEach(se =>
+			List<IFullyQualifiedNativeType> ntList = rsys.SemanticTypeSystem.GetFullyQualifiedNativeTypes(ProtocolName);
+			ISemanticTypeStruct outprotocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct(ProtocolName);
+			dynamic outsignal = rsys.SemanticTypeSystem.Create(ProtocolName);
+			
+			ntList.ForEach(nt =>
 				{
-					CreateCarrier(se.Name, signal => se.SetValue(rsys.SemanticTypeSystem, signal, dvSignals[e.RowIndex][se.Name].ToString()));
+					// Store the value into the signal using the FQN.
+					string colName = nt.FullyQualifiedName;
+
+					// Columns that can't be mapped to native types directly (like lists) are not part of the data table.
+					if (dgvSignals.Columns.Contains(colName))
+					{
+						rsys.SemanticTypeSystem.SetFullyQualifiedNativeTypeValue(outsignal, nt.FullyQualifiedNameSansRoot, dvSignals[e.RowIndex][colName]);
+					}
 				});
+
+			// Send the record on its way.
+			rsys.CreateCarrier(this, st, outsignal);
 		}
 	}
 }

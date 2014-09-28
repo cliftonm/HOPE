@@ -7,7 +7,9 @@
     <wf:Controls>
       <wf:DataGridView Dock="Fill"
                        AllowUserToAddRows="false"
-                       AllowUserToDeleteRows="false"/>
+                       AllowUserToDeleteRows="false"
+                       RowHeadersVisible="false"
+                       AutoSizeColumnsMode="Fill"/>
     </wf:Controls>
   </wf:Form>
 </MycroXaml>

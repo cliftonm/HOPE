@@ -12,14 +12,14 @@ namespace HelloWorldReceptor
 {
     public class ReceptorDefinition : BaseReceptor
     {
-		public override string Name { get { return "Heartbeat"; } }
+		public override string Name { get { return "Hello World"; } }
 
 		protected Timer timer;
 
 		public ReceptorDefinition(IReceptorSystem rsys) : base(rsys)
 		{
 			InitializeRepeatedHelloEvent();
-			AddEmitProtocol("DebugMessage");
+			AddEmitProtocol("LoggerMessage");
 		}
 
 		public override void Terminate()
@@ -38,10 +38,15 @@ namespace HelloWorldReceptor
 
 		protected void SayHello(object sender, EventArgs args)
 		{
-			ISemanticTypeStruct protocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct("DebugMessage");
-			dynamic signal = rsys.SemanticTypeSystem.Create("DebugMessage");
-			signal.Message = "Hello World!";
-			rsys.CreateCarrier(this, protocol, signal);
+			if (Enabled)
+			{
+				CreateCarrier("LoggerMessage", signal =>
+					{
+						// TODO: We need "calculated" fields, ones that automatically populate with a constant (much like computed fields, which perform a computation.)
+						signal.MessageTime = DateTime.Now;
+						signal.TextMessage.Text.Value = "Hello world!";
+					});
+			}
 		}
     }
 }

@@ -4,6 +4,8 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Xml;
 
 using Clifton.ExtensionMethods;
 using Clifton.MycroParser;
@@ -53,15 +55,24 @@ namespace Clifton.Receptor.Interfaces
 		public virtual string Subname { get { return String.Empty; } }
 		public virtual bool IsEdgeReceptor { get { return false; } }
 		public virtual bool IsHidden { get { return false; } }
+		public virtual bool Enabled { get; set; }
 
 		/// <summary>
 		/// Allows a receptor to specify a MyXaml (MycroXaml) form UI for configuring the receptor.
 		/// The default (null) means "no configuration UI."
 		/// </summary>
 		public virtual string ConfigurationUI { get { return null; } }
+		
+		/// <summary>
+		/// Receptors set this value to provide a message to the user when a configuration error occurs.
+		/// </summary>
+		public string ConfigurationError { get; protected set; }
 
 		protected List<ReceiveQualifier> receiveProtocols;
-		protected List<string> emitProtocols;
+		protected List<EmittedProtocol> emitProtocols;
+		protected Dictionary<string, bool> cachedReceiveProtocolConfig;
+		protected Dictionary<string, bool> cachedEmitProtocolConfig;
+
 		protected Dictionary<string, Gate> gates;
 		protected Dictionary<string, CompositeGate> compositeGates;
 
@@ -80,9 +91,28 @@ namespace Clifton.Receptor.Interfaces
 		{
 			this.rsys = rsys;
 			receiveProtocols = new List<ReceiveQualifier>();
-			emitProtocols = new List<string>();
+			emitProtocols = new List<EmittedProtocol>();
+			cachedEmitProtocolConfig = new Dictionary<string, bool>();
+			cachedReceiveProtocolConfig = new Dictionary<string, bool>();
 			gates = new Dictionary<string, Gate>();
 			compositeGates = new Dictionary<string, CompositeGate>();
+			Enabled = true;
+		}
+
+		/// <summary>
+		/// We cache the persisted enable state of the emit protocols for receptors that register emit protocols after initialization.
+		/// </summary>
+		public void CacheEmitProtocol(string protocolName, bool enabled)
+		{
+			cachedEmitProtocolConfig[protocolName] = enabled;
+		}
+
+		/// <summary>
+		/// We cache the persisted enable state of the receive protocols for receptors that register receive protocols after initialization.
+		/// </summary>
+		public void CacheReceiveProtocol(string protocolName, bool enabled)
+		{
+			cachedReceiveProtocolConfig[protocolName] = enabled;
 		}
 
 		/// <summary>
@@ -102,14 +132,37 @@ namespace Clifton.Receptor.Interfaces
 		{
 		}
 
+		/// <summary>
+		/// Return all receive protocols.
+		/// </summary>
 		public virtual List<ReceiveQualifier> GetReceiveProtocols()
 		{
 			return receiveProtocols;
 		}
 
-		public virtual List<string> GetEmittedProtocols()
+		/// <summary>
+		/// Returns all emitted protocols.
+		/// </summary>
+		/// <returns></returns>
+		public virtual List<EmittedProtocol> GetEmittedProtocols()
 		{
 			return emitProtocols;
+		}
+
+		/// <summary>
+		/// Returns only enabled receive protocols.
+		/// </summary>
+		public virtual List<ReceiveQualifier> GetEnabledReceiveProtocols()
+		{
+			return receiveProtocols.Where(p => p.Enabled).ToList();
+		}
+
+		/// <summary>
+		/// Returns only enabled emitted protocols.
+		/// </summary>
+		public virtual List<EmittedProtocol> GetEnabledEmittedProtocols()
+		{
+			return emitProtocols.Where(p => p.Enabled).ToList();
 		}
 
 		/// <summary>
@@ -134,8 +187,9 @@ namespace Clifton.Receptor.Interfaces
 		/// <summary>
 		/// Called when the user configurable items in a receptor instance have been updated by user or other action.
 		/// </summary>
-		public virtual void UserConfigurationUpdated()
+		public virtual bool UserConfigurationUpdated()
 		{
+			return true;
 		}
 
 		/// <summary>
@@ -194,7 +248,9 @@ namespace Clifton.Receptor.Interfaces
 		/// </summary>
 		protected virtual void AddReceiveProtocol(string p)
 		{
-			receiveProtocols.Add(new ReceiveQualifier(p));
+			bool cachedEnableState;
+			cachedReceiveProtocolConfig.TryGetValue(p, out cachedEnableState).Else(() => cachedEnableState = true);
+			receiveProtocols.Add(new ReceiveQualifier(p) { Enabled = cachedEnableState });
 			ReceiveProtocolsChanged.Fire(this, EventArgs.Empty);
 		}
 
@@ -203,7 +259,9 @@ namespace Clifton.Receptor.Interfaces
 		/// </summary>
 		protected virtual void AddReceiveProtocol(string p, Action<dynamic> a)
 		{
-			receiveProtocols.Add(new ReceiveQualifier(p, a));
+			bool cachedEnableState;
+			cachedReceiveProtocolConfig.TryGetValue(p, out cachedEnableState).Else(() => cachedEnableState = true);
+			receiveProtocols.Add(new ReceiveQualifier(p, a) { Enabled = cachedEnableState });
 			ReceiveProtocolsChanged.Fire(this, EventArgs.Empty);
 		}
 
@@ -212,7 +270,9 @@ namespace Clifton.Receptor.Interfaces
 		/// </summary>
 		protected virtual void AddReceiveProtocol(string p, Func<dynamic, bool> q)
 		{
-			receiveProtocols.Add(new ReceiveQualifier(p, q));
+			bool cachedEnableState;
+			cachedReceiveProtocolConfig.TryGetValue(p, out cachedEnableState).Else(() => cachedEnableState = true);
+			receiveProtocols.Add(new ReceiveQualifier(p, q) { Enabled = cachedEnableState });
 			ReceiveProtocolsChanged.Fire(this, EventArgs.Empty);
 		}
 
@@ -221,7 +281,9 @@ namespace Clifton.Receptor.Interfaces
 		/// </summary>
 		protected virtual void AddReceiveProtocol(string p, Func<dynamic, bool> q, Action<dynamic> a)
 		{
-			receiveProtocols.Add(new ReceiveQualifier(p, q, a));
+			bool cachedEnableState;
+			cachedReceiveProtocolConfig.TryGetValue(p, out cachedEnableState).Else(() => cachedEnableState = true);
+			receiveProtocols.Add(new ReceiveQualifier(p, q, a) { Enabled = cachedEnableState });
 			ReceiveProtocolsChanged.Fire(this, EventArgs.Empty);
 		}
 
@@ -246,11 +308,14 @@ namespace Clifton.Receptor.Interfaces
 		/// <summary>
 		/// Add protocol that this receptor emits.
 		/// </summary>
-		protected virtual void AddEmitProtocol(string p, bool processInternalSemanticElements = true)
+		protected virtual void AddEmitProtocol(string protocolName, bool processInternalSemanticElements = true)
 		{
-			if (!emitProtocols.Contains(p))
+			// We can encounter the same protocol when we recurse into the internal semantics, so ignore repeats.
+			if (!emitProtocols.Exists(p=>p.Protocol==protocolName))
 			{
-				emitProtocols.Add(p);
+				bool cachedEnableState;
+				cachedEmitProtocolConfig.TryGetValue(protocolName, out cachedEnableState).Else(() => cachedEnableState = true);
+				emitProtocols.Add(new EmittedProtocol() { Protocol = protocolName, Enabled=cachedEnableState });
 				EmitProtocolsChanged.Fire(this, EventArgs.Empty);
 
 				// Kludge to allow a receptor to specify that internal semantic elements of a protocol
@@ -260,7 +325,7 @@ namespace Clifton.Receptor.Interfaces
 				// as part of the SE's ViewImage and GetImageMetadata 
 				if (processInternalSemanticElements)
 				{
-					AddInternalSemanticElements(p);
+					AddInternalSemanticElements(protocolName);
 				}
 			}
 		}
@@ -268,9 +333,9 @@ namespace Clifton.Receptor.Interfaces
 		/// <summary>
 		/// Remove a specific emit protocol.
 		/// </summary>
-		protected virtual void RemoveEmitProtocol(string p)
+		protected virtual void RemoveEmitProtocol(string protocolName)
 		{
-			emitProtocols.Remove(p);
+			emitProtocols.Remove(emitProtocols.Single(p => p.Protocol == protocolName));
 			EmitProtocolsChanged.Fire(this, EventArgs.Empty);
 		}
 
@@ -340,10 +405,11 @@ namespace Clifton.Receptor.Interfaces
 		/// </summary>
 		protected void EmitException(Exception ex)
 		{
-			CreateCarrierIfReceiver("Exception", signal =>
+			CreateCarrierIfReceiver("ExceptionMessage", signal =>
 			{
 				signal.ReceptorName = Name;
-				signal.Message = ex.Message;
+				signal.MessageTime = DateTime.Now;
+				signal.TextMessage.Text.Value = ex.Message;
 			});
 		}
 
@@ -377,6 +443,17 @@ namespace Clifton.Receptor.Interfaces
 					// Recurse, adding semantic elements that are part of the parent protocol.
 					AddEmitProtocol(se.Name);
 				});
+		}
+
+		protected virtual Tuple<Form, Clifton.MycroParser.MycroParser> InitializeViewer(string formName)
+		{
+			Clifton.MycroParser.MycroParser mp = new Clifton.MycroParser.MycroParser();
+			XmlDocument doc = new XmlDocument();
+			doc.Load(formName);
+			mp.Load(doc, "Form", null);
+			Form form = (Form)mp.Process();
+
+			return new Tuple<Form, MycroParser.MycroParser>(form, mp);
 		}
 	}
 }

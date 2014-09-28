@@ -52,6 +52,7 @@ namespace CarrierTabbedListViewerReceptor
 		public CarrierTabbedListViewer(IReceptorSystem rsys)
 			: base(rsys)
 		{
+			AddEmitProtocol("ExceptionMessage");
 			protocolTabPageMap = new Dictionary<string, TabPage>();
 			protocolGridMap = new Dictionary<string, DataGridView>();
 		}
@@ -101,11 +102,38 @@ namespace CarrierTabbedListViewerReceptor
 		/// <summary>
 		/// Update the received protocols given the new configuration.
 		/// </summary>
-		public override void UserConfigurationUpdated()
+		public override bool UserConfigurationUpdated()
 		{
-			UpdateReceivedProtocolsAndTabs();
-			UpdateTabProtocolProperty();
-			UpdateCaption();
+			bool ret = true;
+			List<string> badProtocols = new List<string>();
+
+			// TODO: Most of this (verifying a list of protocols) is probaby a rather common thing to do.  Move into STS as "VerifyProtocolsExist".
+
+			(from row in dt.AsEnumerable()
+			 where ((row[1] != null) && (!String.IsNullOrEmpty(row[1].ToString())))
+			 select row[1].ToString()).ForEach(p =>
+				 {
+					 bool exists = rsys.SemanticTypeSystem.VerifyProtocolExists(p);
+
+					 if (!exists)
+					 {
+						 badProtocols.Add(p);
+						 ret = false;
+					 }
+				 });
+
+			if (ret)
+			{
+				UpdateReceivedProtocolsAndTabs();
+				UpdateTabProtocolProperty();
+				UpdateCaption();
+			}
+			else
+			{
+				ConfigurationError="The semantic type(s):\r\n"+String.Join("\r\n", badProtocols)+"\r\n do not exist.";
+			}
+
+			return ret;
 		}
 
 		protected void UpdateCaption()
@@ -179,6 +207,9 @@ namespace CarrierTabbedListViewerReceptor
 		/// </summary>
 		protected void UpdateReceivedProtocolsAndTabs()
 		{
+			// TODO: There's something fishy here, because in the CarrierListViewer, we are also clearing all the emitted protocols when we change protocol names.  
+			// Why aren't we doing that here?  If we do this, don't forget to add back in the ExceptionMessage protocol.
+
 			// Assume we will remove all protocols.
 			List<string> protocolsToBeRemoved = new List<string>(receiveProtocols.Select(p => p.Protocol).ToList());
 
@@ -186,19 +217,24 @@ namespace CarrierTabbedListViewerReceptor
 			{
 				string protocol = row[1].ToString();
 
-				if (!protocolsToBeRemoved.Contains(protocol))			// does it currently exist or not?
+				if (!String.IsNullOrEmpty(protocol))
 				{
-					AddReceiveProtocol(protocol);
-					// Add emitters for semantic elements in the receive protocol that we can emit when the user double-clicks.
-					ISemanticTypeStruct st = rsys.SemanticTypeSystem.GetSemanticTypeStruct(protocol);
-					st.SemanticElements.ForEach(se => AddEmitProtocol(se.Name));
+					if (!protocolsToBeRemoved.Contains(protocol))			// does it currently exist or not?
+					{
+						AddReceiveProtocol(protocol);
+						// Add emitters for semantic elements in the receive protocol that we can emit when the user double-clicks.
+						// TODO: Do we add just the protocol as being emitted, or recursive sub-SE protocols as well?
+						// Note this is the same issue on the CarrierListViewer as well.
+						// ISemanticTypeStruct st = rsys.SemanticTypeSystem.GetSemanticTypeStruct(protocol);
+						// st.SemanticElements.ForEach(se => AddEmitProtocol(se.Name));
 
-					// Create the tab page.
-					TabPage tabPage = CreateTabPage(row[0].ToString(), protocol);
-					CreateViewerTable(tabPage, protocol);
+						// Create the tab page.
+						TabPage tabPage = CreateTabPage(row[0].ToString(), protocol);
+						CreateViewerTable(tabPage, protocol);
+					}
+
+					protocolsToBeRemoved.Remove(protocol);		 // nope, we don't remove this one.
 				}
-
-				protocolsToBeRemoved.Remove(protocol);		 // nope, we don't remove this one.
 			}
 
 			protocolsToBeRemoved.ForEach(p =>
@@ -253,17 +289,21 @@ namespace CarrierTabbedListViewerReceptor
 		/// </summary>
 		protected void InitializeConfigTable()
 		{
-			string[] tpArray = ProtocolTabs.Split(';');
-			dt = InitializeDataTable();			
+			dt = InitializeDataTable();
 
-			foreach (string tp in tpArray)
+			if (!String.IsNullOrEmpty(ProtocolTabs))
 			{
-				string tabName = tp.LeftOf(',');
-				string protocolName = tp.RightOf(',');
-				DataRow row = dt.NewRow();
-				row[0] = tabName;
-				row[1] = protocolName;
-				dt.Rows.Add(row);
+				string[] tpArray = ProtocolTabs.Split(';');
+
+				foreach (string tp in tpArray)
+				{
+					string tabName = tp.LeftOf(',');
+					string protocolName = tp.RightOf(',');
+					DataRow row = dt.NewRow();
+					row[0] = tabName;
+					row[1] = protocolName;
+					dt.Rows.Add(row);
+				}
 			}
 		}
 
@@ -273,12 +313,24 @@ namespace CarrierTabbedListViewerReceptor
 		protected void CreateViewerTable(TabPage tabPage, string protocolName)
 		{
 			DataTable dt = new DataTable();
-			ISemanticTypeStruct st = rsys.SemanticTypeSystem.GetSemanticTypeStruct(protocolName);
+			List<IFullyQualifiedNativeType> columns = rsys.SemanticTypeSystem.GetFullyQualifiedNativeTypes(protocolName);
 
-			st.AllTypes.ForEach(t =>
+			columns.ForEach(col =>
 			{
-				DataColumn dc = new DataColumn(t.Name, t.GetImplementingType(rsys.SemanticTypeSystem));
-				dt.Columns.Add(dc);
+				try
+				{
+					DataColumn dc = new DataColumn(col.FullyQualifiedName, col.NativeType.GetImplementingType(rsys.SemanticTypeSystem));
+					
+					// If no alias, then use the FQN, skipping the root protocol name.
+					String.IsNullOrEmpty(col.Alias).Then(() => dc.Caption = col.FullyQualifiedName.RightOf('.')).Else(() => dc.Caption = col.Alias);
+					dt.Columns.Add(dc);
+				}
+				catch
+				{
+					// If the implementing type is not known by the native type system (for example, List<dynamic> used in the WeatherInfo protocol, we ignore it.
+					// TODO: We need a way to support implementing lists and displaying them in the viewer as a sub-collection.
+				}
+
 			});
 
 			DataView dv = new DataView(dt);
@@ -294,6 +346,11 @@ namespace CarrierTabbedListViewerReceptor
 			dgv.Tag = protocolName;
 			dgv.CellContentDoubleClick += OnCellContentDoubleClick;
 
+			foreach (DataColumn dc in dt.Columns)
+			{
+				dgv.Columns[dc.ColumnName].HeaderText = dc.Caption;
+			}
+
 			tabPage.Controls.Add(dgv);
 			protocolGridMap[protocolName] = dgv;
 		}
@@ -307,14 +364,19 @@ namespace CarrierTabbedListViewerReceptor
 			{
 				DataTable dt = ((DataView)protocolGridMap[protocol].DataSource).Table;
 				DataRow row = dt.NewRow();
-				ISemanticTypeStruct st = rsys.SemanticTypeSystem.GetSemanticTypeStruct(protocol);
-
-				st.AllTypes.ForEach(t =>
-				{
-					object val = t.GetValue(rsys.SemanticTypeSystem, signal);
-					row[t.Name] = val;
-				});
-
+				List<IFullyQualifiedNativeType> colValues = rsys.SemanticTypeSystem.GetFullyQualifiedNativeTypeValues(signal, protocol);
+				colValues.ForEach(cv =>
+					{
+						try
+						{
+							row[cv.FullyQualifiedName] = cv.Value;
+						}
+						catch
+						{
+							// Ignore columns we can't handle.
+							// TODO: Fix this at some point.  WeatherInfo protocol is a good example.
+						}
+					});
 				dt.Rows.Add(row);
 			}
 			catch (Exception ex)

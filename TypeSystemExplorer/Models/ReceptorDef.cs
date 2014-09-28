@@ -98,18 +98,34 @@ namespace TypeSystemExplorer.Models
 		public string Value { get; set; }
 	}
 
+	public class ReceiveProtocol
+	{
+		public string Protocol { get; set; }
+		public bool Enabled { get; set; }
+	}
+
+	public class EmitProtocol
+	{
+		public string Protocol { get; set; }
+		public bool Enabled { get; set; }
+	}
+
 	public class ReceptorDef
 	{
 		public string Name { get; set; }
 		public string AssemblyName { get; set; }
 		public Point Location { get; set; }
 		public bool Enabled { get; set; }
+		public List<ReceiveProtocol> ReceiveProtocols {get; set;}
+		public List<EmitProtocol> EmitProtocols { get; set; }
 		public List<UserConfig> UserConfigs { get; set; }
 
 		public ReceptorDef()
 		{
 			// Default.
 			UserConfigs = new List<UserConfig>();
+			ReceiveProtocols = new List<ReceiveProtocol>();
+			EmitProtocols = new List<EmitProtocol>();
 			Enabled = true;
 		}
 	}

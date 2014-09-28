@@ -63,12 +63,10 @@
     <Compile Include="Actions\ITextController.cs" />
     <Compile Include="Actions\SetDocumentText.cs" />
     <Compile Include="Controllers\ApplicationFormController.cs" />
-    <Compile Include="Controllers\OutputController.cs" />
     <Compile Include="Controllers\PropertyGridController.cs" />
-    <Compile Include="Controllers\SemanticTypeTreeController.cs" />
-    <Compile Include="Controllers\SymbolTableController.cs" />
+    <Compile Include="Controllers\ReceptorChooserController.cs" />
+    <Compile Include="Controllers\SemanticTypeEditorController.cs" />
     <Compile Include="Controllers\VisualizerController.cs" />
-    <Compile Include="Controllers\XmlEditorController.cs" />
     <Compile Include="Controls\DataGridViewControl.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -104,33 +102,29 @@
     </Compile>
     <Compile Include="Models\ApplicationModel.cs" />
     <Compile Include="Models\ReceptorDef.cs" />
-    <Compile Include="Models\SchemaHelper.cs" />
+    <Compile Include="Models\TypeConverters.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Models\Schema.cs" />
     <Compile Include="Views\ApplicationFormView.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Controllers\ViewController.cs" />
     <Compile Include="Views\IPaneView.cs" />
-    <Compile Include="Views\OutputView.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="Views\PaneView.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Views\PropertyGridView.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Views\SemanticTypeTreeView.cs">
+    <Compile Include="Views\ReceptorChooserView.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Views\SymbolTableView.cs">
+    <Compile Include="Views\SemanticTypeEditorView.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Views\TextOnPath.cs" />
     <Compile Include="Views\VisualizerView.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Views\XmlEditorView.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <EmbeddedResource Include="Controls\LabeledTextBox.resx" />
@@ -194,6 +188,12 @@
     <Content Include="..\Applets\Weather Report.xml">
       <Link>Applets\Weather Report.xml</Link>
     </Content>
+    <Content Include="..\misc\marketing.txt">
+      <Link>marketing.txt</Link>
+    </Content>
+    <Content Include="..\misc\sts-rework.txt">
+      <Link>sts-rework.txt</Link>
+    </Content>
     <Content Include="bin\Debug\12565.xml" />
     <Content Include="bin\Debug\94306.xml" />
     <Content Include="bin\Debug\about.xml" />
@@ -205,7 +205,9 @@
     <Content Include="bin\Debug\alchemyKeywordsTestResponse.xml">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="bin\Debug\appState.xml" />
+    <Content Include="bin\Debug\appState.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="bin\Debug\carrier-APODPAGE-1.xml">
       <SubType>Designer</SubType>
     </Content>
@@ -235,7 +237,7 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="bin\Debug\FilterConfig.xml" />
-    <Content Include="bin\Debug\layout.xml" />
+    <Content Include="bin\Debug\ImageViewer.xml" />
     <Content Include="bin\Debug\mainform.xml">
       <SubType>Designer</SubType>
     </Content>
@@ -253,6 +255,8 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="bin\Debug\r-test4.xml" />
+    <Content Include="bin\Debug\ReceptorChooser.xml" />
+    <Content Include="bin\Debug\ReceptorProtocolConfig.xml" />
     <Content Include="bin\Debug\Receptors.xml" />
     <Content Include="bin\Debug\Receptors2.xml">
       <SubType>Designer</SubType>
@@ -261,11 +265,16 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="bin\Debug\SearchForWithinPastDate.xml" />
+    <Content Include="bin\Debug\SemanticTypeEditor.xml" />
     <Content Include="bin\Debug\semanticTypeTree.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="bin\Debug\sttree.xml">
       <SubType>Designer</SubType>
     </Content>
     <Content Include="bin\Debug\symbolTable.xml" />
     <Content Include="bin\Debug\test types with line.xml" />
+    <Content Include="bin\Debug\TextViewer.xml" />
     <Content Include="bin\Debug\ThumbnailConverterConfig.xml" />
     <Content Include="bin\Debug\visualizer.xml">
       <SubType>Designer</SubType>
@@ -303,9 +312,21 @@
       <Project>{90a2efb2-3ea4-4feb-a21e-4ae15b3ec82b}</Project>
       <Name>Clifton.SemanticTypeSystem</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Clifton.Windows.Forms\Clifton.Windows.Forms.csproj">
+      <Project>{cbfb7124-eb66-4a40-8d87-d8aeb13b4128}</Project>
+      <Name>Clifton.Windows.Forms</Name>
+    </ProjectReference>
     <ProjectReference Include="..\lib\lib.csproj">
       <Project>{d1627a50-1c2b-4e28-ac6c-ab437b0138b4}</Project>
       <Name>lib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\XTreeInterfaces\XTreeInterfaces.csproj">
+      <Project>{a26a25aa-8da4-45b1-8935-d0407c47f2ea}</Project>
+      <Name>XTreeInterfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\XTree\XTree.csproj">
+      <Project>{f739a9cd-402d-4e1e-a839-01e5418ac9aa}</Project>
+      <Name>XTree</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

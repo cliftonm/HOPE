@@ -82,21 +82,22 @@ namespace ZipCodeReceptor
 
 		public ReceptorDefinition(IReceptorSystem rsys) : base(rsys)
 		{
-			AddReceiveProtocol("Zipcode");
-			AddEmitProtocol("Location");
-			AddEmitProtocol("Exception");
+			AddReceiveProtocol("Zip5");
+			AddEmitProtocol("USLocation");
+			AddEmitProtocol("ExceptionMessage");
 		}
 
 		public override async void ProcessCarrier(ICarrier carrier)
 		{
 			try
 			{
+				string zipcode = carrier.Signal.Value;	// We only use the zip5 portion.
+
 				Tuple<string, string> location = await Task.Run(() =>
 				{
 					string city = String.Empty;
 					string stateAbbr = String.Empty;
 
-						string zipcode = carrier.Signal.Value;
 						USZip zip = new USZip();
 						XmlNode node = zip.GetInfoByZIP(zipcode);
 						XDocument zxdoc = XDocument.Parse(node.InnerXml);
@@ -106,7 +107,7 @@ namespace ZipCodeReceptor
 
 				});
 
-				Emit(carrier.Signal.Value, location.Item1, location.Item2);
+				Emit(zipcode, location.Item1, location.Item2);
 			}
 			catch (Exception ex)
 			{
@@ -119,19 +120,20 @@ namespace ZipCodeReceptor
 
 		protected void Emit(string zipCode, string city, string stateAbbr)
 		{
-			ISemanticTypeStruct protocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct("Location");
-			dynamic signal = rsys.SemanticTypeSystem.Create("Location");
-			signal.Zipcode = zipCode;
-			signal.City = city;
-			signal.State = "";
+			ISemanticTypeStruct protocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct("USLocation");
+			dynamic signal = rsys.SemanticTypeSystem.Create("USLocation");
+			signal.Zip5.Value = zipCode;
+			signal.City.Value = city;
+			signal.USState.Value = "";
 			int idx = Array.IndexOf(abbreviations, stateAbbr);
 
 			if (idx != -1)
 			{
-				signal.State = abbreviations[idx + 1];
+				// The state name is in the adjacent +1 index.
+				signal.USState.Value = abbreviations[idx+1];
 			}
 
-			signal.StateAbbr = stateAbbr;
+			signal.USStateAbbreviation.Value = stateAbbr;
 			rsys.CreateCarrier(this, protocol, signal);
 		}
 	}

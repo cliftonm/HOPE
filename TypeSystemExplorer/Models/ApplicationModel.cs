@@ -43,7 +43,7 @@ namespace TypeSystemExplorer.Models
 				ModelIsDirty.IfNotNull(e => e(isDirty));
 			}
 		}
-
+/*
 		public void NewModel()
 		{
 			dataSet = SchemaHelper.CreateSchema();
@@ -71,5 +71,6 @@ namespace TypeSystemExplorer.Models
 			dataSet.WriteXml(filename, XmlWriteMode.WriteSchema);
 			IsDirty = false;
 		}
+ */ 
 	}
 }

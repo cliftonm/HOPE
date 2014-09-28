@@ -13,6 +13,12 @@ namespace Clifton.SemanticTypeSystem
 	public class SemanticElement : ISemanticElement, IGetSetSemanticType
 	{
 		public string Name { get; set; }
+
+		/// <summary>
+		/// Beautified display name that replaces the fully qualified name.
+		/// </summary>
+		public string Alias { get; set; }
+
 		public ISemanticType Element { get; set; }
 
 		/// <summary>
