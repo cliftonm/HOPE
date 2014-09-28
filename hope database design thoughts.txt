@@ -1,0 +1,131 @@
+RSSFeedName			Table, because it's the ST is identified as unique/normalized in RSSFeedItem
+	Text-Value
+
+Url				Table
+	Value	
+
+RSSFeedItem			Table, because it's an ST
+	FK_RSSFeedName		Normalized, m:1, therefore the column is an FK directly to RSSFeedName
+	RSSFeedTitle		no normalized/unique flag
+	FK_Url			Unique, 1:1, therefore the column is an FK the the table Url
+	RSSFeedDescription	no normalized/unique flag
+	RSSFeedPubDate		no normalized/unique flag
+
+Questions:
+
+What about these sub-tree components like:
+
+	Text.Value
+	Url.Value
+
+vs. items like:
+
+	RSSFeedPubDate.Value
+
+What about the fact that RSSFeedUrl is a specific semantic type of Url, which itself is a semantic type having a value?
+
+Do we create a table called RSSFeedUrl with an FK to a table called Url?  That seems silly, but should it actually 
+be a universal rule?
+
+That would mean we would tables like this:
+
+RSSFeedItem
+	FK_RSSFeedName_ID
+	FK_RSSFeedTitle_ID
+	FK_RSSFeedUrl_ID
+	FK_RSSFeedDescription_ID
+	FK_RSSFeedPubDate_ID
+
+RSSFeedName
+	FK_Text_ID
+
+RSSFeedTitle
+	FK_Text_ID
+
+RSSFeedDescription
+	FK_Text_ID
+
+RSSFeedUrl
+	FK_Url_ID
+
+RSSFeedPubDate
+	Value
+
+Text
+	Value
+
+Url
+	Value
+
+This would actually make a whole lot of sense because any ST could be instantiated at any level, and interestingly,
+doing it this way always creates m:1 relationships (many parent instances with 1 child instance per FK).
+
+From the ST schema, we can determine, for example, all the tables referencing Url, and so forth, up the tree to the root
+node -- each ST that includes Url somewhere in the hierarchy.  
+
+We still flag ST's with unique/normalized because this guides the DB engine in determning whether or not to first query
+the table for an existing record.
+
+Interestingly, this also means that any fully qualified named ST value can be persisted (for examle, RSSFeedName.Text.Value)
+and all the ID's are accumulated to create the RSSFeedItem.
+
+This kind of architecture leads to very thin tables, and tables higher up in the food chain are almost always FK's.
+
+In this architecture:
+
+1. Every table represents a semantic type
+2. Every FK references a child semantic type
+3. Every non-FK field is a native type
+
+Rather than indicating that an ST is "unique" or "indexed", I am going to use the concept "normalized" to represent 
+that the values in the table are guaranteed unique.  This instructs the persistence object to check for the existence
+of the "unique key" consisting of the native type(s) in the ST.
+
+But where to we put the "normalized" flag?  This would be on any ST that contains an NT.
+Tables which FK to a normalized (UQ) table are not necessarily UQ themselves unless indicated.
+
+Tables that are purely FK's cannot be cached for normalization performance.
+
+
+
+
+A very strange thing happens when I looked at how to persist semantic data:
+
+The semantic types themselves become tables
+The structure of a semantic type is persisted through the use of foreign keys
+You often get tables that are actually nothing more than containers for FK's
+The "bottom" tables are the ones that actually persist the native types and have non-FK fields.
+
+This is completely orthogonal to the usual database architecture.  Let me illustrate:
+
+Here's what a typical non-normalized schema might look like for managing items in an RSS Feed:
+
+RSSFeedItem
+	ID
+	FeedName
+	FeedTitle
+	FeedUrl
+	FeedDescription
+	FeedPubDate
+
+If we want to normalize this, we can break this up into two tables:
+
+RSSFeed
+	ID
+	FeedName
+	RSSUrl
+
+RSSFeedItem
+	ID
+	RSSFeed_ID
+	FeedTitle
+	FeedUrl
+	FeedDescription
+	FeedPubDate
+
+Now let's consider that each of the fields is actually a semantic type.
+
+	
+
+
+
