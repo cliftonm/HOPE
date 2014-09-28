@@ -23,7 +23,7 @@ namespace TypeSystemExplorer.Models
 
 		[Category("Semantic Type")]
 		[XmlAttribute()]
-		[Description("Aliases are used for cosmetic purposes, such as column display names.  Child aliases override parent aliases.")]
+		[Description("Aliases are used for cosmetic purposes, such as column display names.  Parent aliases override child aliases.")]
 		public string Alias { get; set; }
 
 		[XmlIgnore]
@@ -43,7 +43,7 @@ namespace TypeSystemExplorer.Models
 
 		[Category("Native Type")]
 		[XmlAttribute()]
-		[Description("Aliases are used for cosmetic purposes, such as column display names.  Child aliases override parent aliases.")]
+		[Description("Aliases are used for cosmetic purposes, such as column display names.  Parent aliases override child aliases.")]
 		public string Alias { get; set; }
 
 		[Category("Native Type")]
@@ -69,7 +69,7 @@ namespace TypeSystemExplorer.Models
 
 		[Category("Name")]
 		[XmlAttribute()]
-		[Description("Aliases are used for cosmetic purposes, such as column display names.  Child aliases override parent aliases.")]
+		[Description("Aliases are used for cosmetic purposes, such as column display names.  Parent aliases override child aliases.")]
 		public string Alias { get; set; }
 
 		[XmlIgnore]

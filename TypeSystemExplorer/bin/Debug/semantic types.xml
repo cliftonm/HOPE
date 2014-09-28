@@ -35,7 +35,7 @@
             <SubType Name="Text" />
           </SubTypes>
         </SemanticType>
-        <SemanticType Name="Text">
+        <SemanticType Name="Text" Alias="Text">
           <NativeTypes>
             <NativeType Name="Value" ImplementingType="string" />
           </NativeTypes>
@@ -260,13 +260,13 @@
             <SubType Name="RSSFeedCategories" Alias="" />
           </SubTypes>
         </SemanticType>
-        <SemanticType Name="RSSFeedName" Alias="Name">
+        <SemanticType Name="RSSFeedName" Alias="Feed Name">
           <NativeTypes />
           <SubTypes>
             <SubType Name="Text" />
           </SubTypes>
         </SemanticType>
-        <SemanticType Name="RSSFeedTitle" Alias="Title">
+        <SemanticType Name="RSSFeedTitle" Alias="Feed Title">
           <NativeTypes />
           <SubTypes>
             <SubType Name="Text" />
