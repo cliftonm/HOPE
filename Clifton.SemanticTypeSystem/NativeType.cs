@@ -17,6 +17,12 @@ namespace Clifton.SemanticTypeSystem
 		/// Resolves to the name of the field/property.
 		/// </summary>
 		public string Name { get; set; }
+
+		/// <summary>
+		/// Beautified display name that replaces the fully qualified name.
+		/// </summary>
+		public string Alias { get; set; }
+		
 		/// <summary>
 		/// Resolves to the intrinsic type.
 		/// </summary>

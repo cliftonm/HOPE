@@ -21,6 +21,11 @@ namespace TypeSystemExplorer.Models
 		[DisplayName("Semantic Type")]
 		public string Name { get; set; }
 
+		[Category("Semantic Type")]
+		[XmlAttribute()]
+		[Description("Aliases are used for cosmetic purposes, such as column display names.  Child aliases override parent aliases.")]
+		public string Alias { get; set; }
+
 		[XmlIgnore]
 		[Browsable(false)]
 		public Dictionary<string, dynamic> Collection { get { return null; } }
@@ -35,6 +40,11 @@ namespace TypeSystemExplorer.Models
 		[Category("Native Type")]
 		[XmlAttribute()]
 		public string Name { get; set; }
+
+		[Category("Native Type")]
+		[XmlAttribute()]
+		[Description("Aliases are used for cosmetic purposes, such as column display names.  Child aliases override parent aliases.")]
+		public string Alias { get; set; }
 
 		[Category("Native Type")]
 		[XmlAttribute()]
@@ -56,6 +66,11 @@ namespace TypeSystemExplorer.Models
 		[Category("Name")]
 		[XmlAttribute()]
 		public string Name { get; set; }
+
+		[Category("Name")]
+		[XmlAttribute()]
+		[Description("Aliases are used for cosmetic purposes, such as column display names.  Child aliases override parent aliases.")]
+		public string Alias { get; set; }
 
 		[XmlIgnore]
 		[Browsable(false)]

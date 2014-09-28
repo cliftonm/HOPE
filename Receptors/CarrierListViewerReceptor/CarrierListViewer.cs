@@ -188,6 +188,9 @@ namespace CarrierListViewerReceptor
 						try
 						{
 							DataColumn dc = new DataColumn(col.FullyQualifiedName, col.NativeType.GetImplementingType(rsys.SemanticTypeSystem));
+
+							// If no alias, then use the FQN, skipping the root protocol name.
+							String.IsNullOrEmpty(col.Alias).Then(() => dc.Caption = col.FullyQualifiedName.RightOf('.')).Else(() => dc.Caption = col.Alias);
 							dt.Columns.Add(dc);
 						}
 						catch
@@ -201,6 +204,11 @@ namespace CarrierListViewerReceptor
 
 				dvSignals = new DataView(dt);
 				dgvSignals.DataSource = dvSignals;
+
+				foreach(DataColumn dc in dt.Columns)
+				{
+					dgvSignals.Columns[dc.ColumnName].HeaderText = dc.Caption;
+				}
 			}
 		}
 
@@ -268,11 +276,24 @@ namespace CarrierListViewerReceptor
 		protected void OnCellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
 		{
 			ISemanticTypeStruct st = rsys.SemanticTypeSystem.GetSemanticTypeStruct(ProtocolName);
-
-			st.SemanticElements.ForEach(se =>
+			List<IFullyQualifiedNativeType> ntList = rsys.SemanticTypeSystem.GetFullyQualifiedNativeTypes(ProtocolName);
+			ISemanticTypeStruct outprotocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct(ProtocolName);
+			dynamic outsignal = rsys.SemanticTypeSystem.Create(ProtocolName);
+			
+			ntList.ForEach(nt =>
 				{
-					CreateCarrier(se.Name, signal => se.SetValue(rsys.SemanticTypeSystem, signal, dvSignals[e.RowIndex][se.Name].ToString()));
+					// Store the value into the signal using the FQN.
+					string colName = nt.FullyQualifiedName;
+
+					// Columns that can't be mapped to native types directly (like lists) are not part of the data table.
+					if (dgvSignals.Columns.Contains(colName))
+					{
+						rsys.SemanticTypeSystem.SetFullyQualifiedNativeTypeValue(outsignal, nt.FullyQualifiedNameSansRoot, dvSignals[e.RowIndex][colName]);
+					}
 				});
+
+			// Send the record on its way.
+			rsys.CreateCarrier(this, st, outsignal);
 		}
 	}
 }

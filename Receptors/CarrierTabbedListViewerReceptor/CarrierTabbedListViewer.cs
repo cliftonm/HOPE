@@ -320,6 +320,9 @@ namespace CarrierTabbedListViewerReceptor
 				try
 				{
 					DataColumn dc = new DataColumn(col.FullyQualifiedName, col.NativeType.GetImplementingType(rsys.SemanticTypeSystem));
+					
+					// If no alias, then use the FQN, skipping the root protocol name.
+					String.IsNullOrEmpty(col.Alias).Then(() => dc.Caption = col.FullyQualifiedName.RightOf('.')).Else(() => dc.Caption = col.Alias);
 					dt.Columns.Add(dc);
 				}
 				catch
@@ -342,6 +345,11 @@ namespace CarrierTabbedListViewerReceptor
 			dgv.RowHeadersVisible = false;
 			dgv.Tag = protocolName;
 			dgv.CellContentDoubleClick += OnCellContentDoubleClick;
+
+			foreach (DataColumn dc in dt.Columns)
+			{
+				dgv.Columns[dc.ColumnName].HeaderText = dc.Caption;
+			}
 
 			tabPage.Controls.Add(dgv);
 			protocolGridMap[protocolName] = dgv;

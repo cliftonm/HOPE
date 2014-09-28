@@ -15,6 +15,11 @@ namespace Clifton.SemanticTypeSystem
 		/// Placeholder name from XML deserialization.
 		/// </summary>
 		public string DeclTypeName { get; set; }
+
+		/// <summary>
+		/// Beautified display name that replaces the fully qualified name.
+		/// </summary>
+		public string Alias { get; set; }
 		
 		/// <summary>
 		/// The SemanticTypeDecl instance.

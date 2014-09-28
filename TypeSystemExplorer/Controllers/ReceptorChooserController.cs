@@ -96,6 +96,7 @@ namespace TypeSystemExplorer.Controllers
 			receptors.Add(new ReceptorEntry() { Name = "Weather Service", Filename = "WeatherServiceReceptor.dll" });
 			receptors.Add(new ReceptorEntry() { Name = "Weather Info", Filename = "WeatherInfoReceptor.dll" });
 			receptors.Add(new ReceptorEntry() { Name = "Feed Reader", Filename = "FeedReaderReceptor.dll" });
+			receptors.Add(new ReceptorEntry() { Name = "Web Page Launcher", Filename = "UrlReceptor.dll" });
 
 			receptors.Sort((r1, r2) => r1.Name.CompareTo(r2.Name));
 		}

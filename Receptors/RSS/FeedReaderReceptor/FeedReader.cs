@@ -1,4 +1,4 @@
-﻿// #define SIMULATED
+﻿#define SIMULATED
 
 using System;
 using System.Collections.Generic;
@@ -38,6 +38,7 @@ namespace FeedReaderReceptor
 			AddReceiveProtocol("RSSFeedUrl", (Action<dynamic>)(s => ProcessUrl(s)));
 			AddEmitProtocol("RSSFeedItem");
 			AddEmitProtocol("ExceptionMessage");
+			AddEmitProtocol("LoggerMessage");
 		}
 
 		/// <summary>
@@ -46,7 +47,7 @@ namespace FeedReaderReceptor
 		public override void EndSystemInit()
 		{
 			base.EndSystemInit();
-			AcquireFeed();
+			AcquireFeed(FeedUrl);
 		}
 
 		/// <summary>
@@ -55,37 +56,27 @@ namespace FeedReaderReceptor
 		public override bool UserConfigurationUpdated()
 		{
 			base.UserConfigurationUpdated();
-			AcquireFeed();
+			AcquireFeed(FeedUrl);
 
 			return true;
 		}
 
-		protected async void ProcessUrl(dynamic signal)
+		protected void ProcessUrl(dynamic signal)
 		{
 			string feedUrl = signal.RSSFeedUrl.Url.Value;
-			int numItems = signal.MaxItems;
-
-			try
-			{
-				SyndicationFeed feed = await GetFeedAsync(feedUrl);
-				EmitFeedItems(feed, numItems);
-			}
-			catch (Exception ex)
-			{
-				EmitException(ex);
-			}
+			AcquireFeed(feedUrl);
 		}
 
 		/// <summary>
 		/// Acquire the feed and emit the feed items. 
 		/// </summary>
-		protected async void AcquireFeed()
+		protected async void AcquireFeed(string feedUrl)
 		{
-			if (!String.IsNullOrEmpty(FeedUrl))
+			if (!String.IsNullOrEmpty(feedUrl))
 			{
 				try
 				{
-					SyndicationFeed feed = await GetFeedAsync(FeedUrl);
+					SyndicationFeed feed = await GetFeedAsync(feedUrl);
 					EmitFeedItems(feed);
 				}
 				catch (Exception ex)
@@ -103,6 +94,8 @@ namespace FeedReaderReceptor
 #if SIMULATED
 			return null;
 #else
+			CreateCarrier("LoggerMessage", signal => signal.TextMessage.Text.Value = "Acquiring feed " + feedUrl);
+
 			SyndicationFeed feed = await Task.Run(() =>
 				{
 					XmlReader xr = XmlReader.Create(feedUrl);

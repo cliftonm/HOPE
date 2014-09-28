@@ -29,7 +29,7 @@
           </NativeTypes>
           <SubTypes />
         </SemanticType>
-        <SemanticType Name="TextMessage">
+        <SemanticType Name="TextMessage" Alias="Message">
           <NativeTypes />
           <SubTypes>
             <SubType Name="Text" />
@@ -57,7 +57,7 @@
     </SemanticTypesContainer>
     <SemanticTypesContainer Name="Messages">
       <SemanticTypes>
-        <SemanticType Name="DebugMessage">
+        <SemanticType Name="DebugMessage" Alias="Date/Time">
           <NativeTypes>
             <NativeType Name="MessageTime" ImplementingType="DateTime" />
           </NativeTypes>
@@ -67,7 +67,7 @@
         </SemanticType>
         <SemanticType Name="LoggerMessage">
           <NativeTypes>
-            <NativeType Name="MessageTime" ImplementingType="DateTime" />
+            <NativeType Name="MessageTime" Alias="Date/Time" ImplementingType="DateTime" />
           </NativeTypes>
           <SubTypes>
             <SubType Name="TextMessage" />
@@ -75,7 +75,7 @@
         </SemanticType>
         <SemanticType Name="ErrorMessage">
           <NativeTypes>
-            <NativeType Name="MessageTime" ImplementingType="DateTime" />
+            <NativeType Name="MessageTime" Alias="Date/Time" ImplementingType="DateTime" />
           </NativeTypes>
           <SubTypes>
             <SubType Name="TextMessage" />
@@ -83,8 +83,8 @@
         </SemanticType>
         <SemanticType Name="ExceptionMessage">
           <NativeTypes>
-            <NativeType Name="MessageTime" ImplementingType="DateTime" />
-            <NativeType Name="ReceptorName" ImplementingType="string" />
+            <NativeType Name="MessageTime" Alias="Date/Time" ImplementingType="DateTime" />
+            <NativeType Name="ReceptorName" Alias="Receptor" ImplementingType="string" />
           </NativeTypes>
           <SubTypes>
             <SubType Name="TextMessage" />
@@ -204,6 +204,13 @@
           </NativeTypes>
           <SubTypes />
         </SemanticType>
+        <SemanticType Name="latlon">
+          <NativeTypes>
+            <NativeType Name="lat" ImplementingType="float" />
+            <NativeType Name="lon" ImplementingType="float" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
       </SemanticTypes>
     </SemanticTypesContainer>
     <SemanticTypesContainer Name="Weather Service">
@@ -244,40 +251,40 @@
         <SemanticType Name="RSSFeedItem">
           <NativeTypes />
           <SubTypes>
-            <SubType Name="RSSFeedName" />
-            <SubType Name="RSSFeedTitle" />
-            <SubType Name="RSSFeedUrl" />
-            <SubType Name="RSSFeedDescription" />
-            <SubType Name="RSSFeedPubDate" />
-            <SubType Name="RSSFeedAuthors" />
-            <SubType Name="RSSFeedCategories" />
+            <SubType Name="RSSFeedName" Alias="" />
+            <SubType Name="RSSFeedTitle" Alias="" />
+            <SubType Name="RSSFeedUrl" Alias="" />
+            <SubType Name="RSSFeedDescription" Alias="" />
+            <SubType Name="RSSFeedPubDate" Alias="" />
+            <SubType Name="RSSFeedAuthors" Alias="" />
+            <SubType Name="RSSFeedCategories" Alias="" />
           </SubTypes>
         </SemanticType>
-        <SemanticType Name="RSSFeedName">
+        <SemanticType Name="RSSFeedName" Alias="Name">
           <NativeTypes />
           <SubTypes>
             <SubType Name="Text" />
           </SubTypes>
         </SemanticType>
-        <SemanticType Name="RSSFeedTitle">
+        <SemanticType Name="RSSFeedTitle" Alias="Title">
           <NativeTypes />
           <SubTypes>
             <SubType Name="Text" />
           </SubTypes>
         </SemanticType>
-        <SemanticType Name="RSSFeedDescription">
+        <SemanticType Name="RSSFeedDescription" Alias="Descr.">
           <NativeTypes />
           <SubTypes>
             <SubType Name="Text" />
           </SubTypes>
         </SemanticType>
-        <SemanticType Name="RSSFeedPubDate">
+        <SemanticType Name="RSSFeedPubDate" Alias="PubDate">
           <NativeTypes>
             <NativeType Name="Value" ImplementingType="DateTime" />
           </NativeTypes>
           <SubTypes />
         </SemanticType>
-        <SemanticType Name="RSSFeedUrl">
+        <SemanticType Name="RSSFeedUrl" Alias="Url">
           <NativeTypes />
           <SubTypes>
             <SubType Name="Url" />

@@ -8,8 +8,8 @@
               <ixm:UserConfigs>
                 <ixm:UserConfig Name="ProtocolName" Value="ExceptionMessage" />
                 <ixm:UserConfig Name="WindowName" Value="Exceptions" />
-                <ixm:UserConfig Name="WindowX" Value="2309" />
-                <ixm:UserConfig Name="WindowY" Value="661" />
+                <ixm:UserConfig Name="WindowX" Value="143" />
+                <ixm:UserConfig Name="WindowY" Value="465" />
                 <ixm:UserConfig Name="WindowWidth" Value="712" />
                 <ixm:UserConfig Name="WindowHeight" Value="176" />
               </ixm:UserConfigs>
@@ -58,8 +58,8 @@
                   <ixm:UserConfigs>
                     <ixm:UserConfig Name="ProtocolName" Value="WeatherInfo" />
                     <ixm:UserConfig Name="WindowName" Value="Weather Info" />
-                    <ixm:UserConfig Name="WindowX" Value="2653" />
-                    <ixm:UserConfig Name="WindowY" Value="840" />
+                    <ixm:UserConfig Name="WindowX" Value="151" />
+                    <ixm:UserConfig Name="WindowY" Value="221" />
                     <ixm:UserConfig Name="WindowWidth" Value="528" />
                     <ixm:UserConfig Name="WindowHeight" Value="204" />
                   </ixm:UserConfigs>
@@ -68,8 +68,8 @@
                   <ixm:UserConfigs>
                     <ixm:UserConfig Name="ProtocolName" Value="USLocation" />
                     <ixm:UserConfig Name="WindowName" Value="Location" />
-                    <ixm:UserConfig Name="WindowX" Value="1984" />
-                    <ixm:UserConfig Name="WindowY" Value="846" />
+                    <ixm:UserConfig Name="WindowX" Value="148" />
+                    <ixm:UserConfig Name="WindowY" Value="0" />
                     <ixm:UserConfig Name="WindowWidth" Value="664" />
                     <ixm:UserConfig Name="WindowHeight" Value="201" />
                   </ixm:UserConfigs>
@@ -99,7 +99,7 @@
                 <ixm:ReceptorDef Name="Weather Info" AssemblyName="WeatherInfoReceptor.dll" Enabled="True" Location="359, 360" />
                 <ixm:ReceptorDef Name="Text Display" AssemblyName="TextDisplayReceptor.dll" Enabled="True" Location="436, 357">
                   <ixm:UserConfigs>
-                    <ixm:UserConfig Name="WindowX" Value="553" />
+                    <ixm:UserConfig Name="WindowX" Value="0" />
                     <ixm:UserConfig Name="WindowY" Value="767" />
                     <ixm:UserConfig Name="WindowWidth" Value="513" />
                     <ixm:UserConfig Name="WindowHeight" Value="246" />
