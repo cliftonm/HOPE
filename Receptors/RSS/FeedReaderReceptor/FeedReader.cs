@@ -1,4 +1,4 @@
-﻿#define SIMULATED
+﻿//#define SIMULATED
 
 using System;
 using System.Collections.Generic;
@@ -94,7 +94,11 @@ namespace FeedReaderReceptor
 #if SIMULATED
 			return null;
 #else
-			CreateCarrier("LoggerMessage", signal => signal.TextMessage.Text.Value = "Acquiring feed " + feedUrl);
+			CreateCarrier("LoggerMessage", signal => 
+				{
+					signal.TextMessage.Text.Value = "Acquiring feed " + feedUrl + ".";
+					signal.MessageTime = DateTime.Now;
+				});
 
 			SyndicationFeed feed = await Task.Run(() =>
 				{
@@ -104,6 +108,13 @@ namespace FeedReaderReceptor
 
 					return sfeed;
 				});
+
+			CreateCarrier("LoggerMessage", signal =>
+				{
+					signal.TextMessage.Text.Value = "Feed " + feedUrl + " has " + feed.Items.Count().ToString() + " items.";
+					signal.MessageTime = DateTime.Now;
+				});
+
 
 			return feed;
 #endif

@@ -133,19 +133,19 @@ namespace CarrierListViewerReceptor
 			// finishes initialization.
 			form.LocationChanged += OnLocationChanged;
 			form.SizeChanged += OnSizeChanged;
+			form.FormClosing += OnFormClosing;
 		}
 
-		/// <summary>
-		/// Verify the protocol exists before we let the user close the dialog.
-		/// </summary>
 		protected void OnFormClosing(object sender, FormClosingEventArgs e)
 		{
+			form = null;
 		}
 
 		// TODO: This stuff on window location and size changing and setting needs to be moved
 		// to a common lib that a receptor instance project can easily just wire in, as this
 		// is going to be common behavior for receptors with UI's.  Gawd, sometimes I really 
 		// wish C# supported multiple inheritence.
+		// DONE: The core behaviors are now implemented in the abstract class WindowedBaseReceptor.
 		protected void OnLocationChanged(object sender, EventArgs e)
 		{
 			WindowX = form.Location.X;
@@ -236,12 +236,22 @@ namespace CarrierListViewerReceptor
 			oldProtocol = ProtocolName;
 		}
 
+		protected void ReinitializeUI()
+		{
+			InitializeUI();
+			UpdateFormLocationAndSize();
+			CreateViewerTable();
+			ListenForProtocol();
+			UpdateCaption();
+		}
+
 		/// <summary>
 		/// Add a record to the existing view showing the signal's content.
 		/// </summary>
 		/// <param name="signal"></param>
 		protected void ShowSignal(dynamic signal)
 		{
+			form.IfNull(()=>ReinitializeUI());
 			List<IFullyQualifiedNativeType> colValues = rsys.SemanticTypeSystem.GetFullyQualifiedNativeTypeValues(signal, ProtocolName);
 
 			try
