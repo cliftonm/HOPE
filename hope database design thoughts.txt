@@ -63,10 +63,10 @@ doing it this way always creates m:1 relationships (many parent instances with 1
 From the ST schema, we can determine, for example, all the tables referencing Url, and so forth, up the tree to the root
 node -- each ST that includes Url somewhere in the hierarchy.  
 
-We still flag ST's with unique/normalized because this guides the DB engine in determning whether or not to first query
+We still flag ST's with unique/normalized because this guides the DB engine in determining whether or not to first query
 the table for an existing record.
 
-Interestingly, this also means that any fully qualified named ST value can be persisted (for examle, RSSFeedName.Text.Value)
+Interestingly, this also means that any fully qualified named ST value can be persisted (for example, RSSFeedName.Text.Value)
 and all the ID's are accumulated to create the RSSFeedItem.
 
 This kind of architecture leads to very thin tables, and tables higher up in the food chain are almost always FK's.
@@ -86,10 +86,9 @@ Tables which FK to a normalized (UQ) table are not necessarily UQ themselves unl
 
 Tables that are purely FK's cannot be cached for normalization performance.
 
+---------------------------
 
-
-
-A very strange thing happens when I looked at how to persist semantic data:
+A very interesting thing happens when I looked at how to persist semantic data:
 
 The semantic types themselves become tables
 The structure of a semantic type is persisted through the use of foreign keys
@@ -123,9 +122,109 @@ RSSFeedItem
 	FeedDescription
 	FeedPubDate
 
-Now let's consider that each of the fields is actually a semantic type.
+Contrast this with the "semantic" table structure illustrated earlier.
 
-	
+-----------------
 
+How to handle UI specificity? An example will illustrate the issue, and how it leads into dealing with non-UI issues as well:
 
+I have an RSSFeed with feed items, and I want to display the last 40 (some arbitrary number) feeds from the database and also
+merge in new feeds. 
+
+By merge, I mean: if the feed item is already in the view, don't display a second, identical, record
+
+I also want to indicate which feeds are new (coming from the feed reader), which fields are old (coming from the database), and which feeds I've read.
+
+We need a UI semantic type, something like:
+
+FeedItemUserState
+	RSSFeedItem
+	State (old, new, read)
+
+1. The first question is, how do we query the database?  An example syntax might be:
+
+"select top 40 RSSFeedItem where RSSFeed.FeedName='Code Project' order by RSSPubDate desc"
+
+OK, that's not bad, I don't see any implementation problems with the DB service figuring out the tables needed to execute this query.
+
+2. Next, how does the UI determine how to merge fields?  Well, it can determine that there are unique keys (i.e., normalized values), which in our case are:
+
+RSSFeedName
+RSSFeedUrl
+
+Technically, only RSSFeedUrl is needed, but the merge function, being somewhat dumb, will probably end up using both fields.
+
+3. OK, that doesn't sound bad, but I wonder, should this be part of the UI behavior, or should we have an "unique record aggregator" receptor that takes data from
+different streams and ensures their uniqueness (as in, it only emits unique records?)
+
+That seems like a good idea, as this kind of behavior will probably be desired in many places.
+
+4. Now, how do we include the user state for each feed?  Well, the query would be changed to look something like this:
+
+"select top 40 (RSSFeedItem, FeedItemUserState) where RSSFeed.FeedName='Code Project' order by RSSPubDate desc"
+
+or (because State is a poor semantic description):
+
+FeedItemUserState
+	RSSFeedItem
+	UserVisitedUrlState (old, new, read)
+
+"select top 40 (RSSFeedItem, UserVisitedUrlState) where RSSFeed.FeedName='Code Project' order by RSSPubDate desc"
+
+But this will create a semantic type that is undefined, as the tree now includes a branch (probably under RSSFeedItem) that includes State.  
+
+Also note the (), which I'm intending to indicate: get the top 40 RSSFeedItem records joined with the UserVisitedUrlState for each record.
+The query does make a certain kind of sense, in that FeedItemUserState can be acquired from the Url unique key shared in the linkage.
+
+*** Is there a better way to do this? ***
+
+A. In the above description for FeedItemUserState, would it be better to define it this way (especially given the semantic name for the state):
+
+UrlUserState
+	Url
+	UrlVisitedState (old, new, read)
+
+After all, the state corresponds more to whether the user has visited the URL, not the feed item.  We should look briefly also at including a user id in case we are running this on a network with multiple users:
+
+UserUrlVisitedState
+	User
+	Url
+	UrlVisitedState (old, new, read)
+
+Now the query would look like:
+
+"select top 40 (RSSFeedItem, UrlVisitedState) where RSSFeed.FeedName='Code Project' and User.ID='123' order by RSSPubDate desc"
+
+Note the semantics here though -- we have some really abstract concepts like "UserUrlVisitedState" which have child ST's that are a decomposition of the parent ST name.  Interesting.
+
+Also note that because User and Url are normalized, these entries will be unique for a unique user-url key.
+
+Also, technically, the query might be better like this:
+
+"select top 40 (RSSFeedItem, UserUrlVisitedState) where RSSFeed.FeedName='Code Project' and User.ID='123' order by RSSPubDate desc"
+
+because it creates the full type UserUrlVisitedState which becomes easier to work with in terms of updating and persistence.
+
+Now that we have that cleared up:
+
+B. I don't want to have to create an ST for every kind of joined data structure I might need.  This is an important issue...
+
+B1. We need to determine where "UrlVisitedState" goes in the semantic tree.  Does it become a native type of the Url ST?  Does it become a native type of the RSSFeedItem ST that we are "joining" with?  Does it actually matter?  Not really.  Joined types (ST or NT) can be added to the root type.  If it's a collection, then the records will appear as a native type List<someType>.  Also, deciding that the joined types always are added to the definition of the root type makes it clear as to where the additional data can be found.
+
+So, the first order of business is the reality that new types are going to be defined and created by receptors.  Let's assume these are going to be named by the user for now (so we don't have to come up with some naming scheme) so the query now would read:
+
+"select top 40 (RSSFeedItem, UserUrlVisitedState) as UserFeedItem where RSSFeed.FeedName='Code Project' and User.ID='123' order by RSSPubDate desc"
+
+where the "as..." part is required whenever joining two or more ST's.
+
+5. How to implement the display logic?  I hate hard-coding this stuff, but the only alternative seems to be a rather specific configuration UI and
+behavior on the part of the list viewer.
+
+*** Is there a more generic way to do this? ***
+
+6. How does the UI persist state change?  Again, this points to a solution-specific receptor (at least one that is specific to having state information that affects row colorization.)
+
+7. How do we get session information, like the user ID, into receptors?  Or, to put it another way, how do receptors access session information?
+
+8. Does the aggregator update the state to "old", or does the UI receptor do this?  What does "old" mean anyways?  Do we want to see feed items as "new" for a while before they become "old" ?  Or does "old" correspond to the age of the feed item itself, such that, say, feed items older than two days are marked as "old"?  Should a feed be marked as old only when the user says so?  Some of this is UI aspects, some of it might be how we automate the concepts of "new" and "old" in the aggregator or other places.  Are there (at least) two different concepts of "old": old, as in, say, the pub date is more than 48 hours, and "old" as in "since the list was displayed?"  I sort of like that idea, as I can see truly new items, and after a designated time, non-new items that have "aged", or "grown stale" are indicated differently.
 
