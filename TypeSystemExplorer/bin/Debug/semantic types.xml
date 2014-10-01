@@ -3,53 +3,53 @@
   <SemanticTypesContainer>
     <SemanticTypesContainer Name="Core">
       <SemanticTypes>
-        <SemanticType Name="Name">
+        <SemanticType Name="Name" Normalize="false">
           <NativeTypes>
-            <NativeType Name="Value" ImplementingType="string" />
+            <NativeType Name="Value" ImplementingType="string" Normalize="false" />
           </NativeTypes>
           <SubTypes />
         </SemanticType>
-        <SemanticType Name="Filename">
+        <SemanticType Name="Filename" Normalize="false">
           <NativeTypes />
           <SubTypes>
-            <SubType Name="Path" />
-            <SubType Name="Name" />
-            <SubType Name="FileExtension" />
+            <SubType Name="Path" Normalize="false" />
+            <SubType Name="Name" Normalize="false" />
+            <SubType Name="FileExtension" Normalize="false" />
           </SubTypes>
         </SemanticType>
-        <SemanticType Name="Path">
+        <SemanticType Name="Path" Normalize="false">
           <NativeTypes>
-            <NativeType Name="Value" ImplementingType="string" />
+            <NativeType Name="Value" ImplementingType="string" Normalize="false" />
           </NativeTypes>
           <SubTypes />
         </SemanticType>
-        <SemanticType Name="FileExtension">
+        <SemanticType Name="FileExtension" Normalize="false">
           <NativeTypes>
-            <NativeType Name="Value" ImplementingType="string" />
+            <NativeType Name="Value" ImplementingType="string" Normalize="false" />
           </NativeTypes>
           <SubTypes />
         </SemanticType>
-        <SemanticType Name="TextMessage" Alias="Message">
+        <SemanticType Name="TextMessage" Alias="Message" Normalize="false">
           <NativeTypes />
           <SubTypes>
-            <SubType Name="Text" />
+            <SubType Name="Text" Normalize="false" />
           </SubTypes>
         </SemanticType>
-        <SemanticType Name="Text" Alias="Text">
+        <SemanticType Name="Text" Alias="Text" Normalize="false">
           <NativeTypes>
-            <NativeType Name="Value" ImplementingType="string" />
+            <NativeType Name="Value" ImplementingType="string" Normalize="false" />
           </NativeTypes>
           <SubTypes />
         </SemanticType>
-        <SemanticType Name="Title">
+        <SemanticType Name="Title" Normalize="false">
           <NativeTypes>
-            <NativeType Name="Value" ImplementingType="string" />
+            <NativeType Name="Value" ImplementingType="string" Normalize="false" />
           </NativeTypes>
           <SubTypes />
         </SemanticType>
-        <SemanticType Name="Description">
+        <SemanticType Name="Description" Normalize="false">
           <NativeTypes>
-            <NativeType Name="Value" ImplementingType="string" />
+            <NativeType Name="Value" ImplementingType="string" Normalize="false" />
           </NativeTypes>
           <SubTypes />
         </SemanticType>
@@ -57,49 +57,49 @@
     </SemanticTypesContainer>
     <SemanticTypesContainer Name="Messages">
       <SemanticTypes>
-        <SemanticType Name="DebugMessage" Alias="Date/Time">
+        <SemanticType Name="DebugMessage" Alias="Date/Time" Normalize="false">
           <NativeTypes>
-            <NativeType Name="MessageTime" ImplementingType="DateTime" />
+            <NativeType Name="MessageTime" ImplementingType="DateTime" Normalize="false" />
           </NativeTypes>
           <SubTypes>
-            <SubType Name="TextMessage" />
+            <SubType Name="TextMessage" Normalize="false" />
           </SubTypes>
         </SemanticType>
-        <SemanticType Name="LoggerMessage">
+        <SemanticType Name="LoggerMessage" Normalize="false">
           <NativeTypes>
-            <NativeType Name="MessageTime" Alias="Date/Time" ImplementingType="DateTime" />
+            <NativeType Name="MessageTime" Alias="Date/Time" ImplementingType="DateTime" Normalize="false" />
           </NativeTypes>
           <SubTypes>
-            <SubType Name="TextMessage" />
+            <SubType Name="TextMessage" Normalize="false" />
           </SubTypes>
         </SemanticType>
-        <SemanticType Name="ErrorMessage">
+        <SemanticType Name="ErrorMessage" Normalize="false">
           <NativeTypes>
-            <NativeType Name="MessageTime" Alias="Date/Time" ImplementingType="DateTime" />
+            <NativeType Name="MessageTime" Alias="Date/Time" ImplementingType="DateTime" Normalize="false" />
           </NativeTypes>
           <SubTypes>
-            <SubType Name="TextMessage" />
+            <SubType Name="TextMessage" Normalize="false" />
           </SubTypes>
         </SemanticType>
-        <SemanticType Name="ExceptionMessage">
+        <SemanticType Name="ExceptionMessage" Normalize="false">
           <NativeTypes>
-            <NativeType Name="MessageTime" Alias="Date/Time" ImplementingType="DateTime" />
-            <NativeType Name="ReceptorName" Alias="Receptor" ImplementingType="string" />
+            <NativeType Name="MessageTime" Alias="Date/Time" ImplementingType="DateTime" Normalize="false" />
+            <NativeType Name="ReceptorName" Alias="Receptor" ImplementingType="string" Normalize="false" />
           </NativeTypes>
           <SubTypes>
-            <SubType Name="TextMessage" />
+            <SubType Name="TextMessage" Normalize="false" />
           </SubTypes>
         </SemanticType>
       </SemanticTypes>
     </SemanticTypesContainer>
     <SemanticTypesContainer Name="Visualizer">
       <SemanticTypes>
-        <SemanticType Name="CarrierAnimation">
+        <SemanticType Name="CarrierAnimation" Normalize="false">
           <NativeTypes>
-            <NativeType Name="Process" ImplementingType="Action" />
-            <NativeType Name="From" ImplementingType="IReceptorInstance" />
-            <NativeType Name="To" ImplementingType="IReceptorInstance" />
-            <NativeType Name="Carrier" ImplementingType="ICarrier" />
+            <NativeType Name="Process" ImplementingType="Action" Normalize="false" />
+            <NativeType Name="From" ImplementingType="IReceptorInstance" Normalize="false" />
+            <NativeType Name="To" ImplementingType="IReceptorInstance" Normalize="false" />
+            <NativeType Name="Carrier" ImplementingType="ICarrier" Normalize="false" />
           </NativeTypes>
           <SubTypes />
         </SemanticType>
@@ -107,107 +107,107 @@
     </SemanticTypesContainer>
     <SemanticTypesContainer Name="Image">
       <SemanticTypes>
-        <SemanticType Name="ThumbnailImage">
+        <SemanticType Name="ThumbnailImage" Normalize="false">
           <NativeTypes />
           <SubTypes>
-            <SubType Name="SourceImageFilename" />
-            <SubType Name="Image" />
+            <SubType Name="SourceImageFilename" Normalize="false" />
+            <SubType Name="Image" Normalize="false" />
           </SubTypes>
         </SemanticType>
-        <SemanticType Name="ImageFilename">
+        <SemanticType Name="ImageFilename" Normalize="false">
           <NativeTypes />
           <SubTypes>
-            <SubType Name="Filename" />
+            <SubType Name="Filename" Normalize="false" />
           </SubTypes>
         </SemanticType>
-        <SemanticType Name="Image">
+        <SemanticType Name="Image" Normalize="false">
           <NativeTypes>
-            <NativeType Name="Value" ImplementingType="Bitmap" />
+            <NativeType Name="Value" ImplementingType="Bitmap" Normalize="false" />
           </NativeTypes>
           <SubTypes />
         </SemanticType>
-        <SemanticType Name="SourceImageFilename">
+        <SemanticType Name="SourceImageFilename" Normalize="false">
           <NativeTypes />
           <SubTypes>
-            <SubType Name="Filename" />
+            <SubType Name="Filename" Normalize="false" />
           </SubTypes>
         </SemanticType>
       </SemanticTypes>
     </SemanticTypesContainer>
     <SemanticTypesContainer Name="System">
       <SemanticTypes>
-        <SemanticType Name="SystemMessage">
+        <SemanticType Name="SystemMessage" Normalize="false">
           <NativeTypes>
-            <NativeType Name="Action" ImplementingType="string" />
-            <NativeType Name="Data" ImplementingType="Object" />
-            <NativeType Name="Source" ImplementingType="Object" />
+            <NativeType Name="Action" ImplementingType="string" Normalize="false" />
+            <NativeType Name="Data" ImplementingType="Object" Normalize="false" />
+            <NativeType Name="Source" ImplementingType="Object" Normalize="false" />
           </NativeTypes>
           <SubTypes />
         </SemanticType>
-        <SemanticType Name="SystemShowImage">
+        <SemanticType Name="SystemShowImage" Normalize="false">
           <NativeTypes>
-            <NativeType Name="From" ImplementingType="IReceptorInstance" />
+            <NativeType Name="From" ImplementingType="IReceptorInstance" Normalize="false" />
           </NativeTypes>
           <SubTypes>
-            <SubType Name="Image" />
-            <SubType Name="Filename" />
+            <SubType Name="Image" Normalize="false" />
+            <SubType Name="Filename" Normalize="false" />
           </SubTypes>
         </SemanticType>
       </SemanticTypes>
     </SemanticTypesContainer>
     <SemanticTypesContainer Name="Locational">
       <SemanticTypes>
-        <SemanticType Name="USZipCode">
+        <SemanticType Name="USZipCode" Normalize="false">
           <NativeTypes />
           <SubTypes>
-            <SubType Name="Zip5" />
-            <SubType Name="Zip4" />
+            <SubType Name="Zip5" Normalize="false" />
+            <SubType Name="Zip4" Normalize="false" />
           </SubTypes>
         </SemanticType>
-        <SemanticType Name="Zip5">
+        <SemanticType Name="Zip5" Normalize="false">
           <NativeTypes>
-            <NativeType Name="Value" ImplementingType="string" />
+            <NativeType Name="Value" ImplementingType="string" Normalize="false" />
           </NativeTypes>
           <SubTypes />
         </SemanticType>
-        <SemanticType Name="Zip4">
+        <SemanticType Name="Zip4" Normalize="false">
           <NativeTypes>
-            <NativeType Name="Value" ImplementingType="string" />
+            <NativeType Name="Value" ImplementingType="string" Normalize="false" />
           </NativeTypes>
           <SubTypes />
         </SemanticType>
-        <SemanticType Name="USLocation">
+        <SemanticType Name="USLocation" Normalize="false">
           <NativeTypes />
           <SubTypes>
-            <SubType Name="Zip5" />
-            <SubType Name="Zip4" />
-            <SubType Name="City" />
-            <SubType Name="USState" />
-            <SubType Name="USStateAbbreviation" />
+            <SubType Name="Zip5" Normalize="false" />
+            <SubType Name="Zip4" Normalize="false" />
+            <SubType Name="City" Normalize="false" />
+            <SubType Name="USState" Normalize="false" />
+            <SubType Name="USStateAbbreviation" Normalize="false" />
           </SubTypes>
         </SemanticType>
-        <SemanticType Name="City">
+        <SemanticType Name="City" Normalize="false">
           <NativeTypes>
-            <NativeType Name="Value" ImplementingType="string" />
+            <NativeType Name="Value" ImplementingType="string" Normalize="false" />
           </NativeTypes>
           <SubTypes />
         </SemanticType>
-        <SemanticType Name="USState">
+        <SemanticType Name="USState" Normalize="false">
           <NativeTypes>
-            <NativeType Name="Value" ImplementingType="string" />
+            <NativeType Name="Value" ImplementingType="string" Normalize="false" />
           </NativeTypes>
           <SubTypes />
         </SemanticType>
-        <SemanticType Name="USStateAbbreviation">
+        <SemanticType Name="USStateAbbreviation" Normalize="false">
           <NativeTypes>
-            <NativeType Name="Value" ImplementingType="string" />
+            <NativeType Name="Value" ImplementingType="string" Normalize="false" />
           </NativeTypes>
           <SubTypes />
         </SemanticType>
-        <SemanticType Name="latlon">
+        <SemanticType Name="latlon" Normalize="false">
           <NativeTypes>
-            <NativeType Name="lat" ImplementingType="float" />
-            <NativeType Name="lon" ImplementingType="float" />
+            <NativeType Name="lat" ImplementingType="float" Normalize="false" />
+            <NativeType Name="lon" ImplementingType="float" Normalize="false" />
           </NativeTypes>
           <SubTypes />
         </SemanticType>
@@ -215,32 +215,32 @@
     </SemanticTypesContainer>
     <SemanticTypesContainer Name="Weather Service">
       <SemanticTypes>
-        <SemanticType Name="WeatherInfo">
+        <SemanticType Name="WeatherInfo" Normalize="false">
           <NativeTypes>
-            <NativeType Name="Summary" ImplementingType="string" />
-            <NativeType Name="High" ImplementingType="string" />
-            <NativeType Name="Low" ImplementingType="string" />
-            <NativeType Name="Conditions" ImplementingType="List&lt;dynamic&gt;" />
-            <NativeType Name="Hazards" ImplementingType="List&lt;dynamic&gt;" />
+            <NativeType Name="Summary" ImplementingType="string" Normalize="false" />
+            <NativeType Name="High" ImplementingType="string" Normalize="false" />
+            <NativeType Name="Low" ImplementingType="string" Normalize="false" />
+            <NativeType Name="Conditions" ImplementingType="List&lt;dynamic&gt;" Normalize="false" />
+            <NativeType Name="Hazards" ImplementingType="List&lt;dynamic&gt;" Normalize="false" />
           </NativeTypes>
           <SubTypes>
-            <SubType Name="Zip5" />
+            <SubType Name="Zip5" Normalize="false" />
           </SubTypes>
         </SemanticType>
-        <SemanticType Name="WeatherCondition">
+        <SemanticType Name="WeatherCondition" Normalize="false">
           <NativeTypes>
-            <NativeType Name="Additive" ImplementingType="string" />
-            <NativeType Name="Coverage" ImplementingType="string" />
-            <NativeType Name="Intensity" ImplementingType="string" />
-            <NativeType Name="WeatherType" ImplementingType="string" />
-            <NativeType Name="Qualifier" ImplementingType="string" />
+            <NativeType Name="Additive" ImplementingType="string" Normalize="false" />
+            <NativeType Name="Coverage" ImplementingType="string" Normalize="false" />
+            <NativeType Name="Intensity" ImplementingType="string" Normalize="false" />
+            <NativeType Name="WeatherType" ImplementingType="string" Normalize="false" />
+            <NativeType Name="Qualifier" ImplementingType="string" Normalize="false" />
           </NativeTypes>
           <SubTypes />
         </SemanticType>
-        <SemanticType Name="WeatherHazard">
+        <SemanticType Name="WeatherHazard" Normalize="false">
           <NativeTypes>
-            <NativeType Name="Phenomena" ImplementingType="string" />
-            <NativeType Name="Significance" ImplementingType="string" />
+            <NativeType Name="Phenomena" ImplementingType="string" Normalize="false" />
+            <NativeType Name="Significance" ImplementingType="string" Normalize="false" />
           </NativeTypes>
           <SubTypes />
         </SemanticType>
@@ -248,57 +248,57 @@
     </SemanticTypesContainer>
     <SemanticTypesContainer Name="RSS">
       <SemanticTypes>
-        <SemanticType Name="RSSFeedItem">
+        <SemanticType Name="RSSFeedItem" Normalize="false">
           <NativeTypes />
           <SubTypes>
-            <SubType Name="RSSFeedName" Alias="" />
-            <SubType Name="RSSFeedTitle" Alias="" />
-            <SubType Name="RSSFeedUrl" Alias="" />
-            <SubType Name="RSSFeedDescription" Alias="" />
-            <SubType Name="RSSFeedPubDate" Alias="" />
-            <SubType Name="RSSFeedAuthors" Alias="" />
-            <SubType Name="RSSFeedCategories" Alias="" />
+            <SubType Name="RSSFeedName" Alias="" Normalize="false" />
+            <SubType Name="RSSFeedTitle" Alias="" Normalize="false" />
+            <SubType Name="RSSFeedUrl" Alias="" Normalize="false" />
+            <SubType Name="RSSFeedDescription" Alias="" Normalize="false" />
+            <SubType Name="RSSFeedPubDate" Alias="" Normalize="false" />
+            <SubType Name="RSSFeedAuthors" Alias="" Normalize="false" />
+            <SubType Name="RSSFeedCategories" Alias="" Normalize="false" />
           </SubTypes>
         </SemanticType>
-        <SemanticType Name="RSSFeedName" Alias="Feed Name">
+        <SemanticType Name="RSSFeedName" Alias="Feed Name" Normalize="true">
           <NativeTypes />
           <SubTypes>
-            <SubType Name="Text" />
+            <SubType Name="Text" Normalize="false" />
           </SubTypes>
         </SemanticType>
-        <SemanticType Name="RSSFeedTitle" Alias="Feed Title">
+        <SemanticType Name="RSSFeedTitle" Alias="Feed Title" Normalize="false">
           <NativeTypes />
           <SubTypes>
-            <SubType Name="Text" />
+            <SubType Name="Text" Normalize="false" />
           </SubTypes>
         </SemanticType>
-        <SemanticType Name="RSSFeedDescription" Alias="Descr.">
+        <SemanticType Name="RSSFeedDescription" Alias="Descr." Normalize="false">
           <NativeTypes />
           <SubTypes>
-            <SubType Name="Text" />
+            <SubType Name="Text" Normalize="false" />
           </SubTypes>
         </SemanticType>
-        <SemanticType Name="RSSFeedPubDate" Alias="PubDate">
+        <SemanticType Name="RSSFeedPubDate" Alias="PubDate" Normalize="false">
           <NativeTypes>
-            <NativeType Name="Value" ImplementingType="DateTime" />
+            <NativeType Name="Value" ImplementingType="DateTime" Normalize="false" />
           </NativeTypes>
           <SubTypes />
         </SemanticType>
-        <SemanticType Name="RSSFeedUrl" Alias="Url">
+        <SemanticType Name="RSSFeedUrl" Alias="Url" Normalize="true">
           <NativeTypes />
           <SubTypes>
-            <SubType Name="Url" />
+            <SubType Name="Url" Normalize="false" />
           </SubTypes>
         </SemanticType>
-        <SemanticType Name="RSSFeedAuthors">
+        <SemanticType Name="RSSFeedAuthors" Normalize="false">
           <NativeTypes>
-            <NativeType Name="Value" ImplementingType="List&lt;string&gt;" />
+            <NativeType Name="Value" ImplementingType="List&lt;string&gt;" Normalize="false" />
           </NativeTypes>
           <SubTypes />
         </SemanticType>
-        <SemanticType Name="RSSFeedCategories">
+        <SemanticType Name="RSSFeedCategories" Normalize="false">
           <NativeTypes>
-            <NativeType Name="Value" ImplementingType="List&lt;string&gt;" />
+            <NativeType Name="Value" ImplementingType="List&lt;string&gt;" Normalize="false" />
           </NativeTypes>
           <SubTypes />
         </SemanticType>
@@ -306,9 +306,9 @@
     </SemanticTypesContainer>
     <SemanticTypesContainer Name="Web">
       <SemanticTypes>
-        <SemanticType Name="Url">
+        <SemanticType Name="Url" Normalize="false">
           <NativeTypes>
-            <NativeType Name="Value" ImplementingType="string" />
+            <NativeType Name="Value" ImplementingType="string" Normalize="true" />
           </NativeTypes>
           <SubTypes />
         </SemanticType>

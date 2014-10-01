@@ -587,16 +587,16 @@ namespace TypeSystemExplorer.Controllers
 					{
 						decl = new SemanticTypeDecl() { OfTypeName = "Noun" };
 						decl.AttributeValues.Add(new AttributeValue() { Name = "Name", Value = st.Name });
-						sts = new SemanticTypeStruct() { DeclTypeName = st.Name, Alias = st.Alias };
+						sts = new SemanticTypeStruct() { DeclTypeName = st.Name, Alias = st.Alias, Normalize = st.Normalize };
 
 						foreach (Models.NativeType nt in st.NativeTypes)
 						{
-							sts.NativeTypes.Add(new Clifton.SemanticTypeSystem.NativeType() { Name = nt.Name, ImplementingType = nt.ImplementingType, Alias = nt.Alias });
+							sts.NativeTypes.Add(new Clifton.SemanticTypeSystem.NativeType() { Name = nt.Name, ImplementingType = nt.ImplementingType, Alias = nt.Alias, Normalize = nt.Normalize });
 						}
 
 						foreach (Models.SubType subt in st.SubTypes)
 						{
-							sts.SemanticElements.Add(new Clifton.SemanticTypeSystem.SemanticElement() { Name = subt.Name, Alias = subt.Alias});
+							sts.SemanticElements.Add(new Clifton.SemanticTypeSystem.SemanticElement() { Name = subt.Name, Alias = subt.Alias, Normalize = subt.Normalize });
 						}
 
 						decls.Add(decl);

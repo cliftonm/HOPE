@@ -20,6 +20,11 @@ namespace Clifton.SemanticTypeSystem
 		/// Beautified display name that replaces the fully qualified name.
 		/// </summary>
 		public string Alias { get; set; }
+
+		/// <summary>
+		/// Used by the semantic database to determine how this semantic type behaves with regards to duplicate data.
+		/// </summary>
+		public bool Normalize { get; set; }
 		
 		/// <summary>
 		/// The SemanticTypeDecl instance.

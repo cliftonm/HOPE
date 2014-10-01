@@ -26,6 +26,11 @@ namespace TypeSystemExplorer.Models
 		[Description("Aliases are used for cosmetic purposes, such as column display names.  Parent aliases override child aliases.")]
 		public string Alias { get; set; }
 
+		[Category("Database")]
+		[XmlAttribute()]
+		[Description("Indicate whether this field is to be considered unique -- duplicates are not allowed.  Normalized fields optimize relationships between semantic types as these are automatically indexed in the database.")]
+		public bool Normalize { get; set; }
+
 		[XmlIgnore]
 		[Browsable(false)]
 		public Dictionary<string, dynamic> Collection { get { return null; } }
@@ -52,6 +57,11 @@ namespace TypeSystemExplorer.Models
 		[TypeConverter(typeof(ImplementingTypeNameConverter))]
 		public string ImplementingType { get; set; }
 
+		[Category("Database")]
+		[XmlAttribute()]
+		[Description("Indicate whether this field is to be considered unique -- duplicates are not allowed.  Normalized fields optimize relationships between semantic types as these are automatically indexed in the database.")]
+		public bool Normalize { get; set; }
+
 		[XmlIgnore]
 		[Browsable(false)]
 		public Dictionary<string, dynamic> Collection { get {return null;}}
@@ -71,6 +81,11 @@ namespace TypeSystemExplorer.Models
 		[XmlAttribute()]
 		[Description("Aliases are used for cosmetic purposes, such as column display names.  Parent aliases override child aliases.")]
 		public string Alias { get; set; }
+
+		[Category("Database")]
+		[XmlAttribute()]
+		[Description("Indicate whether this field is to be considered unique -- duplicates are not allowed.  Normalized fields optimize relationships between semantic types as these are automatically indexed in the database.")]
+		public bool Normalize { get; set; }
 
 		[XmlIgnore]
 		[Browsable(false)]

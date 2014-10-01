@@ -265,6 +265,7 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="bin\Debug\SearchForWithinPastDate.xml" />
+    <Content Include="bin\Debug\SemanticDatabaseConfig.xml" />
     <Content Include="bin\Debug\SemanticTypeEditor.xml" />
     <Content Include="bin\Debug\semanticTypeTree.xml">
       <SubType>Designer</SubType>

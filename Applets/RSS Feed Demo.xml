@@ -68,8 +68,8 @@
                 <ixm:UserConfig Name="WindowName" Value="Exceptions" />
                 <ixm:UserConfig Name="WindowX" Value="293" />
                 <ixm:UserConfig Name="WindowY" Value="65" />
-                <ixm:UserConfig Name="WindowWidth" Value="0" />
-                <ixm:UserConfig Name="WindowHeight" Value="0" />
+                <ixm:UserConfig Name="WindowWidth" Value="500" />
+                <ixm:UserConfig Name="WindowHeight" Value="120" />
               </ixm:UserConfigs>
             </ixm:ReceptorDef>
             <ixm:ReceptorDef Name="Web Page Launcher" AssemblyName="UrlReceptor.dll" Enabled="False" Location="284, 367">
@@ -91,8 +91,8 @@
                 <ixm:UserConfig Name="WindowName" Value="Logger" />
                 <ixm:UserConfig Name="WindowX" Value="283" />
                 <ixm:UserConfig Name="WindowY" Value="357" />
-                <ixm:UserConfig Name="WindowWidth" Value="0" />
-                <ixm:UserConfig Name="WindowHeight" Value="0" />
+                <ixm:UserConfig Name="WindowWidth" Value="500" />
+                <ixm:UserConfig Name="WindowHeight" Value="194" />
               </ixm:UserConfigs>
             </ixm:ReceptorDef>
             <ixm:ReceptorDef Name="Web Page Viewer" AssemblyName="WebBrowserReceptor.dll" Enabled="True" Location="439, 215">
