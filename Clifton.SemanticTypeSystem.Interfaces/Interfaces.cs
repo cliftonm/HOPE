@@ -31,7 +31,7 @@ namespace Clifton.SemanticTypeSystem.Interfaces
 	{
 		string DeclTypeName { get; }
 		string Alias { get; }
-		bool Normalize { get; }
+		bool UniqueField { get; }
 		List<INativeType> NativeTypes { get; }
 		List<ISemanticElement> SemanticElements { get; }
 		List<IGetSetSemanticType> AllTypes { get; }
@@ -51,7 +51,7 @@ namespace Clifton.SemanticTypeSystem.Interfaces
 	{
 		string Name { get; }
 		string Alias { get; }
-		bool Normalize { get; }
+		bool UniqueField { get; }
 		string ImplementingType { get; }
 
 		// sts parameter is not used for the native type setter/getter, but provides compatability with ISemanticElement.SetValue so we can have a common interface.

@@ -293,6 +293,61 @@ if it is normalized, test it, but this query doesn't drill down, it tests only t
 is normalized, then only the FK_[]ID's for RSSFeedItem are tested to determine whether the insert should be made.  At this level, "update" is 
 meaningless -- the ID's either exist (do nothing) or don't (insert.)
 
+Back to the question at hand -- if RSSFeedItem is not flagged as normalized, we don't do duplicate record checks.  If it is, we check for an existing record.
+Because of the way the feed reader works -- it can emit the same records -- we definitely need to designate RSSFeedItem as normalized.
+
+***
+
+However, this leads to a realization -- all the SE's in RSSFeedItem must therefore also be normalized.  SO, WHAT REALLY ARE WE DOING HERE?
+
+I think we need to go back to the concept of unique fields -- the composite unique fields define the unique key to determine normalization.  If there are no unique fields defined, then the data cannot be normalized.
+So, back again to the question, what happens with something like Text, whose value we don't mark as unique, but we want RSSFeedTitle's Text to be unique?  
+And wait!  in RSSFeedItem, (RSSFeedTitle, RSSFeedUrl) would be designated as the unique key, so that's all we need for determining the FK ID's of the other fields.  But how does this prevent
+us from writing the data for fields like RSSFeedDescription?
+
+Let's say we take a top-to-bottom approach:
+
+Scenario: No RSSFeedItem record matches.
+
+1. We want to write out RSSFeedItem.
+2. It has two unique keys, RSSFeedTitle and RSSFeedUrl
+3. We drill into RSSFeedTitle and RSSFeedUrl
+4. RSSFeedTitle has, at the bottom, an ST (Text) with a Value NT
+5. We query this and discover there is no record
+6. We add the record
+7. We propagate back up the tree, adding the FK's
+8. Back at RSSFeedName, we still need RSSFeedUrl's FK
+9. Repeat 4-7 with RSSFeedUrl
+10. Back at RSSFeedName, we have enough to query RSSFeedItem
+11. We find no record
+12. We see that we don't have values yet for the other FK's.
+13. For each missing FK, We drill into the ST until we get to the NT's, insert their values, and propagate the FK's back up the tree.
+14. Now we can write RSSFeedItem
+
+
+Scenario: Existing RSSFeedItem record matches:
+
+1. We want to write out RSSFeedItem.
+2. It has two unique keys, RSSFeedTitle and RSSFeedUrl
+3. We drill into RSSFeedTitle and RSSFeedUrl
+4. RSSFeedTitle has, at the bottom, an ST (Text) with a Value NT
+5. We query this and discover there is a record
+6. We propagate back up the tree, adding the FK's, and possibly querying additional tables to get the parent FK's, but only if we can identify a unique composite key each step of the way
+7. We repeat the process with RSSFeedUrl, discovering it's FK
+8. Back at RSSFeedName, we have enough to query RSSFeedItem
+9. We find a record and therefore take no further action (or, we can drill into the non-unique ST's and perform updates on the NT's in case values have changed.)
+
+So, it seems like what we need is not a "Normalize" flag but a "Unique" flag.
+
+Furthermore, uniqueness can be unique to the parent structure, or global to the ST definition.  An interesting point.
+
+
+
+
+
+
+
+
 Notes:
 
 1. Multiple normalized NT's in an ST define a composite key.

@@ -28,8 +28,8 @@ namespace TypeSystemExplorer.Models
 
 		[Category("Database")]
 		[XmlAttribute()]
-		[Description("Indicate whether this field is to be considered unique -- duplicates are not allowed.  Normalized fields optimize relationships between semantic types as these are automatically indexed in the database.")]
-		public bool Normalize { get; set; }
+		[Description("Indicate whether this type is part of a unique composite key for the parent semantic element.")]
+		public bool UniqueField { get; set; }
 
 		[XmlIgnore]
 		[Browsable(false)]
@@ -59,8 +59,8 @@ namespace TypeSystemExplorer.Models
 
 		[Category("Database")]
 		[XmlAttribute()]
-		[Description("Indicate whether this field is to be considered unique -- duplicates are not allowed.  Normalized fields optimize relationships between semantic types as these are automatically indexed in the database.")]
-		public bool Normalize { get; set; }
+		[Description("Indicate whether this field is part of a unique composite key for the parent semantic element.")]
+		public bool UniqueField { get; set; }
 
 		[XmlIgnore]
 		[Browsable(false)]
@@ -84,8 +84,8 @@ namespace TypeSystemExplorer.Models
 
 		[Category("Database")]
 		[XmlAttribute()]
-		[Description("Indicate whether this field is to be considered unique -- duplicates are not allowed.  Normalized fields optimize relationships between semantic types as these are automatically indexed in the database.")]
-		public bool Normalize { get; set; }
+		[Description("Indicate whether this semantic element's fields are treated as a composite unique key.")]
+		public bool UniqueField { get; set; }
 
 		[XmlIgnore]
 		[Browsable(false)]

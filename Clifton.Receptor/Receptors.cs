@@ -27,7 +27,7 @@ namespace Clifton.Receptor
 	/// Container for all registered receptors, as well as providing managing the creation
 	/// of carriers and the execution of a carrier's protocol on receiving receptors.
 	/// </summary>
-    public class ReceptorsContainer :  IReceptorSystem
+    public class ReceptorsContainer : IReceptorSystem
     {
 		/// <summary>
 		/// Fires when a new receptor is instantiated and registered into the system.

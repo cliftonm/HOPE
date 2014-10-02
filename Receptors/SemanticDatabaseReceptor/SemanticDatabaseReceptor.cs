@@ -17,7 +17,10 @@ using Clifton.SemanticTypeSystem.Interfaces;
 using Clifton.Tools.Data;
 using Clifton.Tools.Strings.Extensions;
 
-namespace SemanticDatabaseReceptor
+// SQLite:
+// list fields in a table: pragma table_info('sqlite_master')
+
+namespace SemanticDatabase
 {
 	public enum FieldValueType
 	{
@@ -29,14 +32,16 @@ namespace SemanticDatabaseReceptor
 	{
 		public string FieldName { get; set; }
 		public object Value { get; set; }
-		public bool Normalize { get; set; }
+		public bool UniqueField { get; set; }
 		public FieldValueType Type { get; set; }
+		public TableFieldValues Parent { get; set; }
 
-		public FieldValue(string fieldName, object val, bool normalize, FieldValueType type)
+		public FieldValue(TableFieldValues parent, string fieldName, object val, bool unique, FieldValueType type)
 		{
+			Parent = parent;
 			FieldName = fieldName;
 			Value = val;
-			Normalize = normalize;
+			UniqueField = unique;
 			Type = type;
 		}
 	}
@@ -44,13 +49,14 @@ namespace SemanticDatabaseReceptor
 	public class TableFieldValues
 	{
 		public string TableName { get; set; }
-		public bool Normalize { get; set; }
+		public bool UniqueField { get; set; }
 		public List<FieldValue> FieldValues { get; protected set; }
+		public int RecordID { get; set; }
 
-		public TableFieldValues(string tableName, bool normalize)
+		public TableFieldValues(string tableName, bool unique)
 		{
 			TableName = tableName;
-			Normalize = normalize;
+			UniqueField = unique;
 			FieldValues = new List<FieldValue>();
 		}
 	}
@@ -78,6 +84,15 @@ namespace SemanticDatabaseReceptor
 		{
 			CreateDBIfMissing();
 			OpenDB();
+		}
+
+		/// <summary>
+		/// Support for unit testing.
+		/// </summary>
+		public void ProtocolsUpdated()
+		{
+			ValidateDatabaseSchema();
+			UpdateListeners();
 		}
 
 		public override void EndSystemInit()
@@ -170,7 +185,7 @@ namespace SemanticDatabaseReceptor
 			base.ProcessCarrier(carrier);
 			string st = carrier.Protocol.DeclTypeName;
 			List<TableFieldValues> tfvList = CreateTableFieldValueList(st, carrier.Signal);
-			List<TableFieldValues> tfvNormalizedList = tfvList.Where(t => t.Normalize || t.FieldValues.Any(fv=>fv.Normalize && fv.Type==FieldValueType.NativeType)).ToList();
+			List<TableFieldValues> tfvUniqueFielddList = tfvList.Where(t => t.UniqueField || t.FieldValues.Any(fv=>fv.UniqueField && fv.Type==FieldValueType.NativeType)).ToList();
 		}
 
 		/// <summary>
@@ -383,13 +398,13 @@ namespace SemanticDatabaseReceptor
 		protected void CreateTableFieldValueList(List<TableFieldValues> tfvList, string st, dynamic signal)
 		{
 			ISemanticTypeStruct sts = rsys.SemanticTypeSystem.GetSemanticTypeStruct(st);
-			TableFieldValues tfvEntry=new TableFieldValues(st, sts.Normalize);
+			TableFieldValues tfvEntry=new TableFieldValues(st, sts.UniqueField);
 			tfvList.Add(tfvEntry);
 
 			sts.SemanticElements.ForEach(child =>
 			{
 				string fieldName = "FK_" + child.Name + "ID";
-				tfvEntry.FieldValues.Add(new FieldValue(fieldName, null, child.Element.Struct.Normalize, FieldValueType.SemanticType));
+				tfvEntry.FieldValues.Add(new FieldValue(tfvEntry, fieldName, null, child.Element.Struct.UniqueField, FieldValueType.SemanticType));
 				PropertyInfo piSub = signal.GetType().GetProperty(child.Name);
 				object childSignal = piSub.GetValue(signal);
 				CreateTableFieldValueList(tfvList, child.Name, childSignal);
@@ -400,11 +415,10 @@ namespace SemanticDatabaseReceptor
 				// Acquire value through reflection.
 				PropertyInfo pi = signal.GetType().GetProperty(nt.Name);
 				object val = pi.GetValue(signal);
-				tfvEntry.FieldValues.Add(new FieldValue(nt.Name, val, nt.Normalize, FieldValueType.NativeType));
+				tfvEntry.FieldValues.Add(new FieldValue(tfvEntry, nt.Name, val, nt.UniqueField, FieldValueType.NativeType));
 			}
 		}
 	}
 }
 
 
-// pragma table_info('sqlite_master')
