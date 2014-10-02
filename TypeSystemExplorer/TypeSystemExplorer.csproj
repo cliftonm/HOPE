@@ -188,6 +188,9 @@
     <Content Include="..\Applets\Weather Report.xml">
       <Link>Applets\Weather Report.xml</Link>
     </Content>
+    <Content Include="..\hope database design thoughts.txt">
+      <Link>hope database design thoughts.txt</Link>
+    </Content>
     <Content Include="..\misc\marketing.txt">
       <Link>marketing.txt</Link>
     </Content>

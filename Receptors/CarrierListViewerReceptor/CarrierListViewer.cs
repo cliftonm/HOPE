@@ -55,15 +55,15 @@ namespace CarrierListViewerReceptor
 		{
 			base.Initialize();
 			InitializeUI();
+			UpdateFormLocationAndSize();
+			CreateViewerTable();
+			ListenForProtocol();
+			UpdateCaption();
 		}
 
 		public override void EndSystemInit()
 		{
 			base.EndSystemInit();
-			UpdateFormLocationAndSize();
-			CreateViewerTable();
-			ListenForProtocol();
-			UpdateCaption();
 		}
 
 		/// <summary>

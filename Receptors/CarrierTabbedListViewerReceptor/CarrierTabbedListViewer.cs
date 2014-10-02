@@ -61,15 +61,15 @@ namespace CarrierTabbedListViewerReceptor
 		{
 			base.Initialize();
 			InitializeUI();
+			UpdateFormLocationAndSize();
+			InitializeConfigTable();
+			UpdateReceivedProtocolsAndTabs();
+			UpdateCaption();
 		}
 
 		public override void EndSystemInit()
 		{
 			base.EndSystemInit();
-			UpdateFormLocationAndSize();
-			InitializeConfigTable();
-			UpdateReceivedProtocolsAndTabs();
-			UpdateCaption();
 		}
 
 		public override void ProcessCarrier(ICarrier carrier)
@@ -391,6 +391,9 @@ namespace CarrierTabbedListViewerReceptor
 		/// </summary>
 		protected void OnCellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
 		{
+			// TODO: Implement the same we did this in the CarrierListViewer.  Get the code unified between the two!
+
+			/*
 			DataGridView dgv = (DataGridView)sender;
 			string protocol = dgv.Tag.ToString();
 			DataView dv = (DataView)dgv.DataSource;
@@ -400,6 +403,7 @@ namespace CarrierTabbedListViewerReceptor
 			{
 				CreateCarrier(se.Name, signal => se.SetValue(rsys.SemanticTypeSystem, signal, dv[e.RowIndex][se.Name].ToString()));
 			});
+			 */
 		}
 	}
 }

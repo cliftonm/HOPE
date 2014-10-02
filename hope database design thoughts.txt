@@ -228,3 +228,90 @@ behavior on the part of the list viewer.
 
 8. Does the aggregator update the state to "old", or does the UI receptor do this?  What does "old" mean anyways?  Do we want to see feed items as "new" for a while before they become "old" ?  Or does "old" correspond to the age of the feed item itself, such that, say, feed items older than two days are marked as "old"?  Should a feed be marked as old only when the user says so?  Some of this is UI aspects, some of it might be how we automate the concepts of "new" and "old" in the aggregator or other places.  Are there (at least) two different concepts of "old": old, as in, say, the pub date is more than 48 hours, and "old" as in "since the list was displayed?"  I sort of like that idea, as I can see truly new items, and after a designated time, non-new items that have "aged", or "grown stale" are indicated differently.
 
+9. How does the database determine whether to create new instances of a record or to "use" an existing instance?
+
+For example, RSSFeedItem should always be unique, but the only real piece of information that determines this uniqueness is the URL value.
+On the other hand, there might be scenarios where multiple records with other variances might point to the same URL--these would not be omitted.
+Are those "other variances" to be considered part of the unique key, such that we should be able to make a determination, always, from the 
+"normalized" types in the signal, as to whether a structure should actually persist to the DB?
+
+Let's assume so and consider this problem more rigorously later.  Furthermore, we will assume that if the "normalized" fields exist, then the operation
+is at best an update operation, otherwise, if one or more of the normalized fields do not exist, then we have an insert operation.
+
+One of the complexities is that ST's, not just NT's, can be flagged as "normalized."  This causes some issue when we have a structure like:
+
+RSSFeedName => Text => Value(string)
+
+where RSSFeedName and Text are ST's and Value is a string NT.
+
+We want to normalize RSSFeedName, not Text, because we want Text normalized only in the context of RSSFeedName.  , but RSSFeedName is an ST, not an NT,
+so how do we query this to determine its normalization?
+
+Contrast this with:
+
+RSSFeedUrl => Url => Value(string)
+
+Here, it makes more sense to always normalize Url because of its semantic specificity as compared to the more generic semantic description "Text."
+
+Also, what do we do when more than one item in the structure-path is normalized, for example: RSSFeedUrl, Url, and Value could all be designated as Normalized.
+
+Both questions might lie in the concept that the first normalized field we encounter when in traversing the structure becomes the anchor point for
+determining normalization.  Thus, the SQL would have to look like:
+
+select a.ID, b.ID
+from RSSFeedName a
+left join Text b on a.FK_TextID = b.ID
+where b.Value = 'Code Project'
+
+where the left joins represent drilling down into the tree until all values are encountered.
+
+If no rows are returned, there is no entry, so the operation should be considered an insert.
+
+We have to make these tests from the bottom up when we insert the structure so as to ensure that we don't create duplication at lower levels.  So,
+the first query for URL that gets run would be:
+
+select a.ID from Url a where a.Value = 'http://whatever'
+
+No rows means "insert".
+A returned row means that the returned ID would be used for the FK_UrlID value.  This gets tested:
+
+select a.ID from RssFeedUrl a where a.Value = [FK_UrlID]
+
+On the other hand, inserting a unique feed name presents a problem.  Text is not designated as normalized, but RSSFeedName is.
+
+So, if the query:
+
+select a.ID, b.ID
+from RSSFeedName a
+left join Text b on a.FK_TextID = b.ID
+where b.Value = 'Code Project'
+
+returns no rows, we first insert the feed name value into Text, then insert the resulting id into RSSFeedName.FK_TextID.
+
+This would continue up the tree of ST's as we build the FK_[]ID values.  Whenever an ST "fills" with the FK_[]ID values, we can insert it, or,
+if it is normalized, test it, but this query doesn't drill down, it tests only the fields at that level.  So, for example, if RSSFeedItem itself
+is normalized, then only the FK_[]ID's for RSSFeedItem are tested to determine whether the insert should be made.  At this level, "update" is 
+meaningless -- the ID's either exist (do nothing) or don't (insert.)
+
+Notes:
+
+1. Multiple normalized NT's in an ST define a composite key.
+2. If an ST is defined as normalized, all the ST FK's and NT's in the remaining structure define the composite key.
+
+
+
+
+
+
+
+Other thoughts unrelated to DB stuff:
+
+Q: When should something be a native type and when should something be an ST that wraps a native type in a Value field?
+A: An ST wrapper should be created when there is sufficient semantic meaning to indicate re-use in other structures.  For example,
+Url, Zip5, and even Text all have semantic meaning that indicates re-use.  Second, even when a type doesn't have re-use value, if it has
+sub-types that are semantic, like Text, DateTime, etc., then it needs to be an ST to leverage the benefits of drilling down into the sub-types
+so that linkages can be made with other types that either currently exist or may be defined later.
+
+
+
+
