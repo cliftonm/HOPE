@@ -20,6 +20,12 @@ using Clifton.Tools.Strings.Extensions;
 // SQLite:
 // list fields in a table: pragma table_info('sqlite_master')
 
+// TODO:
+//		ST names with spaces need to be replaced with "_"
+//		NT names with spaces need to be replaced with "_"
+// 		Other issues with naming?  
+//			Names that are keywords or other reserved tokens
+
 namespace SemanticDatabase
 {
 	public enum FieldValueType
@@ -63,7 +69,7 @@ namespace SemanticDatabase
 
 	public class SemanticDatabaseReceptor : BaseReceptor
 	{
-		const string DatabaseFileName = "hope_semantic_database.db";
+		public const string DatabaseFileName = "hope_semantic_database.db";
 
 		public override string Name { get { return "Semantic Database"; } }
 		public override bool IsEdgeReceptor { get { return true; } }
@@ -74,7 +80,12 @@ namespace SemanticDatabase
 		/// </summary>
 		[UserConfigurableProperty("Internal")]
 		public string Protocols { get; set; }
-		
+
+		/// <summary>
+		/// Used for unit testing.
+		/// </summary>
+		public SQLiteConnection Connection { get { return conn; } }
+
 		protected SQLiteConnection conn;
 		protected DataTable dt;
 		protected DataGridView dgvTypes;
@@ -185,7 +196,11 @@ namespace SemanticDatabase
 			base.ProcessCarrier(carrier);
 			string st = carrier.Protocol.DeclTypeName;
 			List<TableFieldValues> tfvList = CreateTableFieldValueList(st, carrier.Signal);
-			List<TableFieldValues> tfvUniqueFielddList = tfvList.Where(t => t.UniqueField || t.FieldValues.Any(fv=>fv.UniqueField && fv.Type==FieldValueType.NativeType)).ToList();
+			List<TableFieldValues> tfvUniqueFieldList = tfvList.Where(t => t.UniqueField || t.FieldValues.Any(fv=>fv.UniqueField && fv.Type==FieldValueType.NativeType)).ToList();
+
+			// Get the STS for the carrier's protocol:
+			ISemanticTypeStruct sts = rsys.SemanticTypeSystem.GetSemanticTypeStruct(st);
+			ProcessSTS(sts, carrier.Signal);
 		}
 
 		/// <summary>
@@ -398,13 +413,13 @@ namespace SemanticDatabase
 		protected void CreateTableFieldValueList(List<TableFieldValues> tfvList, string st, dynamic signal)
 		{
 			ISemanticTypeStruct sts = rsys.SemanticTypeSystem.GetSemanticTypeStruct(st);
-			TableFieldValues tfvEntry=new TableFieldValues(st, sts.UniqueField);
+			TableFieldValues tfvEntry=new TableFieldValues(st, sts.Unique);
 			tfvList.Add(tfvEntry);
 
 			sts.SemanticElements.ForEach(child =>
 			{
 				string fieldName = "FK_" + child.Name + "ID";
-				tfvEntry.FieldValues.Add(new FieldValue(tfvEntry, fieldName, null, child.Element.Struct.UniqueField, FieldValueType.SemanticType));
+				tfvEntry.FieldValues.Add(new FieldValue(tfvEntry, fieldName, null, child.Element.Struct.Unique, FieldValueType.SemanticType));
 				PropertyInfo piSub = signal.GetType().GetProperty(child.Name);
 				object childSignal = piSub.GetValue(signal);
 				CreateTableFieldValueList(tfvList, child.Name, childSignal);
@@ -417,6 +432,99 @@ namespace SemanticDatabase
 				object val = pi.GetValue(signal);
 				tfvEntry.FieldValues.Add(new FieldValue(tfvEntry, nt.Name, val, nt.UniqueField, FieldValueType.NativeType));
 			}
+		}
+
+		protected int ProcessSTS(ISemanticTypeStruct sts, object signal)
+		{
+			int id = -1;
+
+			// Is this ST a bottom-most ST, such that it only implements native types?
+			if (sts.HasSemanticTypes)
+			{
+				// Nope, we're somewehere higher up.
+			}
+			else
+			{
+				// Is this ST designated as unique?
+				if (sts.Unique)
+				{
+					// If so, then we treat all NT's as a composite unique key.
+					// Do lookup to see if the already exists exists.
+					// Use all NT fields.
+					List<IFullyQualifiedNativeType> fieldValues = rsys.SemanticTypeSystem.GetFullyQualifiedNativeTypeValues(signal, sts.DeclTypeName);
+					bool exists = QueryUniqueness(sts, signal, fieldValues, out id);
+
+					if (!exists)
+					{
+						// If no record, create it.
+						id = Insert(sts, signal);
+					}
+				}
+				else if (sts.NativeTypes.Any(nt => nt.UniqueField))
+				{
+					// If any NT's are designated as unique, then we also have a way of identifying a record.
+					// Do lookup to see if the record already exists.
+					// Use just the unique fields.
+					List<IFullyQualifiedNativeType> fieldValues = rsys.SemanticTypeSystem.GetFullyQualifiedNativeTypeValues(signal, sts.DeclTypeName).Where(fqnt => fqnt.NativeType.UniqueField).ToList();
+					bool exists = QueryUniqueness(sts, signal, fieldValues, out id);
+
+					if (!exists)
+					{
+						// If no record, create it.
+						id = Insert(sts, signal);
+					}
+				}
+				else
+				{
+					// No unique fields, so we just insert the record.
+					id = Insert(sts, signal);
+					
+					// The ID can now be returned as the FK for any parent ST.
+				}
+			}
+
+			return id;
+		}
+
+		protected int Insert(ISemanticTypeStruct sts, object signal)
+		{
+			List<IFullyQualifiedNativeType> fieldValues = rsys.SemanticTypeSystem.GetFullyQualifiedNativeTypeValues(signal, sts.DeclTypeName);
+			StringBuilder sb = new StringBuilder("insert into " + sts.DeclTypeName + " (");
+			sb.Append(String.Join(", ", fieldValues.Select(f => f.Name)));
+			sb.Append(") values (");
+			sb.Append(String.Join(", ", fieldValues.Select(f => "@"+f.Name)));
+			sb.Append(")");
+			SQLiteCommand cmd = conn.CreateCommand();
+			fieldValues.ForEach(fv => cmd.Parameters.Add(new SQLiteParameter("@" + fv.Name, fv.Value)));
+			cmd.CommandText = sb.ToString();
+			cmd.ExecuteNonQuery();
+
+			cmd.CommandText = "SELECT last_insert_rowid()";
+			int id = Convert.ToInt32(cmd.ExecuteScalar());
+
+			return id;
+		}
+
+		protected bool QueryUniqueness(ISemanticTypeStruct sts, object signal, List<IFullyQualifiedNativeType> fieldValues, out int id)
+		{
+			id = -1;
+			bool ret = false;
+
+			StringBuilder sb = new StringBuilder("select id from " + sts.DeclTypeName + " where ");
+			sb.Append(String.Join(" and ", fieldValues.Select(f => f.Name + " = @" + f.Name)));
+			SQLiteCommand cmd = conn.CreateCommand();
+			fieldValues.ForEach(fv => cmd.Parameters.Add(new SQLiteParameter("@" + fv.Name, fv.Value)));
+			cmd.CommandText = sb.ToString();
+			object oid = cmd.ExecuteScalar();
+
+			ret = (oid != null);
+
+			if (ret)
+			{
+				id = Convert.ToInt32(oid);
+			}
+
+			return ret;
 		}
 	}
 }

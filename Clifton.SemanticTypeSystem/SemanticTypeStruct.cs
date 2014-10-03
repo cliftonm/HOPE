@@ -24,7 +24,7 @@ namespace Clifton.SemanticTypeSystem
 		/// <summary>
 		/// Used by the semantic database to determine how this semantic type behaves with regards to duplicate data.
 		/// </summary>
-		public bool UniqueField { get; set; }
+		public bool Unique { get; set; }
 		
 		/// <summary>
 		/// The SemanticTypeDecl instance.

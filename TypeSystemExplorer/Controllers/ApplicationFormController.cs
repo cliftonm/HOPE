@@ -587,7 +587,7 @@ namespace TypeSystemExplorer.Controllers
 					{
 						decl = new SemanticTypeDecl() { OfTypeName = "Noun" };
 						decl.AttributeValues.Add(new AttributeValue() { Name = "Name", Value = st.Name });
-						sts = new SemanticTypeStruct() { DeclTypeName = st.Name, Alias = st.Alias, UniqueField = st.UniqueField };
+						sts = new SemanticTypeStruct() { DeclTypeName = st.Name, Alias = st.Alias, Unique = st.UniqueField };
 
 						foreach (Models.NativeType nt in st.NativeTypes)
 						{

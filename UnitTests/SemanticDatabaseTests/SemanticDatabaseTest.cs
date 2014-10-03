@@ -1,9 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SQLite;
+using System.IO;
+using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Clifton.Receptor;
+using Clifton.Receptor.Interfaces;
 using Clifton.SemanticTypeSystem;
+using Clifton.SemanticTypeSystem.Interfaces;
 
 using SemanticDatabase;
 
@@ -12,62 +18,176 @@ namespace SemanticDatabaseTests
 	[TestClass]
 	public class SemanticDatabaseTest
 	{
-		[TestMethod]
-		public void SimpleInsert()
+		protected STS ssys;
+		protected ReceptorsContainer rsys;
+		protected SemanticDatabaseReceptor sdr;
+		protected List<SemanticTypeDecl> decls;
+		protected List<SemanticTypeStruct> structs;
+
+		protected void InitializeSDRTests(Action initStructs)
 		{
-			STS ssys = new STS();
-			ReceptorsContainer rsys = new ReceptorsContainer(ssys);
-			SemanticDatabaseReceptor sdr = new SemanticDatabaseReceptor(rsys);
+			// Initialize the Semantic Type System.
+			ssys = new STS();
 
-			List<SemanticTypeDecl> decls = new List<SemanticTypeDecl>();
-			List<SemanticTypeStruct> structs = new List<SemanticTypeStruct>();
+			// Initialize the Receptor System
+			rsys = new ReceptorsContainer(ssys);
 
-			InitializeNoun(ssys, decls, structs);
-			SemanticTypeStruct sts = CreateSemanticType("LatLon", false, decls, structs);
-			CreateNativeType(sts, "latitude", "double", false);
-			CreateNativeType(sts, "longitude", "double", false);
-			
+			// Initialize the Semantic Database Receptor
+			sdr = new SemanticDatabaseReceptor(rsys);
+
+			// Initialize declaration and structure lists.
+			decls = new List<SemanticTypeDecl>();
+			structs = new List<SemanticTypeStruct>();
+
+			// We must have a noun definition for now.
+			Helpers.InitializeNoun(ssys, decls, structs);
+
+			// Create our semantic structure.
+			initStructs();
+
+			// Instantiate the runtime code-behind.
 			ssys.Parse(decls, structs);
 			string code = ssys.GenerateCode();
 			System.Reflection.Assembly assy = Compiler.Compile(code);
 			ssys.CompiledAssembly = assy;
+		}
 
+		protected void InitLatLonNonUnique()
+		{
+			SemanticTypeStruct sts = Helpers.CreateSemanticType("LatLon", false, decls, structs);
+			Helpers.CreateNativeType(sts, "latitude", "double", false);
+			Helpers.CreateNativeType(sts, "longitude", "double", false);
+		}
+
+		// TODO: We should also test a unique single field in an multi-field ST.
+		protected void InitLatLonUniqueFields()
+		{
+			SemanticTypeStruct sts = Helpers.CreateSemanticType("LatLon", false, decls, structs);
+			Helpers.CreateNativeType(sts, "latitude", "double", true);
+			Helpers.CreateNativeType(sts, "longitude", "double", true);
+		}
+
+		protected void InitLatLonUniqueST()
+		{
+			SemanticTypeStruct sts = Helpers.CreateSemanticType("LatLon", true, decls, structs);
+			Helpers.CreateNativeType(sts, "latitude", "double", false);
+			Helpers.CreateNativeType(sts, "longitude", "double", false);
+		}
+
+		protected void DropTable(string tableName)
+		{
+			SQLiteConnection conn = sdr.Connection;
+			SQLiteCommand cmd = conn.CreateCommand();
+			cmd.CommandText = "drop table "+tableName;
+			cmd.ExecuteNonQuery();
+		}
+
+		[TestMethod]
+		public void SimpleNonUniqueInsert()
+		{
+			InitializeSDRTests(() => InitLatLonNonUnique());
+
+			// Initialize the Semantic Data Receptor with the signal it should be listening to.
+			DropTable("LatLon");
 			sdr.Protocols = "LatLon";
 			sdr.ProtocolsUpdated();
+
+			// Create the signal.
+			ICarrier carrier = Helpers.CreateCarrier(rsys, "LatLon", signal =>
+				{
+					signal.latitude = 1.0;
+					signal.longitude = 2.0;
+				});
+
+			// Let's see what the SDR does.
+			sdr.ProcessCarrier(carrier);
+			SQLiteConnection conn = sdr.Connection;
+
+			int count;
+			SQLiteCommand cmd = conn.CreateCommand();
+			cmd.CommandText = "SELECT count(*) from LatLon";
+			count = Convert.ToInt32(cmd.ExecuteScalar());
+			Assert.AreEqual(1, count, "Expected 1 LatLon record.");
+
+			// Insert another, identical record.  We should now have two records.
+			sdr.ProcessCarrier(carrier);
+			cmd.CommandText = "SELECT count(*) from LatLon";
+			count = Convert.ToInt32(cmd.ExecuteScalar());
+			Assert.AreEqual(2, count, "Expected 2 LatLon records.");
+
+			sdr.Terminate();
 		}
 
-		protected void InitializeNoun(STS ssys, List<SemanticTypeDecl> decls, List<SemanticTypeStruct> structs)
+		[TestMethod]
+		public void SimpleUniqueFieldsInsert()
 		{
-			// Reflective noun necessary for self-referential definition.
-			SemanticTypeDecl decl = new SemanticTypeDecl() { OfTypeName = "Noun" };
-			decl.AttributeValues.Add(new AttributeValue() { Name = "Name", Value = "Noun" });
-			decls.Add(decl);
+			InitializeSDRTests(() => InitLatLonUniqueFields());
 
-			SemanticTypeStruct sts = new SemanticTypeStruct() { DeclTypeName = "Noun" };
-			sts.NativeTypes.Add(new Clifton.SemanticTypeSystem.NativeType() { Name = "Name", ImplementingType = "string" });
-			structs.Add(sts);
+			// Initialize the Semantic Data Receptor with the signal it should be listening to.
+			DropTable("LatLon");
+			sdr.Protocols = "LatLon";
+			sdr.ProtocolsUpdated();
+
+			// Create the signal.
+			ICarrier carrier = Helpers.CreateCarrier(rsys, "LatLon", signal =>
+			{
+				signal.latitude = 1.0;
+				signal.longitude = 2.0;
+			});
+
+			// Let's see what the SDR does.
+			sdr.ProcessCarrier(carrier);
+			SQLiteConnection conn = sdr.Connection;
+
+			int count;
+			SQLiteCommand cmd = conn.CreateCommand();
+			cmd.CommandText = "SELECT count(*) from LatLon";
+			count = Convert.ToInt32(cmd.ExecuteScalar());
+			Assert.AreEqual(1, count, "Expected 1 LatLon record.");
+
+			// Insert another, identical record.  We should still have one record.
+			sdr.ProcessCarrier(carrier);
+			cmd.CommandText = "SELECT count(*) from LatLon";
+			count = Convert.ToInt32(cmd.ExecuteScalar());
+			Assert.AreEqual(1, count, "Expected 1 LatLon records.");
+
+			sdr.Terminate();
 		}
 
-		protected SemanticTypeStruct CreateSemanticType(string name, bool unique, List<SemanticTypeDecl> decls, List<SemanticTypeStruct> structs)
+		[TestMethod]
+		public void SimpleUniqueSTInsert()
 		{
-			SemanticTypeDecl decl = new SemanticTypeDecl() { OfTypeName = "Noun" };
-			decl.AttributeValues.Add(new AttributeValue() { Name = "Name", Value = name });
-			SemanticTypeStruct sts = new SemanticTypeStruct() { DeclTypeName = name, UniqueField = unique };
+			InitializeSDRTests(() => InitLatLonUniqueST());
 
-			decls.Add(decl);
-			structs.Add(sts);
+			// Initialize the Semantic Data Receptor with the signal it should be listening to.
+			DropTable("LatLon");
+			sdr.Protocols = "LatLon";
+			sdr.ProtocolsUpdated();
 
-			return sts;
-		}
+			// Create the signal.
+			ICarrier carrier = Helpers.CreateCarrier(rsys, "LatLon", signal =>
+			{
+				signal.latitude = 1.0;
+				signal.longitude = 2.0;
+			});
 
-		protected void CreateNativeType(SemanticTypeStruct sts, string name, string type, bool unique)
-		{
-			sts.NativeTypes.Add(new Clifton.SemanticTypeSystem.NativeType() { Name = name, ImplementingType = type, UniqueField = unique });
-		}
+			// Let's see what the SDR does.
+			sdr.ProcessCarrier(carrier);
+			SQLiteConnection conn = sdr.Connection;
 
-		protected void CreateSemanticElement(SemanticTypeStruct sts, string name, string subtypeName, bool unique)
-		{
-			sts.SemanticElements.Add(new Clifton.SemanticTypeSystem.SemanticElement() { Name = name, UniqueField = unique });
+			int count;
+			SQLiteCommand cmd = conn.CreateCommand();
+			cmd.CommandText = "SELECT count(*) from LatLon";
+			count = Convert.ToInt32(cmd.ExecuteScalar());
+			Assert.AreEqual(1, count, "Expected 1 LatLon record.");
+
+			// Insert another, identical record.  We should still have one record.
+			sdr.ProcessCarrier(carrier);
+			cmd.CommandText = "SELECT count(*) from LatLon";
+			count = Convert.ToInt32(cmd.ExecuteScalar());
+			Assert.AreEqual(1, count, "Expected 1 LatLon records.");
+
+			sdr.Terminate();
 		}
 	}
 }

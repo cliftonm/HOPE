@@ -31,7 +31,7 @@ namespace Clifton.SemanticTypeSystem.Interfaces
 	{
 		string DeclTypeName { get; }
 		string Alias { get; }
-		bool UniqueField { get; }
+		bool Unique { get; }
 		List<INativeType> NativeTypes { get; }
 		List<ISemanticElement> SemanticElements { get; }
 		List<IGetSetSemanticType> AllTypes { get; }
