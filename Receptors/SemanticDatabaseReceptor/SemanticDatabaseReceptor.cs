@@ -36,13 +36,15 @@ namespace SemanticDatabase
 
 	public class FKValue
 	{
-		public string FieldName { get; set; }
-		public int ID { get; set; }
+		public string FieldName { get; protected set; }
+		public int ID { get; protected set; }
+		public bool UniqueField { get; protected set; }
 
-		public FKValue(string fieldName, int id)
+		public FKValue(string fieldName, int id, bool uniqueField)
 		{
 			FieldName = fieldName;
 			ID = id;
+			UniqueField = uniqueField;
 		}
 	}
 
@@ -105,6 +107,8 @@ namespace SemanticDatabase
 		public SemanticDatabaseReceptor(IReceptorSystem rsys)
 			: base(rsys)
 		{
+			AddEmitProtocol("LoggerMessage");
+			AddEmitProtocol("ExceptionMessage");
 			CreateDBIfMissing();
 			OpenDB();
 		}
@@ -213,7 +217,15 @@ namespace SemanticDatabase
 			// Get the STS for the carrier's protocol:
 			ISemanticTypeStruct sts = rsys.SemanticTypeSystem.GetSemanticTypeStruct(st);
 			Dictionary<ISemanticTypeStruct, List<FKValue>> stfkMap = new Dictionary<ISemanticTypeStruct, List<FKValue>>();
-			ProcessSTS(stfkMap, sts, carrier.Signal);
+
+			try
+			{
+				ProcessSTS(stfkMap, sts, carrier.Signal);
+			}
+			catch (Exception ex)
+			{
+				EmitException(ex);
+			}
 		}
 
 		/// <summary>
@@ -313,6 +325,7 @@ namespace SemanticDatabase
 		{
 			SQLiteCommand cmd = conn.CreateCommand();
 			cmd.CommandText = "SELECT name FROM sqlite_master WHERE type='table'";
+			LogSqlStatement(cmd.CommandText);
 			SQLiteDataReader reader = cmd.ExecuteReader();
 			List<string> tableNames = new List<string>();
 			
@@ -331,6 +344,7 @@ namespace SemanticDatabase
 		{
 			SQLiteCommand cmd = conn.CreateCommand();
 			cmd.CommandText = "pragma table_info('"+tableName+"')";
+			LogSqlStatement(cmd.CommandText);
 			SQLiteDataReader reader = cmd.ExecuteReader();
 			List<string> columnNames = new List<string>();
 
@@ -396,6 +410,7 @@ namespace SemanticDatabase
 		{
 			SQLiteCommand cmd = conn.CreateCommand();
 			cmd.CommandText = sql;
+			LogSqlStatement(cmd.CommandText);
 			cmd.ExecuteNonQuery();
 			cmd.Dispose();
 		}
@@ -447,7 +462,7 @@ namespace SemanticDatabase
 			}
 		}
 
-		protected int ProcessSTS(Dictionary<ISemanticTypeStruct, List<FKValue>> stfkMap, ISemanticTypeStruct sts, object signal)
+		protected int ProcessSTS(Dictionary<ISemanticTypeStruct, List<FKValue>> stfkMap, ISemanticTypeStruct sts, object signal, bool childAsUnique = false)
 		{
 			int id = -1;
 
@@ -462,7 +477,7 @@ namespace SemanticDatabase
 						ISemanticTypeStruct childsts = child.Element.Struct; // rsys.SemanticTypeSystem.GetSemanticTypeStruct(child.Name);
 						PropertyInfo piSub = signal.GetType().GetProperty(child.Name);
 						object childSignal = piSub.GetValue(signal);
-						id = ProcessSTS(stfkMap, childsts, childSignal);
+						id = ProcessSTS(stfkMap, childsts, childSignal, (sts.Unique || childAsUnique));
 
 						// Associate the ID to this ST's FK for that child table.
 						string fieldName = "FK_" + child.Name + "ID";
@@ -472,18 +487,35 @@ namespace SemanticDatabase
 							stfkMap[sts] = new List<FKValue>();
 						}
 
-						stfkMap[sts].Add(new FKValue(fieldName, id));
+						stfkMap[sts].Add(new FKValue(fieldName, id, child.UniqueField));
 					});
 
 				// Having processed all child ST's, We can now make the same determination of
 				// whether the record needs to check for uniqueness, however at this level,
 				// we need to write out both ST and any NT values in the current ST structure.
 				// This is very similar to an ST without child ST's, but here we also use ST's that are designated as unique to build the composite key.
-				if (sts.Unique)
+				if (sts.Unique || childAsUnique)
 				{
+					// All FK's and NT's of this ST are considered part of the composite key.
+					// Get all NT's specifically for this ST (no recursive drilldown)
+					List<IFullyQualifiedNativeType> fieldValues = rsys.SemanticTypeSystem.GetFullyQualifiedNativeTypeValues(signal, sts.DeclTypeName, false);
+					bool exists = QueryUniqueness(stfkMap, sts, signal, fieldValues, out id, true);
+
+					if (!exists)
+					{
+						id = Insert(stfkMap, sts, signal);
+					}
 				}
 				else if (sts.SemanticElements.Any(se => se.UniqueField) || sts.NativeTypes.Any(nt => nt.UniqueField))
 				{
+					// Get only unique NT's specifically for this ST (no recursive drilldown)
+					List<IFullyQualifiedNativeType> fieldValues = rsys.SemanticTypeSystem.GetFullyQualifiedNativeTypeValues(signal, sts.DeclTypeName, false).Where(fqnt=>fqnt.NativeType.UniqueField).ToList();
+					bool exists = QueryUniqueness(stfkMap, sts, signal, fieldValues, out id);
+
+					if (!exists)
+					{
+						id = Insert(stfkMap, sts, signal);
+					}
 				}
 				else
 				{
@@ -494,11 +526,11 @@ namespace SemanticDatabase
 			else
 			{
 				// Is this ST designated as unique?
-				if (sts.Unique)
+				if (sts.Unique || childAsUnique)
 				{
 					// If so, then we treat all NT's as a composite unique key.
 					// Do lookup to see if the already exists exists.
-					// Use all NT fields.
+					// Use all NT fields.  Recurse can be true because we know we don't have any child ST's.
 					List<IFullyQualifiedNativeType> fieldValues = rsys.SemanticTypeSystem.GetFullyQualifiedNativeTypeValues(signal, sts.DeclTypeName);
 					bool exists = QueryUniqueness(stfkMap, sts, signal, fieldValues, out id);
 
@@ -576,6 +608,7 @@ namespace SemanticDatabase
 			}
 
 			cmd.CommandText = sb.ToString();
+			LogSqlStatement(cmd.CommandText);
 			cmd.ExecuteNonQuery();
 
 			cmd.CommandText = "SELECT last_insert_rowid()";
@@ -584,16 +617,45 @@ namespace SemanticDatabase
 			return id;
 		}
 
-		protected bool QueryUniqueness(Dictionary<ISemanticTypeStruct, List<FKValue>> stfkMap, ISemanticTypeStruct sts, object signal, List<IFullyQualifiedNativeType> fieldValues, out int id)
+		protected bool QueryUniqueness(Dictionary<ISemanticTypeStruct, List<FKValue>> stfkMap, ISemanticTypeStruct sts, object signal, List<IFullyQualifiedNativeType> uniqueFieldValues, out int id, bool allPKs = false)
 		{
 			id = -1;
 			bool ret = false;
 
+			// Get ST's to insert as FK_ID's:
+			List<FKValue> fkValues;
+			bool hasFKValues = stfkMap.TryGetValue(sts, out fkValues);
+/*
+			// If we have no NT's or ST FK's to determine uniqueness (this is valid) then return false: not unique.
+			if (uniqueFieldValues.Count == 0 && (!hasFKValues || (hasFKValues && fkValues.Where(fk => fk.UniqueField || allPKs).Count() == 0)))
+			{
+				return false;
+			}
+*/
 			StringBuilder sb = new StringBuilder("select id from " + sts.DeclTypeName + " where ");
-			sb.Append(String.Join(" and ", fieldValues.Select(f => f.Name + " = @" + f.Name)));
+
+			// Put NT fields into "where" clause.
+			sb.Append(String.Join(" and ", uniqueFieldValues.Select(f => f.Name + " = @" + f.Name)));
+
+			// Put unique ST fields into "where" clause.
+			if (hasFKValues && fkValues.Any(fk => fk.UniqueField || allPKs))
+			{
+				if (uniqueFieldValues.Count > 0) sb.Append(" and ");
+				sb.Append(String.Join(" and ", fkValues.Where(fk => fk.UniqueField || allPKs).Select(fk => fk.FieldName + " = @" + fk.FieldName)));
+			}
+
 			SQLiteCommand cmd = conn.CreateCommand();
-			fieldValues.ForEach(fv => cmd.Parameters.Add(new SQLiteParameter("@" + fv.Name, fv.Value)));
+
+			// Populate parameters:
+			uniqueFieldValues.ForEach(fv => cmd.Parameters.Add(new SQLiteParameter("@" + fv.Name, fv.Value)));
+
+			if (hasFKValues && fkValues.Any(fk => fk.UniqueField || allPKs))
+			{
+				fkValues.Where(fk => fk.UniqueField || allPKs).ForEach(fk => cmd.Parameters.Add(new SQLiteParameter("@" + fk.FieldName, fk.ID)));
+			}
+
 			cmd.CommandText = sb.ToString();
+			LogSqlStatement(cmd.CommandText);
 			object oid = cmd.ExecuteScalar();
 
 			ret = (oid != null);
@@ -604,6 +666,15 @@ namespace SemanticDatabase
 			}
 
 			return ret;
+		}
+
+		protected void LogSqlStatement(string sql)
+		{
+			CreateCarrierIfReceiver("LoggerMessage", signal =>
+				{
+					signal.MessageTime = DateTime.Now;
+					signal.TextMessage.Text.Value = sql;
+				});
 		}
 	}
 }

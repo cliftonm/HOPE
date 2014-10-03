@@ -134,7 +134,7 @@ namespace FeedReaderReceptor
 					signal.RSSFeedDescription.Text.Value = "Test Description";
 					signal.RSSFeedAuthors.Value = new List<string>();
 					signal.RSSFeedCategories.Value = new List<string>();
-					signal.RSSFeedPubDate.Value = DateTime.Now;
+					signal.RSSFeedPubDate.Value = new DateTime(2014, 8, 19, 12, 1, 0);		// use a fixed date to test semantic database.
 				});
 #else
 			// Allow -1 to also represent max items.

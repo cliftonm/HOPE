@@ -70,7 +70,7 @@
             <NativeType Name="MessageTime" Alias="Date/Time" ImplementingType="DateTime" UniqueField="false" />
           </NativeTypes>
           <SubTypes>
-            <SubType Name="TextMessage" UniqueField="false" />
+            <SubType Name="TextMessage" Alias="Message" UniqueField="false" />
           </SubTypes>
         </SemanticType>
         <SemanticType Name="ErrorMessage" UniqueField="false">
@@ -78,7 +78,7 @@
             <NativeType Name="MessageTime" Alias="Date/Time" ImplementingType="DateTime" UniqueField="false" />
           </NativeTypes>
           <SubTypes>
-            <SubType Name="TextMessage" UniqueField="false" />
+            <SubType Name="TextMessage" Alias="Text" UniqueField="false" />
           </SubTypes>
         </SemanticType>
         <SemanticType Name="ExceptionMessage" UniqueField="false">
@@ -87,7 +87,7 @@
             <NativeType Name="ReceptorName" Alias="Receptor" ImplementingType="string" UniqueField="false" />
           </NativeTypes>
           <SubTypes>
-            <SubType Name="TextMessage" UniqueField="false" />
+            <SubType Name="TextMessage" Alias="Exception" UniqueField="false" />
           </SubTypes>
         </SemanticType>
       </SemanticTypes>
@@ -248,7 +248,7 @@
     </SemanticTypesContainer>
     <SemanticTypesContainer Name="RSS">
       <SemanticTypes>
-        <SemanticType Name="RSSFeedItem" UniqueField="false">
+        <SemanticType Name="RSSFeedItem" UniqueField="true">
           <NativeTypes />
           <SubTypes>
             <SubType Name="RSSFeedName" Alias="" UniqueField="false" />

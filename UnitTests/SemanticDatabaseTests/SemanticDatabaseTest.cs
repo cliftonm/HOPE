@@ -77,6 +77,27 @@ namespace SemanticDatabaseTests
 			Helpers.CreateSemanticElement(stsRest, "LatLon", false);											// The element LatLon in Restaurant is NOT unique.
 		}
 
+		protected void InitRestaurantLatLonUniqueParentSTElement()
+		{
+			SemanticTypeStruct stsRest = Helpers.CreateSemanticType("Restaurant", false, decls, structs);
+			SemanticTypeStruct stsLatLon = Helpers.CreateSemanticType("LatLon", false, decls, structs);			// child ST LatLon is declared to NOT be unique.
+			Helpers.CreateNativeType(stsLatLon, "latitude", "double", false);
+			Helpers.CreateNativeType(stsLatLon, "longitude", "double", false);
+			Helpers.CreateSemanticElement(stsRest, "LatLon", true);											// The element LatLon in Restaurant is unique.
+		}
+
+		protected void InitRestaurantUniqueLatLonAndParentSTElement()
+		{
+			SemanticTypeStruct stsRest = Helpers.CreateSemanticType("Restaurant", true, decls, structs);
+			
+			// child ST LatLon is NOT declared to be unique, but is actually treated as unique because Restaurant, the parent ST, is declared unique.
+			SemanticTypeStruct stsLatLon = Helpers.CreateSemanticType("LatLon", false, decls, structs);			
+
+			Helpers.CreateNativeType(stsLatLon, "latitude", "double", false);
+			Helpers.CreateNativeType(stsLatLon, "longitude", "double", false);
+			Helpers.CreateSemanticElement(stsRest, "LatLon", true);											// The element LatLon in Restaurant is unique.
+		}
+
 		// TODO: We should also test a unique single field in an multi-field ST.
 		protected void InitLatLonUniqueFields()
 		{
@@ -181,7 +202,7 @@ namespace SemanticDatabaseTests
 			sdr.ProcessCarrier(carrier);
 			cmd.CommandText = "SELECT count(*) from LatLon";
 			count = Convert.ToInt32(cmd.ExecuteScalar());
-			Assert.AreEqual(1, count, "Expected 1 LatLon records.");
+			Assert.AreEqual(1, count, "Expected 1 LatLon record.");
 
 			sdr.Terminate();
 		}
@@ -220,7 +241,7 @@ namespace SemanticDatabaseTests
 			sdr.ProcessCarrier(carrier);
 			cmd.CommandText = "SELECT count(*) from LatLon";
 			count = Convert.ToInt32(cmd.ExecuteScalar());
-			Assert.AreEqual(1, count, "Expected 1 LatLon records.");
+			Assert.AreEqual(1, count, "Expected 1 LatLon record.");
 
 			sdr.Terminate();
 		}
@@ -263,10 +284,10 @@ namespace SemanticDatabaseTests
 			sdr.ProcessCarrier(carrier);
 			cmd.CommandText = "SELECT count(*) from LatLon";
 			count = Convert.ToInt32(cmd.ExecuteScalar());
-			Assert.AreEqual(2, count, "Expected 2 LatLon records.");
+			Assert.AreEqual(2, count, "Expected 2 LatLon record.");
 			cmd.CommandText = "SELECT count(*) from Restaurant";
 			count = Convert.ToInt32(cmd.ExecuteScalar());
-			Assert.AreEqual(2, count, "Expected 2 Restaurant record.");
+			Assert.AreEqual(2, count, "Expected 2 Restaurant records.");
 
 			sdr.Terminate();
 		}
@@ -309,10 +330,151 @@ namespace SemanticDatabaseTests
 			sdr.ProcessCarrier(carrier);
 			cmd.CommandText = "SELECT count(*) from LatLon";
 			count = Convert.ToInt32(cmd.ExecuteScalar());
-			Assert.AreEqual(1, count, "Expected 1 LatLon records.");
+			Assert.AreEqual(1, count, "Expected 1 LatLon record.");
 			cmd.CommandText = "SELECT count(*) from Restaurant";
 			count = Convert.ToInt32(cmd.ExecuteScalar());
-			Assert.AreEqual(2, count, "Expected 2 Restaurant record.");
+			Assert.AreEqual(2, count, "Expected 2 Restaurant records.");
+
+			sdr.Terminate();
+		}
+
+		/// <summary>
+		/// Verifies that a two-tier ST structure with a child whose ST is not unique but the parent ST's element referencing the child is unique.
+		/// Because the child is not unique, this should result in two parent entries for same child entry, since the child FK_ID will be different.
+		/// </summary>
+		[TestMethod]
+		public void TwoLevelUniqueSTElementInsert()
+		{
+			InitializeSDRTests(() => InitRestaurantLatLonUniqueParentSTElement());
+
+			// Initialize the Semantic Data Receptor with the signal it should be listening to.
+			DropTable("Restaurant");
+			DropTable("LatLon");
+			sdr.Protocols = "LatLon; Restaurant";
+			sdr.ProtocolsUpdated();
+
+			// Create the signal.
+			ICarrier carrier = Helpers.CreateCarrier(rsys, "Restaurant", signal =>
+			{
+				signal.LatLon.latitude = 1.0;
+				signal.LatLon.longitude = 2.0;
+			});
+
+			// Let's see what the SDR does.
+			sdr.ProcessCarrier(carrier);
+			SQLiteConnection conn = sdr.Connection;
+
+			int count;
+			SQLiteCommand cmd = conn.CreateCommand();
+			cmd.CommandText = "SELECT count(*) from LatLon";
+			count = Convert.ToInt32(cmd.ExecuteScalar());
+			Assert.AreEqual(1, count, "Expected 1 LatLon record.");
+			cmd.CommandText = "SELECT count(*) from Restaurant";
+			count = Convert.ToInt32(cmd.ExecuteScalar());
+			Assert.AreEqual(1, count, "Expected 1 Restaurant record.");
+
+			// Insert another, identical record.  We should still have one record.
+			sdr.ProcessCarrier(carrier);
+			cmd.CommandText = "SELECT count(*) from LatLon";
+			count = Convert.ToInt32(cmd.ExecuteScalar());
+			Assert.AreEqual(2, count, "Expected 2 LatLon records.");
+			cmd.CommandText = "SELECT count(*) from Restaurant";
+			count = Convert.ToInt32(cmd.ExecuteScalar());
+			Assert.AreEqual(2, count, "Expected 2 Restaurant records.");
+
+			sdr.Terminate();
+		}
+
+		/// <summary>
+		/// Verifies that a two-tier ST structure with a child whose ST is unique and the parent ST's element referencing the child is unique.
+		/// Because the child is unique and the parent's element referencing the child is unique, this should result in one parent and one child entry for the same data.
+		/// </summary>
+		[TestMethod]
+		public void TwoLevelUniqueElementAndChildSTInsert()
+		{
+			InitializeSDRTests(() => InitRestaurantUniqueLatLonAndParentSTElement());
+
+			// Initialize the Semantic Data Receptor with the signal it should be listening to.
+			DropTable("Restaurant");
+			DropTable("LatLon");
+			sdr.Protocols = "LatLon; Restaurant";
+			sdr.ProtocolsUpdated();
+
+			// Create the signal.
+			ICarrier carrier = Helpers.CreateCarrier(rsys, "Restaurant", signal =>
+			{
+				signal.LatLon.latitude = 1.0;
+				signal.LatLon.longitude = 2.0;
+			});
+
+			// Let's see what the SDR does.
+			sdr.ProcessCarrier(carrier);
+			SQLiteConnection conn = sdr.Connection;
+
+			int count;
+			SQLiteCommand cmd = conn.CreateCommand();
+			cmd.CommandText = "SELECT count(*) from LatLon";
+			count = Convert.ToInt32(cmd.ExecuteScalar());
+			Assert.AreEqual(1, count, "Expected 1 LatLon record.");
+			cmd.CommandText = "SELECT count(*) from Restaurant";
+			count = Convert.ToInt32(cmd.ExecuteScalar());
+			Assert.AreEqual(1, count, "Expected 1 Restaurant record.");
+
+			// Insert another, identical record.  We should still have one record.
+			sdr.ProcessCarrier(carrier);
+			cmd.CommandText = "SELECT count(*) from LatLon";
+			count = Convert.ToInt32(cmd.ExecuteScalar());
+			Assert.AreEqual(1, count, "Expected 1 LatLon record.");
+			cmd.CommandText = "SELECT count(*) from Restaurant";
+			count = Convert.ToInt32(cmd.ExecuteScalar());
+			Assert.AreEqual(1, count, "Expected 1 Restaurant record.");
+
+			sdr.Terminate();
+		}
+
+		/// <summary>
+		/// Here we designate the parent to be unique.  This will test the parent's composite fields for uniqueness.  However,
+		/// the only way the parent's composite fields can ever be unique is if we enforce a uniqueness test in all the child ST's as well.
+		/// </summary>
+		[TestMethod]
+		public void TwoLevelUniqueParentSTInsert()
+		{
+			InitializeSDRTests(() => InitRestaurantUniqueLatLonAndParentSTElement());
+
+			// Initialize the Semantic Data Receptor with the signal it should be listening to.
+			DropTable("Restaurant");
+			DropTable("LatLon");
+			sdr.Protocols = "LatLon; Restaurant";
+			sdr.ProtocolsUpdated();
+
+			// Create the signal.
+			ICarrier carrier = Helpers.CreateCarrier(rsys, "Restaurant", signal =>
+			{
+				signal.LatLon.latitude = 1.0;
+				signal.LatLon.longitude = 2.0;
+			});
+
+			// Let's see what the SDR does.
+			sdr.ProcessCarrier(carrier);
+			SQLiteConnection conn = sdr.Connection;
+
+			int count;
+			SQLiteCommand cmd = conn.CreateCommand();
+			cmd.CommandText = "SELECT count(*) from LatLon";
+			count = Convert.ToInt32(cmd.ExecuteScalar());
+			Assert.AreEqual(1, count, "Expected 1 LatLon record.");
+			cmd.CommandText = "SELECT count(*) from Restaurant";
+			count = Convert.ToInt32(cmd.ExecuteScalar());
+			Assert.AreEqual(1, count, "Expected 1 Restaurant record.");
+
+			// Insert another, identical record.  We should still have one record.
+			sdr.ProcessCarrier(carrier);
+			cmd.CommandText = "SELECT count(*) from LatLon";
+			count = Convert.ToInt32(cmd.ExecuteScalar());
+			Assert.AreEqual(1, count, "Expected 1 LatLon record.");
+			cmd.CommandText = "SELECT count(*) from Restaurant";
+			count = Convert.ToInt32(cmd.ExecuteScalar());
+			Assert.AreEqual(1, count, "Expected 1 Restaurant record.");
 
 			sdr.Terminate();
 		}
