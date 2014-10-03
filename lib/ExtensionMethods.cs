@@ -27,6 +27,16 @@ namespace Clifton.ExtensionMethods
 
 		// ---------- if-then-else as lambda expressions --------------
 
+		// If the test returns true, execute the action.
+		// Works with objects, not value types.
+		public static void IfTrue<T>(this T obj, Func<T, bool> test, Action action)
+		{
+			if (test(obj))
+			{
+				action();
+			}
+		}
+
 		/// <summary>
 		/// Returns true if the object is null.
 		/// </summary>

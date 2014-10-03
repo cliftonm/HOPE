@@ -34,6 +34,18 @@ namespace SemanticDatabase
 		SemanticType,
 	}
 
+	public class FKValue
+	{
+		public string FieldName { get; set; }
+		public int ID { get; set; }
+
+		public FKValue(string fieldName, int id)
+		{
+			FieldName = fieldName;
+			ID = id;
+		}
+	}
+
 	public class FieldValue
 	{
 		public string FieldName { get; set; }
@@ -195,12 +207,13 @@ namespace SemanticDatabase
 		{
 			base.ProcessCarrier(carrier);
 			string st = carrier.Protocol.DeclTypeName;
-			List<TableFieldValues> tfvList = CreateTableFieldValueList(st, carrier.Signal);
-			List<TableFieldValues> tfvUniqueFieldList = tfvList.Where(t => t.UniqueField || t.FieldValues.Any(fv=>fv.UniqueField && fv.Type==FieldValueType.NativeType)).ToList();
+			// List<TableFieldValues> tfvList = CreateTableFieldValueList(st, carrier.Signal);
+			// List<TableFieldValues> tfvUniqueFieldList = tfvList.Where(t => t.UniqueField || t.FieldValues.Any(fv=>fv.UniqueField && fv.Type==FieldValueType.NativeType)).ToList();
 
 			// Get the STS for the carrier's protocol:
 			ISemanticTypeStruct sts = rsys.SemanticTypeSystem.GetSemanticTypeStruct(st);
-			ProcessSTS(sts, carrier.Signal);
+			Dictionary<ISemanticTypeStruct, List<FKValue>> stfkMap = new Dictionary<ISemanticTypeStruct, List<FKValue>>();
+			ProcessSTS(stfkMap, sts, carrier.Signal);
 		}
 
 		/// <summary>
@@ -263,7 +276,7 @@ namespace SemanticDatabase
 				foreach (string tp in tpArray)
 				{
 					DataRow row = dt.NewRow();
-					row[0] = tp;
+					row[0] = tp.Trim();
 					dt.Rows.Add(row);
 				}
 			}
@@ -289,7 +302,7 @@ namespace SemanticDatabase
 
 			foreach (string expectedRootTable in expectedRootTables)
 			{
-				CreateIfMissing(expectedRootTable, tableNames);
+				CreateIfMissing(expectedRootTable.Trim(), tableNames);
 			}
 		}
 
@@ -396,7 +409,7 @@ namespace SemanticDatabase
 		protected void UpdateListeners()
 		{
 			// TODO: Remove protocols that are not being listened to anymore
-			Protocols.Split(';').ForEach(p => AddReceiveProtocol(p));			
+			Protocols.Split(';').ForEach(p => AddReceiveProtocol(p.Trim()));			
 		}
 
 		protected List<TableFieldValues> CreateTableFieldValueList(string st, dynamic signal)
@@ -434,7 +447,7 @@ namespace SemanticDatabase
 			}
 		}
 
-		protected int ProcessSTS(ISemanticTypeStruct sts, object signal)
+		protected int ProcessSTS(Dictionary<ISemanticTypeStruct, List<FKValue>> stfkMap, ISemanticTypeStruct sts, object signal)
 		{
 			int id = -1;
 
@@ -442,6 +455,41 @@ namespace SemanticDatabase
 			if (sts.HasSemanticTypes)
 			{
 				// Nope, we're somewehere higher up.
+				// Drill into each child ST and assign the return ID to this ST's FK for the child table name.
+				sts.SemanticElements.ForEach(child =>
+					{
+						// Get the child signal and STS and check it, returning a new or existing ID for the entry.
+						ISemanticTypeStruct childsts = child.Element.Struct; // rsys.SemanticTypeSystem.GetSemanticTypeStruct(child.Name);
+						PropertyInfo piSub = signal.GetType().GetProperty(child.Name);
+						object childSignal = piSub.GetValue(signal);
+						id = ProcessSTS(stfkMap, childsts, childSignal);
+
+						// Associate the ID to this ST's FK for that child table.
+						string fieldName = "FK_" + child.Name + "ID";
+
+						if (!stfkMap.ContainsKey(sts))
+						{
+							stfkMap[sts] = new List<FKValue>();
+						}
+
+						stfkMap[sts].Add(new FKValue(fieldName, id));
+					});
+
+				// Having processed all child ST's, We can now make the same determination of
+				// whether the record needs to check for uniqueness, however at this level,
+				// we need to write out both ST and any NT values in the current ST structure.
+				// This is very similar to an ST without child ST's, but here we also use ST's that are designated as unique to build the composite key.
+				if (sts.Unique)
+				{
+				}
+				else if (sts.SemanticElements.Any(se => se.UniqueField) || sts.NativeTypes.Any(nt => nt.UniqueField))
+				{
+				}
+				else
+				{
+					// No composite key, so just insert the ST.
+					Insert(stfkMap, sts, signal);
+				}
 			}
 			else
 			{
@@ -452,12 +500,12 @@ namespace SemanticDatabase
 					// Do lookup to see if the already exists exists.
 					// Use all NT fields.
 					List<IFullyQualifiedNativeType> fieldValues = rsys.SemanticTypeSystem.GetFullyQualifiedNativeTypeValues(signal, sts.DeclTypeName);
-					bool exists = QueryUniqueness(sts, signal, fieldValues, out id);
+					bool exists = QueryUniqueness(stfkMap, sts, signal, fieldValues, out id);
 
 					if (!exists)
 					{
 						// If no record, create it.
-						id = Insert(sts, signal);
+						id = Insert(stfkMap, sts, signal);
 					}
 				}
 				else if (sts.NativeTypes.Any(nt => nt.UniqueField))
@@ -466,18 +514,18 @@ namespace SemanticDatabase
 					// Do lookup to see if the record already exists.
 					// Use just the unique fields.
 					List<IFullyQualifiedNativeType> fieldValues = rsys.SemanticTypeSystem.GetFullyQualifiedNativeTypeValues(signal, sts.DeclTypeName).Where(fqnt => fqnt.NativeType.UniqueField).ToList();
-					bool exists = QueryUniqueness(sts, signal, fieldValues, out id);
+					bool exists = QueryUniqueness(stfkMap, sts, signal, fieldValues, out id);
 
 					if (!exists)
 					{
 						// If no record, create it.
-						id = Insert(sts, signal);
+						id = Insert(stfkMap, sts, signal);
 					}
 				}
 				else
 				{
 					// No unique fields, so we just insert the record.
-					id = Insert(sts, signal);
+					id = Insert(stfkMap, sts, signal);
 					
 					// The ID can now be returned as the FK for any parent ST.
 				}
@@ -486,16 +534,47 @@ namespace SemanticDatabase
 			return id;
 		}
 
-		protected int Insert(ISemanticTypeStruct sts, object signal)
+		protected int Insert(Dictionary<ISemanticTypeStruct, List<FKValue>> stfkMap, ISemanticTypeStruct sts, object signal)
 		{
-			List<IFullyQualifiedNativeType> fieldValues = rsys.SemanticTypeSystem.GetFullyQualifiedNativeTypeValues(signal, sts.DeclTypeName);
+			// Get native types to insert:
+			List<IFullyQualifiedNativeType> ntFieldValues = rsys.SemanticTypeSystem.GetFullyQualifiedNativeTypeValues(signal, sts.DeclTypeName, false);
 			StringBuilder sb = new StringBuilder("insert into " + sts.DeclTypeName + " (");
-			sb.Append(String.Join(", ", fieldValues.Select(f => f.Name)));
+			sb.Append(String.Join(", ", ntFieldValues.Select(f => f.Name)));
+
+			// Get ST's to insert as FK_ID's:
+			List<FKValue> fkValues;
+			bool hasFKValues = stfkMap.TryGetValue(sts, out fkValues);
+
+			if (hasFKValues && fkValues.Count > 0)
+			{
+				// Join in the FK_ID field names.
+				if (ntFieldValues.Count > 0) sb.Append(", ");
+				sb.Append(string.Join(", ", fkValues.Select(fkv => fkv.FieldName)));
+			}
+
+			// Setup NT field values:
 			sb.Append(") values (");
-			sb.Append(String.Join(", ", fieldValues.Select(f => "@"+f.Name)));
+			sb.Append(String.Join(", ", ntFieldValues.Select(f => "@"+f.Name)));
+
+			// Setup ST FK parameters:
+			if (hasFKValues && fkValues.Count > 0)
+			{
+				if (ntFieldValues.Count > 0) sb.Append(", ");
+				sb.Append(string.Join(", ", fkValues.Select(fkv => "@" + fkv.FieldName)));
+			}
+
 			sb.Append(")");
 			SQLiteCommand cmd = conn.CreateCommand();
-			fieldValues.ForEach(fv => cmd.Parameters.Add(new SQLiteParameter("@" + fv.Name, fv.Value)));
+
+			// Assign NT values:
+			ntFieldValues.ForEach(fv => cmd.Parameters.Add(new SQLiteParameter("@" + fv.Name, fv.Value)));
+
+			// Assign FK values:
+			if (hasFKValues && fkValues.Count > 0)
+			{
+				fkValues.ForEach(fkv => cmd.Parameters.Add(new SQLiteParameter("@" + fkv.FieldName, fkv.ID)));
+			}
+
 			cmd.CommandText = sb.ToString();
 			cmd.ExecuteNonQuery();
 
@@ -505,7 +584,7 @@ namespace SemanticDatabase
 			return id;
 		}
 
-		protected bool QueryUniqueness(ISemanticTypeStruct sts, object signal, List<IFullyQualifiedNativeType> fieldValues, out int id)
+		protected bool QueryUniqueness(Dictionary<ISemanticTypeStruct, List<FKValue>> stfkMap, ISemanticTypeStruct sts, object signal, List<IFullyQualifiedNativeType> fieldValues, out int id)
 		{
 			id = -1;
 			bool ret = false;

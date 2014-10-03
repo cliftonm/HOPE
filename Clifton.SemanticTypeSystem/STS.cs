@@ -128,14 +128,16 @@ namespace Clifton.SemanticTypeSystem
 		// TODO: Ordinality (which still needs to be implemented as a property of NT's and SE's) needs to be preserved.
 		/// <summary>
 		/// Returns a list of fully qualified (full path) type names for the final implementing native types.
+		/// This function recurses into all child ST to derive all NT's in the ST tree.
+		/// Set the recurse flag to false to prevent this behavior, thus the method will return only NT's for the current protocol.
 		/// </summary>
-		public List<IFullyQualifiedNativeType> GetFullyQualifiedNativeTypes(string protocolName)
+		public List<IFullyQualifiedNativeType> GetFullyQualifiedNativeTypes(string protocolName, bool recurse = true)
 		{
 			List<IFullyQualifiedNativeType> ret = new List<IFullyQualifiedNativeType>();
 			string stack = protocolName;
 			ISemanticTypeStruct st = GetSemanticTypeStruct(protocolName);
 			string alias = st.Alias;
-			RecurseGetFullyQualifiedNativeTypes(st, stack, alias, ret);
+			RecurseGetFullyQualifiedNativeTypes(st, stack, alias, recurse, ret);
 
 			return ret;
 		}
@@ -143,14 +145,16 @@ namespace Clifton.SemanticTypeSystem
 		// TODO: Ordinality (which still needs to be implemented as a property of NT's and SE's) needs to be preserved.
 		/// <summary>
 		/// Returns a list of fully qualified (full path) type names for the final implementing native types and their values, given the provided source signal.
+		/// This function recurses into all child ST to derive all NT's in the ST tree.
+		/// Set the recurse flag to false to prevent this behavior, thus the method will return only NT's for the current protocol.
 		/// </summary>
-		public List<IFullyQualifiedNativeType> GetFullyQualifiedNativeTypeValues(dynamic signal, string protocolName)
+		public List<IFullyQualifiedNativeType> GetFullyQualifiedNativeTypeValues(dynamic signal, string protocolName, bool recurse = true)
 		{
 			List<IFullyQualifiedNativeType> ret = new List<IFullyQualifiedNativeType>();
 			string stack = protocolName;
 			ISemanticTypeStruct st = GetSemanticTypeStruct(protocolName);
 			string alias = st.Alias;
-			RecurseGetFullyQualifiedNativeTypeValues(signal, st, stack, alias, ret);
+			RecurseGetFullyQualifiedNativeTypeValues(signal, st, stack, alias, recurse, ret);
 
 			return ret;
 		}
@@ -178,7 +182,7 @@ namespace Clifton.SemanticTypeSystem
 			}
 		}
 
-		protected void RecurseGetFullyQualifiedNativeTypes(ISemanticTypeStruct st, string stack, string alias, List<IFullyQualifiedNativeType> fqntList)
+		protected void RecurseGetFullyQualifiedNativeTypes(ISemanticTypeStruct st, string stack, string alias, bool recurse, List<IFullyQualifiedNativeType> fqntList)
 		{
 			foreach (INativeType nativeType in st.NativeTypes)
 			{
@@ -186,17 +190,20 @@ namespace Clifton.SemanticTypeSystem
 				fqntList.Add(new FullyQualifiedNativeType() { FullyQualifiedName = stack + "." + nativeType.Name, NativeType = nativeType, Alias = alias });
 			}
 
-			foreach (ISemanticElement childElem in st.SemanticElements)
+			if (recurse)
 			{
-				stack = stack + "." + childElem.Name;			// push
-				ISemanticTypeStruct stChild = GetSemanticTypeStruct(childElem.Name);
-				string newAlias = (!String.IsNullOrEmpty(alias) ? alias : stChild.Alias);
-				RecurseGetFullyQualifiedNativeTypes(stChild, stack, newAlias, fqntList);
-				stack = stack.LeftOfRightmostOf('.');			// pop
+				foreach (ISemanticElement childElem in st.SemanticElements)
+				{
+					stack = stack + "." + childElem.Name;			// push
+					ISemanticTypeStruct stChild = GetSemanticTypeStruct(childElem.Name);
+					string newAlias = (!String.IsNullOrEmpty(alias) ? alias : stChild.Alias);
+					RecurseGetFullyQualifiedNativeTypes(stChild, stack, newAlias, recurse, fqntList);
+					stack = stack.LeftOfRightmostOf('.');			// pop
+				}
 			}
 		}
 
-		protected void RecurseGetFullyQualifiedNativeTypeValues(object signal, ISemanticTypeStruct st, string stack, string alias, List<IFullyQualifiedNativeType> fqntList)
+		protected void RecurseGetFullyQualifiedNativeTypeValues(object signal, ISemanticTypeStruct st, string stack, string alias, bool recurse, List<IFullyQualifiedNativeType> fqntList)
 		{
 			foreach (INativeType nativeType in st.NativeTypes)
 			{
@@ -214,17 +221,20 @@ namespace Clifton.SemanticTypeSystem
 				});
 			}
 
-			foreach (ISemanticElement childElem in st.SemanticElements)
+			if (recurse)
 			{
-				// Acquire child SE through reflection:
-				PropertyInfo piSub = signal.GetType().GetProperty(childElem.Name);
-				object childSignal = piSub.GetValue(signal);
+				foreach (ISemanticElement childElem in st.SemanticElements)
+				{
+					// Acquire child SE through reflection:
+					PropertyInfo piSub = signal.GetType().GetProperty(childElem.Name);
+					object childSignal = piSub.GetValue(signal);
 
-				stack = stack + "." + childElem.Name;			// push
-				ISemanticTypeStruct stChild = GetSemanticTypeStruct(childElem.Name);
-				string newAlias = (!String.IsNullOrEmpty(alias) ? alias : stChild.Alias);
-				RecurseGetFullyQualifiedNativeTypeValues(childSignal, stChild, stack, newAlias, fqntList);
-				stack = stack.LeftOfRightmostOf('.');			// pop
+					stack = stack + "." + childElem.Name;			// push
+					ISemanticTypeStruct stChild = GetSemanticTypeStruct(childElem.Name);
+					string newAlias = (!String.IsNullOrEmpty(alias) ? alias : stChild.Alias);
+					RecurseGetFullyQualifiedNativeTypeValues(childSignal, stChild, stack, newAlias, recurse, fqntList);
+					stack = stack.LeftOfRightmostOf('.');			// pop
+				}
 			}
 		}
 

@@ -97,6 +97,17 @@ namespace Clifton.SemanticTypeSystem.Interfaces
 	public interface ISemanticElement
 	{
 		string Name { get; }
+
+		/// <summary>
+		/// Beautified display name that replaces the fully qualified name.
+		/// </summary>
+		string Alias { get; }
+
+		/// <summary>
+		/// Used by the semantic database to determine how this semantic type behaves with regards to duplicate data.
+		/// </summary>
+		bool UniqueField { get; set; }
+
 		ISemanticType Element { get; set; }
 
 		/// <summary>
@@ -130,8 +141,8 @@ namespace Clifton.SemanticTypeSystem.Interfaces
 		ISemanticTypeStruct GetSemanticTypeStruct(string typeName);
 		Dictionary<string, ISemanticType> SemanticTypes { get;}
 		dynamic Clone(dynamic sourceSignal, ISemanticElement se);
-		List<IFullyQualifiedNativeType> GetFullyQualifiedNativeTypes(string protocolName);
-		List<IFullyQualifiedNativeType> GetFullyQualifiedNativeTypeValues(dynamic signal, string protocolName);
+		List<IFullyQualifiedNativeType> GetFullyQualifiedNativeTypes(string protocolName, bool recurse = true);
+		List<IFullyQualifiedNativeType> GetFullyQualifiedNativeTypeValues(dynamic signal, string protocolName, bool recurse = true);
 		void SetFullyQualifiedNativeTypeValue(dynamic signal, string fqn, object val);
 		bool VerifyProtocolExists(string protocol);
 	}
