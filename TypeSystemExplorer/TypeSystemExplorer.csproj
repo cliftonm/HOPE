@@ -273,6 +273,7 @@
     <Content Include="bin\Debug\semanticTypeTree.xml">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="bin\Debug\SignalCreatorConfig.xml" />
     <Content Include="bin\Debug\sttree.xml">
       <SubType>Designer</SubType>
     </Content>

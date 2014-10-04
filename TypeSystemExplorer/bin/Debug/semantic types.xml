@@ -314,5 +314,15 @@
         </SemanticType>
       </SemanticTypes>
     </SemanticTypesContainer>
+    <SemanticTypesContainer Name="Database">
+      <SemanticTypes>
+        <SemanticType Name="Query" UniqueField="false">
+          <NativeTypes>
+            <NativeType Name="QueryText" ImplementingType="string" UniqueField="false" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
+      </SemanticTypes>
+    </SemanticTypesContainer>
   </SemanticTypesContainer>
 </Schema>

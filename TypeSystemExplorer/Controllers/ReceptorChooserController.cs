@@ -99,6 +99,7 @@ namespace TypeSystemExplorer.Controllers
 			receptors.Add(new ReceptorEntry() { Name = "Web Page Launcher", Filename = "UrlReceptor.dll" });
 			receptors.Add(new ReceptorEntry() { Name = "Web Page Viewer", Filename = "WebBrowserReceptor.dll" });
 			receptors.Add(new ReceptorEntry() { Name = "Semantic Database", Filename = "SemanticDatabaseReceptor.dll" });
+			receptors.Add(new ReceptorEntry() { Name = "Signal Creator", Filename = "SignalCreatorReceptor.dll" });
 
 			receptors.Sort((r1, r2) => r1.Name.CompareTo(r2.Name));
 		}

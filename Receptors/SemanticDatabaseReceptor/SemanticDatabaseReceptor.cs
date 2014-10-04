@@ -107,6 +107,7 @@ namespace SemanticDatabase
 		public SemanticDatabaseReceptor(IReceptorSystem rsys)
 			: base(rsys)
 		{
+			AddReceiveProtocol("Query", (Action<dynamic>)(signal => QueryDatabase((string)signal.QueryText)));
 			AddEmitProtocol("LoggerMessage");
 			AddEmitProtocol("ExceptionMessage");
 			CreateDBIfMissing();
@@ -309,12 +310,15 @@ namespace SemanticDatabase
 		/// </summary>
 		protected void ValidateDatabaseSchema()
 		{
-			List<string> tableNames = GetTables();
-			string[] expectedRootTables = Protocols.Split(';');
-
-			foreach (string expectedRootTable in expectedRootTables)
+			if (!String.IsNullOrEmpty(Protocols))
 			{
-				CreateIfMissing(expectedRootTable.Trim(), tableNames);
+				List<string> tableNames = GetTables();
+				string[] expectedRootTables = Protocols.Split(';');
+
+				foreach (string expectedRootTable in expectedRootTables)
+				{
+					CreateIfMissing(expectedRootTable.Trim(), tableNames);
+				}
 			}
 		}
 
@@ -423,8 +427,11 @@ namespace SemanticDatabase
 
 		protected void UpdateListeners()
 		{
+			if (!(String.IsNullOrEmpty(Protocols)))
+			{
 			// TODO: Remove protocols that are not being listened to anymore
 			Protocols.Split(';').ForEach(p => AddReceiveProtocol(p.Trim()));			
+			}
 		}
 
 		protected List<TableFieldValues> CreateTableFieldValueList(string st, dynamic signal)
@@ -675,6 +682,19 @@ namespace SemanticDatabase
 					signal.MessageTime = DateTime.Now;
 					signal.TextMessage.Text.Value = sql;
 				});
+		}
+
+		// ------ Query -------
+
+		protected void QueryDatabase(string query)
+		{
+			try
+			{
+			}
+			catch (Exception ex)
+			{
+				EmitException(ex);
+			}
 		}
 	}
 }
