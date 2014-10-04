@@ -9,9 +9,10 @@
 <body>
 
 <p>Semantic Database - Concepts, Design, Implementation</p>
-<h2>Preface</h2>
+<h2>Introduction</h2>
+<p>What is a semantic database?&nbsp; Why do we need one?</p>
 <h3>Semantics</h3>
-<p>Semantics is an emerging &quot;space&quot; of research and development in 
+<p>Semantics is an emerging field of research and development in 
 information 
 science.&nbsp; You have most likely heard of the
 <a href="http://en.wikipedia.org/wiki/Semantic_Web">Semantic Web</a> and perhaps 
@@ -151,37 +152,30 @@ Interestingly, this semantic information becomes an arbitrary label in the
 <a href="http://docs.neo4j.org/chunked/snapshot/cypher-query-lang.html">Cypher</a> query 
 fragment <code>bard=node:author(lastname='Shakespeare')</code>.&nbsp; From the 
 query we can determine that William Shakespeare is a bard, however, this 
-information is completely lost in the graph database!&nbsp; To put it another 
-way, if we follow the &quot;fact&quot; best practice, it becomes impossible to query a 
-graph database for data by specifying a semantic context.&nbsp; I cannot ask the 
-graph database &quot;show me all the people that are bards&quot; unless I explicitly 
-create a node called &quot;bard&quot; with a relationship to William Shakespeare.&nbsp; 
-This problem stems partially from the fact that a graph database represents a 
-specific domain: <i>&quot;By assembling the simple abstractions of nodes and 
-relationships into connected structures, graph databases enable us to build 
-arbitrarily sophisticated models that map closely to our problem domain.&quot;</i> - 
-(ibid, pg 6).&nbsp; At best, we can say a node with properties &quot;firstname&quot; and &quot;lastname&quot; 
-represents a &quot;person&quot;, but we can say nothing else about that person, such as 
-distinguishing the person from the playwright, the producer, or the actor, <i>
-except</i> through a relationship with another node, where the relationship 
-provides further semantic meaning, such as &quot;wrote_play&quot;, or &quot;produced_play&quot; or &quot;acted_in&quot;.</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>However, a graph database typically views semantics (the data structure) as a 
-second class citizen, as, for example:</p>
-<p><i>&quot;Use node properties to represent entity attributes, plus any necessary 
-entity metadata, such as timestamps, version numbers, etc.&quot; -</i> Robinson, Ian, 
-&amp; Webber, Jim, &amp; Eifrem, Emil (2013). <i>Graph Databases.</i> O'Reilly, pg 65 
-(free download <a href="http://www.graphdatabases.com/">here</a>.)</p>
-<p>The concern here is that the graph database is emphasizing the ontology, 
-leaving the semantic structure to be defined as node properties.</p>
+information is completely lost in the graph database!&nbsp; </p>
+<p>To put it another way, if we follow the &quot;fact&quot; best practice, it becomes 
+impossible to query a graph database for data by specifying a semantic context.&nbsp; 
+I cannot ask the graph database &quot;show me all the people that are bards&quot; unless I 
+explicitly create a node called &quot;bard&quot; with a relationship to William 
+Shakespeare.&nbsp; This problem stems partially from the fact that a graph 
+database represents a specific domain: <i>&quot;By assembling the simple abstractions 
+of nodes and relationships into connected structures, graph databases enable us 
+to build arbitrarily sophisticated models that map closely to our problem 
+domain.&quot;</i> - (ibid, pg 6).&nbsp; At best, we can say a node with properties &quot;firstname&quot; 
+and &quot;lastname&quot; represents a &quot;person&quot;, but we can say nothing else about that 
+person, such as distinguishing the person from the playwright, the producer, or 
+the actor, <i>except</i> through a relationship with another concrete node, 
+where the relationship provides further semantic meaning, such as &quot;wrote_play&quot;, 
+or &quot;produced_play&quot; or &quot;acted_in&quot;.&nbsp; </p>
+<p>Therefore, with regards to semantic structure, a graph database, while an 
+excellent tool for creating ontologies of concrete entities, is not appropriate 
+for abstract structural elements that have semantic significance but no values 
+(which would have to be represented as nodes without properties), nor does a 
+graph database properly semanticize property values, except as &quot;field names&quot; 
+which, like traditional databases, the semantics are not accessible as part of 
+the data.</p>
+<p>Nonetheless, there is much guidance in the literature on graph databases that 
+is valuable when designing a semantic database. </p>
 <h3>Semantic Database</h3>
 <p>In the above discussion, we come to several important observations:</p>
 <ol>
@@ -195,38 +189,18 @@ leaving the semantic structure to be defined as node properties.</p>
 	<li>Graph databases describe ontologies, not semantics.</li>
 	<li>Relational databases describe relationships rather poorly (and semantic 
 	structures not at all).</li>
-	<li>NoSQL database don't describe relationships.</li>
+	<li>NoSQL databases don't describe relationships.</li>
 </ol>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<h2>Introduction</h2>
-<p>This article looks at a specific design of a semantic database and its 
-initial implementation.&nbsp; A semantic database brings together the loosely 
+<p>What is needed is:</p>
+<ol>
+	<li>The ability to create ontologies from semantics.</li>
+	<li>A semantic database for persisting such creations.</li>
+</ol>
+<p>This article discusses an approach to meeting those two needs, bringing 
+together the loosely 
 coupled fields of graph databases, ontology engineering, and semantics.</p>
 <p>&nbsp;</p>
 <p>&nbsp;</p>
-<p>&nbsp;</p>
-
-<p>&nbsp;</p>
-<p>
-<a href="http://www.forbes.com/sites/danwoods/2014/02/14/50-shades-of-graph-how-graph-databases-are-transforming-online-dating/">
-http://www.forbes.com/sites/danwoods/2014/02/14/50-shades-of-graph-how-graph-databases-are-transforming-online-dating/</a></p>
-<li><b>The world is connected.</b> The value in computing these days is no 
-longer about automating business processes (this was the dominant use case when 
-the relational database was born). Today’s problems center around understanding 
-the real world in all its connected and dynamic glory. The world is a graph: 
-might as well embrace it.</li>
-<li><b>Change happens fast.</b> The world moves a lot faster than it did 20 
-years ago. Back then, it didn’t matter if it took months and years to design and 
-write systems. Today the timescale is months. Putting connected data into a 
-relational database is hard. And getting it out is even harder. By putting your 
-graph data into a graph database, the modeling time and development time are 
-both drastically reduced, and it’s much easier to change the model once the 
-system has been built.</li>
 <p>&nbsp;</p>
 
 </body>
