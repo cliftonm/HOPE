@@ -186,8 +186,8 @@ namespace Clifton.SemanticTypeSystem
 		{
 			foreach (INativeType nativeType in st.NativeTypes)
 			{
-				alias = (!String.IsNullOrEmpty(alias) ? alias : nativeType.Alias);
-				fqntList.Add(new FullyQualifiedNativeType() { FullyQualifiedName = stack + "." + nativeType.Name, NativeType = nativeType, Alias = alias });
+				string ntalias = (!String.IsNullOrEmpty(alias) ? alias : nativeType.Alias);
+				fqntList.Add(new FullyQualifiedNativeType() { FullyQualifiedName = stack + "." + nativeType.Name, NativeType = nativeType, Alias = ntalias });
 			}
 
 			if (recurse)
@@ -210,12 +210,12 @@ namespace Clifton.SemanticTypeSystem
 				// Acquire value through reflection.
 				PropertyInfo pi = signal.GetType().GetProperty(nativeType.Name);
 				object val = pi.GetValue(signal);
-				alias = (!String.IsNullOrEmpty(alias) ? alias : nativeType.Alias);
+				string ntalias = (!String.IsNullOrEmpty(alias) ? alias : nativeType.Alias);
 
 				fqntList.Add(new FullyQualifiedNativeType() 
 				{ 
 					FullyQualifiedName = stack + "." + nativeType.Name, 
-					Alias = alias,
+					Alias = ntalias,
 					NativeType = nativeType,
 					Value = val
 				});

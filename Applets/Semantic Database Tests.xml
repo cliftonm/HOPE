@@ -62,10 +62,10 @@
               <ixm:UserConfigs>
                 <ixm:UserConfig Name="ProtocolName" Value="RSSFeedItem" />
                 <ixm:UserConfig Name="WindowName" Value="Feed" />
-                <ixm:UserConfig Name="WindowX" Value="17" />
-                <ixm:UserConfig Name="WindowY" Value="32" />
-                <ixm:UserConfig Name="WindowWidth" Value="1586" />
-                <ixm:UserConfig Name="WindowHeight" Value="417" />
+                <ixm:UserConfig Name="WindowX" Value="159" />
+                <ixm:UserConfig Name="WindowY" Value="16" />
+                <ixm:UserConfig Name="WindowWidth" Value="712" />
+                <ixm:UserConfig Name="WindowHeight" Value="231" />
               </ixm:UserConfigs>
             </ixm:ReceptorDef>
             <ixm:ReceptorDef Name="Carrier List Viewer" AssemblyName="CarrierListViewerReceptor.dll" Enabled="True" Location="211, 260">
@@ -80,8 +80,8 @@
               <ixm:UserConfigs>
                 <ixm:UserConfig Name="ProtocolName" Value="LoggerMessage" />
                 <ixm:UserConfig Name="WindowName" Value="SQL Statements" />
-                <ixm:UserConfig Name="WindowX" Value="14" />
-                <ixm:UserConfig Name="WindowY" Value="656" />
+                <ixm:UserConfig Name="WindowX" Value="160" />
+                <ixm:UserConfig Name="WindowY" Value="447" />
                 <ixm:UserConfig Name="WindowWidth" Value="0" />
                 <ixm:UserConfig Name="WindowHeight" Value="0" />
               </ixm:UserConfigs>
@@ -98,10 +98,10 @@
               <ixm:UserConfigs>
                 <ixm:UserConfig Name="ProtocolName" Value="ExceptionMessage" />
                 <ixm:UserConfig Name="WindowName" Value="Exceptions" />
-                <ixm:UserConfig Name="WindowX" Value="15" />
-                <ixm:UserConfig Name="WindowY" Value="343" />
-                <ixm:UserConfig Name="WindowWidth" Value="879" />
-                <ixm:UserConfig Name="WindowHeight" Value="300" />
+                <ixm:UserConfig Name="WindowX" Value="161" />
+                <ixm:UserConfig Name="WindowY" Value="257" />
+                <ixm:UserConfig Name="WindowWidth" Value="549" />
+                <ixm:UserConfig Name="WindowHeight" Value="198" />
               </ixm:UserConfigs>
             </ixm:ReceptorDef>
             <ixm:ReceptorDef Name="Web Page Viewer" AssemblyName="WebBrowserReceptor.dll" Enabled="True" Location="163, 153">
