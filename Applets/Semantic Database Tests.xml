@@ -18,7 +18,7 @@
                 <ixm:UserConfig Name="Protocols" Value="RSSFeedItem" />
               </ixm:UserConfigs>
             </ixm:ReceptorDef>
-            <ixm:ReceptorDef Name="Feed Reader" AssemblyName="FeedReaderReceptor.dll" Enabled="True" Location="238, 166">
+            <ixm:ReceptorDef Name="Feed Reader" AssemblyName="FeedReaderReceptor.dll" Enabled="True" Location="215, 550">
               <ixm:ReceiveProtocols>
                 <ixm:ReceiveProtocol Protocol="RSSFeedUrl" Enabled="True" />
               </ixm:ReceiveProtocols>
@@ -28,17 +28,17 @@
                 <ixm:EmitProtocol Protocol="Text" Enabled="True" />
                 <ixm:EmitProtocol Protocol="RSSFeedTitle" Enabled="True" />
                 <ixm:EmitProtocol Protocol="RSSFeedUrl" Enabled="True" />
-                <ixm:EmitProtocol Protocol="Url" Enabled="True" />
+                <ixm:EmitProtocol Protocol="Url" Enabled="False" />
                 <ixm:EmitProtocol Protocol="RSSFeedDescription" Enabled="True" />
                 <ixm:EmitProtocol Protocol="RSSFeedPubDate" Enabled="True" />
                 <ixm:EmitProtocol Protocol="RSSFeedAuthors" Enabled="True" />
                 <ixm:EmitProtocol Protocol="RSSFeedCategories" Enabled="True" />
-                <ixm:EmitProtocol Protocol="ExceptionMessage" Enabled="False" />
+                <ixm:EmitProtocol Protocol="ExceptionMessage" Enabled="True" />
                 <ixm:EmitProtocol Protocol="TextMessage" Enabled="True" />
-                <ixm:EmitProtocol Protocol="LoggerMessage" Enabled="False" />
+                <ixm:EmitProtocol Protocol="LoggerMessage" Enabled="True" />
               </ixm:EmitProtocols>
               <ixm:UserConfigs>
-                <ixm:UserConfig Name="FeedUrl" Value="codeproject" />
+                <ixm:UserConfig Name="FeedUrl" Value="http://www.codeproject.com/WebServices/ArticleRSS.aspx" />
                 <ixm:UserConfig Name="FeedName" Value="codeproject" />
               </ixm:UserConfigs>
             </ixm:ReceptorDef>
@@ -64,11 +64,11 @@
                 <ixm:UserConfig Name="WindowName" Value="Feed" />
                 <ixm:UserConfig Name="WindowX" Value="17" />
                 <ixm:UserConfig Name="WindowY" Value="32" />
-                <ixm:UserConfig Name="WindowWidth" Value="0" />
-                <ixm:UserConfig Name="WindowHeight" Value="0" />
+                <ixm:UserConfig Name="WindowWidth" Value="1586" />
+                <ixm:UserConfig Name="WindowHeight" Value="417" />
               </ixm:UserConfigs>
             </ixm:ReceptorDef>
-            <ixm:ReceptorDef Name="Carrier List Viewer" AssemblyName="CarrierListViewerReceptor.dll" Enabled="True" Location="256, 328">
+            <ixm:ReceptorDef Name="Carrier List Viewer" AssemblyName="CarrierListViewerReceptor.dll" Enabled="True" Location="211, 260">
               <ixm:ReceiveProtocols>
                 <ixm:ReceiveProtocol Protocol="LoggerMessage" Enabled="True" />
               </ixm:ReceiveProtocols>
@@ -86,7 +86,7 @@
                 <ixm:UserConfig Name="WindowHeight" Value="0" />
               </ixm:UserConfigs>
             </ixm:ReceptorDef>
-            <ixm:ReceptorDef Name="Carrier List Viewer" AssemblyName="CarrierListViewerReceptor.dll" Enabled="True" Location="396, 387">
+            <ixm:ReceptorDef Name="Carrier List Viewer" AssemblyName="CarrierListViewerReceptor.dll" Enabled="True" Location="407, 549">
               <ixm:ReceiveProtocols>
                 <ixm:ReceiveProtocol Protocol="ExceptionMessage" Enabled="True" />
               </ixm:ReceiveProtocols>
@@ -100,9 +100,25 @@
                 <ixm:UserConfig Name="WindowName" Value="Exceptions" />
                 <ixm:UserConfig Name="WindowX" Value="15" />
                 <ixm:UserConfig Name="WindowY" Value="343" />
-                <ixm:UserConfig Name="WindowWidth" Value="0" />
-                <ixm:UserConfig Name="WindowHeight" Value="0" />
+                <ixm:UserConfig Name="WindowWidth" Value="879" />
+                <ixm:UserConfig Name="WindowHeight" Value="300" />
               </ixm:UserConfigs>
+            </ixm:ReceptorDef>
+            <ixm:ReceptorDef Name="Web Page Viewer" AssemblyName="WebBrowserReceptor.dll" Enabled="True" Location="163, 153">
+              <ixm:ReceiveProtocols>
+                <ixm:ReceiveProtocol Protocol="Url" Enabled="True" />
+              </ixm:ReceiveProtocols>
+              <ixm:UserConfigs>
+                <ixm:UserConfig Name="WindowX" Value="226" />
+                <ixm:UserConfig Name="WindowY" Value="20" />
+                <ixm:UserConfig Name="WindowWidth" Value="1253" />
+                <ixm:UserConfig Name="WindowHeight" Value="981" />
+              </ixm:UserConfigs>
+            </ixm:ReceptorDef>
+            <ixm:ReceptorDef Name="Web Page Launcher" AssemblyName="UrlReceptor.dll" Enabled="False" Location="57, 156">
+              <ixm:ReceiveProtocols>
+                <ixm:ReceiveProtocol Protocol="Url" Enabled="True" />
+              </ixm:ReceiveProtocols>
             </ixm:ReceptorDef>
           </ixm:Receptors>
           <ixm:Permeabilities>
