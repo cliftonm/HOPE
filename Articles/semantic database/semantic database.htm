@@ -1,0 +1,234 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Semantic Database - Concepts</title>
+</head>
+
+<body>
+
+<p>Semantic Database - Concepts, Design, Implementation</p>
+<h2>Preface</h2>
+<h3>Semantics</h3>
+<p>Semantics is an emerging &quot;space&quot; of research and development in 
+information 
+science.&nbsp; You have most likely heard of the
+<a href="http://en.wikipedia.org/wiki/Semantic_Web">Semantic Web</a> and perhaps 
+have looked at (or are already working with) technologies such as the
+<a href="http://en.wikipedia.org/wiki/Resource_Description_Framework">Resource 
+Description Format</a> (RDF) and/or the
+<a href="http://en.wikipedia.org/wiki/Web_Ontology_Language">Web Ontology 
+Language</a> (OWL).&nbsp; </p>
+<p>If not, you are most likely wondering, what is the point of all of this?&nbsp; 
+A good description of why semantics is important comes from the
+<a href="http://www.schema.org/">schema.org</a>:</p>
+<p><i>&quot;Many sites are generated from structured data, which is often stored in 
+databases. When this data is formatted into HTML, it becomes very difficult to 
+recover the original structured data. Many applications, especially search 
+engines, can benefit greatly from direct access to this structured data.&quot;</i></p>
+<p>In other words, by exposing the semantics of the data, machines can then 
+utilize the information in more interesting ways than just storing it or 
+displaying it.&nbsp; A classic example is a website that contains a phone 
+number.&nbsp; If the phone number is has a semantic tag, then your smart phone 
+can easily offer it up as number to dial.&nbsp; Contrast this with the hoops an 
+application has to go through to scan a page and find text that matches any 
+number of styles of presenting a phone number, validating that it is actually a 
+number rather than a math expression that looks like &quot;619-555-1212&quot;, etc.</p>
+<h3>Structured Data</h3>
+<p>In the above quote, you'll notice the phrase &quot;<i>recover the original 
+structured data.</i>&quot;&nbsp; This implies that the data has structure -- it's not 
+just a field, but the fields mean something and can have sub-structures -- in 
+other words, the structured data is a tree.</p>
+<p>Here's a couple examples:</p>
+<p align="center"><img border="0" src="latlon.png" width="188" height="244">&nbsp;&nbsp;&nbsp;&nbsp;
+<img border="0" src="sphone.png" width="432" height="169" style="margin-bottom:40px"></p>
+<h3>Ontology</h3>
+<p>While in the abstract, &quot;ontology&quot; means &quot;the branch of metaphysics dealing 
+with the nature of being,&quot; in information science:</p>
+<p><i>&quot;An ontology is defined as a formal, explicit specification of a shared 
+conceptualization. It provides a common vocabulary to denote the types, 
+properties and interrelationships of concepts in a domain.&quot; </i>
+<a href="http://en.wikipedia.org/wiki/Ontology_(information_science)">- Ontology 
+(information science)</a></p>
+<p>And notice:</p>
+<p><i>&quot;Ontologies are the structural frameworks for organizing information and 
+are used in ...the <u>Semantic Web</u>...&quot;</i></p>
+<p>Semantics are useful for understanding the structure of a &quot;thing&quot;, however we 
+need ontologies to relate things with other things.&nbsp; One would expect that 
+a semantic database be relational -- it would be able to relate structured data 
+into ontologies using &quot;semantic relationships.&quot;</p>
+<p>Here is an example instance of the <a href="http://www.foaf-project.org/">
+Friend of a Friend</a> ontology (from the
+<a href="http://www.w3.org/TR/2005/WD-swbp-skos-core-guide-20051102/">W3C SKOS 
+Core Guide</a>):</p>
+<p align="center"><img border="0" src="foaf.png" width="613" height="506"></p>
+<p>The SKOS Core Vocabulary defines two properties of a semantic relationship:</p>
+<ol>
+	<li>The relationship between the two structures defines one as being 
+	&quot;broader&quot; or &quot;narrower&quot; with relation to the other</li>
+	<li>An associative relationship, in which the two structures are &quot;related&quot; 
+</li>
+</ol>
+<p>We again see two concepts emerging:</p>
+<ol>
+	<li>The relationship between data structures is itself structural (trees)</li>
+<li>A structural can be associated with another structure (relational)</li>
+</ol>
+<h3>Graph Databases</h3>
+<p>If you haven't heard, graph databases are all the rage at the moment, one of 
+the most popular being <a href="http://www.neo4j.org">Neo4j</a>.&nbsp; From 
+their website:</p>
+<p><i>&quot;A graph database stores data in a graph, the most generic of data 
+structures, capable of elegantly representing any kind of data in a highly 
+accessible way.&quot;</i></p>
+<p>It is very important to understand the strengths and weaknesses of a graph 
+database with regards to a semantic database.&nbsp; There is a lot of guidance 
+that a graph database can give on understanding the issues of mapping 
+ontologies.&nbsp; Ironically though, a graph database does very poorly with 
+regards the capturing semantic structure, as will be revealed in the following 
+discussion.</p>
+<h4>What is a Graph?</h4>
+<p>From Neo4j's website:</p>
+<p><i>&quot;...a graph is just a collection of vertices and edges—or, in less 
+intimidating language,a set of nodes and the relationships that connect them. 
+Graphs represent entities as nodes and the ways in which those entities relate 
+to the world as relationships.&quot; -</i> Robinson, Ian, &amp; Webber, Jim, &amp; Eifrem, 
+Emil (2013). <i>Graph Databases.</i> O'Reilly, pg 1 (free download
+<a href="http://www.graphdatabases.com/">here</a>.)</p>
+<h4>Graph Database vs. Relational Database</h4>
+<p>Importantly, with regards to traditional relational databases:</p>
+<p><i>&quot;...relational databases were initially designed to codify paper forms and 
+tabular structures—something they do exceedingly well—they struggle when 
+attempting to model the ad hoc, exceptional relationships that crop up in the 
+real world. Ironically, relational databases deal poorly with relationships.&nbsp; 
+Relationships do exist in the vernacular of relational databases, but only as a 
+means of joining tables. In our discussion of connected data in the previous 
+chapter, we mentioned we often need to disambiguate the semantics of the 
+relationships that connect entities, as well as qualify their weight or 
+strength. Relational relations do nothing of the sort.&quot; </i>- (ibid, pg 11)</p>
+<p>And here is a very important point:</p>
+<p><i>&quot;Relationships are first-class citizens of the graph data model, unlike 
+other database management systems, which require us to infer connections between 
+entities using contrived properties such as foreign keys, or out-of-band 
+processing like map-reduce. By assembling the simple abstractions of nodes and 
+relationships into connected structures, graph databases enable us to build 
+arbitrarily sophisticated models that map closely to our problem domain. The 
+resulting models are simpler and at the same time more expressive than those 
+produced using traditional relational databases and the other NOSQL stores.&quot;</i> 
+- (ibid, pg 6)</p>
+<p>So there is actually a third leg to the semantic database concept.&nbsp; We 
+previously identified:</p>
+<ol>
+	<li>Semantic structure - the structure of a particular &quot;thing&quot;</li>
+	<li>Ontology - the structure of semantic structures</li>
+</ol>
+<p>We now add a third aspect:</p>
+
+<p>&nbsp;&nbsp;&nbsp; 3.&nbsp;&nbsp; Explicit connection meaning</p>
+
+<p>In other words, the connections between semantic structures that comprise the 
+ontology themselves have meaning.</p>
+<h4>Loss of Semantic Structure</h4>
+<p>Because a graph database focuses on the ontology of information, it has no 
+concept of the actual structures that define the properties of a node.&nbsp; 
+This is a result of the concept of &quot;facts&quot;:&nbsp; <i>&quot;When two or more domain 
+entities interact for a period of time, a fact emerges. We represent these facts 
+as separate nodes, with connections to each of the entities engaged in that 
+fact.&quot;</i> - (ibid, pg 66)</p>
+<p>We can see this in the examples given for creating a graph database.&nbsp; 
+From pg 41:</p>
+<p align="center"><img border="0" src="graphdb1.png" width="337" height="137"></p>
+<p>We have &quot;fact&quot; nodes:</p>
+<ul>
+	<li>William Shakespeare</li>
+<li>The Tempest</li>
+	<li>Juilias Ceasar</li>
+</ul>
+<p>This information lacks semantic context, for example indicating that 
+&quot;William Shakespeare&quot; is a playwright or that &quot;The Tempest&quot; is a play.&nbsp; 
+Interestingly, this semantic information becomes an arbitrary label in the
+<a href="http://docs.neo4j.org/chunked/snapshot/cypher-query-lang.html">Cypher</a> query 
+fragment <code>bard=node:author(lastname='Shakespeare')</code>.&nbsp; From the 
+query we can determine that William Shakespeare is a bard, however, this 
+information is completely lost in the graph database!&nbsp; To put it another 
+way, if we follow the &quot;fact&quot; best practice, it becomes impossible to query a 
+graph database for data by specifying a semantic context.&nbsp; I cannot ask the 
+graph database &quot;show me all the people that are bards&quot; unless I explicitly 
+create a node called &quot;bard&quot; with a relationship to William Shakespeare.&nbsp; 
+This problem stems partially from the fact that a graph database represents a 
+specific domain: <i>&quot;By assembling the simple abstractions of nodes and 
+relationships into connected structures, graph databases enable us to build 
+arbitrarily sophisticated models that map closely to our problem domain.&quot;</i> - 
+(ibid, pg 6).&nbsp; At best, we can say a node with properties &quot;firstname&quot; and &quot;lastname&quot; 
+represents a &quot;person&quot;, but we can say nothing else about that person, such as 
+distinguishing the person from the playwright, the producer, or the actor, <i>
+except</i> through a relationship with another node, where the relationship 
+provides further semantic meaning, such as &quot;wrote_play&quot;, or &quot;produced_play&quot; or &quot;acted_in&quot;.</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>However, a graph database typically views semantics (the data structure) as a 
+second class citizen, as, for example:</p>
+<p><i>&quot;Use node properties to represent entity attributes, plus any necessary 
+entity metadata, such as timestamps, version numbers, etc.&quot; -</i> Robinson, Ian, 
+&amp; Webber, Jim, &amp; Eifrem, Emil (2013). <i>Graph Databases.</i> O'Reilly, pg 65 
+(free download <a href="http://www.graphdatabases.com/">here</a>.)</p>
+<p>The concern here is that the graph database is emphasizing the ontology, 
+leaving the semantic structure to be defined as node properties.</p>
+<h3>Semantic Database</h3>
+<p>In the above discussion, we come to several important observations:</p>
+<ol>
+	<li>An ontology emphases the relationship of entities rather than defining 
+	the entity structure.</li>
+	<li>Semantics emphasizes the structure but not the relationships between 
+	structures.</li>
+</ol>
+<p>Furthermore, with regards to current database options:</p>
+<ol>
+	<li>Graph databases describe ontologies, not semantics.</li>
+	<li>Relational databases describe relationships rather poorly (and semantic 
+	structures not at all).</li>
+	<li>NoSQL database don't describe relationships.</li>
+</ol>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<h2>Introduction</h2>
+<p>This article looks at a specific design of a semantic database and its 
+initial implementation.&nbsp; A semantic database brings together the loosely 
+coupled fields of graph databases, ontology engineering, and semantics.</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+<p>
+<a href="http://www.forbes.com/sites/danwoods/2014/02/14/50-shades-of-graph-how-graph-databases-are-transforming-online-dating/">
+http://www.forbes.com/sites/danwoods/2014/02/14/50-shades-of-graph-how-graph-databases-are-transforming-online-dating/</a></p>
+<li><b>The world is connected.</b> The value in computing these days is no 
+longer about automating business processes (this was the dominant use case when 
+the relational database was born). Today’s problems center around understanding 
+the real world in all its connected and dynamic glory. The world is a graph: 
+might as well embrace it.</li>
+<li><b>Change happens fast.</b> The world moves a lot faster than it did 20 
+years ago. Back then, it didn’t matter if it took months and years to design and 
+write systems. Today the timescale is months. Putting connected data into a 
+relational database is hard. And getting it out is even harder. By putting your 
+graph data into a graph database, the modeling time and development time are 
+both drastically reduced, and it’s much easier to change the model once the 
+system has been built.</li>
+<p>&nbsp;</p>
+
+</body>
+
+</html>
