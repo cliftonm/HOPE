@@ -108,8 +108,18 @@ namespace SemanticDatabase
 			: base(rsys)
 		{
 			AddReceiveProtocol("Query", (Action<dynamic>)(signal => QueryDatabase((string)signal.QueryText)));
-			AddEmitProtocol("LoggerMessage");
-			AddEmitProtocol("ExceptionMessage");
+
+			// Test is made for the benefit of unit testing, which doesn't necessarily instantiate this message.
+			if (rsys.SemanticTypeSystem.VerifyProtocolExists("LoggerMessage"))
+			{
+				AddEmitProtocol("LoggerMessage");
+			}
+
+			// Test is made for the benefit of unit testing, which doesn't necessarily instantiate this message.
+			if (rsys.SemanticTypeSystem.VerifyProtocolExists("ExceptionMessage"))
+			{
+				AddEmitProtocol("ExceptionMessage");
+			}
 			CreateDBIfMissing();
 			OpenDB();
 		}
@@ -211,6 +221,13 @@ namespace SemanticDatabase
 		public override void ProcessCarrier(ICarrier carrier)
 		{
 			base.ProcessCarrier(carrier);
+
+			// TODO: This is a major kludge.  What we need to do is change Action to a Func, returning true of the base handler processed the carrier.
+			if (carrier.Protocol.DeclTypeName == "Query")
+			{
+				return;
+			}
+
 			string st = carrier.Protocol.DeclTypeName;
 			// List<TableFieldValues> tfvList = CreateTableFieldValueList(st, carrier.Signal);
 			// List<TableFieldValues> tfvUniqueFieldList = tfvList.Where(t => t.UniqueField || t.FieldValues.Any(fv=>fv.UniqueField && fv.Type==FieldValueType.NativeType)).ToList();
@@ -429,8 +446,8 @@ namespace SemanticDatabase
 		{
 			if (!(String.IsNullOrEmpty(Protocols)))
 			{
-			// TODO: Remove protocols that are not being listened to anymore
-			Protocols.Split(';').ForEach(p => AddReceiveProtocol(p.Trim()));			
+				// TODO: Remove protocols that are not being listened to anymore
+				Protocols.Split(';').ForEach(p => AddReceiveProtocol(p.Trim()));			
 			}
 		}
 
@@ -675,25 +692,34 @@ namespace SemanticDatabase
 			return ret;
 		}
 
-		protected void LogSqlStatement(string sql)
-		{
-			CreateCarrierIfReceiver("LoggerMessage", signal =>
-				{
-					signal.MessageTime = DateTime.Now;
-					signal.TextMessage.Text.Value = sql;
-				});
-		}
-
 		// ------ Query -------
 
 		protected void QueryDatabase(string query)
 		{
 			try
 			{
+				AddEmitProtocol(query);
+				CreateCarrier(query, signal => { });
 			}
 			catch (Exception ex)
 			{
 				EmitException(ex);
+			}
+		}
+
+		// --------------------
+
+		protected void LogSqlStatement(string sql)
+		{
+			// Test is made for the benefit of unit testing, which doesn't necessarily instantiate this message.
+			if (rsys.SemanticTypeSystem.VerifyProtocolExists("LoggerMessage"))
+			{
+
+				CreateCarrierIfReceiver("LoggerMessage", signal =>
+				{
+					signal.MessageTime = DateTime.Now;
+					signal.TextMessage.Text.Value = sql;
+				});
 			}
 		}
 	}

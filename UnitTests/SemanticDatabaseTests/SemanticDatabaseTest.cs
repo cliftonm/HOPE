@@ -32,15 +32,19 @@ namespace SemanticDatabaseTests
 			// Initialize the Receptor System
 			rsys = new ReceptorsContainer(ssys);
 
-			// Initialize the Semantic Database Receptor
-			sdr = new SemanticDatabaseReceptor(rsys);
-
 			// Initialize declaration and structure lists.
 			decls = new List<SemanticTypeDecl>();
 			structs = new List<SemanticTypeStruct>();
 
 			// We must have a noun definition for now.
 			Helpers.InitializeNoun(ssys, decls, structs);
+
+			// We need this ST for query tests.
+			SemanticTypeStruct sts = Helpers.CreateSemanticType("Query", false, decls, structs);
+			Helpers.CreateNativeType(sts, "QueryText", "string", false);
+
+			// Initialize the Semantic Database Receptor
+			sdr = new SemanticDatabaseReceptor(rsys);
 
 			// Create our semantic structure.
 			initStructs();
@@ -477,6 +481,39 @@ namespace SemanticDatabaseTests
 			Assert.AreEqual(1, count, "Expected 1 Restaurant record.");
 
 			sdr.Terminate();
+		}
+
+		[TestMethod]
+		public void SimpleQuery()
+		{
+			InitializeSDRTests(() => InitLatLonNonUnique());
+
+			// Initialize the Semantic Data Receptor with the signal it should be listening to.
+			DropTable("LatLon");
+			sdr.Protocols = "LatLon";
+			sdr.ProtocolsUpdated();
+
+			// Create the signal.
+			ICarrier latLonCarrier = Helpers.CreateCarrier(rsys, "LatLon", signal =>
+			{
+				signal.latitude = 1.0;
+				signal.longitude = 2.0;
+			});
+
+			sdr.ProcessCarrier(latLonCarrier);
+
+			// Create the query
+			ICarrier queryCarrier = Helpers.CreateCarrier(rsys, "Query", signal =>
+			{
+				signal.QueryText = "LatLon";
+			});
+
+			sdr.ProcessCarrier(queryCarrier);
+			List<QueuedCarrierAction> queuedCarriers = rsys.QueuedCarriers;
+			Assert.AreEqual(1, queuedCarriers.Count, "Expected one signal to be returned.");
+			dynamic retSignal = queuedCarriers[0].Carrier.Signal;
+			Assert.AreEqual(1.0, retSignal.latitude, "Wrong data.");
+			Assert.AreEqual(2.0, retSignal.longitude, "Wrong data.");
 		}
 	}
 }

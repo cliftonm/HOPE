@@ -391,12 +391,20 @@ namespace Clifton.Receptor.Interfaces
 		/// </summary>
 		protected void EmitException(Exception ex)
 		{
-			CreateCarrierIfReceiver("ExceptionMessage", signal =>
+			// Test is made for the benefit of unit testing, which doesn't necessarily instantiate this message.
+			if (rsys.SemanticTypeSystem.VerifyProtocolExists("ExceptionMessage"))
 			{
-				signal.ReceptorName = Name;
-				signal.MessageTime = DateTime.Now;
-				signal.TextMessage.Text.Value = ex.Message;
-			});
+				CreateCarrierIfReceiver("ExceptionMessage", signal =>
+				{
+					signal.ReceptorName = Name;
+					signal.MessageTime = DateTime.Now;
+					signal.TextMessage.Text.Value = ex.Message;
+				});
+			}
+			else
+			{
+				throw ex;
+			}
 		}
 
 		/// <summary>

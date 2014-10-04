@@ -16,7 +16,7 @@ namespace Clifton.Receptor
 	/// Internal class for managing the queued carrier and the action to carry out when 
 	/// a receptor receiving the carrier's protocol becomes available.
 	/// </summary>
-	internal class QueuedCarrierAction
+	public class QueuedCarrierAction
 	{
 		public IReceptor From { get; set; }
 		public Carrier Carrier { get; set; }
@@ -81,6 +81,11 @@ namespace Clifton.Receptor
 		/// carrier's protocol.
 		/// </summary>
 		private List<QueuedCarrierAction> queuedCarriers;
+
+		/// <summary>
+		/// Exposed to make unit testing easier for receptors that emit carriers that aren't processed.
+		/// </summary>
+		public List<QueuedCarrierAction> QueuedCarriers { get { return queuedCarriers; } }
 
 		/// <summary>
 		/// Internal collection of receptors in this receptor system.
@@ -547,18 +552,30 @@ namespace Clifton.Receptor
 		{
 			// Get the action that we are supposed to perform on the carrier.
 			Action action = GetProcessAction(from, carrier, stopRecursion);
-			List<IReceptor> receptors = GetTargetReceptorsFor(ReceptorFromInstance(from), carrier);
+			IReceptor receptor = ReceptorFromInstance(from);
 
-			// If we have any enabled receptor for this carrier (a mapping of carrier to receptor list exists and receptors actually exist in that map)...
-			if (receptors.Count > 0)
+			// Some bullet proofing that was revealed in unit testing.
+			if (receptor != null)
 			{
-				// ...perform the action.
-				action();
+				List<IReceptor> receptors = GetTargetReceptorsFor(ReceptorFromInstance(from), carrier);
+
+				// If we have any enabled receptor for this carrier (a mapping of carrier to receptor list exists and receptors actually exist in that map)...
+				if (receptors.Count > 0)
+				{
+					// ...perform the action.
+					action();
+				}
+				else
+				{
+					// ...othwerise, queue up the carrier for when there is a receptor for it.
+					queuedCarriers.Add(new QueuedCarrierAction() { From = ReceptorFromInstance(from), Carrier = carrier, Action = action });
+				}
 			}
 			else
 			{
-				// ...othwerise, queue up the carrier for when there is a receptor for it.
-				queuedCarriers.Add(new QueuedCarrierAction() { From = ReceptorFromInstance(from), Carrier = carrier, Action = action });
+				// The "from" receptor is null, which is an invalid condition occurring during unit testing.
+				// Regardless, queue the carrier.
+				queuedCarriers.Add(new QueuedCarrierAction() { From = null, Carrier = carrier, Action = action });
 			}
 		}
 
