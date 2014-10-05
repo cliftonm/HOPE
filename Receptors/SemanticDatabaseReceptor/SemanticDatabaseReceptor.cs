@@ -718,9 +718,74 @@ namespace SemanticDatabase
 				}
 				else if (types.Count() > 1)
 				{
+					// TODO: Move this into separate functions:
+
 					// Joins require creating dynamic semantic types.
 					// Define a new protocol consisting of a root placeholder semantic element with n children,
 					// one child for each of the joined semantic types.
+
+					// First we need to find common structures between each of the specified structures.
+					Dictionary<string, List<Tuple<ISemanticTypeStruct, ISemanticTypeStruct>>> stSemanticTypes = new Dictionary<string, List<Tuple<ISemanticTypeStruct, ISemanticTypeStruct>>>();
+
+					foreach (string st in types)
+					{
+						stSemanticTypes[st] = rsys.SemanticTypeSystem.GetAllSemanticTypes(st);
+					}
+
+					// TODO: We need to implement the logic for discovering intersections with more than 2 joins.
+					// TODO: Write a unit test for this scenario.
+
+					List<ISemanticTypeStruct> sharedStructs = stSemanticTypes[types[0]].Select(t1=>t1.Item1).Intersect(stSemanticTypes[types[1]].Select(t2=>t2.Item1)).ToList();
+
+					// If the shared structure is a unique field in both parent structures, then we can do then join with the FK_ID's rather than the underlying data.
+					// So, for example, in the UniqueKeyJoinQuery unit test, we can join RSSFeedItem and Visited with:
+					// "join [one of the tables] on RSSFeedItem.FK_UrlID = Visited.FK_UrlID"		(ignoring aliased table names)
+					// IMPORTANT: Where the parent tables in the "on" statement are the parents of the respective shared structure, not the root query structure name (which just so happens to be the same in this case.)
+
+					// If there is NOT a unique key at either or both ends, then we have to drill into all native types at the joined structure level for both query paths, which would look like:
+					// "join [one of the tables] on Url1.Value = Url2.Value [and...]" where the and aggregates all the NT values shared between the two query paths.
+					// Notice that here it is VITAL that we figure out the aliases for each query path.
+
+					// Interestingly, if both reference is unique structure, we get an intersection.
+					// If both reference a non-unique structure, we get an intersection, but then we need to check the parent to see if the element is unique for both paths.
+
+					if (sharedStructs.Count > 0)
+					{
+						// TODO: If there's more than one shared structure, try an pick the one that is unique or who's parent is a unique element.
+						// TODO: Write a unit test for this.
+						if (sharedStructs[0].Unique)
+						{
+							ISemanticTypeStruct sharedStruct = sharedStructs[0];
+
+							// Find the parent for each root query given the shared structure.
+							// TODO: Will "Single" barf?
+							ISemanticTypeStruct parent0 = stSemanticTypes[types[0]].Single(t => t.Item1 == sharedStruct).Item2;
+							ISemanticTypeStruct parent1 = stSemanticTypes[types[1]].Single(t => t.Item1 == sharedStruct).Item2;
+
+							// Build the query pieces for the first type:
+							ISemanticTypeStruct sts0 = rsys.SemanticTypeSystem.GetSemanticTypeStruct(types[0]);
+							List<string> fields0 = new List<string>();
+							List<string> joins0 = new List<string>();
+							Dictionary<ISemanticTypeStruct, int> structureUseCounts = new Dictionary<ISemanticTypeStruct, int>();
+							BuildQuery(sts0, fields0, joins0, structureUseCounts);
+
+							// Build the query pieces for the second type, preserving counts so we don't accidentally re-use an alias.
+							ISemanticTypeStruct sts1 = rsys.SemanticTypeSystem.GetSemanticTypeStruct(types[1]);
+							List<string> fields1 = new List<string>();
+							List<string> joins1 = new List<string>();
+							BuildQuery(sts1, fields1, joins1, structureUseCounts);
+
+							fields0.AddRange(fields1);
+							joins0.AddRange(joins1);
+
+							// Note the root element of the second structure is always aliased as "1".
+							// TODO: This doesn't handle self joins.  Scenario?  Unit test?  Test and throw exception?
+							joins0.Add("inner join " + parent1.DeclTypeName + " on " + parent1.DeclTypeName + ".FK_" + sharedStructs[0].DeclTypeName + "ID = " + parent0.DeclTypeName + ".FK_" + sharedStructs[0].DeclTypeName + "ID");
+
+							string sqlQuery = "select " + String.Join(", ", fields0) + " \r\nfrom " + sts0.DeclTypeName + " \r\n" + String.Join(" \r\n", joins0);
+						}
+					}
+
 				}
 				else
 				{

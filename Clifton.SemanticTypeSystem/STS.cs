@@ -125,6 +125,33 @@ namespace Clifton.SemanticTypeSystem
 			return subsignal;
 		}
 
+		/// <summary>
+		/// Recurse into the named structure, returning itself and all sub-structures.
+		/// The return is a list of tuples, where item0 is the ST and item1 is the parent ST of item0
+		/// </summary>
+		public List<Tuple<ISemanticTypeStruct, ISemanticTypeStruct>> GetAllSemanticTypes(string protocolName)
+		{
+			List<Tuple<ISemanticTypeStruct, ISemanticTypeStruct>> ret = new List<Tuple<ISemanticTypeStruct, ISemanticTypeStruct>>();
+			ISemanticTypeStruct sts = GetSemanticTypeStruct(protocolName);
+			GetAllSemanticTypes(sts, null, ret);
+
+			return ret;
+		}
+
+		// TODO: Fix references to GetSemanticTypeStruct(child.Name);
+		// because these two are identical:
+		// ISemanticTypeStruct s1 = child.Element.Struct;
+		// ISemanticTypeStruct s2 = GetSemanticTypeStruct(child.Name);
+
+		/// <summary>
+		/// Recursively add ST children to the structure list.
+		/// </summary>
+		protected void GetAllSemanticTypes(ISemanticTypeStruct sts, ISemanticTypeStruct parent, List<Tuple<ISemanticTypeStruct, ISemanticTypeStruct>> structList)
+		{
+			structList.Add(new Tuple<ISemanticTypeStruct, ISemanticTypeStruct>(sts, parent));
+			sts.SemanticElements.ForEach(child => GetAllSemanticTypes(child.Element.Struct, sts, structList));
+		}
+
 		// TODO: Ordinality (which still needs to be implemented as a property of NT's and SE's) needs to be preserved.
 		/// <summary>
 		/// Returns a list of fully qualified (full path) type names for the final implementing native types.

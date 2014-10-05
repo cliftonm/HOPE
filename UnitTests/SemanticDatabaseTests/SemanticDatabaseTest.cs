@@ -133,6 +133,22 @@ namespace SemanticDatabaseTests
 			Helpers.CreateSemanticElement(stsPerson, "FirstName", false);
 		}
 
+		/// <summary>
+		/// Used for testing joins between two ST's that share a common ST.
+		/// </summary>
+		protected void InitFeedUrlStruct()
+		{
+			SemanticTypeStruct stsUrl = Helpers.CreateSemanticType("Url", true, decls, structs);
+			Helpers.CreateNativeType(stsUrl, "Value", "string", false);
+
+			SemanticTypeStruct stsVisited = Helpers.CreateSemanticType("Visited", false, decls, structs);
+			Helpers.CreateSemanticElement(stsVisited, "Url", false);
+			Helpers.CreateNativeType(stsVisited, "Count", "int", false);
+
+			SemanticTypeStruct stsFeedUrl = Helpers.CreateSemanticType("RSSFeedUrl", false, decls, structs);
+			Helpers.CreateSemanticElement(stsFeedUrl, "Url", false);
+		}
+
 		protected void DropTable(string tableName)
 		{
 			SQLiteConnection conn = sdr.Connection;
@@ -532,8 +548,11 @@ namespace SemanticDatabaseTests
 			Assert.AreEqual(2.0, retSignal.longitude, "Wrong data for longitude.");
 		}
 
+		/// <summary>
+		/// This query references the "Text" ST twice, requiring that the query use aliases, which is test here.
+		/// </summary>
 		[TestMethod]
-		public void MultipleIdenticalSubtypeQuery()
+		public void AliasQuery()
 		{
 			InitializeSDRTests(() => InitPersonStruct());
 
@@ -541,6 +560,7 @@ namespace SemanticDatabaseTests
 			DropTable("Person");
 			DropTable("LastName");
 			DropTable("FirstName");
+			DropTable("Text");
 			sdr.Protocols = "Person";
 			sdr.ProtocolsUpdated();
 
@@ -565,6 +585,94 @@ namespace SemanticDatabaseTests
 			dynamic retSignal = queuedCarriers[0].Carrier.Signal;
 			Assert.AreEqual("Clifton", retSignal.LastName.Text.Value, "Wrong data for latitude.");
 			Assert.AreEqual("Marc", retSignal.FirstName.Text.Value, "Wrong data for longitude.");
+		}
+
+		/// <summary>
+		/// In this test, two ST's a unique key structure are joined.
+		/// This is a depth-1 join, so we need to also test what happens when the join occurs at, say, depth=2.
+		/// </summary>
+		[TestMethod]
+		public void UniqueKeySingleLevelJoinQuery()
+		{
+			InitializeSDRTests(() => InitFeedUrlStruct());
+
+			DropTable("Url");
+			DropTable("Visited");
+			DropTable("RSSFeedUrl");
+
+			sdr.Protocols = "Visited;RSSFeedUrl";
+			sdr.ProtocolsUpdated();
+
+			// The schema defines that:
+			// URL is a unique structure
+			// RSSFeedUrl.Url is unique (no duplicates pointing to the same Url)
+			// Visited.Url is unique (no duplicates pointing to the same Url)
+
+			ICarrier feedUrlCarrier1 = Helpers.CreateCarrier(rsys, "RSSFeedUrl", signal =>
+				{
+					signal.Url.Value = "http://localhost";
+				});
+
+			// A URL we will not be joining on because we don't have a Visited record.
+			ICarrier feedUrlCarrier2 = Helpers.CreateCarrier(rsys, "RSSFeedUrl", signal =>
+			{
+				signal.Url.Value = "http://www.codeproject.com";
+			});
+
+			ICarrier visitedCarrier = Helpers.CreateCarrier(rsys, "Visited", signal =>
+				{
+					signal.Url.Value = "http://localhost";
+					signal.Count = 1;		// non-zero value to make sure that we're not getting a default value back.
+				});
+
+			sdr.ProcessCarrier(feedUrlCarrier1);
+			sdr.ProcessCarrier(feedUrlCarrier2);
+			sdr.ProcessCarrier(visitedCarrier);
+
+			// Create the query
+			ICarrier queryCarrier = Helpers.CreateCarrier(rsys, "Query", signal =>
+			{
+				// *** The order here is important, because the second join will be a left join ***
+				// TODO: This needs to be exposed to the user somehow.
+				signal.QueryText = "RSSFeedUrl, Visited";
+			});
+
+			sdr.ProcessCarrier(queryCarrier);
+			List<QueuedCarrierAction> queuedCarriers = rsys.QueuedCarriers;
+			Assert.AreEqual(1, queuedCarriers.Count, "Expected one signal to be returned.");
+
+			// This is a new ST that isn't defined in our schema.
+			dynamic retSignal = queuedCarriers[0].Carrier.Signal;
+		}
+
+		[TestMethod]
+		public void UniqueKeyTwoLevelJoinQuery()
+		{
+			Assert.Inconclusive();
+		}
+
+		[TestMethod]
+		public void UniqueElementSingleLevelJoinQuery()
+		{
+			Assert.Inconclusive();
+		}
+
+		[TestMethod]
+		public void UniqueElementTwoLevelJoinQuery()
+		{
+			Assert.Inconclusive();
+		}
+
+		[TestMethod]
+		public void NonUniqueElementSingleLevelJoinQuery()
+		{
+			Assert.Inconclusive();
+		}
+
+		[TestMethod]
+		public void NonUniqueElementTwoLevelJoinQuery()
+		{
+			Assert.Inconclusive();
 		}
 	}
 }

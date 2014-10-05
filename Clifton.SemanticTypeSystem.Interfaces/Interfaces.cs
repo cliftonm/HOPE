@@ -141,6 +141,13 @@ namespace Clifton.SemanticTypeSystem.Interfaces
 		ISemanticTypeStruct GetSemanticTypeStruct(string typeName);
 		Dictionary<string, ISemanticType> SemanticTypes { get;}
 		dynamic Clone(dynamic sourceSignal, ISemanticElement se);
+
+		/// <summary>
+		/// Recurse into the named structure, returning itself and all sub-structures.
+		/// The return is a list of tuples, where item0 is the ST and item1 is the parent ST of item0
+		/// </summary>
+		List<Tuple<ISemanticTypeStruct, ISemanticTypeStruct>> GetAllSemanticTypes(string protocolName);
+
 		List<IFullyQualifiedNativeType> GetFullyQualifiedNativeTypes(string protocolName, bool recurse = true);
 		List<IFullyQualifiedNativeType> GetFullyQualifiedNativeTypeValues(dynamic signal, string protocolName, bool recurse = true);
 		void SetFullyQualifiedNativeTypeValue(dynamic signal, string fqn, object val);
