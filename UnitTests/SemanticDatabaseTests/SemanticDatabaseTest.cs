@@ -117,6 +117,22 @@ namespace SemanticDatabaseTests
 			Helpers.CreateNativeType(sts, "longitude", "double", false);
 		}
 
+		protected void InitPersonStruct()
+		{
+			SemanticTypeStruct stsText = Helpers.CreateSemanticType("Text", false, decls, structs);
+			Helpers.CreateNativeType(stsText, "Value", "string", false);
+	
+			SemanticTypeStruct stsFirstName = Helpers.CreateSemanticType("FirstName", false, decls, structs);
+			Helpers.CreateSemanticElement(stsFirstName, "Text", false);
+
+			SemanticTypeStruct stsLastName = Helpers.CreateSemanticType("LastName", false, decls, structs);
+			Helpers.CreateSemanticElement(stsLastName, "Text", false);
+
+			SemanticTypeStruct stsPerson = Helpers.CreateSemanticType("Person", false, decls, structs);
+			Helpers.CreateSemanticElement(stsPerson, "LastName", false);
+			Helpers.CreateSemanticElement(stsPerson, "FirstName", false);
+		}
+
 		protected void DropTable(string tableName)
 		{
 			SQLiteConnection conn = sdr.Connection;
@@ -512,8 +528,43 @@ namespace SemanticDatabaseTests
 			List<QueuedCarrierAction> queuedCarriers = rsys.QueuedCarriers;
 			Assert.AreEqual(1, queuedCarriers.Count, "Expected one signal to be returned.");
 			dynamic retSignal = queuedCarriers[0].Carrier.Signal;
-			Assert.AreEqual(1.0, retSignal.latitude, "Wrong data.");
-			Assert.AreEqual(2.0, retSignal.longitude, "Wrong data.");
+			Assert.AreEqual(1.0, retSignal.latitude, "Wrong data for latitude.");
+			Assert.AreEqual(2.0, retSignal.longitude, "Wrong data for longitude.");
+		}
+
+		[TestMethod]
+		public void MultipleIdenticalSubtypeQuery()
+		{
+			InitializeSDRTests(() => InitPersonStruct());
+
+			// Initialize the Semantic Data Receptor with the signal it should be listening to.
+			DropTable("Person");
+			DropTable("LastName");
+			DropTable("FirstName");
+			sdr.Protocols = "Person";
+			sdr.ProtocolsUpdated();
+
+			// Create the signal.
+			ICarrier personCarrier = Helpers.CreateCarrier(rsys, "Person", signal =>
+			{
+				signal.LastName.Text.Value = "Clifton";
+				signal.FirstName.Text.Value = "Marc";
+			});
+
+			sdr.ProcessCarrier(personCarrier);
+
+			// Create the query
+			ICarrier queryCarrier = Helpers.CreateCarrier(rsys, "Query", signal =>
+			{
+				signal.QueryText = "Person";
+			});
+
+			sdr.ProcessCarrier(queryCarrier);
+			List<QueuedCarrierAction> queuedCarriers = rsys.QueuedCarriers;
+			Assert.AreEqual(1, queuedCarriers.Count, "Expected one signal to be returned.");
+			dynamic retSignal = queuedCarriers[0].Carrier.Signal;
+			Assert.AreEqual("Clifton", retSignal.LastName.Text.Value, "Wrong data for latitude.");
+			Assert.AreEqual("Marc", retSignal.FirstName.Text.Value, "Wrong data for longitude.");
 		}
 	}
 }

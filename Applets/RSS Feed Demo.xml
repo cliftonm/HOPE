@@ -4,7 +4,7 @@
       <ixm:Membranes>
         <ixm:MembraneDef Name="Skin">
           <ixm:Receptors>
-            <ixm:ReceptorDef Name="Feed Reader" AssemblyName="FeedReaderReceptor.dll" Enabled="True" Location="99, 218">
+            <ixm:ReceptorDef Name="Feed Reader" AssemblyName="FeedReaderReceptor.dll" Enabled="True" Location="161, 217">
               <ixm:ReceiveProtocols>
                 <ixm:ReceiveProtocol Protocol="RSSFeedUrl" Enabled="True" />
               </ixm:ReceiveProtocols>
@@ -104,6 +104,21 @@
                 <ixm:UserConfig Name="WindowY" Value="123" />
                 <ixm:UserConfig Name="WindowWidth" Value="769" />
                 <ixm:UserConfig Name="WindowHeight" Value="529" />
+              </ixm:UserConfigs>
+            </ixm:ReceptorDef>
+            <ixm:ReceptorDef Name="Semantic Database" AssemblyName="SemanticDatabaseReceptor.dll" Enabled="True" Location="57, 164">
+              <ixm:ReceiveProtocols>
+                <ixm:ReceiveProtocol Protocol="Query" Enabled="True" />
+                <ixm:ReceiveProtocol Protocol="RSSFeedItem" Enabled="True" />
+              </ixm:ReceiveProtocols>
+              <ixm:EmitProtocols>
+                <ixm:EmitProtocol Protocol="LoggerMessage" Enabled="True" />
+                <ixm:EmitProtocol Protocol="TextMessage" Enabled="True" />
+                <ixm:EmitProtocol Protocol="Text" Enabled="True" />
+                <ixm:EmitProtocol Protocol="ExceptionMessage" Enabled="True" />
+              </ixm:EmitProtocols>
+              <ixm:UserConfigs>
+                <ixm:UserConfig Name="Protocols" Value="RSSFeedItem" />
               </ixm:UserConfigs>
             </ixm:ReceptorDef>
           </ixm:Receptors>

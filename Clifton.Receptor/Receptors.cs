@@ -469,17 +469,21 @@ namespace Clifton.Receptor
 		{
 			bool ret = false;
 
-			List<IReceptor> targets = new List<IReceptor>();
-			if (MasterReceptorConnectionList.TryGetValue(from, out targets))
+			// Some bullet proofing that was revealed in unit testing.
+			if (from != null)
 			{
-				// We're only interested in enabled receptors.
-				ret = targets.Any(r => r != from && r.Instance.Enabled && r.Instance.GetEnabledReceiveProtocols().Select(rp=>rp.Protocol).Contains(protocol.DeclTypeName));
-			}
+				List<IReceptor> targets = new List<IReceptor>();
+				if (MasterReceptorConnectionList.TryGetValue(from, out targets))
+				{
+					// We're only interested in enabled receptors.
+					ret = targets.Any(r => r != from && r.Instance.Enabled && r.Instance.GetEnabledReceiveProtocols().Select(rp => rp.Protocol).Contains(protocol.DeclTypeName));
+				}
 
-			if (!ret)
-			{
-				// check protocol map for receivers that are not the issuing receptor:
-				ret = protocolReceptorMap.Any(kvp => (kvp.Key == protocol.DeclTypeName) && kvp.Value.Any(r => (r != from) && (r.Instance.Enabled))); // .ContainsKey(protocol.DeclTypeName);
+				if (!ret)
+				{
+					// check protocol map for receivers that are not the issuing receptor:
+					ret = protocolReceptorMap.Any(kvp => (kvp.Key == protocol.DeclTypeName) && kvp.Value.Any(r => (r != from) && (r.Instance.Enabled))); // .ContainsKey(protocol.DeclTypeName);
+				}
 			}
 
 			return ret;

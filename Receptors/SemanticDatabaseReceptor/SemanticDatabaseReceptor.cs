@@ -480,8 +480,7 @@ namespace SemanticDatabase
 			foreach (INativeType nt in sts.NativeTypes)
 			{
 				// Acquire value through reflection.
-				PropertyInfo pi = signal.GetType().GetProperty(nt.Name);
-				object val = pi.GetValue(signal);
+				object val = nt.GetValue(rsys.SemanticTypeSystem, signal);
 				tfvEntry.FieldValues.Add(new FieldValue(tfvEntry, nt.Name, val, nt.UniqueField, FieldValueType.NativeType));
 			}
 		}
@@ -544,7 +543,7 @@ namespace SemanticDatabase
 				else
 				{
 					// No composite key, so just insert the ST.
-					Insert(stfkMap, sts, signal);
+					id = Insert(stfkMap, sts, signal);
 				}
 			}
 			else
@@ -698,12 +697,160 @@ namespace SemanticDatabase
 		{
 			try
 			{
-				AddEmitProtocol(query);
-				CreateCarrier(query, signal => { });
+				List<string> types = query.LeftOf("where").Split(',').Select(s => s.Trim()).ToList();
+
+				// We only have one protocol to query, so we can create the protocol directly since it's already defined.
+				if (types.Count() == 1)
+				{
+					string protocol = types[0];
+					AddEmitProtocol(protocol);		// identical protocols are ignored.
+					ISemanticTypeStruct sts = rsys.SemanticTypeSystem.GetSemanticTypeStruct(protocol);
+					
+					if (!rsys.SemanticTypeSystem.VerifyProtocolExists(protocol))
+					{
+						throw new Exception("Protocol " + protocol + " is not defined.");
+					}
+
+					List<object> signal = QueryType(protocol, String.Empty);
+
+					// Create a carrier for each of the signals in the returned record collection.
+					signal.ForEach(s => rsys.CreateCarrier(this, sts, s));
+				}
+				else if (types.Count() > 1)
+				{
+					// Joins require creating dynamic semantic types.
+					// Define a new protocol consisting of a root placeholder semantic element with n children,
+					// one child for each of the joined semantic types.
+				}
+				else
+				{
+					throw new Exception("Query does not include any semantic types.");
+				}
 			}
 			catch (Exception ex)
 			{
 				EmitException(ex);
+			}
+		}
+
+		/// <summary>
+		/// Return a list of dynamics that represents the semantic element instances in the resulting query set.
+		/// </summary>
+		protected List<object> QueryType(string protocol, string where)
+		{
+			List<object> ret = new List<object>();
+
+			// We build the query by recursing through the semantic structure.
+			ISemanticTypeStruct sts = rsys.SemanticTypeSystem.GetSemanticTypeStruct(protocol);
+			List<string> fields = new List<string>();
+			List<string> joins = new List<string>();
+			Dictionary<ISemanticTypeStruct, int> structureUseCounts = new Dictionary<ISemanticTypeStruct, int>();
+			BuildQuery(sts, fields, joins, structureUseCounts);
+
+			// CRLF for pretty inspection.
+			string sqlQuery = "select " + String.Join(", ", fields) + " \r\nfrom " + sts.DeclTypeName + " \r\n" + String.Join(" \r\n", joins);
+
+			SQLiteCommand cmd = conn.CreateCommand();
+			cmd.CommandText = sqlQuery;
+			LogSqlStatement(sqlQuery);
+			SQLiteDataReader reader = cmd.ExecuteReader();
+
+			// Populate the signal with the columns in each record read.
+			while (reader.Read())
+			{
+				ISemanticTypeStruct outprotocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct(protocol);
+				object outsignal = rsys.SemanticTypeSystem.Create(protocol);
+				int counter = 0;
+				Populate(sts, outsignal, reader, ref counter);
+				ret.Add(outsignal);
+			}
+
+			reader.Close();
+
+			return ret;
+		}
+
+		/// <summary>
+		/// Recurses the semantic structure to generate the native type fields and the semantic element joins.
+		/// </summary>
+		protected void BuildQuery(ISemanticTypeStruct sts, List<string> fields, List<string> joins, Dictionary<ISemanticTypeStruct, int> structureUseCounts)
+		{
+			// Add native type fields.
+			string parentName = GetUseName(sts, structureUseCounts);
+			sts.NativeTypes.ForEach(nt => fields.Add(parentName + "." + nt.Name));
+
+			sts.SemanticElements.ForEach(child =>
+				{
+					ISemanticTypeStruct childsts = child.Element.Struct; // rsys.SemanticTypeSystem.GetSemanticTypeStruct(child.Name);
+					int childcount = IncrementUseCount(childsts, structureUseCounts);
+					string asChildName = GetUseName(childsts, structureUseCounts);
+					joins.Add("left join " + childsts.DeclTypeName + " as " + asChildName + " on " + asChildName + ".ID = " + parentName + ".FK_" + childsts.DeclTypeName + "ID");
+					BuildQuery(childsts, fields, joins, structureUseCounts);
+				});
+		}
+
+		/// <summary>
+		/// Increment the use counter for the structure.
+		/// </summary>
+		protected int IncrementUseCount(ISemanticTypeStruct childsts, Dictionary<ISemanticTypeStruct, int> structureUseCounts)
+		{
+			int ret;
+
+			if (!structureUseCounts.TryGetValue(childsts, out ret))
+			{
+				structureUseCounts[childsts] = 0;
+			}
+
+			ret = structureUseCounts[childsts] + 1;
+			structureUseCounts[childsts] = ret;
+
+			return ret;
+		}
+
+		/// <summary>
+		/// Append the use counter if it exists.
+		/// </summary>
+		protected string GetUseName(ISemanticTypeStruct sts, Dictionary<ISemanticTypeStruct, int> structureUseCounts)
+		{
+			int count;
+			string ret = sts.DeclTypeName;
+
+			if (structureUseCounts.TryGetValue(sts, out count))
+			{
+				ret = ret + count;
+			}
+
+			return ret;
+		}
+
+		/// <summary>
+		/// Recursively populates the values into the signal.  The recursion algorithm here must match exactly the same
+		/// form as the recursion algorithm in BuildQuery, as the correlation between field names and their occurrance
+		/// in the semantic structure is relied upon.  For now at least.
+		/// </summary>
+		protected void Populate(ISemanticTypeStruct sts, object signal, SQLiteDataReader reader, ref int parmNumber)
+		{
+			// Add native type fields.  Use a foreach loop because ref types can't be used in lambda expressions.
+			foreach(INativeType nt in sts.NativeTypes)
+			{
+				try
+				{
+					nt.SetValue(rsys.SemanticTypeSystem, signal, reader[parmNumber++]);
+				}
+				catch(Exception ex)
+				{
+					// TODO: We are silently catching types that we can't convert, such as List<>.
+					// We need a unit test for this kind of behavior as well as, of course, the implementation.
+					EmitException(ex);
+				}
+			}
+
+			foreach(ISemanticElement child in sts.SemanticElements)
+			{
+				ISemanticTypeStruct childsts = child.Element.Struct;
+				PropertyInfo piSub = signal.GetType().GetProperty(child.Name);
+				object childSignal = piSub.GetValue(signal);
+				Populate(childsts, childSignal, reader, ref parmNumber);
 			}
 		}
 
