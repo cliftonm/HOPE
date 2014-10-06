@@ -643,6 +643,8 @@ namespace SemanticDatabaseTests
 
 			// This is a new ST that isn't defined in our schema.
 			dynamic retSignal = queuedCarriers[0].Carrier.Signal;
+			Assert.AreEqual("http://localhost", retSignal.RSSFeedUrl.Url.Value, "Unexpected URL value.");
+			Assert.AreEqual(1, retSignal.Visited.Count);
 		}
 
 		[TestMethod]

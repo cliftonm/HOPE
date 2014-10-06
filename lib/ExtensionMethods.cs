@@ -255,6 +255,24 @@ namespace Clifton.ExtensionMethods
 			return (new[] { dict1, dict2 }).SelectMany(dict => dict).ToDictionary(pair => pair.Key, pair => pair.Value);
 		}
 
+		/// <summary>
+		/// Merges only the unique elements found in both dictionaries.
+		/// </summary>
+		public static Dictionary<T, U> MergeNonDuplicates<T, U>(this Dictionary<T, U> dict1, Dictionary<T, U> dict2)
+		{
+			Dictionary<T, U> dict = dict1.ToDictionary(pair => pair.Key, pair => pair.Value);
+
+			foreach (KeyValuePair<T, U> kvp in dict2)
+			{
+				if (!dict1.ContainsKey(kvp.Key))
+				{
+					dict[kvp.Key] = kvp.Value;
+				}
+			}
+
+			return dict;
+		}
+
 		// ---------- collection management --------------
 
 		// From the comments of the blog entry http://blog.jordanterrell.com/post/LINQ-Distinct()-does-not-work-as-expected.aspx regarding why Distinct doesn't work right.

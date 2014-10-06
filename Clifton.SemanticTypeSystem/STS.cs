@@ -209,6 +209,62 @@ namespace Clifton.SemanticTypeSystem
 			}
 		}
 
+		/// <summary>
+		/// Creates a custom type of the given name and known child protocols.
+		/// </summary>
+		public void CreateCustomType(string name, List<string> childProtocols)
+		{
+			List<SemanticTypeDecl> decls = new List<SemanticTypeDecl>();
+			List<SemanticTypeStruct> structs = new List<SemanticTypeStruct>();
+
+			SemanticTypeDecl decl;
+			SemanticTypeStruct sts;
+
+			// Noun Decl.
+			decl = new SemanticTypeDecl() { OfTypeName = "Noun" };
+			decl.AttributeValues.Add(new AttributeValue() { Name = "Name", Value = "Noun" });
+			decls.Add(decl);
+
+			// Noun Struct.
+			sts = new SemanticTypeStruct() { DeclTypeName = "Noun" };
+			sts.NativeTypes.Add(new Clifton.SemanticTypeSystem.NativeType() { Name = "Name", ImplementingType = "string" });
+			structs.Add(sts);
+
+			// Custom type decl and struct.
+			decl = new SemanticTypeDecl() { OfTypeName = "Noun" };
+			decl.AttributeValues.Add(new AttributeValue() { Name = "Name", Value = name });
+			sts = new SemanticTypeStruct() { DeclTypeName = name };
+			decls.Add(decl);
+			structs.Add(sts);
+
+			// Elements of the custom type.
+			foreach (string childProtocol in childProtocols)
+			{
+				sts.SemanticElements.Add(new Clifton.SemanticTypeSystem.SemanticElement() { Name = childProtocol});
+				// Recursively copy decls and structs of the existing types into our decls and structs lists.
+				SemanticTypeStruct existingSts = (SemanticTypeStruct)GetSemanticTypeStruct(childProtocol);
+				CopyDeclStruct(decls, structs, existingSts);
+			}
+
+			// Compile it.
+			Parse(decls, structs);
+			string code = GenerateCode();
+			System.Reflection.Assembly assy = Compiler.Compile(code);
+			CompiledAssembly = assy;
+		}
+
+		protected void CopyDeclStruct(List<SemanticTypeDecl> decls, List<SemanticTypeStruct> structs, SemanticTypeStruct sts)
+		{
+			// Ignore duplicates.
+			if (!decls.Contains(sts.DeclType))
+			{
+				decls.Add(sts.DeclType);
+				structs.Add(sts);
+
+				sts.SemanticElements.ForEach(child => CopyDeclStruct(decls, structs, (SemanticTypeStruct)child.Element.Struct));
+			}
+		}
+
 		protected void RecurseGetFullyQualifiedNativeTypes(ISemanticTypeStruct st, string stack, string alias, bool recurse, List<IFullyQualifiedNativeType> fqntList)
 		{
 			foreach (INativeType nativeType in st.NativeTypes)
@@ -297,7 +353,7 @@ namespace Clifton.SemanticTypeSystem
 		public void Parse(List<SemanticTypeDecl> decls, List<SemanticTypeStruct> structs)
 		{
 			Dictionary<string, ISemanticType> stDict = Parser.BuildSemanticTypes(decls, structs);
-			SemanticTypes = SemanticTypes.Merge(stDict);
+			SemanticTypes = SemanticTypes.MergeNonDuplicates(stDict);
 		}
 
 		public string GenerateCode()

@@ -783,6 +783,53 @@ namespace SemanticDatabase
 							joins0.Add("inner join " + parent1.DeclTypeName + " on " + parent1.DeclTypeName + ".FK_" + sharedStructs[0].DeclTypeName + "ID = " + parent0.DeclTypeName + ".FK_" + sharedStructs[0].DeclTypeName + "ID");
 
 							string sqlQuery = "select " + String.Join(", ", fields0) + " \r\nfrom " + sts0.DeclTypeName + " \r\n" + String.Join(" \r\n", joins0);
+
+							// Perform the query:
+							// TODO: Separate function!
+
+							SQLiteCommand cmd = conn.CreateCommand();
+							cmd.CommandText = sqlQuery;
+							LogSqlStatement(sqlQuery);
+							SQLiteDataReader reader = cmd.ExecuteReader();
+
+							// Populate the signal with the columns in each record read.
+							while (reader.Read())
+							{
+								// The resulting fields are in the order of how they're populated based on our join list.
+								// Since we're hard-coding a 2 type joins...
+								ISemanticTypeStruct outprotocol0 = rsys.SemanticTypeSystem.GetSemanticTypeStruct(types[0]);
+								object outsignal0 = rsys.SemanticTypeSystem.Create(types[0]);
+								ISemanticTypeStruct outprotocol1 = rsys.SemanticTypeSystem.GetSemanticTypeStruct(types[1]);
+								object outsignal1 = rsys.SemanticTypeSystem.Create(types[1]);
+
+								int counter = 0;
+								Populate(outprotocol0, outsignal0, reader, ref counter);
+								Populate(outprotocol1, outsignal1, reader, ref counter);
+
+								// Now create a custom type if it doesn't already exist.  The custom type name is formed from the type names in the join.
+								string customTypeName = String.Join("_", types);
+
+								if (!rsys.SemanticTypeSystem.VerifyProtocolExists(customTypeName))
+								{
+									rsys.SemanticTypeSystem.CreateCustomType(customTypeName, new List<string>() { types[0], types[1] });
+									AddEmitProtocol(customTypeName);		// We now emit this custom protocol.
+								}
+
+								ISemanticTypeStruct outprotocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct(customTypeName);
+								object outsignal = rsys.SemanticTypeSystem.Create(customTypeName);
+
+								// Assign our signals to the children of the custom type.  
+								// TODO: Again, self-joins will fail here.
+								PropertyInfo pi0 = outsignal.GetType().GetProperty(types[0]);
+								pi0.SetValue(outsignal, outsignal0);
+								PropertyInfo pi1 = outsignal.GetType().GetProperty(types[1]);
+								pi1.SetValue(outsignal, outsignal1);
+
+								// Finally!  Create the carrier:
+								rsys.CreateCarrier(this, outprotocol, outsignal);
+							}
+
+							reader.Close();
 						}
 					}
 

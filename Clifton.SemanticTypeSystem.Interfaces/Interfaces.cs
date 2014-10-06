@@ -152,6 +152,8 @@ namespace Clifton.SemanticTypeSystem.Interfaces
 		List<IFullyQualifiedNativeType> GetFullyQualifiedNativeTypeValues(dynamic signal, string protocolName, bool recurse = true);
 		void SetFullyQualifiedNativeTypeValue(dynamic signal, string fqn, object val);
 		bool VerifyProtocolExists(string protocol);
+
+		void CreateCustomType(string typeName, List<string> childProtocols);
 	}
 
 	public interface IFullyQualifiedNativeType
