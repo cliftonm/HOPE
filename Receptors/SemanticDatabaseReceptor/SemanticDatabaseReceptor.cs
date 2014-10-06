@@ -751,17 +751,20 @@ namespace SemanticDatabase
 
 					if (sharedStructs.Count > 0)
 					{
+						ISemanticTypeStruct sharedStruct = sharedStructs[0];
+
+						// Find the parent for each root query given the shared structure.
+						// TODO: Will "Single" barf?
+						ISemanticTypeStruct parent0 = stSemanticTypes[types[0]].Single(t => t.Item1 == sharedStruct).Item2;
+						ISemanticTypeStruct parent1 = stSemanticTypes[types[1]].Single(t => t.Item1 == sharedStruct).Item2;
+						bool parent0ElementUnique = parent0.SemanticElements.Any(se => se.Name == sharedStruct.DeclTypeName && se.UniqueField);
+						bool parent1ElementUnique = parent1.SemanticElements.Any(se => se.Name == sharedStruct.DeclTypeName && se.UniqueField);
+
 						// TODO: If there's more than one shared structure, try an pick the one that is unique or who's parent is a unique element.
 						// TODO: Write a unit test for this.
-						if (sharedStructs[0].Unique)
+						// If the shared structure is unique, or the elements referencing the structure are unique in both parents, then we can use the FK ID between the two parent ST's to join the structures.
+						if ( (sharedStructs[0].Unique) || (parent0ElementUnique && parent1ElementUnique))
 						{
-							ISemanticTypeStruct sharedStruct = sharedStructs[0];
-
-							// Find the parent for each root query given the shared structure.
-							// TODO: Will "Single" barf?
-							ISemanticTypeStruct parent0 = stSemanticTypes[types[0]].Single(t => t.Item1 == sharedStruct).Item2;
-							ISemanticTypeStruct parent1 = stSemanticTypes[types[1]].Single(t => t.Item1 == sharedStruct).Item2;
-
 							// Build the query pieces for the first type:
 							ISemanticTypeStruct sts0 = rsys.SemanticTypeSystem.GetSemanticTypeStruct(types[0]);
 							List<string> fields0 = new List<string>();

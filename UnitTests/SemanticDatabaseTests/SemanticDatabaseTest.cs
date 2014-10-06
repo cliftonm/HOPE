@@ -134,9 +134,9 @@ namespace SemanticDatabaseTests
 		}
 
 		/// <summary>
-		/// Used for testing joins between two ST's that share a common ST.
+		/// Used for testing joins between two ST's that share a common unique ST.
 		/// </summary>
-		protected void InitFeedUrlStruct()
+		protected void InitFeedUrlWithUniqueStruct()
 		{
 			SemanticTypeStruct stsUrl = Helpers.CreateSemanticType("Url", true, decls, structs);
 			Helpers.CreateNativeType(stsUrl, "Value", "string", false);
@@ -147,6 +147,25 @@ namespace SemanticDatabaseTests
 
 			SemanticTypeStruct stsFeedUrl = Helpers.CreateSemanticType("RSSFeedUrl", false, decls, structs);
 			Helpers.CreateSemanticElement(stsFeedUrl, "Url", false);
+		}
+
+		/// <summary>
+		/// Used for testing joins between two ST's that share a common ST.
+		/// The elements in the parent ST's that reference the common ST are unique fields.
+		/// Note that here the NT of the shared ST is designated unique to ensure the referencing ID's are the same for the
+		/// two parent structures.
+		/// </summary>
+		protected void InitFeedUrlWithUniqueElements()
+		{
+			SemanticTypeStruct stsUrl = Helpers.CreateSemanticType("Url", false, decls, structs);
+			Helpers.CreateNativeType(stsUrl, "Value", "string", true);
+
+			SemanticTypeStruct stsVisited = Helpers.CreateSemanticType("Visited", false, decls, structs);
+			Helpers.CreateSemanticElement(stsVisited, "Url", true);
+			Helpers.CreateNativeType(stsVisited, "Count", "int", false);
+
+			SemanticTypeStruct stsFeedUrl = Helpers.CreateSemanticType("RSSFeedUrl", false, decls, structs);
+			Helpers.CreateSemanticElement(stsFeedUrl, "Url", true);
 		}
 
 		protected void DropTable(string tableName)
@@ -594,7 +613,7 @@ namespace SemanticDatabaseTests
 		[TestMethod]
 		public void UniqueKeySingleLevelJoinQuery()
 		{
-			InitializeSDRTests(() => InitFeedUrlStruct());
+			InitializeSDRTests(() => InitFeedUrlWithUniqueStruct());
 
 			DropTable("Url");
 			DropTable("Visited");
@@ -656,7 +675,57 @@ namespace SemanticDatabaseTests
 		[TestMethod]
 		public void UniqueElementSingleLevelJoinQuery()
 		{
-			Assert.Inconclusive();
+			InitializeSDRTests(() => InitFeedUrlWithUniqueElements());
+
+			DropTable("Url");
+			DropTable("Visited");
+			DropTable("RSSFeedUrl");
+
+			sdr.Protocols = "Visited;RSSFeedUrl";
+			sdr.ProtocolsUpdated();
+
+			// The schema defines that:
+			// URL is a unique structure
+			// RSSFeedUrl.Url is unique (no duplicates pointing to the same Url)
+			// Visited.Url is unique (no duplicates pointing to the same Url)
+
+			ICarrier feedUrlCarrier1 = Helpers.CreateCarrier(rsys, "RSSFeedUrl", signal =>
+			{
+				signal.Url.Value = "http://localhost";
+			});
+
+			// A URL we will not be joining on because we don't have a Visited record.
+			ICarrier feedUrlCarrier2 = Helpers.CreateCarrier(rsys, "RSSFeedUrl", signal =>
+			{
+				signal.Url.Value = "http://www.codeproject.com";
+			});
+
+			ICarrier visitedCarrier = Helpers.CreateCarrier(rsys, "Visited", signal =>
+			{
+				signal.Url.Value = "http://localhost";
+				signal.Count = 1;		// non-zero value to make sure that we're not getting a default value back.
+			});
+
+			sdr.ProcessCarrier(feedUrlCarrier1);
+			sdr.ProcessCarrier(feedUrlCarrier2);
+			sdr.ProcessCarrier(visitedCarrier);
+
+			// Create the query
+			ICarrier queryCarrier = Helpers.CreateCarrier(rsys, "Query", signal =>
+			{
+				// *** The order here is important, because the second join will be a left join ***
+				// TODO: This needs to be exposed to the user somehow.
+				signal.QueryText = "RSSFeedUrl, Visited";
+			});
+
+			sdr.ProcessCarrier(queryCarrier);
+			List<QueuedCarrierAction> queuedCarriers = rsys.QueuedCarriers;
+			Assert.AreEqual(1, queuedCarriers.Count, "Expected one signal to be returned.");
+
+			// This is a new ST that isn't defined in our schema.
+			dynamic retSignal = queuedCarriers[0].Carrier.Signal;
+			Assert.AreEqual("http://localhost", retSignal.RSSFeedUrl.Url.Value, "Unexpected URL value.");
+			Assert.AreEqual(1, retSignal.Visited.Count);
 		}
 
 		[TestMethod]
