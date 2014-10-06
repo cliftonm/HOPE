@@ -614,56 +614,7 @@ namespace SemanticDatabaseTests
 		public void UniqueKeySingleLevelJoinQuery()
 		{
 			InitializeSDRTests(() => InitFeedUrlWithUniqueStruct());
-
-			DropTable("Url");
-			DropTable("Visited");
-			DropTable("RSSFeedUrl");
-
-			sdr.Protocols = "Visited;RSSFeedUrl";
-			sdr.ProtocolsUpdated();
-
-			// The schema defines that:
-			// URL is a unique structure
-			// RSSFeedUrl.Url is unique (no duplicates pointing to the same Url)
-			// Visited.Url is unique (no duplicates pointing to the same Url)
-
-			ICarrier feedUrlCarrier1 = Helpers.CreateCarrier(rsys, "RSSFeedUrl", signal =>
-				{
-					signal.Url.Value = "http://localhost";
-				});
-
-			// A URL we will not be joining on because we don't have a Visited record.
-			ICarrier feedUrlCarrier2 = Helpers.CreateCarrier(rsys, "RSSFeedUrl", signal =>
-			{
-				signal.Url.Value = "http://www.codeproject.com";
-			});
-
-			ICarrier visitedCarrier = Helpers.CreateCarrier(rsys, "Visited", signal =>
-				{
-					signal.Url.Value = "http://localhost";
-					signal.Count = 1;		// non-zero value to make sure that we're not getting a default value back.
-				});
-
-			sdr.ProcessCarrier(feedUrlCarrier1);
-			sdr.ProcessCarrier(feedUrlCarrier2);
-			sdr.ProcessCarrier(visitedCarrier);
-
-			// Create the query
-			ICarrier queryCarrier = Helpers.CreateCarrier(rsys, "Query", signal =>
-			{
-				// *** The order here is important, because the second join will be a left join ***
-				// TODO: This needs to be exposed to the user somehow.
-				signal.QueryText = "RSSFeedUrl, Visited";
-			});
-
-			sdr.ProcessCarrier(queryCarrier);
-			List<QueuedCarrierAction> queuedCarriers = rsys.QueuedCarriers;
-			Assert.AreEqual(1, queuedCarriers.Count, "Expected one signal to be returned.");
-
-			// This is a new ST that isn't defined in our schema.
-			dynamic retSignal = queuedCarriers[0].Carrier.Signal;
-			Assert.AreEqual("http://localhost", retSignal.RSSFeedUrl.Url.Value, "Unexpected URL value.");
-			Assert.AreEqual(1, retSignal.Visited.Count);
+			TwoStructureJoinTest();
 		}
 
 		[TestMethod]
@@ -676,7 +627,29 @@ namespace SemanticDatabaseTests
 		public void UniqueElementSingleLevelJoinQuery()
 		{
 			InitializeSDRTests(() => InitFeedUrlWithUniqueElements());
+			TwoStructureJoinTest();
+		}
 
+		[TestMethod]
+		public void UniqueElementTwoLevelJoinQuery()
+		{
+			Assert.Inconclusive();
+		}
+
+		[TestMethod]
+		public void NonUniqueElementSingleLevelJoinQuery()
+		{
+			Assert.Inconclusive();
+		}
+
+		[TestMethod]
+		public void NonUniqueElementTwoLevelJoinQuery()
+		{
+			Assert.Inconclusive();
+		}
+
+		protected void TwoStructureJoinTest()
+		{
 			DropTable("Url");
 			DropTable("Visited");
 			DropTable("RSSFeedUrl");
@@ -726,24 +699,6 @@ namespace SemanticDatabaseTests
 			dynamic retSignal = queuedCarriers[0].Carrier.Signal;
 			Assert.AreEqual("http://localhost", retSignal.RSSFeedUrl.Url.Value, "Unexpected URL value.");
 			Assert.AreEqual(1, retSignal.Visited.Count);
-		}
-
-		[TestMethod]
-		public void UniqueElementTwoLevelJoinQuery()
-		{
-			Assert.Inconclusive();
-		}
-
-		[TestMethod]
-		public void NonUniqueElementSingleLevelJoinQuery()
-		{
-			Assert.Inconclusive();
-		}
-
-		[TestMethod]
-		public void NonUniqueElementTwoLevelJoinQuery()
-		{
-			Assert.Inconclusive();
 		}
 	}
 }
