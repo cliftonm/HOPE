@@ -5,7 +5,9 @@
   xmlns:ref="ref">
   <wf:Form Text="List Viewer" Size="500, 300" StartPosition="CenterScreen" ShowInTaskbar="false" MinimizeBox="false" MaximizeBox="false">
     <wf:Controls>
-      <wf:DataGridView def:Name="dgvRecords" Dock="Fill"
+      <wf:Label Location="10, 14" Size="60, 15" Text="Protocol:"/>
+      <wf:ComboBox def:Name="cbProtocols" Location="70, 10" Size="380, 25" Anchor="Top, Left, Right" AutoCompleteMode="SuggestAppend" AutoCompleteSource="ListItems"/>
+      <wf:DataGridView def:Name="dgvRecords" Location="0, 40" Size =" 500, 250" Anchor="Top, Left, Bottom, Right"
                         AllowUserToAddRows="false"
                         AllowUserToDeleteRows="false"
                         ReadOnly="true"

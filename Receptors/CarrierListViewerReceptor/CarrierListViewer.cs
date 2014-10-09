@@ -15,7 +15,7 @@ using Clifton.Tools.Strings.Extensions;
 
 namespace CarrierListViewerReceptor
 {
-	public class CarrierListViewer : BaseReceptor
+	public class CarrierListViewer : WindowedBaseReceptor
     {
 		public override string Name { get { return "Carrier List Viewer"; } }
 		public override string Subname { get { return ProtocolName; } }
@@ -25,28 +25,20 @@ namespace CarrierListViewerReceptor
 		[UserConfigurableProperty("Protocol Name:")]
 		public string ProtocolName { get; set; }
 
-		[UserConfigurableProperty("WindowName")]
-		public string WindowName { get; set; }
-
-		[UserConfigurableProperty("X")]
-		public int WindowX {get;set;}
-
-		[UserConfigurableProperty("Y")]
-		public int WindowY {get;set;}
-
-		[UserConfigurableProperty("W")]
-		public int WindowWidth { get; set; }
-
-		[UserConfigurableProperty("H")]
-		public int WindowHeight { get; set; }
+		/// <summary>
+		/// If true, the protocol select is shown in the UI with the grid using a different XML file.
+		/// </summary>
+		[UserConfigurableProperty("ShowProtocolPicker")]
+		public bool ShowProtocolPicker { get; set; }
 
 		protected string oldProtocol;
+		protected bool oldShowProtocolPicker;
 		protected DataView dvSignals;
 		protected DataGridView dgvSignals;
-		protected Form form;
+		protected ComboBox cbProtocols;
 
 		public CarrierListViewer(IReceptorSystem rsys)
-		  : base(rsys)
+		  : base("CarrierListViewer.xml", true, rsys)
 		{
 			AddEmitProtocol("ExceptionMessage");
 		}
@@ -54,16 +46,10 @@ namespace CarrierListViewerReceptor
 		public override void Initialize()
 		{
 			base.Initialize();
-			InitializeUI();
-			UpdateFormLocationAndSize();
+
+			// Initialization happens before EndSystemInit so that the receptor is configured to receive carriers.
 			CreateViewerTable();
 			ListenForProtocol();
-			UpdateCaption();
-		}
-
-		public override void EndSystemInit()
-		{
-			base.EndSystemInit();
 		}
 
 		/// <summary>
@@ -72,105 +58,96 @@ namespace CarrierListViewerReceptor
 		/// </summary>
 		public override bool UserConfigurationUpdated()
 		{
+			bool ret = true;
 			base.UserConfigurationUpdated();
-			bool ret = rsys.SemanticTypeSystem.VerifyProtocolExists(ProtocolName);
 
-			if (ret)
+			if (oldShowProtocolPicker != ShowProtocolPicker)
 			{
-				CreateViewerTable();
-				ListenForProtocol();
-				UpdateCaption();
+				form.IfNotNull(f => f.Close());
+				displayFormFilename = GetDisplayFormName();
+				ReinitializeUI();
 			}
-			else
+
+			oldShowProtocolPicker = ShowProtocolPicker;
+
+			if (!ShowProtocolPicker)
 			{
-				ConfigurationError = "The semantic type '"+ProtocolName+"' is not defined.";
+
+				ret = rsys.SemanticTypeSystem.VerifyProtocolExists(ProtocolName);
+
+				if (ret)
+				{
+					CreateViewerTable();
+					ListenForProtocol();
+					UpdateCaption();
+				}
+				else
+				{
+					ConfigurationError = "The semantic type '" + ProtocolName + "' is not defined.";
+				}
 			}
 
 			return ret;
 		}
 
-		public override void Terminate()
+		/// <summary>
+		/// Return the XML file for displaying the carrier list depending on the ShowProtocolPicker state.
+		/// </summary>
+		protected string GetDisplayFormName()
 		{
-			base.Terminate();
-			form.Close();
+			return (ShowProtocolPicker ? "CarrierListViewerWithProtocolPicker.xml" : "CarrierListViewer.xml");
 		}
 
-		protected void UpdateCaption()
+		protected override void UpdateCaption()
 		{
+			string caption = String.Empty;
+
 			if (!String.IsNullOrEmpty(WindowName))
 			{
-				form.Text= WindowName;
+				caption = WindowName;
 			}
-			else
+			if (!String.IsNullOrEmpty(ProtocolName))
 			{
-				if (!String.IsNullOrEmpty(ProtocolName))
-				{
-					string updatedText = form.Text.LeftOf('-');
-					updatedText = updatedText + " - " + ProtocolName;
-					form.Text = updatedText;
-				}
-				else
-				{
-					form.Text = String.Empty;
-				}
+				form.Text = caption + " - " + ProtocolName;
 			}
 		}
 
 		/// <summary>
 		/// Instantiate the UI.
 		/// </summary>
-		protected void InitializeUI()
+		protected override void InitializeUI()
 		{
-			// Setup the UI:
-			MycroParser mp = new MycroParser();
-			form = mp.Load<Form>("CarrierListViewer.xml", this);
-			dgvSignals = (DataGridView)mp.ObjectCollection["dgvRecords"];
-			form.Show();
+			displayFormFilename = GetDisplayFormName();
+			base.InitializeUI();
 
-			// Wire up the location changed event after the form has initialized,
-			// so we don't generate this event during form creation.  That way,
-			// the user's config will be preserved and used when the system
-			// finishes initialization.
-			form.LocationChanged += OnLocationChanged;
-			form.SizeChanged += OnSizeChanged;
-			form.FormClosing += OnFormClosing;
-		}
+			oldShowProtocolPicker = ShowProtocolPicker;
+			dgvSignals = (DataGridView)mycroParser.ObjectCollection["dgvRecords"];
+			dgvSignals.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(0xF0, 0xFF, 0xF0);
 
-		protected void OnFormClosing(object sender, FormClosingEventArgs e)
-		{
-			form = null;
-		}
-
-		// TODO: This stuff on window location and size changing and setting needs to be moved
-		// to a common lib that a receptor instance project can easily just wire in, as this
-		// is going to be common behavior for receptors with UI's.  Gawd, sometimes I really 
-		// wish C# supported multiple inheritence.
-		// DONE: The core behaviors are now implemented in the abstract class WindowedBaseReceptor.
-		protected void OnLocationChanged(object sender, EventArgs e)
-		{
-			WindowX = form.Location.X;
-			WindowY = form.Location.Y;
-		}
-
-		protected void OnSizeChanged(object sender, EventArgs e)
-		{
-			WindowWidth = form.Size.Width;
-			WindowHeight = form.Size.Height;
-		}
-
-		protected void UpdateFormLocationAndSize()
-		{
-			// Only update if user has changed the size from its declarative value.
-			if (WindowX != 0 && WindowY != 0)
+			if (ShowProtocolPicker)
 			{
-				form.Location = new Point(WindowX, WindowY);
-			}
+				cbProtocols = (ComboBox)mycroParser.ObjectCollection["cbProtocols"];
+				List<string> types = rsys.SemanticTypeSystem.SemanticTypes.Keys.ToList();
+				types.Sort();
+				cbProtocols.DataSource = types;
+				cbProtocols.SelectedValueChanged += cbProtocols_SelectedValueChanged;
 
-			// Only update if user has changed the size from its declarative value.
-			if (WindowWidth != 0 && WindowHeight != 0)
-			{
-				form.Size = new Size(WindowWidth, WindowHeight);
+				if (!String.IsNullOrEmpty(ProtocolName))
+				{
+					cbProtocols.SelectedItem = ProtocolName;
+				}
 			}
+		}
+
+		/// <summary>
+		/// This event will not fire unless an item from the list is selected.
+		/// </summary>
+		protected void cbProtocols_SelectedValueChanged(object sender, EventArgs e)
+		{
+			ProtocolName = cbProtocols.SelectedValue.ToString();
+			CreateViewerTable();
+			ListenForProtocol();
+			UpdateCaption();
 		}
 
 		/// <summary>
@@ -236,13 +213,12 @@ namespace CarrierListViewerReceptor
 			oldProtocol = ProtocolName;
 		}
 
-		protected void ReinitializeUI()
+		protected override void ReinitializeUI()
 		{
-			InitializeUI();
-			UpdateFormLocationAndSize();
+			base.ReinitializeUI();
+
 			CreateViewerTable();
 			ListenForProtocol();
-			UpdateCaption();
 		}
 
 		/// <summary>
@@ -278,8 +254,6 @@ namespace CarrierListViewerReceptor
 			}
 		}
 
-		// TODO: This is actually a more complicated problem.  Do we emit the parent protocol, or just child SE's, or do we look at the column
-		// clicked on and determine the sub-SE for that specific set of data?
 		/// <summary>
 		/// Emit a semantic protocol with the value in the selected row and the column determined by the semantic element name.
 		/// </summary>

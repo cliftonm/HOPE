@@ -13,6 +13,7 @@ using Clifton.SemanticTypeSystem.Interfaces;
 using Clifton.Tools.Strings.Extensions;
 
 // TODO: This is hard-coded for the Query protocol at the moment.
+// TODO: The UI should really be dynamic based on the native types defined in the protocol.
 
 namespace SignalCreatorReceptor
 {

@@ -229,6 +229,7 @@
     <Content Include="bin\Debug\carrier-test_update.xml" />
     <Content Include="bin\Debug\CarrierListViewer.xml" />
     <Content Include="bin\Debug\CarrierListViewerConfig.xml" />
+    <Content Include="bin\Debug\CarrierListViewerWithProtocolPicker.xml" />
     <Content Include="bin\Debug\CarrierTabbedListViewer.xml" />
     <Content Include="bin\Debug\CarrierTabbedListViewerConfig.xml">
       <SubType>Designer</SubType>

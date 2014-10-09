@@ -23,9 +23,10 @@
               </ixm:EmitProtocols>
               <ixm:UserConfigs>
                 <ixm:UserConfig Name="ProtocolName" Value="RSSFeedItem" />
+                <ixm:UserConfig Name="ShowProtocolSelector" Value="False" />
                 <ixm:UserConfig Name="WindowName" Value="Feeds" />
-                <ixm:UserConfig Name="WindowX" Value="411" />
-                <ixm:UserConfig Name="WindowY" Value="143" />
+                <ixm:UserConfig Name="WindowX" Value="353" />
+                <ixm:UserConfig Name="WindowY" Value="86" />
                 <ixm:UserConfig Name="WindowWidth" Value="823" />
                 <ixm:UserConfig Name="WindowHeight" Value="300" />
               </ixm:UserConfigs>
@@ -59,7 +60,7 @@
                 <ixm:UserConfig Name="Data" Value="RSSFeedItem" />
               </ixm:UserConfigs>
             </ixm:ReceptorDef>
-            <ixm:ReceptorDef Name="Carrier List Viewer" AssemblyName="CarrierListViewerReceptor.dll" Enabled="True" Location="265, 342">
+            <ixm:ReceptorDef Name="Carrier List Viewer" AssemblyName="CarrierListViewerReceptor.dll" Enabled="True" Location="160, 390">
               <ixm:ReceiveProtocols>
                 <ixm:ReceiveProtocol Protocol="LoggerMessage" Enabled="True" />
               </ixm:ReceiveProtocols>
@@ -70,6 +71,7 @@
               </ixm:EmitProtocols>
               <ixm:UserConfigs>
                 <ixm:UserConfig Name="ProtocolName" Value="LoggerMessage" />
+                <ixm:UserConfig Name="ShowProtocolSelector" Value="False" />
                 <ixm:UserConfig Name="WindowName" Value="Log" />
                 <ixm:UserConfig Name="WindowX" Value="407" />
                 <ixm:UserConfig Name="WindowY" Value="636" />
@@ -77,7 +79,7 @@
                 <ixm:UserConfig Name="WindowHeight" Value="154" />
               </ixm:UserConfigs>
             </ixm:ReceptorDef>
-            <ixm:ReceptorDef Name="Carrier List Viewer" AssemblyName="CarrierListViewerReceptor.dll" Enabled="True" Location="107, 339">
+            <ixm:ReceptorDef Name="Carrier List Viewer" AssemblyName="CarrierListViewerReceptor.dll" Enabled="True" Location="309, 387">
               <ixm:ReceiveProtocols>
                 <ixm:ReceiveProtocol Protocol="ExceptionMessage" Enabled="True" />
               </ixm:ReceiveProtocols>
@@ -88,6 +90,7 @@
               </ixm:EmitProtocols>
               <ixm:UserConfigs>
                 <ixm:UserConfig Name="ProtocolName" Value="ExceptionMessage" />
+                <ixm:UserConfig Name="ShowProtocolSelector" Value="False" />
                 <ixm:UserConfig Name="WindowName" Value="Exceptions" />
                 <ixm:UserConfig Name="WindowX" Value="405" />
                 <ixm:UserConfig Name="WindowY" Value="449" />

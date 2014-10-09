@@ -714,7 +714,7 @@ namespace SemanticDatabase
 					List<object> signal = QueryType(protocol, String.Empty);
 
 					// Create a carrier for each of the signals in the returned record collection.
-					signal.ForEach(s => rsys.CreateCarrier(this, sts, s));
+					signal.ForEach(s => rsys.CreateCarrierIfReceiver(this, sts, s));
 				}
 				else if (types.Count() > 1)
 				{
@@ -829,7 +829,7 @@ namespace SemanticDatabase
 								pi1.SetValue(outsignal, outsignal1);
 
 								// Finally!  Create the carrier:
-								rsys.CreateCarrier(this, outprotocol, outsignal);
+								rsys.CreateCarrierIfReceiver(this, outprotocol, outsignal);
 							}
 
 							reader.Close();

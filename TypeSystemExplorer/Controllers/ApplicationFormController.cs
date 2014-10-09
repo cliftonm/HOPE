@@ -1031,9 +1031,18 @@ namespace TypeSystemExplorer.Controllers
 						{
 							Type rt = rec.Instance.GetType();
 							PropertyInfo pi = rt.GetProperty(uc.Name);
-							string strVal = uc.Value;
-							object val = Converter.Convert(strVal, pi.PropertyType);
-							pi.SetValue(rec.Instance, val);
+
+							if (pi != null)
+							{
+								string strVal = uc.Value;
+								object val = Converter.Convert(strVal, pi.PropertyType);
+								pi.SetValue(rec.Instance, val);
+							}
+							else
+							{
+								// TODO: A property name is now invalid.  Is this because the name was changed intentionally or because of an actual fault?
+								// Probably should log this condition so the developer can inspect the error to determine whether it's an issue or not.
+							}
 						});
 				}
 

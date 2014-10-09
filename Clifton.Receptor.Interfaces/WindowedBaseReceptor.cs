@@ -60,6 +60,13 @@ namespace Clifton.Receptor.Interfaces
 			}
 		}
 
+		public override void Terminate()
+		{
+			base.Terminate();
+			form.Close();
+			form = null;
+		}
+
 		protected virtual void InitializeUI()
 		{
 			mycroParser = new Clifton.MycroParser.MycroParser();
