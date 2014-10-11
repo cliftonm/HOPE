@@ -11,7 +11,7 @@
                         ReadOnly="true"
                         SelectionMode="FullRowSelect"
                         RowHeadersVisible="False"
-                        AutoSizeColumnsMode="Fill"
+                        AutoSizeColumnsMode="AllCells"
                         CellBorderStyle="None"
                         CellContentDoubleClick = "OnCellContentDoubleClick"/>
     </wf:Controls>
