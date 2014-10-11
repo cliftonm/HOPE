@@ -28,7 +28,7 @@
       <!-- menu must come after, so that docking mode Fill for the tree create a control starting below the menu -->
       <wf:MenuStrip>
         <wf:Items>
-          <wf:ToolStripMenuItem def:Name="mnuFile" Text="File">
+          <wf:ToolStripMenuItem def:Name="mnuFile" Text="F&amp;ile">
             <wf:DropDownItems>
               <wf:ToolStripMenuItem Text="New Schema" Click="{controller.OnNew}"/>
               <wf:ToolStripSeparator/>
