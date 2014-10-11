@@ -9,6 +9,5 @@ Receptors
 		Need to inspect UK's in the NT's and update existing rows
 		Green and white striping of alternate rows would improve the presentation.
 
-
-
+Save the viewer's offset along with the applet.
 	

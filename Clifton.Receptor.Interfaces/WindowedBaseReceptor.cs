@@ -101,22 +101,25 @@ namespace Clifton.Receptor.Interfaces
 
 		protected virtual void UpdateFormLocationAndSize()
 		{
-			// Only update if user has changed the size from its declarative value.
-			if (WindowX != 0 && WindowY != 0)
+			if (form != null)
 			{
-				form.Location = new Point(WindowX, WindowY);
-			}
+				// Only update if user has changed the size from its declarative value.
+				if (WindowX != 0 && WindowY != 0)
+				{
+					form.Location = new Point(WindowX, WindowY);
+				}
 
-			// Only update if user has changed the size from its declarative value.
-			if (WindowWidth != 0 && WindowHeight != 0)
-			{
-				form.Size = new Size(WindowWidth, WindowHeight);
+				// Only update if user has changed the size from its declarative value.
+				if (WindowWidth != 0 && WindowHeight != 0)
+				{
+					form.Size = new Size(WindowWidth, WindowHeight);
+				}
 			}
 		}
 
 		protected virtual void UpdateCaption()
 		{
-			if (!String.IsNullOrEmpty(WindowName))
+			if (!String.IsNullOrEmpty(WindowName) && (form != null) )
 			{
 				form.Text = WindowName;
 			}

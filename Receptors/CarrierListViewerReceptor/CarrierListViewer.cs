@@ -37,10 +37,13 @@ namespace CarrierListViewerReceptor
 		protected DataGridView dgvSignals;
 		protected ComboBox cbProtocols;
 
+		protected List<IFullyQualifiedNativeType> uniqueKey;
+
 		public CarrierListViewer(IReceptorSystem rsys)
 		  : base("CarrierListViewer.xml", true, rsys)
 		{
 			AddEmitProtocol("ExceptionMessage");
+			uniqueKey = new List<IFullyQualifiedNativeType>();
 		}
 
 		public override void Initialize()
@@ -159,6 +162,7 @@ namespace CarrierListViewerReceptor
 			{
 				DataTable dt = new DataTable();
 				List<IFullyQualifiedNativeType> columns = rsys.SemanticTypeSystem.GetFullyQualifiedNativeTypes(ProtocolName);
+				uniqueKey.Clear();
 
 				columns.ForEach(col =>
 					{
@@ -169,6 +173,7 @@ namespace CarrierListViewerReceptor
 							// If no alias, then use the FQN, skipping the root protocol name.
 							String.IsNullOrEmpty(col.Alias).Then(() => dc.Caption = col.FullyQualifiedName.RightOf('.')).Else(() => dc.Caption = col.Alias);
 							dt.Columns.Add(dc);
+							col.UniqueField.Then(() => uniqueKey.Add(col));
 						}
 						catch
 						{
@@ -227,31 +232,74 @@ namespace CarrierListViewerReceptor
 		/// <param name="signal"></param>
 		protected void ShowSignal(dynamic signal)
 		{
-			form.IfNull(()=>ReinitializeUI());
+			form.IfNull(() => ReinitializeUI());
 			List<IFullyQualifiedNativeType> colValues = rsys.SemanticTypeSystem.GetFullyQualifiedNativeTypeValues(signal, ProtocolName);
 
-			try
+			if (!RowExists(colValues))
 			{
-				DataTable dt = dvSignals.Table;
-				DataRow row = dt.NewRow();
-				colValues.ForEach(cv =>
+				try
+				{
+					DataTable dt = dvSignals.Table;
+					DataRow row = dt.NewRow();
+					colValues.ForEach(cv =>
+						{
+							try
+							{
+								row[cv.FullyQualifiedName] = cv.Value;
+							}
+							catch
+							{
+								// Ignore columns we can't handle.
+								// TODO: Fix this at some point.  WeatherInfo protocol is a good example.
+							}
+						});
+					dt.Rows.Add(row);
+				}
+				catch (Exception ex)
+				{
+					EmitException(ex);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Returns true if the row, based on the unique key field list, already exists.
+		/// </summary>
+		protected bool RowExists(List<IFullyQualifiedNativeType> colValues)
+		{
+			bool ret = false;
+
+			// Do we have a way of determining uniqueness?  If not, then allow all signals.
+			if (uniqueKey.Count > 0)
+			{
+				StringBuilder sb = new StringBuilder();
+				string and = String.Empty;
+
+				foreach (IFullyQualifiedNativeType fnt in uniqueKey)
+				{
+					try
 					{
-						try
-						{
-							row[cv.FullyQualifiedName] = cv.Value;
-						}
-						catch
-						{
-							// Ignore columns we can't handle.
-							// TODO: Fix this at some point.  WeatherInfo protocol is a good example.
-						}
-					});
-				dt.Rows.Add(row);
+						string strval = colValues.Single(cv=>cv.FullyQualifiedName == fnt.FullyQualifiedName).Value.ToString();
+						// If the above succeeded:
+
+						sb.Append(and);
+						sb.Append(fnt.FullyQualifiedName + " = '" + strval.Replace("'", "''") + "'");
+					}
+					catch
+					{
+						// We ignore types we can't convert to string, such as collections. 
+						// TODO: Collections should never be in the unque key list anyways!
+					}
+
+					and = " and ";
+				}
+
+				DataView dvFilter = new DataView(dvSignals.Table);
+				dvFilter.RowFilter = sb.ToString();
+				ret = (dvFilter.Count > 0);
 			}
-			catch (Exception ex)
-			{
-				EmitException(ex);
-			}
+
+			return ret;
 		}
 
 		/// <summary>

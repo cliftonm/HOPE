@@ -63,7 +63,7 @@ namespace FeedReaderReceptor
 
 		protected void ProcessUrl(dynamic signal)
 		{
-			string feedUrl = signal.RSSFeedUrl.Url.Value;
+			string feedUrl = signal.Url.Value;
 			AcquireFeed(feedUrl);
 		}
 

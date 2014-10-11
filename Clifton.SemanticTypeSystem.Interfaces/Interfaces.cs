@@ -163,6 +163,12 @@ namespace Clifton.SemanticTypeSystem.Interfaces
 		string FullyQualifiedName { get;}
 		string FullyQualifiedNameSansRoot { get; }
 		INativeType NativeType { get;}
+
+		/// <summary>
+		/// This is the aggregate of uniqueness -- if the parent ST is unique, then all native type fields deriving from it are unique.
+		/// </summary>
+		bool UniqueField { get; }
+
 		object Value { get; }
 	}
 }

@@ -27,6 +27,7 @@ namespace Clifton.SemanticTypeSystem
 		public string FullyQualifiedName { get; set; }
 		public string FullyQualifiedNameSansRoot { get { return FullyQualifiedName.RightOf('.'); } }
 		public string Alias { get; set; }
+		public bool UniqueField { get; set; }
 		public INativeType NativeType { get; set; }
 		public object Value { get; set; }				// Only used when getting FQNT's for an associated signal.
 	}
@@ -164,7 +165,7 @@ namespace Clifton.SemanticTypeSystem
 			string stack = protocolName;
 			ISemanticTypeStruct st = GetSemanticTypeStruct(protocolName);
 			string alias = st.Alias;
-			RecurseGetFullyQualifiedNativeTypes(st, stack, alias, recurse, ret);
+			RecurseGetFullyQualifiedNativeTypes(st, stack, alias, st.Unique, recurse, ret);
 
 			return ret;
 		}
@@ -181,7 +182,7 @@ namespace Clifton.SemanticTypeSystem
 			string stack = protocolName;
 			ISemanticTypeStruct st = GetSemanticTypeStruct(protocolName);
 			string alias = st.Alias;
-			RecurseGetFullyQualifiedNativeTypeValues(signal, st, stack, alias, recurse, ret);
+			RecurseGetFullyQualifiedNativeTypeValues(signal, st, stack, alias, st.Unique, recurse, ret);
 
 			return ret;
 		}
@@ -265,12 +266,18 @@ namespace Clifton.SemanticTypeSystem
 			}
 		}
 
-		protected void RecurseGetFullyQualifiedNativeTypes(ISemanticTypeStruct st, string stack, string alias, bool recurse, List<IFullyQualifiedNativeType> fqntList)
+		protected void RecurseGetFullyQualifiedNativeTypes(ISemanticTypeStruct st, string stack, string alias, bool isUnique, bool recurse, List<IFullyQualifiedNativeType> fqntList)
 		{
 			foreach (INativeType nativeType in st.NativeTypes)
 			{
 				string ntalias = (!String.IsNullOrEmpty(alias) ? alias : nativeType.Alias);
-				fqntList.Add(new FullyQualifiedNativeType() { FullyQualifiedName = stack + "." + nativeType.Name, NativeType = nativeType, Alias = ntalias });
+				fqntList.Add(new FullyQualifiedNativeType() 
+				{ 
+					FullyQualifiedName = stack + "." + nativeType.Name, 
+					NativeType = nativeType, 
+					Alias = ntalias,
+					UniqueField = nativeType.UniqueField || isUnique
+				});
 			}
 
 			if (recurse)
@@ -280,13 +287,13 @@ namespace Clifton.SemanticTypeSystem
 					stack = stack + "." + childElem.Name;			// push
 					ISemanticTypeStruct stChild = GetSemanticTypeStruct(childElem.Name);
 					string newAlias = (!String.IsNullOrEmpty(alias) ? alias : stChild.Alias);
-					RecurseGetFullyQualifiedNativeTypes(stChild, stack, newAlias, recurse, fqntList);
+					RecurseGetFullyQualifiedNativeTypes(stChild, stack, newAlias, isUnique || stChild.Unique, recurse, fqntList);
 					stack = stack.LeftOfRightmostOf('.');			// pop
 				}
 			}
 		}
 
-		protected void RecurseGetFullyQualifiedNativeTypeValues(object signal, ISemanticTypeStruct st, string stack, string alias, bool recurse, List<IFullyQualifiedNativeType> fqntList)
+		protected void RecurseGetFullyQualifiedNativeTypeValues(object signal, ISemanticTypeStruct st, string stack, string alias, bool isUnique, bool recurse, List<IFullyQualifiedNativeType> fqntList)
 		{
 			foreach (INativeType nativeType in st.NativeTypes)
 			{
@@ -300,7 +307,8 @@ namespace Clifton.SemanticTypeSystem
 					FullyQualifiedName = stack + "." + nativeType.Name, 
 					Alias = ntalias,
 					NativeType = nativeType,
-					Value = val
+					Value = val,
+					UniqueField = nativeType.UniqueField || isUnique
 				});
 			}
 
@@ -315,7 +323,7 @@ namespace Clifton.SemanticTypeSystem
 					stack = stack + "." + childElem.Name;			// push
 					ISemanticTypeStruct stChild = GetSemanticTypeStruct(childElem.Name);
 					string newAlias = (!String.IsNullOrEmpty(alias) ? alias : stChild.Alias);
-					RecurseGetFullyQualifiedNativeTypeValues(childSignal, stChild, stack, newAlias, recurse, fqntList);
+					RecurseGetFullyQualifiedNativeTypeValues(childSignal, stChild, stack, newAlias, isUnique || stChild.Unique, recurse, fqntList);
 					stack = stack.LeftOfRightmostOf('.');			// pop
 				}
 			}
