@@ -85,6 +85,7 @@
           <NativeTypes>
             <NativeType Name="MessageTime" Alias="Date/Time" ImplementingType="DateTime" UniqueField="false" />
             <NativeType Name="ReceptorName" Alias="Receptor" ImplementingType="string" UniqueField="false" />
+            <NativeType Name="ProtocolName" Alias="Protocol" ImplementingType="string" UniqueField="false" />
           </NativeTypes>
           <SubTypes>
             <SubType Name="TextMessage" Alias="Exception" UniqueField="false" />
