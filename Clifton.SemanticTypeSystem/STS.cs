@@ -102,25 +102,30 @@ namespace Clifton.SemanticTypeSystem
 		/// </summary>
 		public dynamic Clone(dynamic sourceSignal, ISemanticElement childElem)
 		{
-			dynamic subsignal = Create(childElem.Name);										// Create the sub-signal
+			dynamic subsignal = null;
 			PropertyInfo pi = sourceSignal.GetType().GetProperty(childElem.Name);			// Get the property of the source's sub-type, which will/must be a semantic element
 			object val = pi.GetValue(sourceSignal);										// Get the instance of the semantic element we are cloning.
 
-			ISemanticTypeStruct subSemStruct = GetSemanticTypeStruct(childElem.Name);
-
-			foreach (INativeType nativeType in subSemStruct.NativeTypes)
+			// A sub-ST can be null, especially as produced by the persistence engine with outer joins.
+			if (val != null)
 			{
-				// Copy any native types.
-				object ntVal = nativeType.GetValue(this, val);
-				nativeType.SetValue(this, subsignal, ntVal);
-			}
+				subsignal = Create(childElem.Name);										// Create the sub-signal
+				ISemanticTypeStruct subSemStruct = GetSemanticTypeStruct(childElem.Name);
 
-			// Recurse drilling into semantic types of this type and copying any potential native types.
-			foreach (ISemanticElement semanticElem in subSemStruct.SemanticElements)
-			{
-				dynamic se = Clone((dynamic)val, semanticElem);								// Clone the sub-semantic type
-				PropertyInfo piSub = subsignal.GetType().GetProperty(semanticElem.Name);	// Get the PropertyInfo for this type.
-				piSub.SetValue(subsignal, se);												// Assign the instance of the created semantic type to the value for this property.
+				foreach (INativeType nativeType in subSemStruct.NativeTypes)
+				{
+					// Copy any native types.
+					object ntVal = nativeType.GetValue(this, val);
+					nativeType.SetValue(this, subsignal, ntVal);
+				}
+
+				// Recurse drilling into semantic types of this type and copying any potential native types.
+				foreach (ISemanticElement semanticElem in subSemStruct.SemanticElements)
+				{
+					dynamic se = Clone((dynamic)val, semanticElem);								// Clone the sub-semantic type
+					PropertyInfo piSub = subsignal.GetType().GetProperty(semanticElem.Name);	// Get the PropertyInfo for this type.
+					piSub.SetValue(subsignal, se);												// Assign the instance of the created semantic type to the value for this property.
+				}
 			}
 
 			return subsignal;

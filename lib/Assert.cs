@@ -43,5 +43,19 @@ namespace Clifton.Assertions
 			}
 		}
 
+		/// <summary>
+		/// Wraps an action in a try-catch block that performs the specified exception handling.
+		/// </summary>
+		public static void TryCatch(Action tryThis, Action<Exception> onException)
+		{
+			try
+			{
+				tryThis();
+			}
+			catch (Exception ex)
+			{
+				onException(ex);
+			}
+		}
 	}
 }

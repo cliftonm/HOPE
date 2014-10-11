@@ -456,9 +456,14 @@ namespace Clifton.Receptor
 			protocol.SemanticElements.ForEach(se =>
 				{
 					dynamic subsignal = SemanticTypeSystem.Clone(signal, se); // Clone the contents of the signal's semantic element into the subsignal.
-					ISemanticTypeStruct semStruct = SemanticTypeSystem.GetSemanticTypeStruct(se.Name);
-					// Will result in recursive calls for all sub-semantic types.
-					CreateCarrierIfReceiver(from, semStruct, protocolPath + "." + semStruct.DeclTypeName, subsignal);
+
+					// We may have a null child, in which case, don't drill any further into the structure!
+					if (subsignal != null)
+					{
+						ISemanticTypeStruct semStruct = SemanticTypeSystem.GetSemanticTypeStruct(se.Name);
+						// Will result in recursive calls for all sub-semantic types.
+						CreateCarrierIfReceiver(from, semStruct, protocolPath + "." + semStruct.DeclTypeName, subsignal);
+					}
 				});
 		}
 

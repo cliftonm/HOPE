@@ -606,8 +606,8 @@ namespace SemanticDatabaseTests
 			List<QueuedCarrierAction> queuedCarriers = rsys.QueuedCarriers;
 			Assert.AreEqual(1, queuedCarriers.Count, "Expected one signal to be returned.");
 			dynamic retSignal = queuedCarriers[0].Carrier.Signal;
-			Assert.AreEqual("Clifton", retSignal.LastName.Text.Value, "Wrong data for latitude.");
-			Assert.AreEqual("Marc", retSignal.FirstName.Text.Value, "Wrong data for longitude.");
+			Assert.AreEqual("Clifton", retSignal.LastName.Text.Value, "Wrong data for LastName.");
+			Assert.AreEqual("Marc", retSignal.FirstName.Text.Value, "Wrong data for FirstName.");
 		}
 
 		/// <summary>
@@ -698,12 +698,21 @@ namespace SemanticDatabaseTests
 
 			sdr.ProcessCarrier(queryCarrier);
 			List<QueuedCarrierAction> queuedCarriers = rsys.QueuedCarriers;
-			Assert.AreEqual(1, queuedCarriers.Count, "Expected one signal to be returned.");
+			Assert.AreEqual(2, queuedCarriers.Count, "Expected two signals to be returned.");
+
+			// The result, using a left join, is:
+
+			// "http://localhost"; 1; "http://localhost"
+			// "http://www.codeproject.com"; ; ""		<-- notice the Visited portion is null!
 
 			// This is a new ST that isn't defined in our schema.
 			dynamic retSignal = queuedCarriers[0].Carrier.Signal;
 			Assert.AreEqual("http://localhost", retSignal.RSSFeedUrl.Url.Value, "Unexpected URL value.");
 			Assert.AreEqual(1, retSignal.Visited.Count);
+
+			retSignal = queuedCarriers[1].Carrier.Signal;
+			Assert.AreEqual("http://www.codeproject.com", retSignal.RSSFeedUrl.Url.Value, "Unexpected URL value.");
+			Assert.AreEqual(null, retSignal.Visited);
 		}
 	}
 }

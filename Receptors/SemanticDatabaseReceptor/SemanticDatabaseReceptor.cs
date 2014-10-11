@@ -752,8 +752,8 @@ namespace SemanticDatabaseReceptor
 								object outsignal1 = rsys.SemanticTypeSystem.Create(types[1]);
 
 								int counter = 0;
-								Populate(outprotocol0, outsignal0, reader, ref counter);
-								Populate(outprotocol1, outsignal1, reader, ref counter);
+								outsignal0 = Populate(outprotocol0, outsignal0, reader, ref counter);
+								outsignal1 = Populate(outprotocol1, outsignal1, reader, ref counter);
 
 								// Now create a custom type if it doesn't already exist.  The custom type name is formed from the type names in the join.
 								string customTypeName = String.Join("_", types);
@@ -895,40 +895,52 @@ namespace SemanticDatabaseReceptor
 		/// Recursively populates the values into the signal.  The recursion algorithm here must match exactly the same
 		/// form as the recursion algorithm in BuildQuery, as the correlation between field names and their occurrance
 		/// in the semantic structure is relied upon.  For now at least.
+		/// Returns the signal or null if all columns for the type are DBNull, in the case of join resulting in a non-existent record.
+		/// TODO: This creates an interesting implication: an ST must have values for all it's NT's.  We're not allowing nullable NT's at the moment!
 		/// </summary>
-		protected void Populate(ISemanticTypeStruct sts, object signal, IDataReader reader, ref int parmNumber)
+		protected object Populate(ISemanticTypeStruct sts, object signal, IDataReader reader, ref int parmNumber)
 		{
-			// Add native type fields.  Use a foreach loop because ref types can't be used in lambda expressions.
-			foreach (INativeType nt in sts.NativeTypes)
+			object ret = signal;
+			List<object> vals = new List<object>();
+
+			for (int i = 0; i < sts.NativeTypes.Count; i++)
 			{
-				try
+				vals.Add(reader[parmNumber++]);
+			}
+
+			// No NT's means we just have an ST child, so continue on.
+			if ( (vals.Count > 0) && (vals.All(v => v == DBNull.Value)) )
+			{
+				// We don't have a record for this join.
+				ret = null;
+			}
+			else
+			{
+				// Add native type fields.  Use a foreach loop because ref types can't be used in lambda expressions.
+				sts.NativeTypes.ForEachWithIndex((nt, idx) =>
 				{
-					object val = reader[parmNumber++];
+					object val = vals[idx];
 
 					if (val != DBNull.Value)
 					{
-						nt.SetValue(rsys.SemanticTypeSystem, signal, val);
+						Assert.TryCatch(() => nt.SetValue(rsys.SemanticTypeSystem, signal, val), (ex) => EmitException(ex));
 					}
 					else
 					{
-						// TODO: We don't want to use the default value, do we?
+						throw new Exception("DBNull is an unsupported native value type.");
 					}
-				}
-				catch (Exception ex)
+				});
+
+				foreach (ISemanticElement child in sts.SemanticElements)
 				{
-					// TODO: We are silently catching types that we can't convert, such as List<>.
-					// We need a unit test for this kind of behavior as well as, of course, the implementation.
-					EmitException(ex);
+					ISemanticTypeStruct childsts = child.Element.Struct;
+					PropertyInfo piSub = signal.GetType().GetProperty(child.Name);
+					object childSignal = piSub.GetValue(signal);
+					Populate(childsts, childSignal, reader, ref parmNumber);
 				}
 			}
 
-			foreach (ISemanticElement child in sts.SemanticElements)
-			{
-				ISemanticTypeStruct childsts = child.Element.Struct;
-				PropertyInfo piSub = signal.GetType().GetProperty(child.Name);
-				object childSignal = piSub.GetValue(signal);
-				Populate(childsts, childSignal, reader, ref parmNumber);
-			}
+			return ret;
 		}
 
 		// --------------------
