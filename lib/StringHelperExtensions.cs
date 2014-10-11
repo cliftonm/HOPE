@@ -15,21 +15,41 @@ namespace Clifton.Tools.Strings.Extensions
 			return ret;
 		}
 
+		/// <summary>
+		/// Replaces quote with single quote.
+		/// </summary>
 		public static string ParseQuote(this String src)
 		{
 			return src.Replace("\"", "'");
 		}
 
+		/// <summary>
+		/// Replaces single quote with two single quotes.
+		/// </summary>
+		public static string ParseSingleQuote(this String src)
+		{
+			return src.Replace("'", "''");
+		}
+
+		/// <summary>
+		/// Returns a new string surrounded by single quotes.
+		/// </summary>
 		public static string SingleQuote(this String src)
 		{
 			return "'" + src + "'";
 		}
 
+		/// <summary>
+		/// Returns a new string surrounded by quotes.
+		/// </summary>
 		public static string Quote(this String src)
 		{
 			return "\"" + src + "\"";
 		}
 
+		/// <summary>
+		/// Returns a new string surrounded by braces.
+		/// </summary>
 		public static string Brace(this String src)
 		{
 			return "[" + src + "]";

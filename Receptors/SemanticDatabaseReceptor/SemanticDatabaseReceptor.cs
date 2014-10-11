@@ -1,4 +1,7 @@
-﻿using System;
+﻿// #define SQLITE
+ #define POSTGRES
+
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
@@ -83,7 +86,9 @@ namespace SemanticDatabaseReceptor
 
 	public class SemanticDatabase : BaseReceptor, ISemanticDatabase
 	{
-		public const string DatabaseFileName = "hope_semantic_database.db";
+		public const string DatabaseName = "hope_semantic_database";
+		public const string DatabaseFileName = DatabaseName + ".db";
+		public const string PostgresConnectString = "Server=127.0.0.1; Port=5432; User Id=Interacx; Password=laranzu; Database="+DatabaseName;
 
 		public override string Name { get { return "Semantic Database"; } }
 		public override bool IsEdgeReceptor { get { return true; } }
@@ -106,6 +111,7 @@ namespace SemanticDatabaseReceptor
 		/// </summary>
 		public bool UnitTesting { get; set; }
 
+		protected string connectionString;
 		protected DataTable dt;
 		protected DataGridView dgvTypes;
 
@@ -125,10 +131,20 @@ namespace SemanticDatabaseReceptor
 			{
 				AddEmitProtocol("ExceptionMessage");
 			}
-
+#if SQLITE
+			// SQLite connection string
+			connectionString = "Data Source = " + DatabaseFileName;
 			dbio = new SQLiteIO();
 			dbio.CreateDBIfMissing(DatabaseFileName);
-			dbio.OpenDB(DatabaseFileName);
+			dbio.OpenDB(connectionString);
+#endif
+
+#if POSTGRES
+			// Postgres connection string
+			connectionString = PostgresConnectString;
+			dbio = new PostgresIO();
+			dbio.OpenDB(connectionString);
+#endif
 		}
 
 		/// <summary>
@@ -336,31 +352,23 @@ namespace SemanticDatabaseReceptor
 
 		protected void CreateTable(string st)
 		{
-			StringBuilder sb = new StringBuilder("create table " + st + " (");
-			List<string> fields = new List<string>();
-			fields.Add("ID INTEGER PRIMARY KEY AUTOINCREMENT");
+			List<Tuple<string, Type>> fieldTypes = new List<Tuple<string, Type>>();
+			ISemanticTypeStruct sts = rsys.SemanticTypeSystem.GetSemanticTypeStruct(st);
 
 			// Create FK's for child SE's.
-			// Create fields for NT's.
-			ISemanticTypeStruct sts = rsys.SemanticTypeSystem.GetSemanticTypeStruct(st);
 			sts.SemanticElements.ForEach(child =>
-				{
-					fields.Add("FK_" + child.Name + "ID INTEGER");
-				});
+			{
+				fieldTypes.Add(new Tuple<string, Type>("FK_" + child.Name + "ID", typeof(long)));
+			});
 
-			// we ignore types, as per the SQLite 3 documentation:
-			// "Any column in an SQLite version 3 database, except an INTEGER PRIMARY KEY column, may be used to store a value of any storage class."
+			// Create fields for NT's.
 			sts.NativeTypes.ForEach(child =>
 				{
-					fields.Add(child.Name);
-					// Type t = child.GetImplementingType(rsys.SemanticTypeSystem);
+					Type t = child.GetImplementingType(rsys.SemanticTypeSystem);
+					fieldTypes.Add(new Tuple<string,Type>(child.Name, t));
 				});
 
-			string fieldList = String.Join(", ", fields);
-			sb.Append(fieldList);
-			sb.Append(");");
-
-			dbio.Execute(this, sb.ToString());
+			dbio.CreateTable(this, st, fieldTypes);
 		}
 
 		protected void VerifyColumns(string st)
@@ -561,8 +569,7 @@ namespace SemanticDatabaseReceptor
 			LogSqlStatement(cmd.CommandText);
 			cmd.ExecuteNonQuery();
 
-			cmd.CommandText = "SELECT last_insert_rowid()";
-			int id = Convert.ToInt32(cmd.ExecuteScalar());
+			int id = dbio.GetLastID(sts.DeclTypeName);
 
 			return id;
 		}
@@ -688,7 +695,7 @@ namespace SemanticDatabaseReceptor
 						ISemanticTypeStruct sharedStruct = sharedStructs[0];
 
 						// Find the parent for each root query given the shared structure.
-						// TODO: Will "Single" barf?
+						// TODO: Will "Single" ever barf?
 						ISemanticTypeStruct parent0 = stSemanticTypes[types[0]].Single(t => t.Item1 == sharedStruct).Item2;
 						ISemanticTypeStruct parent1 = stSemanticTypes[types[1]].Single(t => t.Item1 == sharedStruct).Item2;
 						bool parent0ElementUnique = parent0.SemanticElements.Any(se => se.Name == sharedStruct.DeclTypeName && se.UniqueField);
@@ -710,14 +717,19 @@ namespace SemanticDatabaseReceptor
 							ISemanticTypeStruct sts1 = rsys.SemanticTypeSystem.GetSemanticTypeStruct(types[1]);
 							List<string> fields1 = new List<string>();
 							List<string> joins1 = new List<string>();
+
 							BuildQuery(sts1, fields1, joins1, structureUseCounts);
 
 							fields0.AddRange(fields1);
-							joins0.AddRange(joins1);
 
 							// Note the root element of the second structure is always aliased as "1".
 							// TODO: This doesn't handle self joins.  Scenario?  Unit test?  Test and throw exception?
-							joins0.Add("inner join " + parent1.DeclTypeName + " on " + parent1.DeclTypeName + ".FK_" + sharedStructs[0].DeclTypeName + "ID = " + parent0.DeclTypeName + ".FK_" + sharedStructs[0].DeclTypeName + "ID");
+							// IMPORTANT: In Postgres, we note that the join that declares the table referenced in joins1 must be joined first.
+							// TODO: We use a left join here because we want to include records from the first table that may not match with the second table.  This should be user definable, perhaps the way Oracle used to do it with the "+" to indicate a left join rather than an inner join.
+							// TODO: The root table name of the second table (parent1) doesn't need an "as" because it will only be referenced once (like in the "from" clause for parent0), however, this means 
+							// that we can't join the same type twice.  When will this be an issue?
+							joins0.Add("left join " + parent1.DeclTypeName + " on " + parent1.DeclTypeName + ".FK_" + sharedStructs[0].DeclTypeName + "ID = " + parent0.DeclTypeName + ".FK_" + sharedStructs[0].DeclTypeName + "ID");
+							joins0.AddRange(joins1);
 
 							string sqlQuery = "select " + String.Join(", ", fields0) + " \r\nfrom " + sts0.DeclTypeName + " \r\n" + String.Join(" \r\n", joins0);
 
@@ -838,7 +850,7 @@ namespace SemanticDatabaseReceptor
 			sts.SemanticElements.ForEach(child =>
 				{
 					ISemanticTypeStruct childsts = child.Element.Struct; // rsys.SemanticTypeSystem.GetSemanticTypeStruct(child.Name);
-					int childcount = IncrementUseCount(childsts, structureUseCounts);
+					IncrementUseCount(childsts, structureUseCounts);
 					string asChildName = GetUseName(childsts, structureUseCounts);
 					joins.Add("left join " + childsts.DeclTypeName + " as " + asChildName + " on " + asChildName + ".ID = " + parentName + ".FK_" + childsts.DeclTypeName + "ID");
 					BuildQuery(childsts, fields, joins, structureUseCounts);
@@ -891,7 +903,16 @@ namespace SemanticDatabaseReceptor
 			{
 				try
 				{
-					nt.SetValue(rsys.SemanticTypeSystem, signal, reader[parmNumber++]);
+					object val = reader[parmNumber++];
+
+					if (val != DBNull.Value)
+					{
+						nt.SetValue(rsys.SemanticTypeSystem, signal, val);
+					}
+					else
+					{
+						// TODO: We don't want to use the default value, do we?
+					}
 				}
 				catch (Exception ex)
 				{

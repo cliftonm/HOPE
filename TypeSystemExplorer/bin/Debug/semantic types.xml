@@ -303,6 +303,12 @@
           </NativeTypes>
           <SubTypes />
         </SemanticType>
+        <SemanticType Name="RSSFeedVisited" UniqueField="false">
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="RSSFeedUrl" UniqueField="false" />
+          </SubTypes>
+        </SemanticType>
       </SemanticTypes>
     </SemanticTypesContainer>
     <SemanticTypesContainer Name="Web">
