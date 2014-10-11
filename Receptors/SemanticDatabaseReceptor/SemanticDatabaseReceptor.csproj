@@ -43,8 +43,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IDatabaseIO.cs" />
+    <Compile Include="ISemanticDatabase.cs" />
     <Compile Include="SemanticDatabaseReceptor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SQLiteIO.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Clifton.Receptor.Interfaces\Clifton.Receptor.Interfaces.csproj">

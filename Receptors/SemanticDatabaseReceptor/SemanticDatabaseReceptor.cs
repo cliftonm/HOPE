@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SQLite;
+using System.Data.Common;
 using System.Linq;
 using System.IO;
 using System.Reflection;
@@ -26,7 +26,7 @@ using Clifton.Tools.Strings.Extensions;
 // 		Other issues with naming?  
 //			Names that are keywords or other reserved tokens
 
-namespace SemanticDatabase
+namespace SemanticDatabaseReceptor
 {
 	public enum FieldValueType
 	{
@@ -81,7 +81,7 @@ namespace SemanticDatabase
 		}
 	}
 
-	public class SemanticDatabaseReceptor : BaseReceptor
+	public class SemanticDatabase : BaseReceptor, ISemanticDatabase
 	{
 		public const string DatabaseFileName = "hope_semantic_database.db";
 
@@ -98,13 +98,18 @@ namespace SemanticDatabase
 		/// <summary>
 		/// Used for unit testing.
 		/// </summary>
-		public SQLiteConnection Connection { get { return conn; } }
+		public IDbConnection Connection { get { return dbio.Connection; } }
+		public IDatabaseIO dbio;
 
-		protected SQLiteConnection conn;
+		/// <summary>
+		/// Determines whether carries are created always (test mode) or only if receiver exists (normal mode).
+		/// </summary>
+		public bool UnitTesting { get; set; }
+
 		protected DataTable dt;
 		protected DataGridView dgvTypes;
 
-		public SemanticDatabaseReceptor(IReceptorSystem rsys)
+		public SemanticDatabase(IReceptorSystem rsys)
 			: base(rsys)
 		{
 			AddReceiveProtocol("Query", (Action<dynamic>)(signal => QueryDatabase((string)signal.QueryText)));
@@ -120,8 +125,10 @@ namespace SemanticDatabase
 			{
 				AddEmitProtocol("ExceptionMessage");
 			}
-			CreateDBIfMissing();
-			OpenDB();
+
+			dbio = new SQLiteIO();
+			dbio.CreateDBIfMissing(DatabaseFileName);
+			dbio.OpenDB(DatabaseFileName);
 		}
 
 		/// <summary>
@@ -142,21 +149,7 @@ namespace SemanticDatabase
 
 		public override void Terminate()
 		{
-			try
-			{
-				conn.Close();
-				conn.Dispose();
-			}
-			catch
-			{
-			}
-			finally
-			{
-				// As per this post:
-				// http://stackoverflow.com/questions/12532729/sqlite-keeps-the-database-locked-even-after-the-connection-is-closed
-				// GC.Collect() is required to ensure that the file handle is released NOW (not when the GC gets a round tuit.  ;)
-				GC.Collect();
-			}
+			dbio.Close();
 		}
 
 		public override void PrepopulateConfig(MycroParser mp)
@@ -247,32 +240,13 @@ namespace SemanticDatabase
 		}
 
 		/// <summary>
-		/// Create the database if it doesn't exist.
-		/// </summary>
-		protected void CreateDBIfMissing()
-		{
-			string subPath = Path.GetDirectoryName(DatabaseFileName);
-
-			if (!File.Exists(DatabaseFileName))
-			{
-				SQLiteConnection.CreateFile(DatabaseFileName);
-			}
-		}
-
-		protected void OpenDB()
-		{
-			conn = new SQLiteConnection("Data Source = " + DatabaseFileName);
-			conn.Open();
-		}
-
-		/// <summary>
 		/// Updates the serializable UI property.
 		/// </summary>
 		protected void UpdateProtocolProperty()
 		{
 			StringBuilder sb = new StringBuilder();
 			string and = String.Empty;
-			
+
 			foreach (DataRow row in dt.Rows)
 			{
 				string protocol = row[0].ToString();
@@ -329,7 +303,7 @@ namespace SemanticDatabase
 		{
 			if (!String.IsNullOrEmpty(Protocols))
 			{
-				List<string> tableNames = GetTables();
+				List<string> tableNames = dbio.GetTables(this);
 				string[] expectedRootTables = Protocols.Split(';');
 
 				foreach (string expectedRootTable in expectedRootTables)
@@ -337,44 +311,6 @@ namespace SemanticDatabase
 					CreateIfMissing(expectedRootTable.Trim(), tableNames);
 				}
 			}
-		}
-
-		/// <summary>
-		/// Return a list of all tables in the database.
-		/// </summary>
-		protected List<string> GetTables()
-		{
-			SQLiteCommand cmd = conn.CreateCommand();
-			cmd.CommandText = "SELECT name FROM sqlite_master WHERE type='table'";
-			LogSqlStatement(cmd.CommandText);
-			SQLiteDataReader reader = cmd.ExecuteReader();
-			List<string> tableNames = new List<string>();
-			
-			while (reader.Read())
-			{
-				tableNames.Add(reader[0].ToString());
-			}
-
-			return tableNames;
-		}
-
-		/// <summary>
-		/// Return a list of all tables in the database.
-		/// </summary>
-		protected List<string> GetColumns(string tableName)
-		{
-			SQLiteCommand cmd = conn.CreateCommand();
-			cmd.CommandText = "pragma table_info('"+tableName+"')";
-			LogSqlStatement(cmd.CommandText);
-			SQLiteDataReader reader = cmd.ExecuteReader();
-			List<string> columnNames = new List<string>();
-
-			while (reader.Read())
-			{
-				columnNames.Add(reader[1].ToString());
-			}
-
-			return columnNames;
 		}
 
 		/// <summary>
@@ -424,21 +360,12 @@ namespace SemanticDatabase
 			sb.Append(fieldList);
 			sb.Append(");");
 
-			Execute(sb.ToString());
-		}
-
-		protected void Execute(string sql)
-		{
-			SQLiteCommand cmd = conn.CreateCommand();
-			cmd.CommandText = sql;
-			LogSqlStatement(cmd.CommandText);
-			cmd.ExecuteNonQuery();
-			cmd.Dispose();
+			dbio.Execute(this, sb.ToString());
 		}
 
 		protected void VerifyColumns(string st)
 		{
-			List<string> colNames = GetColumns(st);										
+			List<string> colNames = dbio.GetColumns(this, st);
 			// TODO: Finish implementation.
 		}
 
@@ -447,7 +374,7 @@ namespace SemanticDatabase
 			if (!(String.IsNullOrEmpty(Protocols)))
 			{
 				// TODO: Remove protocols that are not being listened to anymore
-				Protocols.Split(';').ForEach(p => AddReceiveProtocol(p.Trim()));			
+				Protocols.Split(';').ForEach(p => AddReceiveProtocol(p.Trim()));
 			}
 		}
 
@@ -465,7 +392,7 @@ namespace SemanticDatabase
 		protected void CreateTableFieldValueList(List<TableFieldValues> tfvList, string st, dynamic signal)
 		{
 			ISemanticTypeStruct sts = rsys.SemanticTypeSystem.GetSemanticTypeStruct(st);
-			TableFieldValues tfvEntry=new TableFieldValues(st, sts.Unique);
+			TableFieldValues tfvEntry = new TableFieldValues(st, sts.Unique);
 			tfvList.Add(tfvEntry);
 
 			sts.SemanticElements.ForEach(child =>
@@ -532,7 +459,7 @@ namespace SemanticDatabase
 				else if (sts.SemanticElements.Any(se => se.UniqueField) || sts.NativeTypes.Any(nt => nt.UniqueField))
 				{
 					// Get only unique NT's specifically for this ST (no recursive drilldown)
-					List<IFullyQualifiedNativeType> fieldValues = rsys.SemanticTypeSystem.GetFullyQualifiedNativeTypeValues(signal, sts.DeclTypeName, false).Where(fqnt=>fqnt.NativeType.UniqueField).ToList();
+					List<IFullyQualifiedNativeType> fieldValues = rsys.SemanticTypeSystem.GetFullyQualifiedNativeTypeValues(signal, sts.DeclTypeName, false).Where(fqnt => fqnt.NativeType.UniqueField).ToList();
 					bool exists = QueryUniqueness(stfkMap, sts, signal, fieldValues, out id);
 
 					if (!exists)
@@ -581,7 +508,7 @@ namespace SemanticDatabase
 				{
 					// No unique fields, so we just insert the record.
 					id = Insert(stfkMap, sts, signal);
-					
+
 					// The ID can now be returned as the FK for any parent ST.
 				}
 			}
@@ -609,7 +536,7 @@ namespace SemanticDatabase
 
 			// Setup NT field values:
 			sb.Append(") values (");
-			sb.Append(String.Join(", ", ntFieldValues.Select(f => "@"+f.Name)));
+			sb.Append(String.Join(", ", ntFieldValues.Select(f => "@" + f.Name)));
 
 			// Setup ST FK parameters:
 			if (hasFKValues && fkValues.Count > 0)
@@ -619,15 +546,15 @@ namespace SemanticDatabase
 			}
 
 			sb.Append(")");
-			SQLiteCommand cmd = conn.CreateCommand();
+			IDbCommand cmd = dbio.CreateCommand();
 
 			// Assign NT values:
-			ntFieldValues.ForEach(fv => cmd.Parameters.Add(new SQLiteParameter("@" + fv.Name, fv.Value)));
+			ntFieldValues.ForEach(fv => cmd.Parameters.Add(dbio.CreateParameter(fv.Name, fv.Value)));
 
 			// Assign FK values:
 			if (hasFKValues && fkValues.Count > 0)
 			{
-				fkValues.ForEach(fkv => cmd.Parameters.Add(new SQLiteParameter("@" + fkv.FieldName, fkv.ID)));
+				fkValues.ForEach(fkv => cmd.Parameters.Add(dbio.CreateParameter(fkv.FieldName, fkv.ID)));
 			}
 
 			cmd.CommandText = sb.ToString();
@@ -648,13 +575,13 @@ namespace SemanticDatabase
 			// Get ST's to insert as FK_ID's:
 			List<FKValue> fkValues;
 			bool hasFKValues = stfkMap.TryGetValue(sts, out fkValues);
-/*
-			// If we have no NT's or ST FK's to determine uniqueness (this is valid) then return false: not unique.
-			if (uniqueFieldValues.Count == 0 && (!hasFKValues || (hasFKValues && fkValues.Where(fk => fk.UniqueField || allPKs).Count() == 0)))
-			{
-				return false;
-			}
-*/
+			/*
+						// If we have no NT's or ST FK's to determine uniqueness (this is valid) then return false: not unique.
+						if (uniqueFieldValues.Count == 0 && (!hasFKValues || (hasFKValues && fkValues.Where(fk => fk.UniqueField || allPKs).Count() == 0)))
+						{
+							return false;
+						}
+			*/
 			StringBuilder sb = new StringBuilder("select id from " + sts.DeclTypeName + " where ");
 
 			// Put NT fields into "where" clause.
@@ -667,14 +594,14 @@ namespace SemanticDatabase
 				sb.Append(String.Join(" and ", fkValues.Where(fk => fk.UniqueField || allPKs).Select(fk => fk.FieldName + " = @" + fk.FieldName)));
 			}
 
-			SQLiteCommand cmd = conn.CreateCommand();
+			IDbCommand cmd = dbio.CreateCommand();
 
 			// Populate parameters:
-			uniqueFieldValues.ForEach(fv => cmd.Parameters.Add(new SQLiteParameter("@" + fv.Name, fv.Value)));
+			uniqueFieldValues.ForEach(fv => cmd.Parameters.Add(dbio.CreateParameter(fv.Name, fv.Value)));
 
 			if (hasFKValues && fkValues.Any(fk => fk.UniqueField || allPKs))
 			{
-				fkValues.Where(fk => fk.UniqueField || allPKs).ForEach(fk => cmd.Parameters.Add(new SQLiteParameter("@" + fk.FieldName, fk.ID)));
+				fkValues.Where(fk => fk.UniqueField || allPKs).ForEach(fk => cmd.Parameters.Add(dbio.CreateParameter(fk.FieldName, fk.ID)));
 			}
 
 			cmd.CommandText = sb.ToString();
@@ -705,7 +632,7 @@ namespace SemanticDatabase
 					string protocol = types[0];
 					AddEmitProtocol(protocol);		// identical protocols are ignored.
 					ISemanticTypeStruct sts = rsys.SemanticTypeSystem.GetSemanticTypeStruct(protocol);
-					
+
 					if (!rsys.SemanticTypeSystem.VerifyProtocolExists(protocol))
 					{
 						throw new Exception("Protocol " + protocol + " is not defined.");
@@ -714,7 +641,14 @@ namespace SemanticDatabase
 					List<object> signal = QueryType(protocol, String.Empty);
 
 					// Create a carrier for each of the signals in the returned record collection.
-					signal.ForEach(s => rsys.CreateCarrierIfReceiver(this, sts, s));
+					if (UnitTesting)
+					{
+						signal.ForEach(s => rsys.CreateCarrier(this, sts, s));
+					}
+					else
+					{
+						signal.ForEach(s => rsys.CreateCarrierIfReceiver(this, sts, s));
+					}
 				}
 				else if (types.Count() > 1)
 				{
@@ -735,7 +669,7 @@ namespace SemanticDatabase
 					// TODO: We need to implement the logic for discovering intersections with more than 2 joins.
 					// TODO: Write a unit test for this scenario.
 
-					List<ISemanticTypeStruct> sharedStructs = stSemanticTypes[types[0]].Select(t1=>t1.Item1).Intersect(stSemanticTypes[types[1]].Select(t2=>t2.Item1)).ToList();
+					List<ISemanticTypeStruct> sharedStructs = stSemanticTypes[types[0]].Select(t1 => t1.Item1).Intersect(stSemanticTypes[types[1]].Select(t2 => t2.Item1)).ToList();
 
 					// If the shared structure is a unique field in both parent structures, then we can do then join with the FK_ID's rather than the underlying data.
 					// So, for example, in the UniqueKeyJoinQuery unit test, we can join RSSFeedItem and Visited with:
@@ -763,7 +697,7 @@ namespace SemanticDatabase
 						// TODO: If there's more than one shared structure, try an pick the one that is unique or who's parent is a unique element.
 						// TODO: Write a unit test for this.
 						// If the shared structure is unique, or the elements referencing the structure are unique in both parents, then we can use the FK ID between the two parent ST's to join the structures.
-						if ( (sharedStructs[0].Unique) || (parent0ElementUnique && parent1ElementUnique))
+						if ((sharedStructs[0].Unique) || (parent0ElementUnique && parent1ElementUnique))
 						{
 							// Build the query pieces for the first type:
 							ISemanticTypeStruct sts0 = rsys.SemanticTypeSystem.GetSemanticTypeStruct(types[0]);
@@ -790,10 +724,10 @@ namespace SemanticDatabase
 							// Perform the query:
 							// TODO: Separate function!
 
-							SQLiteCommand cmd = conn.CreateCommand();
+							IDbCommand cmd = dbio.CreateCommand();
 							cmd.CommandText = sqlQuery;
 							LogSqlStatement(sqlQuery);
-							SQLiteDataReader reader = cmd.ExecuteReader();
+							IDataReader reader = cmd.ExecuteReader();
 
 							// Populate the signal with the columns in each record read.
 							while (reader.Read())
@@ -829,7 +763,14 @@ namespace SemanticDatabase
 								pi1.SetValue(outsignal, outsignal1);
 
 								// Finally!  Create the carrier:
-								rsys.CreateCarrierIfReceiver(this, outprotocol, outsignal);
+								if (UnitTesting)
+								{
+									rsys.CreateCarrier(this, outprotocol, outsignal);
+								}
+								else
+								{
+									rsys.CreateCarrierIfReceiver(this, outprotocol, outsignal);
+								}
 							}
 
 							reader.Close();
@@ -865,10 +806,10 @@ namespace SemanticDatabase
 			// CRLF for pretty inspection.
 			string sqlQuery = "select " + String.Join(", ", fields) + " \r\nfrom " + sts.DeclTypeName + " \r\n" + String.Join(" \r\n", joins);
 
-			SQLiteCommand cmd = conn.CreateCommand();
+			IDbCommand cmd = dbio.CreateCommand();
 			cmd.CommandText = sqlQuery;
 			LogSqlStatement(sqlQuery);
-			SQLiteDataReader reader = cmd.ExecuteReader();
+			IDataReader reader = cmd.ExecuteReader();
 
 			// Populate the signal with the columns in each record read.
 			while (reader.Read())
@@ -943,16 +884,16 @@ namespace SemanticDatabase
 		/// form as the recursion algorithm in BuildQuery, as the correlation between field names and their occurrance
 		/// in the semantic structure is relied upon.  For now at least.
 		/// </summary>
-		protected void Populate(ISemanticTypeStruct sts, object signal, SQLiteDataReader reader, ref int parmNumber)
+		protected void Populate(ISemanticTypeStruct sts, object signal, IDataReader reader, ref int parmNumber)
 		{
 			// Add native type fields.  Use a foreach loop because ref types can't be used in lambda expressions.
-			foreach(INativeType nt in sts.NativeTypes)
+			foreach (INativeType nt in sts.NativeTypes)
 			{
 				try
 				{
 					nt.SetValue(rsys.SemanticTypeSystem, signal, reader[parmNumber++]);
 				}
-				catch(Exception ex)
+				catch (Exception ex)
 				{
 					// TODO: We are silently catching types that we can't convert, such as List<>.
 					// We need a unit test for this kind of behavior as well as, of course, the implementation.
@@ -960,7 +901,7 @@ namespace SemanticDatabase
 				}
 			}
 
-			foreach(ISemanticElement child in sts.SemanticElements)
+			foreach (ISemanticElement child in sts.SemanticElements)
 			{
 				ISemanticTypeStruct childsts = child.Element.Struct;
 				PropertyInfo piSub = signal.GetType().GetProperty(child.Name);
@@ -971,12 +912,11 @@ namespace SemanticDatabase
 
 		// --------------------
 
-		protected void LogSqlStatement(string sql)
+		public void LogSqlStatement(string sql)
 		{
 			// Test is made for the benefit of unit testing, which doesn't necessarily instantiate this message.
 			if (rsys.SemanticTypeSystem.VerifyProtocolExists("LoggerMessage"))
 			{
-
 				CreateCarrierIfReceiver("LoggerMessage", signal =>
 				{
 					signal.MessageTime = DateTime.Now;

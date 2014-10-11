@@ -11,7 +11,7 @@ using Clifton.Receptor.Interfaces;
 using Clifton.SemanticTypeSystem;
 using Clifton.SemanticTypeSystem.Interfaces;
 
-using SemanticDatabase;
+using SemanticDatabaseReceptor;
 
 namespace SemanticDatabaseTests
 {
@@ -20,7 +20,7 @@ namespace SemanticDatabaseTests
 	{
 		protected STS ssys;
 		protected ReceptorsContainer rsys;
-		protected SemanticDatabaseReceptor sdr;
+		protected SemanticDatabase sdr;
 		protected List<SemanticTypeDecl> decls;
 		protected List<SemanticTypeStruct> structs;
 
@@ -44,7 +44,7 @@ namespace SemanticDatabaseTests
 			Helpers.CreateNativeType(sts, "QueryText", "string", false);
 
 			// Initialize the Semantic Database Receptor
-			sdr = new SemanticDatabaseReceptor(rsys);
+			sdr = new SemanticDatabase(rsys);
 
 			// Create our semantic structure.
 			initStructs();
@@ -170,8 +170,8 @@ namespace SemanticDatabaseTests
 
 		protected void DropTable(string tableName)
 		{
-			SQLiteConnection conn = sdr.Connection;
-			SQLiteCommand cmd = conn.CreateCommand();
+			IDbConnection conn = sdr.Connection;
+			IDbCommand cmd = conn.CreateCommand();
 			cmd.CommandText = "drop table "+tableName;
 
 			try
@@ -206,10 +206,10 @@ namespace SemanticDatabaseTests
 
 			// Let's see what the SDR does.
 			sdr.ProcessCarrier(carrier);
-			SQLiteConnection conn = sdr.Connection;
+			IDbConnection conn = sdr.Connection;
 
 			int count;
-			SQLiteCommand cmd = conn.CreateCommand();
+			IDbCommand cmd = conn.CreateCommand();
 			cmd.CommandText = "SELECT count(*) from LatLon";
 			count = Convert.ToInt32(cmd.ExecuteScalar());
 			Assert.AreEqual(1, count, "Expected 1 LatLon record.");
@@ -245,10 +245,10 @@ namespace SemanticDatabaseTests
 
 			// Let's see what the SDR does.
 			sdr.ProcessCarrier(carrier);
-			SQLiteConnection conn = sdr.Connection;
+			IDbConnection conn = sdr.Connection;
 
 			int count;
-			SQLiteCommand cmd = conn.CreateCommand();
+			IDbCommand cmd = conn.CreateCommand();
 			cmd.CommandText = "SELECT count(*) from LatLon";
 			count = Convert.ToInt32(cmd.ExecuteScalar());
 			Assert.AreEqual(1, count, "Expected 1 LatLon record.");
@@ -284,10 +284,10 @@ namespace SemanticDatabaseTests
 
 			// Let's see what the SDR does.
 			sdr.ProcessCarrier(carrier);
-			SQLiteConnection conn = sdr.Connection;
+			IDbConnection conn = sdr.Connection;
 
 			int count;
-			SQLiteCommand cmd = conn.CreateCommand();
+			IDbCommand cmd = conn.CreateCommand();
 			cmd.CommandText = "SELECT count(*) from LatLon";
 			count = Convert.ToInt32(cmd.ExecuteScalar());
 			Assert.AreEqual(1, count, "Expected 1 LatLon record.");
@@ -324,10 +324,10 @@ namespace SemanticDatabaseTests
 
 			// Let's see what the SDR does.
 			sdr.ProcessCarrier(carrier);
-			SQLiteConnection conn = sdr.Connection;
+			IDbConnection conn = sdr.Connection;
 
 			int count;
-			SQLiteCommand cmd = conn.CreateCommand();
+			IDbCommand cmd = conn.CreateCommand();
 			cmd.CommandText = "SELECT count(*) from LatLon";
 			count = Convert.ToInt32(cmd.ExecuteScalar());
 			Assert.AreEqual(1, count, "Expected 1 LatLon record.");
@@ -370,10 +370,10 @@ namespace SemanticDatabaseTests
 
 			// Let's see what the SDR does.
 			sdr.ProcessCarrier(carrier);
-			SQLiteConnection conn = sdr.Connection;
+			IDbConnection conn = sdr.Connection;
 
 			int count;
-			SQLiteCommand cmd = conn.CreateCommand();
+			IDbCommand cmd = conn.CreateCommand();
 			cmd.CommandText = "SELECT count(*) from LatLon";
 			count = Convert.ToInt32(cmd.ExecuteScalar());
 			Assert.AreEqual(1, count, "Expected 1 LatLon record.");
@@ -417,10 +417,10 @@ namespace SemanticDatabaseTests
 
 			// Let's see what the SDR does.
 			sdr.ProcessCarrier(carrier);
-			SQLiteConnection conn = sdr.Connection;
+			IDbConnection conn = sdr.Connection;
 
 			int count;
-			SQLiteCommand cmd = conn.CreateCommand();
+			IDbCommand cmd = conn.CreateCommand();
 			cmd.CommandText = "SELECT count(*) from LatLon";
 			count = Convert.ToInt32(cmd.ExecuteScalar());
 			Assert.AreEqual(1, count, "Expected 1 LatLon record.");
@@ -464,10 +464,10 @@ namespace SemanticDatabaseTests
 
 			// Let's see what the SDR does.
 			sdr.ProcessCarrier(carrier);
-			SQLiteConnection conn = sdr.Connection;
+			IDbConnection conn = sdr.Connection;
 
 			int count;
-			SQLiteCommand cmd = conn.CreateCommand();
+			IDbCommand cmd = conn.CreateCommand();
 			cmd.CommandText = "SELECT count(*) from LatLon";
 			count = Convert.ToInt32(cmd.ExecuteScalar());
 			Assert.AreEqual(1, count, "Expected 1 LatLon record.");
@@ -511,10 +511,10 @@ namespace SemanticDatabaseTests
 
 			// Let's see what the SDR does.
 			sdr.ProcessCarrier(carrier);
-			SQLiteConnection conn = sdr.Connection;
+			IDbConnection conn = sdr.Connection;
 
 			int count;
-			SQLiteCommand cmd = conn.CreateCommand();
+			IDbCommand cmd = conn.CreateCommand();
 			cmd.CommandText = "SELECT count(*) from LatLon";
 			count = Convert.ToInt32(cmd.ExecuteScalar());
 			Assert.AreEqual(1, count, "Expected 1 LatLon record.");
@@ -543,6 +543,7 @@ namespace SemanticDatabaseTests
 			DropTable("LatLon");
 			sdr.Protocols = "LatLon";
 			sdr.ProtocolsUpdated();
+			sdr.UnitTesting = true;
 
 			// Create the signal.
 			ICarrier latLonCarrier = Helpers.CreateCarrier(rsys, "LatLon", signal =>
@@ -582,6 +583,9 @@ namespace SemanticDatabaseTests
 			DropTable("Text");
 			sdr.Protocols = "Person";
 			sdr.ProtocolsUpdated();
+			sdr.UnitTesting = true;
+
+			// rsys.RegisterReceptor("SemanticDatabase", sdr);
 
 			// Create the signal.
 			ICarrier personCarrier = Helpers.CreateCarrier(rsys, "Person", signal =>
@@ -656,6 +660,7 @@ namespace SemanticDatabaseTests
 
 			sdr.Protocols = "Visited;RSSFeedUrl";
 			sdr.ProtocolsUpdated();
+			sdr.UnitTesting = true;
 
 			// The schema defines that:
 			// URL is a unique structure
