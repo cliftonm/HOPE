@@ -103,15 +103,18 @@ namespace CarrierListViewerReceptor
 
 		protected override void UpdateCaption()
 		{
-			string caption = String.Empty;
+			if (form != null)
+			{
+				string caption = String.Empty;
 
-			if (!String.IsNullOrEmpty(WindowName))
-			{
-				caption = WindowName;
-			}
-			if (!String.IsNullOrEmpty(ProtocolName))
-			{
-				form.Text = caption + " - " + ProtocolName;
+				if (!String.IsNullOrEmpty(WindowName))
+				{
+					caption = WindowName;
+				}
+				if (!String.IsNullOrEmpty(ProtocolName))
+				{
+					form.Text = caption + " - " + ProtocolName;
+				}
 			}
 		}
 

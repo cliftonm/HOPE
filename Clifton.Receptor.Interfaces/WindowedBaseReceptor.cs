@@ -63,8 +63,12 @@ namespace Clifton.Receptor.Interfaces
 		public override void Terminate()
 		{
 			base.Terminate();
-			form.Close();
-			form = null;
+
+			if (form != null)
+			{
+				form.Close();
+				form = null;
+			}
 		}
 
 		protected virtual void InitializeUI()
@@ -119,9 +123,12 @@ namespace Clifton.Receptor.Interfaces
 
 		protected virtual void UpdateCaption()
 		{
-			if (!String.IsNullOrEmpty(WindowName) && (form != null) )
+			if (form != null)
 			{
-				form.Text = WindowName;
+				if (!String.IsNullOrEmpty(WindowName) && (form != null))
+				{
+					form.Text = WindowName;
+				}
 			}
 		}
 

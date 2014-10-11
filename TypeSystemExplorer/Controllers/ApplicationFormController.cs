@@ -233,8 +233,9 @@ namespace TypeSystemExplorer.Controllers
 			}
 			catch (Exception ex)
 			{
-				System.Diagnostics.Debug.WriteLine(ex.Message);
-				System.Diagnostics.Debug.WriteLine(ex.StackTrace);
+				MessageBox.Show(ex.Message + "\r\n\r\n" + ex.StackTrace, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				//System.Diagnostics.Debug.WriteLine(ex.Message);
+				//System.Diagnostics.Debug.WriteLine(ex.StackTrace);
 			}
 			finally
 			{
