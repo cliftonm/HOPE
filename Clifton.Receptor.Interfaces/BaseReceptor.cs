@@ -78,6 +78,7 @@ namespace Clifton.Receptor.Interfaces
 
 		protected bool receptorInitialized;
 		protected bool systemInitialized;
+		protected string currentProtocol;			// Used in the exception handling message to indicate the protocol name being processed when the exception occurred.
 
 		public virtual IReceptorSystem ReceptorSystem
 		{
@@ -171,8 +172,17 @@ namespace Clifton.Receptor.Interfaces
 		/// <param name="carrier"></param>
 		public virtual void ProcessCarrier(ICarrier carrier)
 		{
+			currentProtocol = carrier.Protocol.DeclTypeName;		// Used in exception processing.
 			ReceiveQualifier rq = receiveProtocols.Find(rp => rp.Protocol == carrier.Protocol.DeclTypeName && rp.Qualifier(carrier.Signal));
-			rq.Action(carrier.Signal);
+
+			try
+			{
+				rq.Action(carrier.Signal);
+			}
+			catch (Exception ex)
+			{
+				EmitException(ex);
+			}
 		}
 
 		/// <summary>
@@ -398,6 +408,7 @@ namespace Clifton.Receptor.Interfaces
 				{
 					signal.ReceptorName = Name;
 					signal.MessageTime = DateTime.Now;
+					signal.ProtocolName = currentProtocol;
 					signal.TextMessage.Text.Value = ex.Message;
 				});
 			}
