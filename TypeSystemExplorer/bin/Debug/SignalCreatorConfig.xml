@@ -4,12 +4,13 @@
   xmlns:r="Clifton.Receptor, Clifton.Receptor"
   xmlns:def="def"
   xmlns:ref="ref">
-  <wf:Form Text="Signal Creator" Size="480, 120" StartPosition="CenterScreen" ShowInTaskbar="false" MinimizeBox="false" MaximizeBox="false">
+  <wf:Form Text="Signal Creator" Size="480, 160" StartPosition="CenterScreen" ShowInTaskbar="false" MinimizeBox="false" MaximizeBox="false">
     <wf:Controls>
       <wf:Label Text="Semantic Type:" Location="20, 23" Size="100, 15"/>
       <wf:TextBox def:Name="tbProtocolName" Location="125, 20" Size="200, 20"/>
       <wf:Label Text="Data:" Location="20, 48" Size="100, 15"/>
       <wf:TextBox def:Name="tbData" Location="125, 45" Size="200, 20"/>
+      <wf:CheckBox def:Name="ckEnabled" Text="Enabled?" Location="20, 80" Size="80, 25"/>
       <wf:Button Text="Create" Location="360, 10" Size="80, 25" Click="OnReceptorConfigOK"/>
       <wf:Button Text="Cancel" Location="360, 40" Size="80, 25" Click="OnReceptorConfigCancel"/>
     </wf:Controls>

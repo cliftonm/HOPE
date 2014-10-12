@@ -41,8 +41,12 @@ namespace SignalCreatorReceptor
 			if (!String.IsNullOrEmpty(ProtocolName))
 			{
 				AddEmitProtocol(ProtocolName);
-				// TODO: User should define whether the signal is emitted right away on startup.
-				CreateCarrier(ProtocolName, signal => signal.QueryText = Data);
+
+				if (Enabled)
+				{
+					// TODO: User should define whether the signal is emitted right away on startup.
+					CreateCarrier(ProtocolName, signal => signal.QueryText = Data);
+				}
 			}
 		}
 
@@ -55,7 +59,11 @@ namespace SignalCreatorReceptor
 			{
 				RemoveEmitProtocols(); 
 				AddEmitProtocol(ProtocolName);
-				CreateCarrier(ProtocolName, signal => signal.QueryText = Data);
+
+				if (Enabled)
+				{
+					CreateCarrier(ProtocolName, signal => signal.QueryText = Data);
+				}
 			}
 			else
 			{

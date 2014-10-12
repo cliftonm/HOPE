@@ -61,7 +61,7 @@ namespace SemanticDatabaseTests
 			ISemanticTypeStruct outprotocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct(protocol);
 			dynamic outsignal = rsys.SemanticTypeSystem.Create(protocol);
 			initializeSignal(outsignal);
-			ICarrier carrier = new Carrier(outprotocol, "", outsignal);
+			ICarrier carrier = new Carrier(outprotocol, "", outsignal, null);
 
 			return carrier;
 		}

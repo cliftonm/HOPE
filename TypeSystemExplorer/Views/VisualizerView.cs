@@ -1676,21 +1676,23 @@ namespace TypeSystemExplorer.Views
 			Form form = (Form)((Control)sender).Parent;
 			ConfigurationInfo ci = (ConfigurationInfo)form.Tag;
 			SaveValues(ci.Receptor.Instance, ci.Parser);
+
+			// Special handling for "enabled."
+			// TODO: Fix this by moving Enabled into IReceptorInstance and BaseReceptor
+			// Update the enabled state.
+			object ckEnabled;
+			if (ci.Parser.ObjectCollection.TryGetValue("ckEnabled", out ckEnabled))
+			{
+				ci.Receptor.Instance.Enabled = ((CheckBox)ckEnabled).Checked;
+				Invalidate(true);
+			}
+
 			// Notify instance that the configuration has been updated.
 			bool ok = ci.Receptor.Instance.UserConfigurationUpdated();
 
+			// If an error occurs, don't close the form.
 			if (ok)
 			{
-				// Special handling for "enabled."
-				// TODO: Fix this by moving Enabled into IReceptorInstance and BaseReceptor
-				object ckEnabled;
-
-				if (ci.Parser.ObjectCollection.TryGetValue("ckEnabled", out ckEnabled))
-				{
-					ci.Receptor.Instance.Enabled = ((CheckBox)ckEnabled).Checked;
-					Invalidate(true);
-				}
-
 				form.Close();
 			}
 			else

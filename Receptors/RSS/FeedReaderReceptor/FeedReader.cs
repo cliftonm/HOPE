@@ -47,7 +47,11 @@ namespace FeedReaderReceptor
 		public override void EndSystemInit()
 		{
 			base.EndSystemInit();
-			AcquireFeed(FeedUrl);
+
+			if (Enabled)
+			{
+				AcquireFeed(FeedUrl);
+			}
 		}
 
 		/// <summary>
@@ -56,7 +60,11 @@ namespace FeedReaderReceptor
 		public override bool UserConfigurationUpdated()
 		{
 			base.UserConfigurationUpdated();
-			AcquireFeed(FeedUrl);
+
+			if (Enabled)
+			{
+				AcquireFeed(FeedUrl);
+			}
 
 			return true;
 		}

@@ -6,7 +6,7 @@
   xmlns:ref="ref">
   <wf:Form Text="Semantic Database Configuration" Size="480, 330" StartPosition="CenterScreen" ShowInTaskbar="false" MinimizeBox="false" MaximizeBox="false">
     <wf:Controls>
-      <wf:Label Text="Semantic types:" Location="20, 23" Size="250, 15" TextAlign="BottomLeft"/>
+      <wf:Label Text="Semantic types we persist:" Location="20, 23" Size="250, 15" TextAlign="BottomLeft"/>
       <wf:DataGridView def:Name="dgvSemanticTypes"
                         AllowUserToAddRows="true"
                         AllowUserToDeleteRows="true"

@@ -91,8 +91,8 @@ namespace Clifton.Receptor.Interfaces
 	public interface IReceptorSystem
 	{
 		ISemanticTypeSystem SemanticTypeSystem { get; }
-		ICarrier CreateCarrier(IReceptorInstance from, ISemanticTypeStruct protocol, dynamic signal);
-		void CreateCarrierIfReceiver(IReceptorInstance from, ISemanticTypeStruct protocol, dynamic signal);
+		ICarrier CreateCarrier(IReceptorInstance from, ISemanticTypeStruct protocol, dynamic signal, ICarrier parentCarrier = null);
+		void CreateCarrierIfReceiver(IReceptorInstance from, ISemanticTypeStruct protocol, dynamic signal, ICarrier parentCarrier = null);
 		void Remove(IReceptorInstance receptorInstance);
 		List<string> GetProtocolsEndingWith(string match);
 		void EndSystemInit();
@@ -103,6 +103,7 @@ namespace Clifton.Receptor.Interfaces
 		ISemanticTypeStruct Protocol { get; set; }
 		dynamic Signal { get; set; }
 		string ProtocolPath { get; set; }
+		ICarrier ParentCarrier { get; }
 	}
 
 	public interface IReceptor

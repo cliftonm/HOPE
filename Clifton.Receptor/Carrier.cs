@@ -29,11 +29,14 @@ namespace Clifton.Receptor
 		/// </summary>
 		public string ProtocolPath { get; set; }
 
-		public Carrier(ISemanticTypeStruct protocol, string protocolPath, dynamic signal)
+		public ICarrier ParentCarrier { get; set; }
+
+		public Carrier(ISemanticTypeStruct protocol, string protocolPath, dynamic signal, ICarrier parentCarrier)
 		{
 			Protocol = protocol;
 			Signal = signal;
 			ProtocolPath = protocolPath;
+			ParentCarrier = parentCarrier;
 		}
 	}
 }

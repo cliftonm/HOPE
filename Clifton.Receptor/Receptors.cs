@@ -236,13 +236,13 @@ namespace Clifton.Receptor
 		/// <param name="from">The source receptor.  Cay be null.</param>
 		/// <param name="protocol">The protocol.</param>
 		/// <param name="signal">The signal in the protocol's format.</param>
-		public ICarrier CreateCarrier(IReceptorInstance from, ISemanticTypeStruct protocol, dynamic signal)
+		public ICarrier CreateCarrier(IReceptorInstance from, ISemanticTypeStruct protocol, dynamic signal, ICarrier parentCarrier = null)
 		{
 			// This calls the internal method with recursion set to false.  We don't want to expose this 
 			// flag, so this method is a public front, as receptors should never set the "stop recursion" flag
 			// to true when creating carriers.
 			// TODO: Improve these "is it a system message" tests -- figure out how to get rid of these hardcoded string.
-			ICarrier carrier = CreateCarrier(from, protocol, protocol.DeclTypeName, signal, false, protocol.DeclTypeName=="SystemMessage" || from.Name=="DropReceptor");
+			ICarrier carrier = CreateCarrier(from, protocol, protocol.DeclTypeName, signal, false, protocol.DeclTypeName=="SystemMessage" || from.Name=="DropReceptor", parentCarrier);
 
 			return carrier;
 		}
@@ -254,30 +254,31 @@ namespace Clifton.Receptor
 		/// <param name="from">The source receptor.  Cay be null.</param>
 		/// <param name="protocol">The protocol.</param>
 		/// <param name="signal">The signal in the protocol's format.</param>
-		public void CreateCarrierIfReceiver(IReceptorInstance from, ISemanticTypeStruct protocol, dynamic signal)
+		public void CreateCarrierIfReceiver(IReceptorInstance from, ISemanticTypeStruct protocol, dynamic signal, ICarrier parentCarrier = null)
 		{
-			CreateCarrierIfReceiver(from, protocol, protocol.DeclTypeName, signal);
+			CreateCarrierIfReceiver(from, protocol, protocol.DeclTypeName, signal, parentCarrier);
 		}
 
-		protected void CreateCarrierIfReceiver(IReceptorInstance from, ISemanticTypeStruct protocol, string protocolPath, dynamic signal)
+		protected void CreateCarrierIfReceiver(IReceptorInstance from, ISemanticTypeStruct protocol, string protocolPath, dynamic signal, ICarrier parentCarrier)
 		{
 			if (from.GetEnabledEmittedProtocols().Any(p => p.Protocol == protocol.DeclTypeName))
 			{
 				if (TargetReceptorExistsFor(ReceptorFromInstance(from), protocol))
 				{
 					// This call will recurse for us.
-					CreateCarrier(from, protocol, protocolPath, signal, false);
+					// CreateCarrier(IReceptorInstance from, ISemanticTypeStruct protocol, string protocolPath, dynamic signal, bool stopRecursion, bool isSystemMessage = false, ICarrier parentCarrier = null)
+					CreateCarrier(from, protocol, protocolPath, signal, false, false, parentCarrier);
 				}
 				else
 				{
 					// Recurse into SE's of the protocol and emit carriers for those as well, if a receiver exists.
 					// We do this even if there isn't a target for the top-level receptor.
-					CreateCarriersForSemanticElements(from, protocol, protocolPath, signal, false);
+					CreateCarriersForSemanticElements(from, protocol, protocolPath, signal, false, parentCarrier);
 				}
 			}
 			else
 			{
-				CreateCarriersForSemanticElements(from, protocol, protocolPath, signal, false);
+				CreateCarriersForSemanticElements(from, protocol, protocolPath, signal, false, parentCarrier);
 			}
 		}
 
@@ -422,13 +423,13 @@ namespace Clifton.Receptor
 		/// <summary>
 		/// Internal carrier creation.  This includes the "stopRecursion" flag to prevent wildcard receptors from receiving ad-infinitum their own emissions.
 		/// </summary>
-		protected ICarrier CreateCarrier(IReceptorInstance from, ISemanticTypeStruct protocol, string protocolPath, dynamic signal, bool stopRecursion, bool isSystemMessage = false)
+		protected ICarrier CreateCarrier(IReceptorInstance from, ISemanticTypeStruct protocol, string protocolPath, dynamic signal, bool stopRecursion, bool isSystemMessage = false, ICarrier parentCarrier = null)
 		{
 			Carrier carrier = null;
 
 			if (from.GetEnabledEmittedProtocols().Any(p => p.Protocol == protocol.DeclTypeName) || isSystemMessage)
 			{
-				carrier = new Carrier(protocol, protocolPath, signal);
+				carrier = new Carrier(protocol, protocolPath, signal, parentCarrier);
 				// ************ MOVED TO A: **************
 				// The reason this was moved is so that we fire NewCarrier only for actual receptors with protocols enabled for that receptor.
 				// TODO: However, this means that we no longer queue protocols for which we have no receptors.  Not sure if we actually want this particular feature.
@@ -442,7 +443,7 @@ namespace Clifton.Receptor
 			// Recurse into SE's of the protocol and emit carriers for those as well, if a receiver exists.
 			if (!isSystemMessage)
 			{
-				CreateCarriersForSemanticElements(from, protocol, protocol.DeclTypeName, signal, stopRecursion);
+				CreateCarriersForSemanticElements(from, protocol, protocol.DeclTypeName, signal, stopRecursion, carrier);
 			}
 
 			return carrier;
@@ -451,7 +452,7 @@ namespace Clifton.Receptor
 		/// <summary>
 		/// Recurse into SE's of the protocol and emit carriers for those as well, if a receiver exists.
 		/// </summary>
-		protected void CreateCarriersForSemanticElements(IReceptorInstance from, ISemanticTypeStruct protocol, string protocolPath, dynamic signal, bool stopRecursion)
+		protected void CreateCarriersForSemanticElements(IReceptorInstance from, ISemanticTypeStruct protocol, string protocolPath, dynamic signal, bool stopRecursion, ICarrier parentCarrier)
 		{
 			protocol.SemanticElements.ForEach(se =>
 				{
@@ -462,7 +463,7 @@ namespace Clifton.Receptor
 					{
 						ISemanticTypeStruct semStruct = SemanticTypeSystem.GetSemanticTypeStruct(se.Name);
 						// Will result in recursive calls for all sub-semantic types.
-						CreateCarrierIfReceiver(from, semStruct, protocolPath + "." + semStruct.DeclTypeName, subsignal);
+						CreateCarrierIfReceiver(from, semStruct, protocolPath + "." + semStruct.DeclTypeName, subsignal, parentCarrier);
 					}
 				});
 		}
