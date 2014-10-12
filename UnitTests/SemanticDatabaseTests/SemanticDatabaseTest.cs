@@ -652,6 +652,14 @@ namespace SemanticDatabaseTests
 			Assert.Inconclusive();
 		}
 
+		// TODO: other tests:
+
+		// Insert structures where a child ST is null
+		// Insert structures where an NT is null
+
+		// Update tests
+		// Delete tests
+
 		protected void TwoStructureJoinTest()
 		{
 			DropTable("Url");

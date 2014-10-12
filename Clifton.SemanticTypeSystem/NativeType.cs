@@ -72,7 +72,8 @@ namespace Clifton.SemanticTypeSystem
 				case "char":
 					return typeof(char);
 				default:
-					throw new ApplicationException("Unknown implementing type: " + ImplementingType);
+					// throw new ApplicationException("Unknown implementing type: " + ImplementingType);
+					return null;
 			}
 		}
 

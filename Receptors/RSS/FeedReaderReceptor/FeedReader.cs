@@ -149,8 +149,15 @@ namespace FeedReaderReceptor
 							signal.RSSFeedTitle.Text.Value = item.Title.Text;
 							signal.RSSFeedUrl.Url.Value = item.Links[0].Uri.ToString();
 							signal.RSSFeedDescription.Text.Value = item.Summary.Text;
-							signal.RSSFeedAuthors.Value = new List<string>(item.Authors.Select(a => a.Name));
-							signal.RSSFeedCategories.Value = new List<string>(item.Categories.Select(c => c.Name));
+							
+							// TODO: The semantic database doesn't support collections at the moment.
+							signal.RSSFeedAuthors.Text.Value = String.Join(", ", item.Authors.Select(a => a.Name));
+							signal.RSSFeedCategories.Text.Value = String.Join(", ", item.Categories.Select(c => c.Name));
+							// Should be instead:
+							// TODO: More semantically correct, Author and Category should be their own ST.
+//							signal.RSSFeedAuthors.Value = new List<string>(item.Authors.Select(a => a.Name));
+//							signal.RSSFeedCategories.Value = new List<string>(item.Categories.Select(c => c.Name));
+
 							signal.RSSFeedPubDate.Value = item.PublishDate.LocalDateTime;
 						});
 				}, ((item, idx) => idx >= max));

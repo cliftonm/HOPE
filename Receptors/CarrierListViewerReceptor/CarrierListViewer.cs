@@ -46,6 +46,13 @@ namespace CarrierListViewerReceptor
 			uniqueKey = new List<IFullyQualifiedNativeType>();
 		}
 
+		public CarrierListViewer(IReceptorSystem rsys, string xmlFormName)
+			: base(xmlFormName, true, rsys)
+		{
+			AddEmitProtocol("ExceptionMessage");
+			uniqueKey = new List<IFullyQualifiedNativeType>();
+		}
+
 		public override void Initialize()
 		{
 			base.Initialize();
@@ -200,7 +207,7 @@ namespace CarrierListViewerReceptor
 		/// <summary>
 		/// Remove the old protocol (if it exists) and start listening to the new.
 		/// </summary>
-		protected void ListenForProtocol()
+		protected virtual void ListenForProtocol()
 		{
 			if (!String.IsNullOrEmpty(oldProtocol))
 			{

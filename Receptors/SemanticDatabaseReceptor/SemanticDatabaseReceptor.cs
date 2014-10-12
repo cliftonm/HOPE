@@ -1,5 +1,5 @@
 ﻿// #define SQLITE
- #define POSTGRES
+#define POSTGRES
 
 using System;
 using System.Collections.Generic;
@@ -319,7 +319,7 @@ namespace SemanticDatabaseReceptor
 		{
 			if (!String.IsNullOrEmpty(Protocols))
 			{
-				List<string> tableNames = dbio.GetTables(this);
+				List<string> tableNames = dbio.GetTables(this).Select(tbl => tbl.ToLower()).ToList();
 				string[] expectedRootTables = Protocols.Split(';');
 
 				foreach (string expectedRootTable in expectedRootTables)
@@ -336,7 +336,7 @@ namespace SemanticDatabaseReceptor
 		/// </summary>
 		protected void CreateIfMissing(string st, List<string> tableNames)
 		{
-			if (!tableNames.Contains(st))
+			if (!tableNames.Contains(st.ToLower()))
 			{
 				CreateTable(st);
 				tableNames.Add(st);
@@ -365,7 +365,17 @@ namespace SemanticDatabaseReceptor
 			sts.NativeTypes.ForEach(child =>
 				{
 					Type t = child.GetImplementingType(rsys.SemanticTypeSystem);
-					fieldTypes.Add(new Tuple<string,Type>(child.Name, t));
+
+					if (t != null)
+					{
+						fieldTypes.Add(new Tuple<string, Type>(child.Name, t));
+					}
+					else
+					{
+						// TODO: The reason for the try-catch is to deal with implementing types we don't support yet, like List<dynamic>
+						// For now, we create a stub type.
+						fieldTypes.Add(new Tuple<string, Type>(child.Name, typeof(string)));
+					}
 				});
 
 			dbio.CreateTable(this, st, fieldTypes);
@@ -435,17 +445,21 @@ namespace SemanticDatabaseReceptor
 						ISemanticTypeStruct childsts = child.Element.Struct; // rsys.SemanticTypeSystem.GetSemanticTypeStruct(child.Name);
 						PropertyInfo piSub = signal.GetType().GetProperty(child.Name);
 						object childSignal = piSub.GetValue(signal);
-						id = ProcessSTS(stfkMap, childsts, childSignal, (sts.Unique || childAsUnique));
 
-						// Associate the ID to this ST's FK for that child table.
-						string fieldName = "FK_" + child.Name + "ID";
-
-						if (!stfkMap.ContainsKey(sts))
+						if (childSignal != null)
 						{
-							stfkMap[sts] = new List<FKValue>();
-						}
+							id = ProcessSTS(stfkMap, childsts, childSignal, (sts.Unique || childAsUnique));
 
-						stfkMap[sts].Add(new FKValue(fieldName, id, child.UniqueField));
+							// Associate the ID to this ST's FK for that child table.
+							string fieldName = "FK_" + child.Name + "ID";
+
+							if (!stfkMap.ContainsKey(sts))
+							{
+								stfkMap[sts] = new List<FKValue>();
+							}
+
+							stfkMap[sts].Add(new FKValue(fieldName, id, child.UniqueField));
+						}
 					});
 
 				// Having processed all child ST's, We can now make the same determination of
@@ -589,16 +603,16 @@ namespace SemanticDatabaseReceptor
 							return false;
 						}
 			*/
-			StringBuilder sb = new StringBuilder("select id from " + sts.DeclTypeName + " where ");
+			StringBuilder sb = new StringBuilder("select id from " + dbio.Delimited(sts.DeclTypeName) + " where ");
 
 			// Put NT fields into "where" clause.
-			sb.Append(String.Join(" and ", uniqueFieldValues.Select(f => f.Name + " = @" + f.Name)));
+			sb.Append(String.Join(" and ", uniqueFieldValues.Select(f => dbio.Delimited(f.Name) + " = @" + f.Name)));
 
 			// Put unique ST fields into "where" clause.
 			if (hasFKValues && fkValues.Any(fk => fk.UniqueField || allPKs))
 			{
 				if (uniqueFieldValues.Count > 0) sb.Append(" and ");
-				sb.Append(String.Join(" and ", fkValues.Where(fk => fk.UniqueField || allPKs).Select(fk => fk.FieldName + " = @" + fk.FieldName)));
+				sb.Append(String.Join(" and ", fkValues.Where(fk => fk.UniqueField || allPKs).Select(fk => dbio.Delimited(fk.FieldName) + " = @" + fk.FieldName)));
 			}
 
 			IDbCommand cmd = dbio.CreateCommand();
@@ -613,7 +627,15 @@ namespace SemanticDatabaseReceptor
 
 			cmd.CommandText = sb.ToString();
 			LogSqlStatement(cmd.CommandText);
-			object oid = cmd.ExecuteScalar();
+			object oid = null;
+
+			try
+			{
+				oid = cmd.ExecuteScalar();
+			}
+			catch (Exception ex)
+			{
+			}
 
 			ret = (oid != null);
 

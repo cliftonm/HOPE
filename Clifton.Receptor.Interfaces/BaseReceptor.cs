@@ -410,6 +410,7 @@ namespace Clifton.Receptor.Interfaces
 					signal.MessageTime = DateTime.Now;
 					signal.ProtocolName = currentProtocol;
 					signal.TextMessage.Text.Value = ex.Message;
+					signal.StackTrace = ex.StackTrace;
 				});
 			}
 			else
@@ -427,6 +428,7 @@ namespace Clifton.Receptor.Interfaces
 			{
 				signal.ReceptorName = Name;
 				signal.Message = message;
+				signal.ProtocolName = currentProtocol;
 			});
 		}
 

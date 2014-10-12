@@ -86,6 +86,7 @@
             <NativeType Name="MessageTime" Alias="Date/Time" ImplementingType="DateTime" UniqueField="false" />
             <NativeType Name="ReceptorName" Alias="Receptor" ImplementingType="string" UniqueField="false" />
             <NativeType Name="ProtocolName" Alias="Protocol" ImplementingType="string" UniqueField="false" />
+            <NativeType Name="StackTrace" ImplementingType="string" UniqueField="false" />
           </NativeTypes>
           <SubTypes>
             <SubType Name="TextMessage" Alias="Exception" UniqueField="false" />
@@ -291,17 +292,17 @@
             <SubType Name="Url" UniqueField="false" />
           </SubTypes>
         </SemanticType>
-        <SemanticType Name="RSSFeedAuthors" UniqueField="false">
-          <NativeTypes>
-            <NativeType Name="Value" ImplementingType="List&lt;string&gt;" UniqueField="false" />
-          </NativeTypes>
-          <SubTypes />
+        <SemanticType Name="RSSFeedAuthors" Alias="Authors" UniqueField="false">
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="Text" Alias="Authors" UniqueField="false" />
+          </SubTypes>
         </SemanticType>
-        <SemanticType Name="RSSFeedCategories" UniqueField="false">
-          <NativeTypes>
-            <NativeType Name="Value" ImplementingType="List&lt;string&gt;" UniqueField="false" />
-          </NativeTypes>
-          <SubTypes />
+        <SemanticType Name="RSSFeedCategories" Alias="Categories" UniqueField="false">
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="Text" Alias="Categories" UniqueField="false" />
+          </SubTypes>
         </SemanticType>
         <SemanticType Name="RSSFeedVisited" UniqueField="false">
           <NativeTypes />

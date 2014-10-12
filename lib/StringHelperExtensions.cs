@@ -48,11 +48,19 @@ namespace Clifton.Tools.Strings.Extensions
 		}
 
 		/// <summary>
-		/// Returns a new string surrounded by braces.
+		/// Returns a new string surrounded by brackets.
 		/// </summary>
-		public static string Brace(this String src)
+		public static string Brackets(this String src)
 		{
 			return "[" + src + "]";
+		}
+
+		/// <summary>
+		/// Returns a new string surrounded by brackets.
+		/// </summary>
+		public static string CurlyBraces(this String src)
+		{
+			return "{" + src + "}";
 		}
 
 		public static string Between(this String src, char c1, char c2)
