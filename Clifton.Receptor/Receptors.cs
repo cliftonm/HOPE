@@ -273,12 +273,15 @@ namespace Clifton.Receptor
 				{
 					// Recurse into SE's of the protocol and emit carriers for those as well, if a receiver exists.
 					// We do this even if there isn't a target for the top-level receptor.
-					CreateCarriersForSemanticElements(from, protocol, protocolPath, signal, false, parentCarrier);
+					// However, we do create a Carrier instance as the parent so the child cah reference it if necessary.
+					Carrier carrier = new Carrier(protocol, protocolPath, signal, parentCarrier);
+					CreateCarriersForSemanticElements(from, protocol, protocolPath, signal, false, carrier);
 				}
 			}
 			else
 			{
-				CreateCarriersForSemanticElements(from, protocol, protocolPath, signal, false, parentCarrier);
+				Carrier carrier = new Carrier(protocol, protocolPath, signal, parentCarrier);
+				CreateCarriersForSemanticElements(from, protocol, protocolPath, signal, false, carrier);
 			}
 		}
 

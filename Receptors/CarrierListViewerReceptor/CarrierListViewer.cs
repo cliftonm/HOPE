@@ -216,7 +216,7 @@ namespace CarrierListViewerReceptor
 
 			if (!String.IsNullOrEmpty(ProtocolName))
 			{
-				AddReceiveProtocol(ProtocolName, (Action<dynamic>)((signal) => ShowSignal(signal)));
+				AddReceiveProtocol(ProtocolName); // , (Action<dynamic>)((signal) => ShowSignal(signal)));
 
 				// Add other semantic type emitters:
 				RemoveEmitProtocols();
@@ -234,6 +234,12 @@ namespace CarrierListViewerReceptor
 
 			CreateViewerTable();
 			ListenForProtocol();
+		}
+
+		public override void ProcessCarrier(ICarrier carrier)
+		{
+			base.ProcessCarrier(carrier);
+			ShowSignal(carrier.Signal);
 		}
 
 		/// <summary>

@@ -33,6 +33,7 @@ namespace FeedItemListReceptor
 			// The only protocol we receive.
 			AddReceiveProtocol("RSSFeedItem", (Action<dynamic>)(signal => ShowSignal(signal)));
 			AddEmitProtocol("ExceptionMessage");
+			AddEmitProtocol("RSSFeedVisited");
 		}
 
 		public override void EndSystemInit()
@@ -55,6 +56,12 @@ namespace FeedItemListReceptor
 		{
 			ISemanticTypeStruct st = rsys.SemanticTypeSystem.GetSemanticTypeStruct(ProtocolName);
 			st.SemanticElements.ForEach(se => AddEmitProtocol(se.Name));
+		}
+
+		public override void ProcessCarrier(ICarrier carrier)
+		{
+			base.ProcessCarrier(carrier);
+			ShowSignal(carrier.Signal);
 		}
 	}
 }

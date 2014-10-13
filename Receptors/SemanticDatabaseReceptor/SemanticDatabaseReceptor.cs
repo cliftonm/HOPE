@@ -764,50 +764,60 @@ namespace SemanticDatabaseReceptor
 							IDataReader reader = cmd.ExecuteReader();
 
 							// Populate the signal with the columns in each record read.
-							while (reader.Read())
+							// Wrap this so we can close the reader if there are any problems.
+							try
 							{
-								// The resulting fields are in the order of how they're populated based on our join list.
-								// Since we're hard-coding a 2 type joins...
-								ISemanticTypeStruct outprotocol0 = rsys.SemanticTypeSystem.GetSemanticTypeStruct(types[0]);
-								object outsignal0 = rsys.SemanticTypeSystem.Create(types[0]);
-								ISemanticTypeStruct outprotocol1 = rsys.SemanticTypeSystem.GetSemanticTypeStruct(types[1]);
-								object outsignal1 = rsys.SemanticTypeSystem.Create(types[1]);
-
-								int counter = 0;
-								outsignal0 = Populate(outprotocol0, outsignal0, reader, ref counter);
-								outsignal1 = Populate(outprotocol1, outsignal1, reader, ref counter);
-
-								// Now create a custom type if it doesn't already exist.  The custom type name is formed from the type names in the join.
-								string customTypeName = String.Join("_", types);
-
-								if (!rsys.SemanticTypeSystem.VerifyProtocolExists(customTypeName))
+								while (reader.Read())
 								{
-									rsys.SemanticTypeSystem.CreateCustomType(customTypeName, new List<string>() { types[0], types[1] });
-									AddEmitProtocol(customTypeName);		// We now emit this custom protocol.
-								}
+									// The resulting fields are in the order of how they're populated based on our join list.
+									// Since we're hard-coding a 2 type joins...
+									ISemanticTypeStruct outprotocol0 = rsys.SemanticTypeSystem.GetSemanticTypeStruct(types[0]);
+									object outsignal0 = rsys.SemanticTypeSystem.Create(types[0]);
+									ISemanticTypeStruct outprotocol1 = rsys.SemanticTypeSystem.GetSemanticTypeStruct(types[1]);
+									object outsignal1 = rsys.SemanticTypeSystem.Create(types[1]);
 
-								ISemanticTypeStruct outprotocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct(customTypeName);
-								object outsignal = rsys.SemanticTypeSystem.Create(customTypeName);
+									int counter = 0;
+									outsignal0 = Populate(outprotocol0, outsignal0, reader, ref counter);
+									outsignal1 = Populate(outprotocol1, outsignal1, reader, ref counter);
 
-								// Assign our signals to the children of the custom type.  
-								// TODO: Again, self-joins will fail here.
-								PropertyInfo pi0 = outsignal.GetType().GetProperty(types[0]);
-								pi0.SetValue(outsignal, outsignal0);
-								PropertyInfo pi1 = outsignal.GetType().GetProperty(types[1]);
-								pi1.SetValue(outsignal, outsignal1);
+									// Now create a custom type if it doesn't already exist.  The custom type name is formed from the type names in the join.
+									string customTypeName = String.Join("_", types);
 
-								// Finally!  Create the carrier:
-								if (UnitTesting)
-								{
-									rsys.CreateCarrier(this, outprotocol, outsignal);
-								}
-								else
-								{
-									rsys.CreateCarrierIfReceiver(this, outprotocol, outsignal);
+									if (!rsys.SemanticTypeSystem.VerifyProtocolExists(customTypeName))
+									{
+										rsys.SemanticTypeSystem.CreateCustomType(customTypeName, new List<string>() { types[0], types[1] });
+										AddEmitProtocol(customTypeName);		// We now emit this custom protocol.
+									}
+
+									ISemanticTypeStruct outprotocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct(customTypeName);
+									object outsignal = rsys.SemanticTypeSystem.Create(customTypeName);
+
+									// Assign our signals to the children of the custom type.  
+									// TODO: Again, self-joins will fail here.
+									PropertyInfo pi0 = outsignal.GetType().GetProperty(types[0]);
+									pi0.SetValue(outsignal, outsignal0);
+									PropertyInfo pi1 = outsignal.GetType().GetProperty(types[1]);
+									pi1.SetValue(outsignal, outsignal1);
+
+									// Finally!  Create the carrier:
+									if (UnitTesting)
+									{
+										rsys.CreateCarrier(this, outprotocol, outsignal);
+									}
+									else
+									{
+										rsys.CreateCarrierIfReceiver(this, outprotocol, outsignal);
+									}
 								}
 							}
-
-							reader.Close();
+							catch (Exception ex)
+							{
+								EmitException(ex);
+							}
+							finally
+							{
+								reader.Close();
+							}
 						}
 					}
 
@@ -819,6 +829,7 @@ namespace SemanticDatabaseReceptor
 			}
 			catch (Exception ex)
 			{
+				// Anything else that screws up outside of the reader loop.
 				EmitException(ex);
 			}
 		}
@@ -930,13 +941,14 @@ namespace SemanticDatabaseReceptor
 				vals.Add(reader[parmNumber++]);
 			}
 
-			// No NT's means we just have an ST child, so continue on.
-			if ( (vals.Count > 0) && (vals.All(v => v == DBNull.Value)) )
-			{
-				// We don't have a record for this join.
-				ret = null;
-			}
-			else
+			// No NT's (vals.Count==0) means we just have an ST child, so continue on.
+			// We have NT's.  Are they all null?
+			//if ( (vals.Count > 0) && (vals.All(v => v == DBNull.Value)) )
+			//{
+			//	// We don't have a records populate for this query.
+			//	ret = null;
+			//}
+			//else
 			{
 				// Add native type fields.  Use a foreach loop because ref types can't be used in lambda expressions.
 				sts.NativeTypes.ForEachWithIndex((nt, idx) =>
@@ -949,7 +961,8 @@ namespace SemanticDatabaseReceptor
 					}
 					else
 					{
-						throw new Exception("DBNull is an unsupported native value type.");
+						// throw new Exception("DBNull is an unsupported native value type.");
+						// At the moment, we do nothing because we don't support null field values.
 					}
 				});
 
