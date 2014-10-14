@@ -300,14 +300,13 @@ namespace CarrierListViewerReceptor
 
 						sb.Append(and);
 						sb.Append(fnt.FullyQualifiedName + " = '" + strval.Replace("'", "''") + "'");
+						and = " and ";
 					}
 					catch
 					{
 						// We ignore types we can't convert to string, such as collections. 
 						// TODO: Collections should never be in the unque key list anyways!
 					}
-
-					and = " and ";
 				}
 
 				DataView dvFilter = new DataView(dvSignals.Table);

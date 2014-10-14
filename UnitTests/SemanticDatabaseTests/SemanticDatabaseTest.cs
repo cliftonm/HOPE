@@ -45,6 +45,8 @@ namespace SemanticDatabaseTests
 
 			// Initialize the Semantic Database Receptor
 			sdr = new SemanticDatabase(rsys);
+			sdr.DatabaseName = "test_semantic_database";
+			sdr.Connect();
 
 			// Create our semantic structure.
 			initStructs();
@@ -163,6 +165,10 @@ namespace SemanticDatabaseTests
 			SemanticTypeStruct stsVisited = Helpers.CreateSemanticType("Visited", false, decls, structs);
 			Helpers.CreateSemanticElement(stsVisited, "Url", true);
 			Helpers.CreateNativeType(stsVisited, "Count", "int", false);
+
+			// For 3 ST join tests.
+			SemanticTypeStruct stsDisplayed = Helpers.CreateSemanticType("Displayed", false, decls, structs);
+			Helpers.CreateSemanticElement(stsDisplayed, "Url", true);
 
 			SemanticTypeStruct stsFeedUrl = Helpers.CreateSemanticType("RSSFeedUrl", false, decls, structs);
 			Helpers.CreateSemanticElement(stsFeedUrl, "Url", true);
@@ -652,6 +658,13 @@ namespace SemanticDatabaseTests
 			Assert.Inconclusive();
 		}
 
+		[TestMethod]
+		public void ThreeSemanticTypesJoinQuery()
+		{
+			InitializeSDRTests(() => InitFeedUrlWithUniqueElements());
+			ThreeSemanticTypesJoinTest();
+		}
+
 		// TODO: other tests:
 
 		// Insert structures where a child ST is null
@@ -666,7 +679,7 @@ namespace SemanticDatabaseTests
 			DropTable("Visited");
 			DropTable("RSSFeedUrl");
 
-			sdr.Protocols = "Visited;RSSFeedUrl";
+			sdr.Protocols = "RSSFeedUrl; Visited";
 			sdr.ProtocolsUpdated();
 			sdr.UnitTesting = true;
 
@@ -722,5 +735,78 @@ namespace SemanticDatabaseTests
 			Assert.AreEqual("http://www.codeproject.com", retSignal.RSSFeedUrl.Url.Value, "Unexpected URL value.");
 			Assert.AreEqual(null, retSignal.Visited);
 		}
+
+		protected void ThreeSemanticTypesJoinTest()
+		{
+			DropTable("Url");
+			DropTable("Visited");
+			DropTable("RSSFeedUrl");
+			DropTable("RSSFeedItemDisplayed");
+
+			sdr.Protocols = "RSSFeedUrl; Visited; Displayed";
+			sdr.ProtocolsUpdated();
+			sdr.UnitTesting = true;
+
+			// The schema defines that:
+			// URL is a unique structure
+			// RSSFeedUrl.Url is unique (no duplicates pointing to the same Url)
+			// Visited.Url is unique (no duplicates pointing to the same Url)
+
+			ICarrier feedUrlCarrier1 = Helpers.CreateCarrier(rsys, "RSSFeedUrl", signal =>
+			{
+				signal.Url.Value = "http://localhost";
+			});
+
+			// A URL we will not be joining on because we don't have a Visited record.
+			ICarrier feedUrlCarrier2 = Helpers.CreateCarrier(rsys, "RSSFeedUrl", signal =>
+			{
+				signal.Url.Value = "http://www.codeproject.com";
+			});
+
+			ICarrier visitedCarrier = Helpers.CreateCarrier(rsys, "Visited", signal =>
+			{
+				signal.Url.Value = "http://localhost";
+				signal.Count = 1;		// non-zero value to make sure that we're not getting a default value back.
+			});
+
+			ICarrier displayedCarrier = Helpers.CreateCarrier(rsys, "Displayed", signal =>
+			{
+				signal.Url.Value = "http://www.codeproject.com";
+			});
+
+			sdr.ProcessCarrier(feedUrlCarrier1);
+			sdr.ProcessCarrier(feedUrlCarrier2);
+			sdr.ProcessCarrier(visitedCarrier);
+			sdr.ProcessCarrier(displayedCarrier);
+
+			// Create the query
+			ICarrier queryCarrier = Helpers.CreateCarrier(rsys, "Query", signal =>
+			{
+				// *** The order here is important, because the second join will be a left join ***
+				// TODO: This needs to be exposed to the user somehow.
+				signal.QueryText = "RSSFeedUrl, Visited, Displayed";
+			});
+
+			sdr.ProcessCarrier(queryCarrier);
+			List<QueuedCarrierAction> queuedCarriers = rsys.QueuedCarriers;
+			Assert.AreEqual(2, queuedCarriers.Count, "Expected two signals to be returned.");
+
+			// The result, using a left join, is:
+
+			// "http://localhost"; 1; "http://localhost"
+			// "http://www.codeproject.com"; ; ""		<-- notice the Visited portion is null, however the "displayed" portion is NOT null.
+
+			// This is a new ST that isn't defined in our schema.
+			dynamic retSignal = queuedCarriers[0].Carrier.Signal;
+			Assert.AreEqual("http://localhost", retSignal.RSSFeedUrl.Url.Value, "Unexpected URL value.");
+			Assert.AreEqual(1, retSignal.Visited.Count);
+			Assert.AreEqual(null, retSignal.Displayed);
+
+			retSignal = queuedCarriers[1].Carrier.Signal;
+			Assert.AreEqual("http://www.codeproject.com", retSignal.RSSFeedUrl.Url.Value, "Unexpected URL value.");
+			Assert.AreEqual(null, retSignal.Visited);
+			Assert.AreNotEqual(null, retSignal.Displayed);
+		}
+
 	}
 }

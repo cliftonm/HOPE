@@ -137,7 +137,7 @@ namespace Clifton.SemanticTypeSystem
 
 		/// <summary>
 		/// Recurse into the named structure, returning itself and all sub-structures.
-		/// The return is a list of tuples, where item0 is the ST and item1 is the parent ST of item0
+		/// The return is a list of tuples, where Item1 is the ST and Item2 is the parent ST of Item1
 		/// </summary>
 		public List<Tuple<ISemanticTypeStruct, ISemanticTypeStruct>> GetAllSemanticTypes(string protocolName)
 		{

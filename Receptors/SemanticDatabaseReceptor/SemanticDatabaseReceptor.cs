@@ -84,15 +84,30 @@ namespace SemanticDatabaseReceptor
 		}
 	}
 
+	public struct TypeIntersection
+	{
+		public string BaseType;
+		public string JoinType;
+
+		public TypeIntersection(string baseType, string joinType)
+		{
+			BaseType = baseType;
+			JoinType = joinType;
+		}
+	}
+
 	public class SemanticDatabase : BaseReceptor, ISemanticDatabase
 	{
-		public const string DatabaseName = "hope_semantic_database";
-		public const string DatabaseFileName = DatabaseName + ".db";
-		public const string PostgresConnectString = "Server=127.0.0.1; Port=5432; User Id=Interacx; Password=laranzu; Database="+DatabaseName;
+		public string DatabaseName { get; set; }
+		public string DatabaseFileName { get { return DatabaseName + ".db"; } }
+		public string PostgresConnectString { get { return "Server=127.0.0.1; Port=5432; User Id=" + postgresUserId + "; Password=" + postgresPassword + "; Database=" + DatabaseName; } }
 
 		public override string Name { get { return "Semantic Database"; } }
 		public override bool IsEdgeReceptor { get { return true; } }
 		public override string ConfigurationUI { get { return "SemanticDatabaseConfig.xml"; } }
+
+		private string postgresUserId;
+		private string postgresPassword;
 
 		/// <summary>
 		/// For serialization only, not displayed on the configuration form.
@@ -118,6 +133,12 @@ namespace SemanticDatabaseReceptor
 		public SemanticDatabase(IReceptorSystem rsys)
 			: base(rsys)
 		{
+			DatabaseName = "hope_semantic_database";
+
+			string[] postgresConfig = File.ReadAllLines("postgres.config");
+			postgresUserId = postgresConfig[0];
+			postgresPassword = postgresConfig[1];
+
 			AddReceiveProtocol("Query", (Action<dynamic>)(signal => QueryDatabase((string)signal.QueryText)));
 
 			// Test is made for the benefit of unit testing, which doesn't necessarily instantiate this message.
@@ -131,20 +152,6 @@ namespace SemanticDatabaseReceptor
 			{
 				AddEmitProtocol("ExceptionMessage");
 			}
-#if SQLITE
-			// SQLite connection string
-			connectionString = "Data Source = " + DatabaseFileName;
-			dbio = new SQLiteIO();
-			dbio.CreateDBIfMissing(DatabaseFileName);
-			dbio.OpenDB(connectionString);
-#endif
-
-#if POSTGRES
-			// Postgres connection string
-			connectionString = PostgresConnectString;
-			dbio = new PostgresIO();
-			dbio.OpenDB(connectionString);
-#endif
 		}
 
 		/// <summary>
@@ -159,6 +166,7 @@ namespace SemanticDatabaseReceptor
 		public override void EndSystemInit()
 		{
 			base.EndSystemInit();
+			Connect();
 			ValidateDatabaseSchema();
 			UpdateListeners();
 		}
@@ -255,6 +263,24 @@ namespace SemanticDatabaseReceptor
 			}
 		}
 
+		public void Connect()
+		{
+#if SQLITE
+			// SQLite connection string
+			connectionString = "Data Source = " + DatabaseFileName;
+			dbio = new SQLiteIO();
+			dbio.CreateDBIfMissing(DatabaseFileName);
+			dbio.OpenDB(connectionString);
+#endif
+
+#if POSTGRES
+			// Postgres connection string
+			connectionString = PostgresConnectString;
+			dbio = new PostgresIO();
+			dbio.OpenDB(connectionString);
+#endif
+		}
+
 		/// <summary>
 		/// Updates the serializable UI property.
 		/// </summary>
@@ -320,6 +346,9 @@ namespace SemanticDatabaseReceptor
 			if (!String.IsNullOrEmpty(Protocols))
 			{
 				List<string> tableNames = dbio.GetTables(this).Select(tbl => tbl.ToLower()).ToList();
+
+				// TODO: Split by comma (which we seem to use everywhere else) or semicolon?
+				// Maybe support both by figuring out which is used???
 				string[] expectedRootTables = Protocols.Split(';');
 
 				foreach (string expectedRootTable in expectedRootTables)
@@ -336,14 +365,16 @@ namespace SemanticDatabaseReceptor
 		/// </summary>
 		protected void CreateIfMissing(string st, List<string> tableNames)
 		{
+			// All of these "ToLower's" is because Postgres converts table and field names to lowercase.  
+			// Why in the world would it do that???  (Of course, if it's a quoted table or field name, then case is preserved!!!)
 			if (!tableNames.Contains(st.ToLower()))
 			{
 				CreateTable(st);
-				tableNames.Add(st);
+				tableNames.Add(st.ToLower());
 			}
 			else
 			{
-				VerifyColumns(st);
+				VerifyColumns(st.ToLower());
 			}
 
 			ISemanticTypeStruct sts = rsys.SemanticTypeSystem.GetSemanticTypeStruct(st);
@@ -690,58 +721,77 @@ namespace SemanticDatabaseReceptor
 					// First we need to find common structures between each of the specified structures.
 					Dictionary<string, List<Tuple<ISemanticTypeStruct, ISemanticTypeStruct>>> stSemanticTypes = new Dictionary<string, List<Tuple<ISemanticTypeStruct, ISemanticTypeStruct>>>();
 
+					// For each root type, get all the sub-ST's.
 					foreach (string st in types)
 					{
 						stSemanticTypes[st] = rsys.SemanticTypeSystem.GetAllSemanticTypes(st);
 					}
 
-					// TODO: We need to implement the logic for discovering intersections with more than 2 joins.
-					// TODO: Write a unit test for this scenario.
+					Dictionary<TypeIntersection, List<ISemanticTypeStruct>> typeIntersectionStructs = new Dictionary<TypeIntersection, List<ISemanticTypeStruct>>();
+					List<TypeIntersection> joinOrder = GetJoinOrder(types, stSemanticTypes, typeIntersectionStructs);
 
-					List<ISemanticTypeStruct> sharedStructs = stSemanticTypes[types[0]].Select(t1 => t1.Item1).Intersect(stSemanticTypes[types[1]].Select(t2 => t2.Item1)).ToList();
+					// Since we always start with the first ST in the join list as the base type:
+					Dictionary<ISemanticTypeStruct, int> structureUseCounts = new Dictionary<ISemanticTypeStruct, int>();
+					List<ISemanticTypeStruct> sharedStructs = typeIntersectionStructs[joinOrder[0]];
+					ISemanticTypeStruct sharedStruct = sharedStructs[0];
+					string baseType = joinOrder[0].BaseType;
 
-					// If the shared structure is a unique field in both parent structures, then we can do then join with the FK_ID's rather than the underlying data.
-					// So, for example, in the UniqueKeyJoinQuery unit test, we can join RSSFeedItem and Visited with:
-					// "join [one of the tables] on RSSFeedItem.FK_UrlID = Visited.FK_UrlID"		(ignoring aliased table names)
-					// IMPORTANT: Where the parent tables in the "on" statement are the parents of the respective shared structure, not the root query structure name (which just so happens to be the same in this case.)
+					ISemanticTypeStruct parent0 = stSemanticTypes[baseType].Single(t => t.Item1 == sharedStruct).Item2;
+					bool parent0ElementUnique = parent0.SemanticElements.Any(se => se.Name == sharedStruct.DeclTypeName && se.UniqueField);
 
-					// If there is NOT a unique key at either or both ends, then we have to drill into all native types at the joined structure level for both query paths, which would look like:
-					// "join [one of the tables] on Url1.Value = Url2.Value [and...]" where the and aggregates all the NT values shared between the two query paths.
-					// Notice that here it is VITAL that we figure out the aliases for each query path.
+					// Build the query pieces for the first type:
+					ISemanticTypeStruct sts0 = rsys.SemanticTypeSystem.GetSemanticTypeStruct(baseType);
+					List<string> fields0 = new List<string>();
+					List<string> joins0 = new List<string>();
+					BuildQuery(sts0, fields0, joins0, structureUseCounts);
 
-					// Interestingly, if both reference is unique structure, we get an intersection.
-					// If both reference a non-unique structure, we get an intersection, but then we need to check the parent to see if the element is unique for both paths.
-
-					if (sharedStructs.Count > 0)
+					// Now we're ready to join the other ST's, which are always joinOrder[joinIdx].JoinType.
+					for (int joinIdx = 0; joinIdx < joinOrder.Count; joinIdx++)
 					{
-						ISemanticTypeStruct sharedStruct = sharedStructs[0];
+						string joinType = joinOrder[joinIdx].JoinType;
+
+						// If we've changed the "base" type, then update parent0 and parent0ElementUnique.
+						if (joinOrder[joinIdx].BaseType != baseType)
+						{
+							baseType = joinOrder[joinIdx].BaseType;
+							parent0 = stSemanticTypes[baseType].Single(t => t.Item1 == sharedStruct).Item2;
+							parent0ElementUnique = parent0.SemanticElements.Any(se => se.Name == sharedStruct.DeclTypeName && se.UniqueField);
+						}
+
+						sharedStructs = typeIntersectionStructs[joinOrder[joinIdx]];
+
+						// If the shared structure is a unique field in both parent structures, then we can do then join with the FK_ID's rather than the underlying data.
+						// So, for example, in the UniqueKeyJoinQuery unit test, we can join RSSFeedItem and Visited with:
+						// "join [one of the tables] on RSSFeedItem.FK_UrlID = Visited.FK_UrlID"		(ignoring aliased table names)
+						// IMPORTANT: Where the parent tables in the "on" statement are the parents of the respective shared structure, not the root query structure name (which just so happens to be the same in this case.)
+
+						// If there is NOT a unique key at either or both ends, then we have to drill into all native types at the joined structure level for both query paths, which would look like:
+						// "join [one of the tables] on Url1.Value = Url2.Value [and...]" where the and aggregates all the NT values shared between the two query paths.
+						// Notice that here it is VITAL that we figure out the aliases for each query path.
+
+						// Interestingly, if both reference is unique structure, we get an intersection.
+						// If both reference a non-unique structure, we get an intersection, but then we need to check the parent to see if the element is unique for both paths.
+
+						// TODO: At the moment, we just pick the first shared structure.  At some point we want to pick one that can work with FK's first, then NT unique key values if we can't find an FK join.
+						sharedStruct = sharedStructs[0];
 
 						// Find the parent for each root query given the shared structure.
 						// TODO: Will "Single" ever barf?
-						ISemanticTypeStruct parent0 = stSemanticTypes[types[0]].Single(t => t.Item1 == sharedStruct).Item2;
-						ISemanticTypeStruct parent1 = stSemanticTypes[types[1]].Single(t => t.Item1 == sharedStruct).Item2;
-						bool parent0ElementUnique = parent0.SemanticElements.Any(se => se.Name == sharedStruct.DeclTypeName && se.UniqueField);
+						ISemanticTypeStruct parent1 = stSemanticTypes[joinType].Single(t => t.Item1 == sharedStruct).Item2;
 						bool parent1ElementUnique = parent1.SemanticElements.Any(se => se.Name == sharedStruct.DeclTypeName && se.UniqueField);
 
 						// TODO: If there's more than one shared structure, try an pick the one that is unique or who's parent is a unique element.
 						// TODO: Write a unit test for this.
 						// If the shared structure is unique, or the elements referencing the structure are unique in both parents, then we can use the FK ID between the two parent ST's to join the structures.
-						if ((sharedStructs[0].Unique) || (parent0ElementUnique && parent1ElementUnique))
+						// Otherwise, we have to use the NT values in each structure.
+						if ((sharedStruct.Unique) || (parent0ElementUnique && parent1ElementUnique))
 						{
-							// Build the query pieces for the first type:
-							ISemanticTypeStruct sts0 = rsys.SemanticTypeSystem.GetSemanticTypeStruct(types[0]);
-							List<string> fields0 = new List<string>();
-							List<string> joins0 = new List<string>();
-							Dictionary<ISemanticTypeStruct, int> structureUseCounts = new Dictionary<ISemanticTypeStruct, int>();
-							BuildQuery(sts0, fields0, joins0, structureUseCounts);
-
 							// Build the query pieces for the second type, preserving counts so we don't accidentally re-use an alias.
-							ISemanticTypeStruct sts1 = rsys.SemanticTypeSystem.GetSemanticTypeStruct(types[1]);
+							ISemanticTypeStruct sts1 = rsys.SemanticTypeSystem.GetSemanticTypeStruct(joinType);
 							List<string> fields1 = new List<string>();
 							List<string> joins1 = new List<string>();
 
 							BuildQuery(sts1, fields1, joins1, structureUseCounts);
-
 							fields0.AddRange(fields1);
 
 							// Note the root element of the second structure is always aliased as "1".
@@ -750,77 +800,101 @@ namespace SemanticDatabaseReceptor
 							// TODO: We use a left join here because we want to include records from the first table that may not match with the second table.  This should be user definable, perhaps the way Oracle used to do it with the "+" to indicate a left join rather than an inner join.
 							// TODO: The root table name of the second table (parent1) doesn't need an "as" because it will only be referenced once (like in the "from" clause for parent0), however, this means 
 							// that we can't join the same type twice.  When will this be an issue?
-							joins0.Add("left join " + parent1.DeclTypeName + " on " + parent1.DeclTypeName + ".FK_" + sharedStructs[0].DeclTypeName + "ID = " + parent0.DeclTypeName + ".FK_" + sharedStructs[0].DeclTypeName + "ID");
+							joins0.Add("left join " + parent1.DeclTypeName + " on " + parent1.DeclTypeName + ".FK_" + sharedStruct.DeclTypeName + "ID = " + parent0.DeclTypeName + ".FK_" + sharedStruct.DeclTypeName + "ID");
 							joins0.AddRange(joins1);
-
-							string sqlQuery = "select " + String.Join(", ", fields0) + " \r\nfrom " + sts0.DeclTypeName + " \r\n" + String.Join(" \r\n", joins0);
-
-							// Perform the query:
-							// TODO: Separate function!
-
-							IDbCommand cmd = dbio.CreateCommand();
-							cmd.CommandText = sqlQuery;
-							LogSqlStatement(sqlQuery);
-							IDataReader reader = cmd.ExecuteReader();
-
-							// Populate the signal with the columns in each record read.
-							// Wrap this so we can close the reader if there are any problems.
-							try
-							{
-								while (reader.Read())
-								{
-									// The resulting fields are in the order of how they're populated based on our join list.
-									// Since we're hard-coding a 2 type joins...
-									ISemanticTypeStruct outprotocol0 = rsys.SemanticTypeSystem.GetSemanticTypeStruct(types[0]);
-									object outsignal0 = rsys.SemanticTypeSystem.Create(types[0]);
-									ISemanticTypeStruct outprotocol1 = rsys.SemanticTypeSystem.GetSemanticTypeStruct(types[1]);
-									object outsignal1 = rsys.SemanticTypeSystem.Create(types[1]);
-
-									int counter = 0;
-									outsignal0 = Populate(outprotocol0, outsignal0, reader, ref counter);
-									outsignal1 = Populate(outprotocol1, outsignal1, reader, ref counter);
-
-									// Now create a custom type if it doesn't already exist.  The custom type name is formed from the type names in the join.
-									string customTypeName = String.Join("_", types);
-
-									if (!rsys.SemanticTypeSystem.VerifyProtocolExists(customTypeName))
-									{
-										rsys.SemanticTypeSystem.CreateCustomType(customTypeName, new List<string>() { types[0], types[1] });
-										AddEmitProtocol(customTypeName);		// We now emit this custom protocol.
-									}
-
-									ISemanticTypeStruct outprotocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct(customTypeName);
-									object outsignal = rsys.SemanticTypeSystem.Create(customTypeName);
-
-									// Assign our signals to the children of the custom type.  
-									// TODO: Again, self-joins will fail here.
-									PropertyInfo pi0 = outsignal.GetType().GetProperty(types[0]);
-									pi0.SetValue(outsignal, outsignal0);
-									PropertyInfo pi1 = outsignal.GetType().GetProperty(types[1]);
-									pi1.SetValue(outsignal, outsignal1);
-
-									// Finally!  Create the carrier:
-									if (UnitTesting)
-									{
-										rsys.CreateCarrier(this, outprotocol, outsignal);
-									}
-									else
-									{
-										rsys.CreateCarrierIfReceiver(this, outprotocol, outsignal);
-									}
-								}
-							}
-							catch (Exception ex)
-							{
-								EmitException(ex);
-							}
-							finally
-							{
-								reader.Close();
-							}
+						}
+						else
+						{
+							// TODO: Implement a join based on NT unique key values, as we're joining an ST with only NT's.
+							throw new Exception("Non-FK joins are currently not supported.");
 						}
 					}
 
+					string sqlQuery = "select " + String.Join(", ", fields0) + " \r\nfrom " + sts0.DeclTypeName + " \r\n" + String.Join(" \r\n", joins0);
+
+					// Perform the query:
+					// TODO: Separate function!
+
+					IDbCommand cmd = dbio.CreateCommand();
+					cmd.CommandText = sqlQuery;
+					LogSqlStatement(sqlQuery);
+					IDataReader reader = cmd.ExecuteReader();
+
+					// Populate the signal with the columns in each record read.
+					// Wrap this so we can close the reader if there are any problems.
+					try
+					{
+						while (reader.Read())
+						{
+							int counter = 0;
+							List<object> joinSignals = new List<object>();
+
+							// The resulting fields are in the order of how they're populated based on our join list.
+							// Since we're hard-coding a 2 type joins...
+							ISemanticTypeStruct outprotocol0 = rsys.SemanticTypeSystem.GetSemanticTypeStruct(types[0]);
+							object outsignal0 = rsys.SemanticTypeSystem.Create(types[0]);
+							Populate(outprotocol0, outsignal0, reader, ref counter);
+
+							for (int joinIdx = 0; joinIdx < joinOrder.Count; joinIdx++)
+							{
+								string joinType = joinOrder[joinIdx].JoinType;
+								ISemanticTypeStruct outprotocol1 = rsys.SemanticTypeSystem.GetSemanticTypeStruct(joinType);
+								object outsignal1 = rsys.SemanticTypeSystem.Create(joinType);
+
+								bool anyNonNull1 = Populate(outprotocol1, outsignal1, reader, ref counter);
+
+								// If all native type values are null in the resulting ST, then this is a join with no record, so set the signal to null.
+								if (!anyNonNull1)
+								{
+									outsignal1 = null;
+								}
+
+								joinSignals.Add(outsignal1);
+							}
+
+							// Now create a custom type if it doesn't already exist.  The custom type name is formed from the type names in the join.
+							string customTypeName = String.Join("_", types);
+
+							if (!rsys.SemanticTypeSystem.VerifyProtocolExists(customTypeName))
+							{
+								rsys.SemanticTypeSystem.CreateCustomType(customTypeName, types);
+								AddEmitProtocol(customTypeName);		// We now emit this custom protocol.
+							}
+
+							ISemanticTypeStruct outprotocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct(customTypeName);
+							object outsignal = rsys.SemanticTypeSystem.Create(customTypeName);
+
+							// Assign our signals to the children of the custom type.  
+							// TODO: Again, self-joins will fail here.
+							PropertyInfo pi0 = outsignal.GetType().GetProperty(types[0]);
+							pi0.SetValue(outsignal, outsignal0);
+
+							for (int joinIdx = 0; joinIdx < joinOrder.Count; joinIdx++)
+							{
+								string joinType = joinOrder[joinIdx].JoinType;
+								PropertyInfo pi1 = outsignal.GetType().GetProperty(joinType);
+								pi1.SetValue(outsignal, joinSignals[joinIdx]);
+							}
+
+							// Finally!  Create the carrier:
+							if (UnitTesting)
+							{
+								rsys.CreateCarrier(this, outprotocol, outsignal);
+							}
+							else
+							{
+								rsys.CreateCarrierIfReceiver(this, outprotocol, outsignal);
+							}
+						}
+					}
+					catch (Exception ex)
+					{
+						EmitException(ex);
+					}
+					finally
+					{
+						reader.Close();
+					}
 				}
 				else
 				{
@@ -832,6 +906,83 @@ namespace SemanticDatabaseReceptor
 				// Anything else that screws up outside of the reader loop.
 				EmitException(ex);
 			}
+		}
+
+		protected List<TypeIntersection> GetJoinOrder(List<string> types, Dictionary<string, List<Tuple<ISemanticTypeStruct, ISemanticTypeStruct>>> stSemanticTypes, Dictionary<TypeIntersection, List<ISemanticTypeStruct>> typeIntersectionStructs)
+		{
+			// We assume that the first ST is always the "base" ST, and everything else is joined to it or to other ST's.
+			// This requires that we process joins 1..n in a specific order to ensure that joins to ST's are first defined, then referenced.
+			// TODO: We do not have a test for that.
+			List<TypeIntersection> joinOrder = new List<TypeIntersection>();
+			List<string> typesToJoin = new List<string>();
+
+			// We need to join all these types.
+			// These may become "base" types if we have a dependency like:
+			// 1 depends on 2, and 2 depends on 0.
+			// To resolve 1, we first discover that 2 depends on 0
+			// We then iterate again with 2 as the base type and discover that we can now join 1 as a dependency on 2.
+			// The resulting order is then 0, 2, 1.
+			typesToJoin.AddRange(types.Skip(1));
+
+			// Assume idx 0 is the base.
+			int baseIdx = 0;
+
+			while (typesToJoin.Count > 0)
+			{
+				int idx = 0;
+				bool found = false;
+
+				// Easier to debug if we don't use anonymous methods.  Better for stack traces on exceptions too!
+				foreach (string typeToJoin in types)
+				{
+					// Skip any type that we already found a join for (it won't be in the list.)
+					if (!typesToJoin.Contains(typeToJoin))
+					{
+						++idx;
+						continue;
+					}
+
+					// Returns a list of intersecting ST's between the base ST and another ST.
+					List<ISemanticTypeStruct> sharedStructs = stSemanticTypes[types[baseIdx]].Select(t1 => t1.Item1).Intersect(stSemanticTypes[types[idx]].Select(t2 => t2.Item1)).ToList();
+
+					// If we have shared structure...
+					if (sharedStructs.Count > 0)
+					{
+						// TODO: We still need to verify that we have unique keys in which to accomplish a join.
+						// Write a test for this.
+						// (For now, we always assume that we do)
+						TypeIntersection typeIntersection = new TypeIntersection(types[baseIdx], types[idx]);
+						typeIntersectionStructs[typeIntersection] = sharedStructs;
+						joinOrder.Add(typeIntersection);
+						typesToJoin.Remove(types[idx]);
+						found = true;
+						// Try next type.
+						break;
+					}
+
+					++idx;
+				}
+
+				if (found)
+				{
+					// Start with the base again.
+					baseIdx = 0;
+				}
+				else
+				{
+					// Start with the next possible base and search again.
+					++baseIdx;
+
+					// If we've gone through the entire list...
+					if (baseIdx >= types.Count)
+					{
+						// TODO: Determine what type failed to join.
+						throw new Exception("Cannot find a common type for the required join.");
+					}
+				}
+			}
+
+			return joinOrder;
 		}
 
 		/// <summary>
@@ -928,12 +1079,11 @@ namespace SemanticDatabaseReceptor
 		/// Recursively populates the values into the signal.  The recursion algorithm here must match exactly the same
 		/// form as the recursion algorithm in BuildQuery, as the correlation between field names and their occurrance
 		/// in the semantic structure is relied upon.  For now at least.
-		/// Returns the signal or null if all columns for the type are DBNull, in the case of join resulting in a non-existent record.
-		/// TODO: This creates an interesting implication: an ST must have values for all it's NT's.  We're not allowing nullable NT's at the moment!
+		/// Returns true if there are any non-null NT valus.
 		/// </summary>
-		protected object Populate(ISemanticTypeStruct sts, object signal, IDataReader reader, ref int parmNumber)
+		protected bool Populate(ISemanticTypeStruct sts, object signal, IDataReader reader, ref int parmNumber)
 		{
-			object ret = signal;
+			bool anyNonNull = false;
 			List<object> vals = new List<object>();
 
 			for (int i = 0; i < sts.NativeTypes.Count; i++)
@@ -958,6 +1108,7 @@ namespace SemanticDatabaseReceptor
 					if (val != DBNull.Value)
 					{
 						Assert.TryCatch(() => nt.SetValue(rsys.SemanticTypeSystem, signal, val), (ex) => EmitException(ex));
+						anyNonNull = true;
 					}
 					else
 					{
@@ -971,11 +1122,11 @@ namespace SemanticDatabaseReceptor
 					ISemanticTypeStruct childsts = child.Element.Struct;
 					PropertyInfo piSub = signal.GetType().GetProperty(child.Name);
 					object childSignal = piSub.GetValue(signal);
-					Populate(childsts, childSignal, reader, ref parmNumber);
+					anyNonNull |= Populate(childsts, childSignal, reader, ref parmNumber);
 				}
 			}
 
-			return ret;
+			return anyNonNull;
 		}
 
 		// --------------------
