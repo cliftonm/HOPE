@@ -23,12 +23,6 @@ using Clifton.Tools.Strings.Extensions;
 // SQLite:
 // list fields in a table: pragma table_info('sqlite_master')
 
-// TODO:
-//		ST names with spaces need to be replaced with "_"
-//		NT names with spaces need to be replaced with "_"
-// 		Other issues with naming?  
-//			Names that are keywords or other reserved tokens
-
 namespace SemanticDatabaseReceptor
 {
 	public enum FieldValueType
