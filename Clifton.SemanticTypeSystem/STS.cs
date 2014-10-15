@@ -148,6 +148,29 @@ namespace Clifton.SemanticTypeSystem
 			return ret;
 		}
 
+		/// <summary>
+		/// Returns true if the signal has the specified semantic type and its value is not null.
+		/// </summary>
+		public bool TryGetSignalValue(dynamic signal, string semanticTypeName, out object val)
+		{
+			val = null;
+			bool ret = false;
+
+			PropertyInfo pi = signal.GetType().GetProperty(semanticTypeName);
+
+			if (pi != null)
+			{
+				val = pi.GetValue(signal);
+
+				if (val != null)
+				{
+					ret = true;
+				}
+			}
+
+			return ret;
+		}
+
 		// TODO: Fix references to GetSemanticTypeStruct(child.Name);
 		// because these two are identical:
 		// ISemanticTypeStruct s1 = child.Element.Struct;

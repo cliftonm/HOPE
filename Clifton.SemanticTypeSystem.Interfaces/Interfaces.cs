@@ -154,6 +154,7 @@ namespace Clifton.SemanticTypeSystem.Interfaces
 		bool VerifyProtocolExists(string protocol);
 
 		void CreateCustomType(string typeName, List<string> childProtocols);
+		bool TryGetSignalValue(dynamic signal, string semanticTypeName, out object val);
 	}
 
 	public interface IFullyQualifiedNativeType

@@ -320,7 +320,7 @@ namespace CarrierListViewerReceptor
 		/// <summary>
 		/// Emit a semantic protocol with the value in the selected row and the column determined by the semantic element name.
 		/// </summary>
-		protected void OnCellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
+		protected virtual void OnCellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
 		{
 			ISemanticTypeStruct st = rsys.SemanticTypeSystem.GetSemanticTypeStruct(ProtocolName);
 			List<IFullyQualifiedNativeType> ntList = rsys.SemanticTypeSystem.GetFullyQualifiedNativeTypes(ProtocolName);

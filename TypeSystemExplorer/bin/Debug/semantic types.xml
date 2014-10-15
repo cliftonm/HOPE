@@ -304,13 +304,13 @@
             <SubType Name="Text" Alias="Categories" UniqueField="false" />
           </SubTypes>
         </SemanticType>
-        <SemanticType Name="RSSFeedVisited" UniqueField="false">
+        <SemanticType Name="RSSFeedVisited" UniqueField="true">
           <NativeTypes />
           <SubTypes>
             <SubType Name="RSSFeedUrl" UniqueField="false" />
           </SubTypes>
         </SemanticType>
-        <SemanticType Name="RSSFeedItemDisplayed" UniqueField="false">
+        <SemanticType Name="RSSFeedItemDisplayed" UniqueField="true">
           <NativeTypes />
           <SubTypes>
             <SubType Name="RSSFeedUrl" UniqueField="false" />
