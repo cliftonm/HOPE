@@ -166,7 +166,7 @@ namespace CarrierListViewerReceptor
 		/// <summary>
 		/// Create the table and column definitions for the protocol.
 		/// </summary>
-		protected void CreateViewerTable()
+		protected virtual void CreateViewerTable()
 		{
 			if (!String.IsNullOrEmpty(ProtocolName))
 			{

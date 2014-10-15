@@ -23,11 +23,22 @@ namespace FeedItemListReceptor
 	/// </summary>
 	public class FeedItemList : CarrierListViewer
     {
+		[Flags]
+		protected enum ItemStates
+		{
+			New = 0x01,
+			Displayed = 0x02,
+			Visited = 0x04
+		}
+
+		protected Color visitedColor = Color.FromArgb(0x98, 0xFB, 0x98);		// Pale Green for visited.
+		protected Color displayedColor = Color.FromArgb(0x87, 0xCE, 0xFA);		// Light Sky Blue for "old feed".
+
 		public override string Name { get { return "Feed Item List"; } }
 		public override bool IsEdgeReceptor { get { return true; } }
 		public override string ConfigurationUI { get { return null; } }
 
-		protected Dictionary<string, Color> rowColorByUrl;
+		protected Dictionary<string, ItemStates> rowStateByUrl;
 
 		public FeedItemList(IReceptorSystem rsys)
 			: base(rsys, "feedItemList.xml")
@@ -38,7 +49,7 @@ namespace FeedItemListReceptor
 			AddEmitProtocol("RSSFeedVisited");
 			AddEmitProtocol("RSSFeedItemDisplayed");
 
-			rowColorByUrl = new Dictionary<string, Color>();
+			rowStateByUrl = new Dictionary<string, ItemStates>();
 		}
 
 		public override void EndSystemInit()
@@ -67,14 +78,41 @@ namespace FeedItemListReceptor
 			// Only once per row.
 			if (e.ColumnIndex == 0)
 			{
-				Color color;
+				ItemStates state;
 
 				// Gnarly.  Nasty.  Yuck.  TODO: What can we do to fix all these hardcoded fully qualified NT paths?
-				if (rowColorByUrl.TryGetValue(dgvSignals.Rows[e.RowIndex].Cells["RSSFeedItem.RSSFeedUrl.Url.Value"].Value.ToString(), out color))
+				if (rowStateByUrl.TryGetValue(dgvSignals.Rows[e.RowIndex].Cells["RSSFeedItem.RSSFeedUrl.Url.Value"].Value.ToString(), out state))
 				{
-					dgvSignals.Rows[e.RowIndex].DefaultCellStyle.BackColor = color;
+					if ((state & ItemStates.Visited) == ItemStates.Visited)
+					{
+						dgvSignals.Rows[e.RowIndex].DefaultCellStyle.BackColor = visitedColor;
+					}
+					else if ((state & ItemStates.Displayed) == ItemStates.Displayed)
+					{
+						dgvSignals.Rows[e.RowIndex].DefaultCellStyle.BackColor = displayedColor;
+					}
 				}
 			}
+		}
+
+		protected override void CreateViewerTable()
+		{
+			base.CreateViewerTable();
+
+			// This doesn't work:
+			// dgvSignals.Sort(dgvSignals.Columns["RSSFeedItem.RSSFeedUrl.Url.Value"], System.ComponentModel.ListSortDirection.Descending);
+
+			// And neither does this:
+			// dvSignals.Sort = "RSSFeedItem.RSSFeedUrl.Url.Value desc";
+
+			// I also tried putting these into ProcessCarrier after the call to base.ProcessCarrier.
+			// WTF?
+
+			// And neither does this:
+			// dgvSignals.Columns["RSSFeedItem.RSSFeedUrl.Url.Value"].SortMode = DataGridViewColumnSortMode.Programmatic;
+			// dgvSignals.Sort(dgvSignals.Columns["RSSFeedItem.RSSFeedUrl.Url.Value"], System.ComponentModel.ListSortDirection.Descending);
+
+			// The real solution of course is to have the query determine the sorting.  Very annoying though that I haven't figured out how to do this programmatically!
 		}
 
 		/// <summary>
@@ -132,28 +170,6 @@ namespace FeedItemListReceptor
 				{
 					dynamic val;
 
-					// Do we have an RSSFeedItemDisplayed ST?
-					if (rsys.SemanticTypeSystem.TryGetSignalValue(carrier.ParentCarrier.Signal, "RSSFeedItemDisplayed", out val))
-					{
-						// Find the row and set the background color to a light blue to indicate "old feed item"
-						foreach (DataGridViewRow row in dgvSignals.Rows)
-						{
-							if (row.Cells["RSSFeedItem.RSSFeedUrl.Url.Value"].Value.ToString() == url)
-							{
-								row.DefaultCellStyle.BackColor = Color.FromArgb(0x87, 0xCE, 0xFA);		// Light Sky Blue for "old feed".
-								rowColorByUrl[url] = Color.FromArgb(0x87, 0xCE, 0xFA);
-								break;
-							}
-						}
-					}
-					else
-					{
-						// This record has not been seen before.
-						// Emit the "ItemDisplayed" ST for this URL.
-						CreateCarrierIfReceiver("RSSFeedItemDisplayed", signal => signal.RSSFeedUrl.Url.Value = url);
-						rowColorByUrl[url] = Color.FromArgb(0x87, 0xCE, 0xFA);
-					}
-
 					// Visited takes precedence over displayed.
 					// If it's visited, of course it's been displayed.
 					if (rsys.SemanticTypeSystem.TryGetSignalValue(carrier.ParentCarrier.Signal, "RSSFeedVisited", out val))
@@ -162,23 +178,43 @@ namespace FeedItemListReceptor
 						{
 							if (row.Cells["RSSFeedItem.RSSFeedUrl.Url.Value"].Value.ToString() == url)
 							{
-								row.DefaultCellStyle.BackColor = Color.FromArgb(0x98, 0xFB, 0x98);		// Pale Green for visited.
-								rowColorByUrl[url] = Color.FromArgb(0x98, 0xFB, 0x98);
+								row.DefaultCellStyle.BackColor = visitedColor;
+								rowStateByUrl[url] = ItemStates.Visited;
 								break;
 							}
+						}
+					}
+					else   // not visited, however, possibly displayed previously.
+					{
+						// Do we have an RSSFeedItemDisplayed ST?
+						if (rsys.SemanticTypeSystem.TryGetSignalValue(carrier.ParentCarrier.Signal, "RSSFeedItemDisplayed", out val))
+						{
+							// Find the row and set the background color to a light blue to indicate "old feed item"
+							foreach (DataGridViewRow row in dgvSignals.Rows)
+							{
+								if (row.Cells["RSSFeedItem.RSSFeedUrl.Url.Value"].Value.ToString() == url)
+								{
+									row.DefaultCellStyle.BackColor = displayedColor;
+									rowStateByUrl[url] = ItemStates.Displayed;
+									break;
+								}
+							}
+						}
+						else
+						{
+							// This record has not been seen before.
+							// Emit the "ItemDisplayed" ST for this URL but keep our display state as new until the DB is re-queried.
+							CreateCarrierIfReceiver("RSSFeedItemDisplayed", signal => signal.RSSFeedUrl.Url.Value = url, false);
+							rowStateByUrl[url] = ItemStates.New;
 						}
 					}
 				}
 				else
 				{
 					// No parent carrier, the feed is possibly coming from the feed reader directly.  Regardless, try marking that the feed has been displayed.
-					CreateCarrierIfReceiver("RSSFeedItemDisplayed", signal => signal.RSSFeedUrl.Url.Value = url);
-
-					// If it's already in the url-color map, don't override the color (which may be "visited")
-					if (!rowColorByUrl.ContainsKey(url))
-					{
-						rowColorByUrl[url] = Color.FromArgb(0x87, 0xCE, 0xFA);
-					}
+					// However, keep our display state as "new" until we receive something from the database indicating that we've displayed this feed item before.
+					CreateCarrierIfReceiver("RSSFeedItemDisplayed", signal => signal.RSSFeedUrl.Url.Value = url, false);
+					rowStateByUrl[url] = ItemStates.New;
 				}
 			}
 		}
@@ -186,9 +222,11 @@ namespace FeedItemListReceptor
 		// When the user double-clicks on a value, we post the RSSFeedVisted carrier with the URL.
 		protected override void OnCellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
 		{
-			dgvSignals.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.FromArgb(0x98, 0xFB, 0x98);		// Pale Green for visited.
+			base.OnCellContentDoubleClick(sender, e);
+			dgvSignals.Rows[e.RowIndex].DefaultCellStyle.BackColor = visitedColor;
 			string url = dgvSignals.Rows[e.RowIndex].Cells["RSSFeedItem.RSSFeedUrl.Url.Value"].Value.ToString();
-			CreateCarrierIfReceiver("RSSFeedVisited", signal => signal.RSSFeedUrl.Url.Value = url);
+			rowStateByUrl[url] = ItemStates.Visited;
+			CreateCarrierIfReceiver("RSSFeedVisited", signal => signal.RSSFeedUrl.Url.Value = url, false);
 		}
 	}
 }

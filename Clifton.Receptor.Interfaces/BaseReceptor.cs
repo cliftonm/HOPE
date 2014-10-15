@@ -358,20 +358,20 @@ namespace Clifton.Receptor.Interfaces
 			EmitProtocolsChanged.Fire(this, EventArgs.Empty);
 		}
 
-		protected void CreateCarrier(string protocol, Action<dynamic> initializeSignal)
+		protected void CreateCarrier(string protocol, Action<dynamic> initializeSignal, bool emitSubElements = true)
 		{
 			ISemanticTypeStruct outprotocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct(protocol);
 			dynamic outsignal = rsys.SemanticTypeSystem.Create(protocol);
 			initializeSignal(outsignal);
-			rsys.CreateCarrier(this, outprotocol, outsignal);
+			rsys.CreateCarrier(this, outprotocol, outsignal, null, emitSubElements);
 		}
 
-		protected void CreateCarrierIfReceiver(string protocol, Action<dynamic> initializeSignal)
+		protected void CreateCarrierIfReceiver(string protocol, Action<dynamic> initializeSignal, bool emitSubElements = true)
 		{
 			ISemanticTypeStruct outprotocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct(protocol);
 			dynamic outsignal = rsys.SemanticTypeSystem.Create(protocol);
 			initializeSignal(outsignal);
-			rsys.CreateCarrierIfReceiver(this, outprotocol, outsignal);
+			rsys.CreateCarrierIfReceiver(this, outprotocol, outsignal, null, emitSubElements);
 		}
 
 		/// <summary>
