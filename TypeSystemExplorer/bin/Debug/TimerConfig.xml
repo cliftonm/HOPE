@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<MycroXaml Name="Form"
+  xmlns:wf="System.Windows.Forms, System.Windows.Forms, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"
+  xmlns:r="Clifton.Receptor, Clifton.Receptor"
+  xmlns:def="def"
+  xmlns:ref="ref">
+  <wf:Form Text="Timer Configuration" Size="480, 160" StartPosition="CenterScreen" ShowInTaskbar="false" MinimizeBox="false" MaximizeBox="false">
+    <wf:Controls>
+      <wf:Label Text="D:" Location="20, 23" Size="20, 15"/>
+      <wf:TextBox def:Name="tbDays" Location="40, 20" Size="40, 20"/>
+      <wf:Label Text="H:" Location="90, 23" Size="20, 15"/>
+      <wf:TextBox def:Name="tbHours" Location="110, 20" Size="40, 20"/>
+      <wf:Label Text="M:" Location="160, 23" Size="20, 15"/>
+      <wf:TextBox def:Name="tbMinutes" Location="180, 20" Size="40, 20"/>
+      <wf:Label Text="S:" Location="230, 23" Size="20, 15"/>
+      <wf:TextBox def:Name="tbSeconds" Location="250, 20" Size="40, 20"/>
+      <wf:Label Text="Semantic Type:" Location="20, 48" Size="90, 15"/>
+      <wf:TextBox def:Name="tbProtocolName" Location="110, 45" Size="200, 20"/>
+      <wf:CheckBox def:Name="ckEnabled" Text="Enabled?" Location="20, 95" Size="80, 25"/>
+      <wf:Button Text="Save" Location="360, 10" Size="80, 25" Click="OnReceptorConfigOK"/>
+      <wf:Button Text="Cancel" Location="360, 40" Size="80, 25" Click="OnReceptorConfigCancel"/>
+    </wf:Controls>
+    <r:PropertyControlMap def:Name="ControlMap">
+      <r:Entries>
+        <r:PropertyControlEntry PropertyName="DaySpan" ControlName="tbDays" ControlPropertyName="Text"/>
+        <r:PropertyControlEntry PropertyName="HourSpan" ControlName="tbHours" ControlPropertyName="Text"/>
+        <r:PropertyControlEntry PropertyName="MinuteSpan" ControlName="tbMinutes" ControlPropertyName="Text"/>
+        <r:PropertyControlEntry PropertyName="SecondSpan" ControlName="tbSeconds" ControlPropertyName="Text"/>
+        <r:PropertyControlEntry PropertyName="ProtocolName" ControlName="tbProtocolName" ControlPropertyName="Text"/>
+      </r:Entries>
+    </r:PropertyControlMap>
+  </wf:Form>
+</MycroXaml>
+
+
