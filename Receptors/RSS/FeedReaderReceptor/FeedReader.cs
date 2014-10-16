@@ -119,6 +119,12 @@ namespace FeedReaderReceptor
 
 			SyndicationFeed feed = await Task.Run(() =>
 				{
+					// To handle this error:
+					// For security reasons DTD is prohibited in this XML document. To enable DTD processing set the DtdProcessing property on XmlReaderSettings to Parse and pass the settings into XmlReader.Create method.
+					XmlReaderSettings settings = new XmlReaderSettings();
+					settings.XmlResolver = null;
+					settings.DtdProcessing = DtdProcessing.Ignore;
+
 					XmlReader xr = XmlReader.Create(feedUrl);
 					SyndicationFeed sfeed = SyndicationFeed.Load(xr);
 					xr.Close();
