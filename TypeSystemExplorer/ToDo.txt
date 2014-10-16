@@ -11,10 +11,22 @@ Receptors
 
 Save the viewer's offset along with the applet.
 	
-Carrier List Viewer:
+Carrier List Viewer:																							 
 	Need Ordinality in schema ST's and NT's (order first by ST's, then NT's within each ST) for defining the default ordering of columns
 	Persist column sort options and columns sizing
 
 Bugs:
 	The alias of a semantic type's child semantic element isn't sticking.  For example: RSSFeedAuthors -> Text, Text is aliased to authors but shows up as "Text" in the list viewer.
+
+
+Semantic Database:
+	ST names with spaces need to be replaced with "-"																		  
+	NT names with spaces need to be replaced with "-"
+	Other issues with naming?  
+		Names that are keywords or other reserved tokens
+
+	NT updating when UK record exists
+	
+	Query prefix (like "top 40")
+	Query where clause
 

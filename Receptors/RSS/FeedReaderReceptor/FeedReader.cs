@@ -30,12 +30,14 @@ namespace FeedReaderReceptor
 		[UserConfigurableProperty("Feed Name:")]
 		public string FeedName {get;set;}
 
+		protected string lastFeedUrl;
 		protected SyndicationFeed feed;
 
 		public FeedReader(IReceptorSystem rsys)
 			: base(rsys)
 		{
 			AddReceiveProtocol("RSSFeedUrl", (Action<dynamic>)(s => ProcessUrl(s)));
+			AddReceiveProtocol("RSSFeedRefresh", (Action<dynamic>)(s => Refresh()));
 			AddEmitProtocol("RSSFeedItem");
 			AddEmitProtocol("ExceptionMessage");
 			AddEmitProtocol("LoggerMessage");
@@ -75,6 +77,11 @@ namespace FeedReaderReceptor
 			AcquireFeed(feedUrl);
 		}
 
+		protected void Refresh()
+		{
+			AcquireFeed(lastFeedUrl);
+		}
+
 		/// <summary>
 		/// Acquire the feed and emit the feed items. 
 		/// </summary>
@@ -82,6 +89,8 @@ namespace FeedReaderReceptor
 		{
 			if (!String.IsNullOrEmpty(feedUrl))
 			{
+				lastFeedUrl = feedUrl;
+
 				try
 				{
 					SyndicationFeed feed = await GetFeedAsync(feedUrl);

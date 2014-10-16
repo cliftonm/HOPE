@@ -101,6 +101,7 @@ namespace TypeSystemExplorer.Controllers
 			receptors.Add(new ReceptorEntry() { Name = "Semantic Database", Filename = "SemanticDatabaseReceptor.dll" });
 			receptors.Add(new ReceptorEntry() { Name = "Signal Creator", Filename = "SignalCreatorReceptor.dll" });
 			receptors.Add(new ReceptorEntry() { Name = "Feed List Viewer", Filename = "FeedItemListReceptor.dll" });
+			receptors.Add(new ReceptorEntry() { Name = "Interval Timer", Filename = "TimerReceptor.dll" });
 
 			receptors.Sort((r1, r2) => r1.Name.CompareTo(r2.Name));
 		}

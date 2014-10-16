@@ -316,6 +316,10 @@
             <SubType Name="RSSFeedUrl" UniqueField="false" />
           </SubTypes>
         </SemanticType>
+        <SemanticType Name="RSSFeedRefresh" UniqueField="false">
+          <NativeTypes />
+          <SubTypes />
+        </SemanticType>
       </SemanticTypes>
     </SemanticTypesContainer>
     <SemanticTypesContainer Name="Web">
