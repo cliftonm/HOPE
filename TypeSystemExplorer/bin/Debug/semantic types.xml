@@ -304,12 +304,6 @@
             <SubType Name="Text" Alias="Categories" UniqueField="false" />
           </SubTypes>
         </SemanticType>
-        <SemanticType Name="RSSFeedVisited" UniqueField="true">
-          <NativeTypes />
-          <SubTypes>
-            <SubType Name="RSSFeedUrl" UniqueField="false" />
-          </SubTypes>
-        </SemanticType>
         <SemanticType Name="RSSFeedItemDisplayed" UniqueField="true">
           <NativeTypes />
           <SubTypes>
@@ -329,6 +323,12 @@
             <NativeType Name="Value" ImplementingType="string" UniqueField="false" />
           </NativeTypes>
           <SubTypes />
+        </SemanticType>
+        <SemanticType Name="UrlVisited" UniqueField="false">
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="Url" UniqueField="false" />
+          </SubTypes>
         </SemanticType>
       </SemanticTypes>
     </SemanticTypesContainer>
