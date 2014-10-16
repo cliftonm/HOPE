@@ -153,21 +153,43 @@ namespace SemanticDatabaseReceptor
 		/// </summary>
 		public void ProtocolsUpdated()
 		{
-			ValidateDatabaseSchema();
-			UpdateListeners();
+			try
+			{
+				ValidateDatabaseSchema();
+				UpdateListeners();
+			}
+			catch (Exception ex)
+			{
+				EmitException(ex);
+			}
 		}
 
 		public override void EndSystemInit()
 		{
 			base.EndSystemInit();
-			Connect();
-			ValidateDatabaseSchema();
-			UpdateListeners();
+
+			try
+			{
+				Connect();
+				ValidateDatabaseSchema();
+				UpdateListeners();
+			}
+			catch (Exception ex)
+			{
+				EmitException(ex);
+			}
 		}
 
 		public override void Terminate()
 		{
-			dbio.Close();
+			try
+			{
+				dbio.Close();
+			}
+			catch
+			{
+				// On terminate, we don't really care about an exception, do we?
+			}
 		}
 
 		public override void PrepopulateConfig(MycroParser mp)
@@ -794,7 +816,24 @@ namespace SemanticDatabaseReceptor
 							// TODO: We use a left join here because we want to include records from the first table that may not match with the second table.  This should be user definable, perhaps the way Oracle used to do it with the "+" to indicate a left join rather than an inner join.
 							// TODO: The root table name of the second table (parent1) doesn't need an "as" because it will only be referenced once (like in the "from" clause for parent0), however, this means 
 							// that we can't join the same type twice.  When will this be an issue?
-							joins0.Add("left join " + parent1.DeclTypeName + " on " + parent1.DeclTypeName + ".FK_" + sharedStruct.DeclTypeName + "ID = " + parent0.DeclTypeName + ".FK_" + sharedStruct.DeclTypeName + "ID");
+
+							// Except for types in the query itself, we need to aliased type.
+							string rightSideTableName = parent0.DeclTypeName;
+
+							if (!types.Contains(parent0.DeclTypeName))
+							{
+								rightSideTableName = parent0.DeclTypeName + "1";		// TODO: But do we need to know which alias, out of a possibility of aliases, to choose from???
+							}
+
+							if (sharedStruct.DeclTypeName == parent0.DeclTypeName)
+							{
+								// The right side should, in this case, be the ID, not an FK, as the left side is joining to the actual table rather than both referencing a common shared FK.
+								joins0.Add("left join " + parent1.DeclTypeName + " on " + parent1.DeclTypeName + ".FK_" + sharedStruct.DeclTypeName + "ID = " + rightSideTableName + ".ID");
+							}
+							else
+							{
+								joins0.Add("left join " + parent1.DeclTypeName + " on " + parent1.DeclTypeName + ".FK_" + sharedStruct.DeclTypeName + "ID = " + rightSideTableName + ".FK_" + sharedStruct.DeclTypeName + "ID");
+							}
 							joins0.AddRange(joins1);
 						}
 						else
