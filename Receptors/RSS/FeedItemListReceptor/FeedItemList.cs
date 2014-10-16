@@ -46,7 +46,7 @@ namespace FeedItemListReceptor
 			// The only protocol we receive.
 			AddReceiveProtocol("RSSFeedItem", (Action<dynamic>)(signal => ShowSignal(signal)));
 			AddEmitProtocol("ExceptionMessage");
-			AddEmitProtocol("RSSFeedVisited");
+			AddEmitProtocol("UrlVisited");
 			AddEmitProtocol("RSSFeedItemDisplayed");
 
 			rowStateByUrl = new Dictionary<string, ItemStates>();
@@ -132,18 +132,18 @@ namespace FeedItemListReceptor
 			{
 				ShowSignal(carrier.Signal);
 
-				// We are interested in the existence of the root and whether an RSSFeedVisited ST exists on it.
+				// We are interested in the existence of the root and whether an UrlVisited ST exists on it.
 				// We determine the following:
 
 				// RSSFeedItem with no parent: this is a new feed coming off the FeedReader itself
 				// RSSFeedItem with parent: this is an existing feed (which may also be duplicated from FeedReader, we have no way of knowing the order)
-				//		If RSSFeedVisited exists, mark it as visited
-				//		If RSSFeedVistied is null, mark it as "old but no visited"
+				//		If UrlVisited exists, mark it as visited
+				//		If UrlVisited is null, mark it as "old but no visited"
 				// Otherwise, any RSSFeedItems with no parent an no (even null) RSSFeedVisted are marked as actually being new!
 
 				// We potentially have a race condition:
 				// A new feed (not seen) is stored to the DB
-				// The query occurs, and while the RSSFeedVisited is null, it's now viewed as "old"
+				// The query occurs, and while the UrlVisited is null, it's now viewed as "old"
 
 				// HOWEVER: THE ABOVE IS INCORRECT!!!
 
@@ -172,7 +172,7 @@ namespace FeedItemListReceptor
 
 					// Visited takes precedence over displayed.
 					// If it's visited, of course it's been displayed.
-					if (rsys.SemanticTypeSystem.TryGetSignalValue(carrier.ParentCarrier.Signal, "RSSFeedVisited", out val))
+					if (rsys.SemanticTypeSystem.TryGetSignalValue(carrier.ParentCarrier.Signal, "UrlVisited", out val))
 					{
 						foreach (DataGridViewRow row in dgvSignals.Rows)
 						{
@@ -231,7 +231,7 @@ namespace FeedItemListReceptor
 			dgvSignals.Rows[e.RowIndex].DefaultCellStyle.BackColor = visitedColor;
 			string url = dgvSignals.Rows[e.RowIndex].Cells["RSSFeedItem.RSSFeedUrl.Url.Value"].Value.ToString();
 			rowStateByUrl[url] = ItemStates.Visited;
-			CreateCarrierIfReceiver("RSSFeedVisited", signal => signal.RSSFeedUrl.Url.Value = url, false);
+			CreateCarrierIfReceiver("UrlVisited", signal => signal.RSSFeedUrl.Url.Value = url, false);
 		}
 	}
 }
