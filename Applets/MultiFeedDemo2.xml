@@ -1,0 +1,321 @@
+<MycroXaml xmlns:ixm="TypeSystemExplorer.Models, TypeSystemExplorer" xmlns:def="def" xmlns:ref="ref" Name="Form">
+  <ixm:Applet>
+    <ixm:MembranesDef>
+      <ixm:Membranes>
+        <ixm:MembraneDef Name="Skin">
+          <ixm:Receptors>
+            <ixm:ReceptorDef Name="Semantic Database" AssemblyName="SemanticDatabaseReceptor.dll" Enabled="True" Location="429, 128">
+              <ixm:ReceiveProtocols>
+                <ixm:ReceiveProtocol Protocol="Query" Enabled="True" />
+                <ixm:ReceiveProtocol Protocol="RSSFeedItem" Enabled="True" />
+                <ixm:ReceiveProtocol Protocol="RSSFeedVisited" Enabled="True" />
+                <ixm:ReceiveProtocol Protocol="RSSFeedItemDisplayed" Enabled="True" />
+              </ixm:ReceiveProtocols>
+              <ixm:EmitProtocols>
+                <ixm:EmitProtocol Protocol="LoggerMessage" Enabled="True" />
+                <ixm:EmitProtocol Protocol="TextMessage" Enabled="True" />
+                <ixm:EmitProtocol Protocol="Text" Enabled="True" />
+                <ixm:EmitProtocol Protocol="ExceptionMessage" Enabled="True" />
+                <ixm:EmitProtocol Protocol="RSSFeedItem_RSSFeedVisited_RSSFeedItemDisplayed" Enabled="True" />
+                <ixm:EmitProtocol Protocol="RSSFeedItem" Enabled="True" />
+                <ixm:EmitProtocol Protocol="RSSFeedName" Enabled="True" />
+                <ixm:EmitProtocol Protocol="RSSFeedTitle" Enabled="True" />
+                <ixm:EmitProtocol Protocol="RSSFeedUrl" Enabled="True" />
+                <ixm:EmitProtocol Protocol="Url" Enabled="True" />
+                <ixm:EmitProtocol Protocol="RSSFeedDescription" Enabled="True" />
+                <ixm:EmitProtocol Protocol="RSSFeedPubDate" Enabled="True" />
+                <ixm:EmitProtocol Protocol="RSSFeedAuthors" Enabled="True" />
+                <ixm:EmitProtocol Protocol="RSSFeedCategories" Enabled="True" />
+                <ixm:EmitProtocol Protocol="RSSFeedVisited" Enabled="True" />
+                <ixm:EmitProtocol Protocol="RSSFeedItemDisplayed" Enabled="True" />
+              </ixm:EmitProtocols>
+              <ixm:UserConfigs>
+                <ixm:UserConfig Name="Protocols" Value="RSSFeedItem;RSSFeedVisited;RSSFeedItemDisplayed" />
+              </ixm:UserConfigs>
+            </ixm:ReceptorDef>
+            <ixm:ReceptorDef Name="Signal Creator" AssemblyName="SignalCreatorReceptor.dll" Enabled="True" Location="546, 129">
+              <ixm:EmitProtocols>
+                <ixm:EmitProtocol Protocol="Query" Enabled="True" />
+              </ixm:EmitProtocols>
+              <ixm:UserConfigs>
+                <ixm:UserConfig Name="ProtocolName" Value="Query" />
+                <ixm:UserConfig Name="Data" Value="RSSFeedItem, RSSFeedVisited, RSSFeedItemDisplayed" />
+              </ixm:UserConfigs>
+            </ixm:ReceptorDef>
+          </ixm:Receptors>
+          <ixm:Permeabilities>
+            <ixm:PermeabilityDef Protocol="LoggerMessage" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="TextMessage" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="Text" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="ExceptionMessage" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="Query" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="RSSFeedVisited" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="RSSFeedItemDisplayed" Direction="Out" Permeable="False" />
+          </ixm:Permeabilities>
+          <ixm:Membranes>
+            <ixm:MembraneDef Name="">
+              <ixm:Receptors>
+                <ixm:ReceptorDef Name="Feed Item List" AssemblyName="FeedItemListReceptor.dll" Enabled="True" Location="312, 199">
+                  <ixm:ReceiveProtocols>
+                    <ixm:ReceiveProtocol Protocol="RSSFeedItem" Enabled="True" />
+                  </ixm:ReceiveProtocols>
+                  <ixm:EmitProtocols>
+                    <ixm:EmitProtocol Protocol="ExceptionMessage" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="TextMessage" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="Text" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedVisited" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedUrl" Enabled="False" />
+                    <ixm:EmitProtocol Protocol="Url" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedItemDisplayed" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedName" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedTitle" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedDescription" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedPubDate" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedAuthors" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedCategories" Enabled="True" />
+                  </ixm:EmitProtocols>
+                  <ixm:UserConfigs>
+                    <ixm:UserConfig Name="ProtocolName" Value="RSSFeedItem" />
+                    <ixm:UserConfig Name="ShowProtocolPicker" Value="False" />
+                    <ixm:UserConfig Name="WindowX" Value="11" />
+                    <ixm:UserConfig Name="WindowY" Value="14" />
+                    <ixm:UserConfig Name="WindowWidth" Value="845" />
+                    <ixm:UserConfig Name="WindowHeight" Value="588" />
+                  </ixm:UserConfigs>
+                </ixm:ReceptorDef>
+                <ixm:ReceptorDef Name="Web Page Viewer" AssemblyName="WebBrowserReceptor.dll" Enabled="True" Location="189, 198">
+                  <ixm:ReceiveProtocols>
+                    <ixm:ReceiveProtocol Protocol="Url" Enabled="True" />
+                  </ixm:ReceiveProtocols>
+                  <ixm:UserConfigs>
+                    <ixm:UserConfig Name="WindowX" Value="361" />
+                    <ixm:UserConfig Name="WindowY" Value="61" />
+                    <ixm:UserConfig Name="WindowWidth" Value="1141" />
+                    <ixm:UserConfig Name="WindowHeight" Value="897" />
+                  </ixm:UserConfigs>
+                </ixm:ReceptorDef>
+              </ixm:Receptors>
+              <ixm:Permeabilities>
+                <ixm:PermeabilityDef Protocol="LoggerMessage" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="TextMessage" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Text" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="ExceptionMessage" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="ExceptionMessage" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="TextMessage" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Text" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedVisited" Direction="Out" Permeable="True" />
+                <ixm:PermeabilityDef Protocol="RSSFeedUrl" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Url" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedItemDisplayed" Direction="Out" Permeable="True" />
+                <ixm:PermeabilityDef Protocol="RSSFeedCategories" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedAuthors" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedPubDate" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedDescription" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedName" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedTitle" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedDescription" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedPubDate" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedAuthors" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedCategories" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Url" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedUrl" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedTitle" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedName" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Query" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedItem" Direction="In" Permeable="True" />
+              </ixm:Permeabilities>
+            </ixm:MembraneDef>
+          </ixm:Membranes>
+          <ixm:Membranes>
+            <ixm:MembraneDef Name="">
+              <ixm:Receptors>
+                <ixm:ReceptorDef Name="Semantic Database" AssemblyName="SemanticDatabaseReceptor.dll" Enabled="True" Location="311, 476">
+                  <ixm:ReceiveProtocols>
+                    <ixm:ReceiveProtocol Protocol="Query" Enabled="True" />
+                    <ixm:ReceiveProtocol Protocol="RSSFeedItem" Enabled="True" />
+                    <ixm:ReceiveProtocol Protocol="RSSFeedVisited" Enabled="True" />
+                    <ixm:ReceiveProtocol Protocol="RSSFeedItemDisplayed" Enabled="True" />
+                  </ixm:ReceiveProtocols>
+                  <ixm:EmitProtocols>
+                    <ixm:EmitProtocol Protocol="LoggerMessage" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="TextMessage" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="Text" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="ExceptionMessage" Enabled="True" />
+                  </ixm:EmitProtocols>
+                  <ixm:UserConfigs>
+                    <ixm:UserConfig Name="Protocols" Value="RSSFeedItem;RSSFeedVisited;RSSFeedItemDisplayed" />
+                  </ixm:UserConfigs>
+                </ixm:ReceptorDef>
+                <ixm:ReceptorDef Name="Feed Reader" AssemblyName="FeedReaderReceptor.dll" Enabled="True" Location="393, 435">
+                  <ixm:ReceiveProtocols>
+                    <ixm:ReceiveProtocol Protocol="RSSFeedUrl" Enabled="True" />
+                    <ixm:ReceiveProtocol Protocol="RSSFeedRefresh" Enabled="True" />
+                  </ixm:ReceiveProtocols>
+                  <ixm:EmitProtocols>
+                    <ixm:EmitProtocol Protocol="RSSFeedItem" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedName" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="Text" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedTitle" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedUrl" Enabled="False" />
+                    <ixm:EmitProtocol Protocol="Url" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedDescription" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedPubDate" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedAuthors" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedCategories" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="ExceptionMessage" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="TextMessage" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="LoggerMessage" Enabled="True" />
+                  </ixm:EmitProtocols>
+                  <ixm:UserConfigs>
+                    <ixm:UserConfig Name="FeedUrl" Value="http://www.codeproject.com/WebServices/ArticleRSS.aspx" />
+                    <ixm:UserConfig Name="FeedName" Value="Code Project" />
+                  </ixm:UserConfigs>
+                </ixm:ReceptorDef>
+                <ixm:ReceptorDef Name="Interval Timer" AssemblyName="TimerReceptor.dll" Enabled="True" Location="316, 535">
+                  <ixm:EmitProtocols>
+                    <ixm:EmitProtocol Protocol="RSSFeedRefresh" Enabled="True" />
+                  </ixm:EmitProtocols>
+                  <ixm:UserConfigs>
+                    <ixm:UserConfig Name="DaySpan" Value="" />
+                    <ixm:UserConfig Name="HourSpan" Value="" />
+                    <ixm:UserConfig Name="MinuteSpan" Value="30" />
+                    <ixm:UserConfig Name="SecondSpan" Value="" />
+                    <ixm:UserConfig Name="ProtocolName" Value="RSSFeedRefresh" />
+                  </ixm:UserConfigs>
+                </ixm:ReceptorDef>
+                <ixm:ReceptorDef Name="Feed Reader" AssemblyName="FeedReaderReceptor.dll" Enabled="True" Location="405, 573">
+                  <ixm:ReceiveProtocols>
+                    <ixm:ReceiveProtocol Protocol="RSSFeedUrl" Enabled="True" />
+                    <ixm:ReceiveProtocol Protocol="RSSFeedRefresh" Enabled="True" />
+                  </ixm:ReceiveProtocols>
+                  <ixm:EmitProtocols>
+                    <ixm:EmitProtocol Protocol="RSSFeedItem" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedName" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="Text" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedTitle" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedUrl" Enabled="False" />
+                    <ixm:EmitProtocol Protocol="Url" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedDescription" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedPubDate" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedAuthors" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedCategories" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="ExceptionMessage" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="TextMessage" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="LoggerMessage" Enabled="True" />
+                  </ixm:EmitProtocols>
+                  <ixm:UserConfigs>
+                    <ixm:UserConfig Name="FeedUrl" Value="http://feeds.arstechnica.com/arstechnica/technology-lab?format=xml" />
+                    <ixm:UserConfig Name="FeedName" Value="Ars Technica" />
+                  </ixm:UserConfigs>
+                </ixm:ReceptorDef>
+                <ixm:ReceptorDef Name="Feed Reader" AssemblyName="FeedReaderReceptor.dll" Enabled="True" Location="233, 584">
+                  <ixm:ReceiveProtocols>
+                    <ixm:ReceiveProtocol Protocol="RSSFeedUrl" Enabled="True" />
+                    <ixm:ReceiveProtocol Protocol="RSSFeedRefresh" Enabled="True" />
+                  </ixm:ReceiveProtocols>
+                  <ixm:EmitProtocols>
+                    <ixm:EmitProtocol Protocol="RSSFeedItem" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedName" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="Text" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedTitle" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedUrl" Enabled="False" />
+                    <ixm:EmitProtocol Protocol="Url" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedDescription" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedPubDate" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedAuthors" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedCategories" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="ExceptionMessage" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="TextMessage" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="LoggerMessage" Enabled="True" />
+                  </ixm:EmitProtocols>
+                  <ixm:UserConfigs>
+                    <ixm:UserConfig Name="FeedUrl" Value="http://feeds.wired.com/wired/index" />
+                    <ixm:UserConfig Name="FeedName" Value="Wired" />
+                  </ixm:UserConfigs>
+                </ixm:ReceptorDef>
+                <ixm:ReceptorDef Name="Feed Reader" AssemblyName="FeedReaderReceptor.dll" Enabled="True" Location="319, 625">
+                  <ixm:ReceiveProtocols>
+                    <ixm:ReceiveProtocol Protocol="RSSFeedUrl" Enabled="True" />
+                    <ixm:ReceiveProtocol Protocol="RSSFeedRefresh" Enabled="True" />
+                  </ixm:ReceiveProtocols>
+                  <ixm:EmitProtocols>
+                    <ixm:EmitProtocol Protocol="RSSFeedItem" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedName" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="Text" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedTitle" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedUrl" Enabled="False" />
+                    <ixm:EmitProtocol Protocol="Url" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedDescription" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedPubDate" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedAuthors" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedCategories" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="ExceptionMessage" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="TextMessage" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="LoggerMessage" Enabled="True" />
+                  </ixm:EmitProtocols>
+                  <ixm:UserConfigs>
+                    <ixm:UserConfig Name="FeedUrl" Value="http://www.infoworld.com/index.rss" />
+                    <ixm:UserConfig Name="FeedName" Value="InfoWorld" />
+                  </ixm:UserConfigs>
+                </ixm:ReceptorDef>
+                <ixm:ReceptorDef Name="Feed Reader" AssemblyName="FeedReaderReceptor.dll" Enabled="True" Location="238, 440">
+                  <ixm:ReceiveProtocols>
+                    <ixm:ReceiveProtocol Protocol="RSSFeedUrl" Enabled="True" />
+                    <ixm:ReceiveProtocol Protocol="RSSFeedRefresh" Enabled="True" />
+                  </ixm:ReceiveProtocols>
+                  <ixm:EmitProtocols>
+                    <ixm:EmitProtocol Protocol="RSSFeedItem" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedName" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="Text" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedTitle" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedUrl" Enabled="False" />
+                    <ixm:EmitProtocol Protocol="Url" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedDescription" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedPubDate" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedAuthors" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedCategories" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="ExceptionMessage" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="TextMessage" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="LoggerMessage" Enabled="True" />
+                  </ixm:EmitProtocols>
+                  <ixm:UserConfigs>
+                    <ixm:UserConfig Name="FeedUrl" Value="https://gigaom.com/feed/" />
+                    <ixm:UserConfig Name="FeedName" Value="Gigaom" />
+                  </ixm:UserConfigs>
+                </ixm:ReceptorDef>
+              </ixm:Receptors>
+              <ixm:Permeabilities>
+                <ixm:PermeabilityDef Protocol="LoggerMessage" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="TextMessage" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Text" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="ExceptionMessage" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedVisited" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedItemDisplayed" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="LoggerMessage" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="TextMessage" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Text" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="ExceptionMessage" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedItem" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedName" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedTitle" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedUrl" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Url" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedDescription" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedPubDate" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedAuthors" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedCategories" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedRefresh" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedItem_RSSFeedVisited_RSSFeedItemDisplayed" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedVisited" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedItemDisplayed" Direction="Out" Permeable="False" />
+              </ixm:Permeabilities>
+            </ixm:MembraneDef>
+          </ixm:Membranes>
+        </ixm:MembraneDef>
+      </ixm:Membranes>
+    </ixm:MembranesDef>
+    <ixm:CarriersDef>
+      <ixm:Carriers />
+    </ixm:CarriersDef>
+  </ixm:Applet>
+</MycroXaml>
