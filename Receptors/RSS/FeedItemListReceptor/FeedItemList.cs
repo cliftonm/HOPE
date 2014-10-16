@@ -214,7 +214,12 @@ namespace FeedItemListReceptor
 					// No parent carrier, the feed is possibly coming from the feed reader directly.  Regardless, try marking that the feed has been displayed.
 					// However, keep our display state as "new" until we receive something from the database indicating that we've displayed this feed item before.
 					CreateCarrierIfReceiver("RSSFeedItemDisplayed", signal => signal.RSSFeedUrl.Url.Value = url, false);
-					rowStateByUrl[url] = ItemStates.New;
+
+					// Only update if the row state is not currently set, as we don't want to reset displayed or visited to the "new" state.
+					if (!rowStateByUrl.ContainsKey(url))
+					{
+						rowStateByUrl[url] = ItemStates.New;
+					}
 				}
 			}
 		}
