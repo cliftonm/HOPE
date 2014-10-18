@@ -367,10 +367,18 @@ namespace SemanticDatabaseReceptor
 				// Maybe support both by figuring out which is used???
 				string[] expectedRootTables = Protocols.Split(';');
 
+				// SQL commands to generate FK's.
+				List<string> fkSql = new List<string>();
+
 				foreach (string expectedRootTable in expectedRootTables)
 				{
-					CreateIfMissing(expectedRootTable.Trim(), tableNames);
+					CreateIfMissing(expectedRootTable.Trim(), tableNames, fkSql);
 				}
+
+				fkSql.Where(s=>!String.IsNullOrEmpty(s)).ForEach(s=>
+				{
+					dbio.Execute(this, s);
+				});
 			}
 		}
 
@@ -379,13 +387,13 @@ namespace SemanticDatabaseReceptor
 		/// If found, the fields are inspected.
 		/// Regardless, the sub-types are recursively inspected as well.
 		/// </summary>
-		protected void CreateIfMissing(string st, List<string> tableNames)
+		protected void CreateIfMissing(string st, List<string> tableNames, List<string> fkSql)
 		{
 			// All of these "ToLower's" is because Postgres converts table and field names to lowercase.  
 			// Why in the world would it do that???  (Of course, if it's a quoted table or field name, then case is preserved!!!)
 			if (!tableNames.Contains(st.ToLower()))
 			{
-				CreateTable(st);
+				CreateTable(st, fkSql);
 				tableNames.Add(st.ToLower());
 			}
 			else
@@ -394,10 +402,10 @@ namespace SemanticDatabaseReceptor
 			}
 
 			ISemanticTypeStruct sts = rsys.SemanticTypeSystem.GetSemanticTypeStruct(st);
-			sts.SemanticElements.ForEach(child => CreateIfMissing(child.Name, tableNames));
+			sts.SemanticElements.ForEach(child => CreateIfMissing(child.Name, tableNames, fkSql));
 		}
 
-		protected void CreateTable(string st)
+		protected void CreateTable(string st, List<string> fkSql)
 		{
 			List<Tuple<string, Type>> fieldTypes = new List<Tuple<string, Type>>();
 			ISemanticTypeStruct sts = rsys.SemanticTypeSystem.GetSemanticTypeStruct(st);
@@ -405,7 +413,9 @@ namespace SemanticDatabaseReceptor
 			// Create FK's for child SE's.
 			sts.SemanticElements.ForEach(child =>
 			{
-				fieldTypes.Add(new Tuple<string, Type>("FK_" + child.Name + "ID", typeof(long)));
+				string fkFieldName = "FK_" + child.Name + "ID";
+				fieldTypes.Add(new Tuple<string, Type>(fkFieldName, typeof(long)));
+				fkSql.Add(dbio.GetForeignKeySql(st, fkFieldName, child.Name, "ID"));
 			});
 
 			// Create fields for NT's.

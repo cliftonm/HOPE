@@ -21,6 +21,7 @@ namespace SemanticDatabaseReceptor
 		void CreateDBIfMissing(string databaseFilename);
 
 		void CreateTable(ISemanticDatabase sdb, string st, List<Tuple<string, Type>> fieldTypes);
+		string GetForeignKeySql(string st, string stField, string childTable, string childField);
 		void OpenDB(string connectionString);
 		List<string> GetTables(ISemanticDatabase sdb);
 		List<string> GetColumns(ISemanticDatabase sdb, string tableName);

@@ -138,5 +138,15 @@ namespace SemanticDatabaseReceptor
 		{
 			return name.Brackets();
 		}
+
+		/// <summary>
+		/// FK's are an optional feature of SQLite, so this function simply returns null.
+		/// </summary>
+		/// <returns>null</returns>
+		public string GetForeignKeySql(string st, string stField, string childTable, string childField)
+		{
+			// TODO: At some point, implement this.
+			return null;
+		}
 	}
 }

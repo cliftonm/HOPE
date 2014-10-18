@@ -148,5 +148,10 @@ namespace SemanticDatabaseReceptor
 			// Note that we also have to conver the name to lowercase, because "Foobar" is not the same as foobar.
 			return name.ToLower().Quote();
 		}
+
+		public string GetForeignKeySql(string st, string stField, string childTable, string childField)
+		{
+			return "alter table " + st + " add foreign key (" + stField + ") references " + childTable + "(" + childField + ")";
+		}
 	}
 }
