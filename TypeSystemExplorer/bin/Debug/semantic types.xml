@@ -4,10 +4,10 @@
     <SemanticTypesContainer Name="Core">
       <SemanticTypes>
         <SemanticType Name="Name" UniqueField="false">
-          <NativeTypes>
-            <NativeType Name="Value" ImplementingType="string" UniqueField="false" />
-          </NativeTypes>
-          <SubTypes />
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="Text" UniqueField="false" />
+          </SubTypes>
         </SemanticType>
         <SemanticType Name="Filename" UniqueField="false">
           <NativeTypes />
@@ -42,16 +42,16 @@
           <SubTypes />
         </SemanticType>
         <SemanticType Name="Title" UniqueField="false">
-          <NativeTypes>
-            <NativeType Name="Value" ImplementingType="string" UniqueField="false" />
-          </NativeTypes>
-          <SubTypes />
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="Text" UniqueField="false" />
+          </SubTypes>
         </SemanticType>
         <SemanticType Name="Description" UniqueField="false">
-          <NativeTypes>
-            <NativeType Name="Value" ImplementingType="string" UniqueField="false" />
-          </NativeTypes>
-          <SubTypes />
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="Text" UniqueField="false" />
+          </SubTypes>
         </SemanticType>
       </SemanticTypes>
     </SemanticTypesContainer>
@@ -265,19 +265,19 @@
         <SemanticType Name="RSSFeedName" Alias="Feed Name" UniqueField="true">
           <NativeTypes />
           <SubTypes>
-            <SubType Name="Text" UniqueField="false" />
+            <SubType Name="Name" UniqueField="false" />
           </SubTypes>
         </SemanticType>
         <SemanticType Name="RSSFeedTitle" Alias="Feed Title" UniqueField="false">
           <NativeTypes />
           <SubTypes>
-            <SubType Name="Text" UniqueField="false" />
+            <SubType Name="Title" UniqueField="false" />
           </SubTypes>
         </SemanticType>
         <SemanticType Name="RSSFeedDescription" Alias="Descr." UniqueField="false">
           <NativeTypes />
           <SubTypes>
-            <SubType Name="Text" UniqueField="false" />
+            <SubType Name="Description" UniqueField="false" />
           </SubTypes>
         </SemanticType>
         <SemanticType Name="RSSFeedPubDate" Alias="PubDate" UniqueField="false">
@@ -337,6 +337,12 @@
         <SemanticType Name="Query" UniqueField="false">
           <NativeTypes>
             <NativeType Name="QueryText" ImplementingType="string" UniqueField="false" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
+        <SemanticType Name="Delete" UniqueField="false">
+          <NativeTypes>
+            <NativeType Name="SemanticType" ImplementingType="string" UniqueField="false" />
           </NativeTypes>
           <SubTypes />
         </SemanticType>

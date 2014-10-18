@@ -231,7 +231,7 @@ namespace FeedItemListReceptor
 			dgvSignals.Rows[e.RowIndex].DefaultCellStyle.BackColor = visitedColor;
 			string url = dgvSignals.Rows[e.RowIndex].Cells["RSSFeedItem.RSSFeedUrl.Url.Value"].Value.ToString();
 			rowStateByUrl[url] = ItemStates.Visited;
-			CreateCarrierIfReceiver("UrlVisited", signal => signal.RSSFeedUrl.Url.Value = url, false);
+			CreateCarrierIfReceiver("UrlVisited", signal => signal.Url.Value = url, false);
 		}
 	}
 }

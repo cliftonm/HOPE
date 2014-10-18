@@ -151,12 +151,12 @@ namespace FeedReaderReceptor
 #if SIMULATED
 			CreateCarrier("RSSFeedItem", signal =>
 				{
-					signal.RSSFeedName.Text.Value = FeedName;
-					signal.RSSFeedTitle.Text.Value = "Test Title";
+					signal.RSSFeedName.Name.Text.Value = FeedName;
+					signal.RSSFeedTitle.Title.Text.Value = "Test Title";
 					signal.RSSFeedUrl.Url.Value = "http://test";
-					signal.RSSFeedDescription.Text.Value = "Test Description";
-					signal.RSSFeedAuthors.Value = new List<string>();
-					signal.RSSFeedCategories.Value = new List<string>();
+					signal.RSSFeedDescription.Description.Text.Value = "Test Description";
+					signal.RSSFeedAuthors.Text.Value = "Marc";
+					signal.RSSFeedCategories.Text.Value = "My Stuff";
 					signal.RSSFeedPubDate.Value = new DateTime(2014, 8, 19, 12, 1, 0);		// use a fixed date to test semantic database.
 				});
 #else
@@ -168,10 +168,10 @@ namespace FeedReaderReceptor
 				{
 					CreateCarrier("RSSFeedItem", signal =>
 						{
-							signal.RSSFeedName.Text.Value = FeedName;
-							signal.RSSFeedTitle.Text.Value = item.Title.Text;
+							signal.RSSFeedName.Name.Text.Value = FeedName;
+							signal.RSSFeedTitle.Title.Text.Value = item.Title.Text;
 							signal.RSSFeedUrl.Url.Value = item.Links[0].Uri.ToString();
-							signal.RSSFeedDescription.Text.Value = item.Summary.Text;
+							signal.RSSFeedDescription.Description.Text.Value = item.Summary.Text;
 							
 							// TODO: The semantic database doesn't support collections at the moment.
 							signal.RSSFeedAuthors.Text.Value = String.Join(", ", item.Authors.Select(a => a.Name));
