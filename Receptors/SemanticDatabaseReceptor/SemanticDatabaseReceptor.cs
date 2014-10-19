@@ -706,11 +706,24 @@ namespace SemanticDatabaseReceptor
 
 		// ------ Query -------
 
+		/// <summary>
+		/// Query is of the form ST [,ST] [where {where clause}] [order by {ST [,ST]}
+		/// The ST's in the where and order by must resolve to single NT elements, otherwise they must be fully qualified ST.NT names.
+		/// </summary>
+		/// <param name="query"></param>
 		protected void QueryDatabase(string query)
 		{
 			try
 			{
-				List<string> types = query.LeftOf("where").Split(',').Select(s => s.Trim()).ToList();
+				// Types are to the left of any were and order by's.
+				List<string> types = query.LeftOf(" where ").LeftOf(" order by ").Split(',').Select(s => s.Trim()).ToList();
+				List<string> orderBy = new List<string>();
+				string strOrderBy = query.RightOf(" order by ");
+
+				if (!String.IsNullOrEmpty(strOrderBy))
+				{
+					orderBy.AddRange(strOrderBy.Split(',').Select(s => s.Trim()));
+				}
 
 				// We only have one protocol to query, so we can create the protocol directly since it's already defined.
 				if (types.Count() == 1)
@@ -724,7 +737,7 @@ namespace SemanticDatabaseReceptor
 						throw new Exception("Protocol " + protocol + " is not defined.");
 					}
 
-					List<object> signal = QueryType(protocol, String.Empty);
+					List<object> signal = QueryType(protocol, String.Empty, orderBy);
 
 					// Create a carrier for each of the signals in the returned record collection.
 					if (UnitTesting)
@@ -769,7 +782,8 @@ namespace SemanticDatabaseReceptor
 					ISemanticTypeStruct sts0 = rsys.SemanticTypeSystem.GetSemanticTypeStruct(baseType);
 					List<string> fields0 = new List<string>();
 					List<string> joins0 = new List<string>();
-					BuildQuery(sts0, fields0, joins0, structureUseCounts);
+					List<Tuple<string, string>> fqntAliases = new List<Tuple<string, string>>();
+					BuildQuery(sts0, fields0, joins0, structureUseCounts, sts0.DeclTypeName, fqntAliases);
 
 					// Now we're ready to join the other ST's, which are always joinOrder[joinIdx].JoinType.
 					for (int joinIdx = 0; joinIdx < joinOrder.Count; joinIdx++)
@@ -817,7 +831,7 @@ namespace SemanticDatabaseReceptor
 							List<string> fields1 = new List<string>();
 							List<string> joins1 = new List<string>();
 
-							BuildQuery(sts1, fields1, joins1, structureUseCounts);
+							BuildQuery(sts1, fields1, joins1, structureUseCounts, sts1.DeclTypeName, fqntAliases);
 							fields0.AddRange(fields1);
 
 							// Note the root element of the second structure is always aliased as "1".
@@ -854,6 +868,7 @@ namespace SemanticDatabaseReceptor
 					}
 
 					string sqlQuery = "select " + String.Join(", ", fields0) + " \r\nfrom " + sts0.DeclTypeName + " \r\n" + String.Join(" \r\n", joins0);
+					sqlQuery = sqlQuery + " " + ParseOrderBy(orderBy, fqntAliases);
 
 					// Perform the query:
 					// TODO: Separate function!
@@ -1031,7 +1046,7 @@ namespace SemanticDatabaseReceptor
 		/// <summary>
 		/// Return a list of dynamics that represents the semantic element instances in the resulting query set.
 		/// </summary>
-		protected List<object> QueryType(string protocol, string where)
+		protected List<object> QueryType(string protocol, string where, List<string> orderBy)
 		{
 			List<object> ret = new List<object>();
 
@@ -1040,10 +1055,12 @@ namespace SemanticDatabaseReceptor
 			List<string> fields = new List<string>();
 			List<string> joins = new List<string>();
 			Dictionary<ISemanticTypeStruct, int> structureUseCounts = new Dictionary<ISemanticTypeStruct, int>();
-			BuildQuery(sts, fields, joins, structureUseCounts);
+			List<Tuple<string, string>> fqntAliases = new List<Tuple<string, string>>();
+			BuildQuery(sts, fields, joins, structureUseCounts, sts.DeclTypeName, fqntAliases);
 
 			// CRLF for pretty inspection.
 			string sqlQuery = "select " + String.Join(", ", fields) + " \r\nfrom " + sts.DeclTypeName + " \r\n" + String.Join(" \r\n", joins);
+			sqlQuery = sqlQuery + " " + ParseOrderBy(orderBy, fqntAliases);
 
 			IDbCommand cmd = dbio.CreateCommand();
 			cmd.CommandText = sqlQuery;
@@ -1065,14 +1082,61 @@ namespace SemanticDatabaseReceptor
 			return ret;
 		}
 
+		protected string ParseOrderBy(List<string> orderBy, List<Tuple<string, string>> fqntAliases)
+		{
+			StringBuilder sb = new StringBuilder();
+
+			if (orderBy.Count > 0)
+			{
+				sb.Append("\r\norder by ");
+				List<string> fields = new List<string>();
+
+				foreach (string orderByField in orderBy)
+				{
+					// Find a match in the FQN - alias map.
+					// We expect to find one and only one match.
+					try
+					{
+						// strip off asc/desc
+						string fieldName = orderByField.LeftOf(" asc").LeftOf(" desc");
+						string alias = fqntAliases.Single(fqnt => fqnt.Item1.Contains(fieldName)).Item2;
+
+						if (fieldName != orderByField)
+						{
+							// Put back any "asc" or "desc" descriptor, which is always to the right of the field name separated by a space.
+							alias = alias + " " + orderByField.RightOf(' ');
+						}
+
+						fields.Add(alias);
+					}
+					catch
+					{
+						// Provide a more useful exception to the user rather than the one .NET will throw.
+						EmitException("The order by field " + orderByField + " cannot be resolved to a single native type.  It requires further specification to disambiguate from other semantic types.");
+					}
+				}
+
+				sb.Append(String.Join(", ", fields));
+			}
+
+			return sb.ToString();
+		}
+
 		/// <summary>
 		/// Recurses the semantic structure to generate the native type fields and the semantic element joins.
+		/// fqntAliases -- fully qualified native type and it's actual alias in the field list.
 		/// </summary>
-		protected void BuildQuery(ISemanticTypeStruct sts, List<string> fields, List<string> joins, Dictionary<ISemanticTypeStruct, int> structureUseCounts)
+		protected void BuildQuery(ISemanticTypeStruct sts, List<string> fields, List<string> joins, Dictionary<ISemanticTypeStruct, int> structureUseCounts, string fqn, List<Tuple<string, string>> fqntAliases)
 		{
 			// Add native type fields.
 			string parentName = GetUseName(sts, structureUseCounts);
-			sts.NativeTypes.ForEach(nt => fields.Add(parentName + "." + nt.Name));
+			sts.NativeTypes.ForEach(nt =>
+				{
+					string qualifiedFieldName = fqn + "." + nt.Name;
+					string qualifiedAliasFieldName = parentName + "." + nt.Name;
+					fields.Add(qualifiedAliasFieldName);
+					fqntAliases.Add(new Tuple<string, string>(qualifiedFieldName, qualifiedAliasFieldName));
+				});
 
 			sts.SemanticElements.ForEach(child =>
 				{
@@ -1080,7 +1144,7 @@ namespace SemanticDatabaseReceptor
 					IncrementUseCount(childsts, structureUseCounts);
 					string asChildName = GetUseName(childsts, structureUseCounts);
 					joins.Add("left join " + childsts.DeclTypeName + " as " + asChildName + " on " + asChildName + ".ID = " + parentName + ".FK_" + childsts.DeclTypeName + "ID");
-					BuildQuery(childsts, fields, joins, structureUseCounts);
+					BuildQuery(childsts, fields, joins, structureUseCounts, fqn+"."+childsts.DeclTypeName, fqntAliases);
 				});
 		}
 

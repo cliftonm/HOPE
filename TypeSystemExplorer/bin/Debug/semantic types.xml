@@ -6,15 +6,15 @@
         <SemanticType Name="Name" UniqueField="false">
           <NativeTypes />
           <SubTypes>
-            <SubType Name="Text" UniqueField="false" />
+            <SubType Name="Text" UniqueField="false" Ordinality="0" />
           </SubTypes>
         </SemanticType>
         <SemanticType Name="Filename" UniqueField="false">
           <NativeTypes />
           <SubTypes>
-            <SubType Name="Path" UniqueField="false" />
-            <SubType Name="Name" UniqueField="false" />
-            <SubType Name="FileExtension" UniqueField="false" />
+            <SubType Name="Path" UniqueField="false" Ordinality="0" />
+            <SubType Name="Name" UniqueField="false" Ordinality="0" />
+            <SubType Name="FileExtension" UniqueField="false" Ordinality="0" />
           </SubTypes>
         </SemanticType>
         <SemanticType Name="Path" UniqueField="false">
@@ -32,7 +32,7 @@
         <SemanticType Name="TextMessage" Alias="Message" UniqueField="false">
           <NativeTypes />
           <SubTypes>
-            <SubType Name="Text" UniqueField="false" />
+            <SubType Name="Text" UniqueField="false" Ordinality="0" />
           </SubTypes>
         </SemanticType>
         <SemanticType Name="Text" Alias="Text" UniqueField="false">
@@ -44,13 +44,13 @@
         <SemanticType Name="Title" UniqueField="false">
           <NativeTypes />
           <SubTypes>
-            <SubType Name="Text" UniqueField="false" />
+            <SubType Name="Text" UniqueField="false" Ordinality="0" />
           </SubTypes>
         </SemanticType>
         <SemanticType Name="Description" UniqueField="false">
           <NativeTypes />
           <SubTypes>
-            <SubType Name="Text" UniqueField="false" />
+            <SubType Name="Text" UniqueField="false" Ordinality="0" />
           </SubTypes>
         </SemanticType>
       </SemanticTypes>
@@ -62,7 +62,7 @@
             <NativeType Name="MessageTime" ImplementingType="DateTime" UniqueField="false" />
           </NativeTypes>
           <SubTypes>
-            <SubType Name="TextMessage" UniqueField="false" />
+            <SubType Name="TextMessage" UniqueField="false" Ordinality="0" />
           </SubTypes>
         </SemanticType>
         <SemanticType Name="LoggerMessage" UniqueField="false">
@@ -70,7 +70,7 @@
             <NativeType Name="MessageTime" Alias="Date/Time" ImplementingType="DateTime" UniqueField="false" />
           </NativeTypes>
           <SubTypes>
-            <SubType Name="TextMessage" Alias="Message" UniqueField="false" />
+            <SubType Name="TextMessage" Alias="Message" UniqueField="false" Ordinality="0" />
           </SubTypes>
         </SemanticType>
         <SemanticType Name="ErrorMessage" UniqueField="false">
@@ -78,7 +78,7 @@
             <NativeType Name="MessageTime" Alias="Date/Time" ImplementingType="DateTime" UniqueField="false" />
           </NativeTypes>
           <SubTypes>
-            <SubType Name="TextMessage" Alias="Text" UniqueField="false" />
+            <SubType Name="TextMessage" Alias="Text" UniqueField="false" Ordinality="0" />
           </SubTypes>
         </SemanticType>
         <SemanticType Name="ExceptionMessage" UniqueField="false">
@@ -89,7 +89,7 @@
             <NativeType Name="StackTrace" ImplementingType="string" UniqueField="false" />
           </NativeTypes>
           <SubTypes>
-            <SubType Name="TextMessage" Alias="Exception" UniqueField="false" />
+            <SubType Name="TextMessage" Alias="Exception" UniqueField="false" Ordinality="0" />
           </SubTypes>
         </SemanticType>
       </SemanticTypes>
@@ -112,14 +112,14 @@
         <SemanticType Name="ThumbnailImage" UniqueField="false">
           <NativeTypes />
           <SubTypes>
-            <SubType Name="SourceImageFilename" UniqueField="false" />
-            <SubType Name="Image" UniqueField="false" />
+            <SubType Name="SourceImageFilename" UniqueField="false" Ordinality="0" />
+            <SubType Name="Image" UniqueField="false" Ordinality="0" />
           </SubTypes>
         </SemanticType>
         <SemanticType Name="ImageFilename" UniqueField="false">
           <NativeTypes />
           <SubTypes>
-            <SubType Name="Filename" UniqueField="false" />
+            <SubType Name="Filename" UniqueField="false" Ordinality="0" />
           </SubTypes>
         </SemanticType>
         <SemanticType Name="Image" UniqueField="false">
@@ -131,7 +131,7 @@
         <SemanticType Name="SourceImageFilename" UniqueField="false">
           <NativeTypes />
           <SubTypes>
-            <SubType Name="Filename" UniqueField="false" />
+            <SubType Name="Filename" UniqueField="false" Ordinality="0" />
           </SubTypes>
         </SemanticType>
       </SemanticTypes>
@@ -151,8 +151,8 @@
             <NativeType Name="From" ImplementingType="IReceptorInstance" UniqueField="false" />
           </NativeTypes>
           <SubTypes>
-            <SubType Name="Image" UniqueField="false" />
-            <SubType Name="Filename" UniqueField="false" />
+            <SubType Name="Image" UniqueField="false" Ordinality="0" />
+            <SubType Name="Filename" UniqueField="false" Ordinality="0" />
           </SubTypes>
         </SemanticType>
       </SemanticTypes>
@@ -162,8 +162,8 @@
         <SemanticType Name="USZipCode" UniqueField="false">
           <NativeTypes />
           <SubTypes>
-            <SubType Name="Zip5" UniqueField="false" />
-            <SubType Name="Zip4" UniqueField="false" />
+            <SubType Name="Zip5" UniqueField="false" Ordinality="0" />
+            <SubType Name="Zip4" UniqueField="false" Ordinality="0" />
           </SubTypes>
         </SemanticType>
         <SemanticType Name="Zip5" UniqueField="false">
@@ -181,11 +181,11 @@
         <SemanticType Name="USLocation" UniqueField="false">
           <NativeTypes />
           <SubTypes>
-            <SubType Name="Zip5" UniqueField="false" />
-            <SubType Name="Zip4" UniqueField="false" />
-            <SubType Name="City" UniqueField="false" />
-            <SubType Name="USState" UniqueField="false" />
-            <SubType Name="USStateAbbreviation" UniqueField="false" />
+            <SubType Name="Zip5" UniqueField="false" Ordinality="0" />
+            <SubType Name="Zip4" UniqueField="false" Ordinality="0" />
+            <SubType Name="City" UniqueField="false" Ordinality="0" />
+            <SubType Name="USState" UniqueField="false" Ordinality="0" />
+            <SubType Name="USStateAbbreviation" UniqueField="false" Ordinality="0" />
           </SubTypes>
         </SemanticType>
         <SemanticType Name="City" UniqueField="false">
@@ -226,7 +226,7 @@
             <NativeType Name="Hazards" ImplementingType="List&lt;dynamic&gt;" UniqueField="false" />
           </NativeTypes>
           <SubTypes>
-            <SubType Name="Zip5" UniqueField="false" />
+            <SubType Name="Zip5" UniqueField="false" Ordinality="0" />
           </SubTypes>
         </SemanticType>
         <SemanticType Name="WeatherCondition" UniqueField="false">
@@ -253,31 +253,31 @@
         <SemanticType Name="RSSFeedItem" UniqueField="true">
           <NativeTypes />
           <SubTypes>
-            <SubType Name="RSSFeedName" Alias="" UniqueField="false" />
-            <SubType Name="RSSFeedTitle" Alias="" UniqueField="false" />
-            <SubType Name="RSSFeedUrl" Alias="" UniqueField="false" />
-            <SubType Name="RSSFeedDescription" Alias="" UniqueField="false" />
-            <SubType Name="RSSFeedPubDate" Alias="" UniqueField="false" />
-            <SubType Name="RSSFeedAuthors" Alias="" UniqueField="false" />
-            <SubType Name="RSSFeedCategories" Alias="" UniqueField="false" />
+            <SubType Name="RSSFeedName" Alias="" UniqueField="false" Ordinality="0" />
+            <SubType Name="RSSFeedTitle" Alias="" UniqueField="false" Ordinality="2" />
+            <SubType Name="RSSFeedUrl" Alias="" UniqueField="false" Ordinality="6" />
+            <SubType Name="RSSFeedDescription" Alias="" UniqueField="false" Ordinality="3" />
+            <SubType Name="RSSFeedPubDate" Alias="" UniqueField="false" Ordinality="1" />
+            <SubType Name="RSSFeedAuthors" Alias="" UniqueField="false" Ordinality="4" />
+            <SubType Name="RSSFeedCategories" Alias="" UniqueField="false" Ordinality="5" />
           </SubTypes>
         </SemanticType>
         <SemanticType Name="RSSFeedName" Alias="Feed Name" UniqueField="true">
           <NativeTypes />
           <SubTypes>
-            <SubType Name="Name" UniqueField="false" />
+            <SubType Name="Name" UniqueField="false" Ordinality="0" />
           </SubTypes>
         </SemanticType>
         <SemanticType Name="RSSFeedTitle" Alias="Feed Title" UniqueField="false">
           <NativeTypes />
           <SubTypes>
-            <SubType Name="Title" UniqueField="false" />
+            <SubType Name="Title" UniqueField="false" Ordinality="0" />
           </SubTypes>
         </SemanticType>
         <SemanticType Name="RSSFeedDescription" Alias="Descr." UniqueField="false">
           <NativeTypes />
           <SubTypes>
-            <SubType Name="Description" UniqueField="false" />
+            <SubType Name="Description" UniqueField="false" Ordinality="0" />
           </SubTypes>
         </SemanticType>
         <SemanticType Name="RSSFeedPubDate" Alias="PubDate" UniqueField="false">
@@ -289,25 +289,25 @@
         <SemanticType Name="RSSFeedUrl" Alias="Url" UniqueField="true">
           <NativeTypes />
           <SubTypes>
-            <SubType Name="Url" UniqueField="false" />
+            <SubType Name="Url" UniqueField="false" Ordinality="0" />
           </SubTypes>
         </SemanticType>
         <SemanticType Name="RSSFeedAuthors" Alias="Authors" UniqueField="false">
           <NativeTypes />
           <SubTypes>
-            <SubType Name="Text" Alias="Authors" UniqueField="false" />
+            <SubType Name="Text" Alias="Authors" UniqueField="false" Ordinality="0" />
           </SubTypes>
         </SemanticType>
         <SemanticType Name="RSSFeedCategories" Alias="Categories" UniqueField="false">
           <NativeTypes />
           <SubTypes>
-            <SubType Name="Text" Alias="Categories" UniqueField="false" />
+            <SubType Name="Text" Alias="Categories" UniqueField="false" Ordinality="0" />
           </SubTypes>
         </SemanticType>
         <SemanticType Name="RSSFeedItemDisplayed" UniqueField="true">
           <NativeTypes />
           <SubTypes>
-            <SubType Name="RSSFeedUrl" UniqueField="false" />
+            <SubType Name="RSSFeedUrl" UniqueField="false" Ordinality="0" />
           </SubTypes>
         </SemanticType>
         <SemanticType Name="RSSFeedRefresh" UniqueField="false">
@@ -327,7 +327,7 @@
         <SemanticType Name="UrlVisited" UniqueField="false">
           <NativeTypes />
           <SubTypes>
-            <SubType Name="Url" UniqueField="false" />
+            <SubType Name="Url" UniqueField="false" Ordinality="0" />
           </SubTypes>
         </SemanticType>
       </SemanticTypes>

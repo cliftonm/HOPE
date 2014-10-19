@@ -10,7 +10,7 @@
               </ixm:EmitProtocols>
               <ixm:UserConfigs>
                 <ixm:UserConfig Name="ProtocolName" Value="Query" />
-                <ixm:UserConfig Name="Data" Value="RSSFeedItem, UrlVisited, RSSFeedItemDisplayed" />
+                <ixm:UserConfig Name="Data" Value="RSSFeedItem, UrlVisited, RSSFeedItemDisplayed order by RSSFeedName, RSSFeedPubDate desc" />
               </ixm:UserConfigs>
             </ixm:ReceptorDef>
             <ixm:ReceptorDef Name="Feed Reader" AssemblyName="FeedReaderReceptor.dll" Enabled="True" Location="430, 445">

@@ -98,7 +98,7 @@ namespace Clifton.Receptor.Interfaces
 			WindowHeight = form.Size.Height;
 		}
 
-		protected void OnFormClosing(object sender, FormClosingEventArgs e)
+		protected virtual void OnFormClosing(object sender, FormClosingEventArgs e)
 		{
 			form = null;
 		}
