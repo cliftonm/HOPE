@@ -27,6 +27,11 @@ namespace Clifton.SemanticTypeSystem
 		public ISemanticType Element { get; set; }
 
 		/// <summary>
+		/// The ordering of elements in a semantic type.  Used for display purposes, like a grid view.
+		/// </summary>
+		public int Ordinality { get; set; }
+
+		/// <summary>
 		/// Returns the name of the native type or semantic element singleton implemented by the semantic element.
 		/// This does NOT recurse to get the underlying native type from a semantic element hierarchy.  See GetImplementingType.
 		/// </summary>

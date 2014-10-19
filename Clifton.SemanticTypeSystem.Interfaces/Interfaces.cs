@@ -29,11 +29,40 @@ namespace Clifton.SemanticTypeSystem.Interfaces
 
 	public interface ISemanticTypeStruct
 	{
+		/// <summary>
+		/// Placeholder name from XML deserialization.
+		/// </summary>
 		string DeclTypeName { get; }
+
+		/// <summary>
+		/// Beautified display name that replaces the fully qualified name.
+		/// </summary>
 		string Alias { get; }
+
+		/// <summary>
+		/// The ordering of elements in a semantic type.  Used for display purposes, like a grid view.
+		/// </summary>
+		int Ordinality { get; }
+
+		/// <summary>
+		/// Used by the semantic database to determine how this semantic type behaves with regards to duplicate data.
+		/// </summary>
 		bool Unique { get; }
+
+		/// <summary>
+		/// Any defined native types.
+		/// </summary>
 		List<INativeType> NativeTypes { get; }
+
+		/// <summary>
+		/// Any defined semantic elements.  This list is an intermediate list built during deserialization.
+		/// Suggestion: Since the semantic element resolves to a semantic type, we could build the SemanticType list here as well.
+		/// </summary>
 		List<ISemanticElement> SemanticElements { get; }
+
+		/// <summary>
+		/// Return all types with the interface IGetSetSemanticType so we can get/set values of those types.
+		/// </summary>
 		List<IGetSetSemanticType> AllTypes { get; }
 
 		bool HasNativeTypes { get; }
@@ -108,6 +137,11 @@ namespace Clifton.SemanticTypeSystem.Interfaces
 		/// </summary>
 		bool UniqueField { get; set; }
 
+		/// <summary>
+		/// The ordering of elements in a semantic type.  Used for display purposes, like a grid view.
+		/// </summary>
+		int Ordinality { get; }
+
 		ISemanticType Element { get; set; }
 
 		/// <summary>
@@ -169,6 +203,11 @@ namespace Clifton.SemanticTypeSystem.Interfaces
 		/// This is the aggregate of uniqueness -- if the parent ST is unique, then all native type fields deriving from it are unique.
 		/// </summary>
 		bool UniqueField { get; }
+
+		/// <summary>
+		/// The ordering of elements in a semantic type.  Used for display purposes, like a grid view.
+		/// </summary>
+		int Ordinality { get; }
 
 		object Value { get; }
 	}

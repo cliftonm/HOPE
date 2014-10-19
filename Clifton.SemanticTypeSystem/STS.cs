@@ -28,6 +28,7 @@ namespace Clifton.SemanticTypeSystem
 		public string FullyQualifiedNameSansRoot { get { return FullyQualifiedName.RightOf('.'); } }
 		public string Alias { get; set; }
 		public bool UniqueField { get; set; }
+		public int Ordinality { get; set; }
 		public INativeType NativeType { get; set; }
 		public object Value { get; set; }				// Only used when getting FQNT's for an associated signal.
 	}
@@ -197,7 +198,7 @@ namespace Clifton.SemanticTypeSystem
 			string stack = protocolName;
 			ISemanticTypeStruct st = GetSemanticTypeStruct(protocolName);
 			string alias = st.Alias;
-			RecurseGetFullyQualifiedNativeTypes(st, stack, alias, st.Unique, recurse, ret);
+			RecurseGetFullyQualifiedNativeTypes(st, stack, alias, st.Unique, 0, recurse, ret);
 
 			return ret;
 		}
@@ -214,7 +215,7 @@ namespace Clifton.SemanticTypeSystem
 			string stack = protocolName;
 			ISemanticTypeStruct st = GetSemanticTypeStruct(protocolName);
 			string alias = st.Alias;
-			RecurseGetFullyQualifiedNativeTypeValues(signal, st, stack, alias, st.Unique, recurse, ret);
+			RecurseGetFullyQualifiedNativeTypeValues(signal, st, stack, alias, st.Unique, 0, recurse, ret);
 
 			return ret;
 		}
@@ -298,7 +299,7 @@ namespace Clifton.SemanticTypeSystem
 			}
 		}
 
-		protected void RecurseGetFullyQualifiedNativeTypes(ISemanticTypeStruct st, string stack, string alias, bool isUnique, bool recurse, List<IFullyQualifiedNativeType> fqntList)
+		protected void RecurseGetFullyQualifiedNativeTypes(ISemanticTypeStruct st, string stack, string alias, bool isUnique, int ordinality, bool recurse, List<IFullyQualifiedNativeType> fqntList)
 		{
 			foreach (INativeType nativeType in st.NativeTypes)
 			{
@@ -308,7 +309,8 @@ namespace Clifton.SemanticTypeSystem
 					FullyQualifiedName = stack + "." + nativeType.Name, 
 					NativeType = nativeType, 
 					Alias = ntalias,
-					UniqueField = nativeType.UniqueField || isUnique
+					UniqueField = nativeType.UniqueField || isUnique,
+					Ordinality = ordinality
 				});
 			}
 
@@ -318,14 +320,22 @@ namespace Clifton.SemanticTypeSystem
 				{
 					stack = stack + "." + childElem.Name;			// push
 					ISemanticTypeStruct stChild = GetSemanticTypeStruct(childElem.Name);
-					string newAlias = (!String.IsNullOrEmpty(alias) ? alias : stChild.Alias);
-					RecurseGetFullyQualifiedNativeTypes(stChild, stack, newAlias, isUnique || stChild.Unique, recurse, fqntList);
+
+					// Check first if the child element has an alias.  If so (and no prior alias is overriding) then use the alias defined in the element.
+					string newAlias = (!String.IsNullOrEmpty(alias) ? alias : childElem.Alias);
+
+					// Check next if the semantic type itself has an alias.  If so (and no prior alias is overriding) then use the alias defined for the semantic type of the child element.
+					// Confusing, isn't it?
+					newAlias = (!String.IsNullOrEmpty(newAlias) ? newAlias : stChild.Alias);
+
+					int newOrdinality = ((ordinality != 0) ? ordinality : childElem.Ordinality);
+					RecurseGetFullyQualifiedNativeTypes(stChild, stack, newAlias, isUnique || stChild.Unique, newOrdinality, recurse, fqntList);
 					stack = stack.LeftOfRightmostOf('.');			// pop
 				}
 			}
 		}
 
-		protected void RecurseGetFullyQualifiedNativeTypeValues(object signal, ISemanticTypeStruct st, string stack, string alias, bool isUnique, bool recurse, List<IFullyQualifiedNativeType> fqntList)
+		protected void RecurseGetFullyQualifiedNativeTypeValues(object signal, ISemanticTypeStruct st, string stack, string alias, bool isUnique, int ordinality, bool recurse, List<IFullyQualifiedNativeType> fqntList)
 		{
 			foreach (INativeType nativeType in st.NativeTypes)
 			{
@@ -340,7 +350,8 @@ namespace Clifton.SemanticTypeSystem
 					Alias = ntalias,
 					NativeType = nativeType,
 					Value = val,
-					UniqueField = nativeType.UniqueField || isUnique
+					UniqueField = nativeType.UniqueField || isUnique,
+					Ordinality = ordinality
 				});
 			}
 
@@ -355,7 +366,8 @@ namespace Clifton.SemanticTypeSystem
 					stack = stack + "." + childElem.Name;			// push
 					ISemanticTypeStruct stChild = GetSemanticTypeStruct(childElem.Name);
 					string newAlias = (!String.IsNullOrEmpty(alias) ? alias : stChild.Alias);
-					RecurseGetFullyQualifiedNativeTypeValues(childSignal, stChild, stack, newAlias, isUnique || stChild.Unique, recurse, fqntList);
+					int newOrdinality = ((ordinality != 0) ? ordinality : stChild.Ordinality);
+					RecurseGetFullyQualifiedNativeTypeValues(childSignal, stChild, stack, newAlias, isUnique || stChild.Unique, newOrdinality, recurse, fqntList);
 					stack = stack.LeftOfRightmostOf('.');			// pop
 				}
 			}

@@ -31,6 +31,11 @@ namespace TypeSystemExplorer.Models
 		[Description("Indicate whether this type is part of a unique composite key for the parent semantic element.")]
 		public bool UniqueField { get; set; }
 
+		[Category("UI")]
+		[XmlAttribute()]
+		[Description("Indicates the ordering of fields for display purposes.")]
+		public int Ordinality { get; set; }
+
 		[XmlIgnore]
 		[Browsable(false)]
 		public Dictionary<string, dynamic> Collection { get { return null; } }
@@ -61,6 +66,12 @@ namespace TypeSystemExplorer.Models
 		[XmlAttribute()]
 		[Description("Indicate whether this field is part of a unique composite key for the parent semantic element.")]
 		public bool UniqueField { get; set; }
+
+		// Note that NT's do not have an ordinality.  This makes no sense because an NT is a high level abstracted property of a semantic type or sub-type.
+		// It is the semantic sub-type that can have an ordinality.
+		// The only use case for NT ordinality is if you have a root ST that is just composed of NT's, however this is most likely an indicator of a bad
+		// hierarchy architecture, as a root ST most likely should be comprised of some level of more generalized ST's.
+		// We may revisit this issue at some point.
 
 		[XmlIgnore]
 		[Browsable(false)]

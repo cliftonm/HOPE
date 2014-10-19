@@ -597,7 +597,7 @@ namespace TypeSystemExplorer.Controllers
 
 						foreach (Models.SubType subt in st.SubTypes)
 						{
-							sts.SemanticElements.Add(new Clifton.SemanticTypeSystem.SemanticElement() { Name = subt.Name, Alias = subt.Alias, UniqueField = subt.UniqueField });
+							sts.SemanticElements.Add(new Clifton.SemanticTypeSystem.SemanticElement() { Name = subt.Name, Alias = subt.Alias, UniqueField = subt.UniqueField, Ordinality = subt.Ordinality });
 						}
 
 						decls.Add(decl);

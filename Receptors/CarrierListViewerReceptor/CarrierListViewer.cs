@@ -171,7 +171,7 @@ namespace CarrierListViewerReceptor
 			if (!String.IsNullOrEmpty(ProtocolName))
 			{
 				DataTable dt = new DataTable();
-				List<IFullyQualifiedNativeType> columns = rsys.SemanticTypeSystem.GetFullyQualifiedNativeTypes(ProtocolName);
+				List<IFullyQualifiedNativeType> columns = rsys.SemanticTypeSystem.GetFullyQualifiedNativeTypes(ProtocolName).OrderBy(fqn=>fqn.Ordinality).ToList();
 				uniqueKey.Clear();
 
 				columns.ForEach(col =>

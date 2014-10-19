@@ -25,6 +25,11 @@ namespace Clifton.SemanticTypeSystem
 		/// Used by the semantic database to determine how this semantic type behaves with regards to duplicate data.
 		/// </summary>
 		public bool Unique { get; set; }
+
+		/// <summary>
+		/// The ordering of elements in a semantic type.  Used for display purposes, like a grid view.
+		/// </summary>
+		public int Ordinality { get; set; }
 		
 		/// <summary>
 		/// The SemanticTypeDecl instance.
