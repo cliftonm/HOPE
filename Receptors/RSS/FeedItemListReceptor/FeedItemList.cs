@@ -71,6 +71,12 @@ namespace FeedItemListReceptor
 			dgvSignals.CellFormatting += OnCellFormatting;
 		}
 
+		protected override void OnFormClosing(object sender, FormClosingEventArgs e)
+		{
+			base.OnFormClosing(sender, e);
+			rowStateByUrl.Clear();
+		}
+
 		// TODO: The problem with this is, once a new feed item is set to "displayed", when the user sorts the data,
 		// the grid will now display the new feed as an old feed, and the only thing the user did was change the sort order!
 		protected void OnCellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
