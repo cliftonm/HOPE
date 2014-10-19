@@ -103,7 +103,7 @@ namespace CarrierListViewerReceptor
 		/// <summary>
 		/// Return the XML file for displaying the carrier list depending on the ShowProtocolPicker state.
 		/// </summary>
-		protected string GetDisplayFormName()
+		protected virtual string GetDisplayFormName()
 		{
 			return (ShowProtocolPicker ? "CarrierListViewerWithProtocolPicker.xml" : "CarrierListViewer.xml");
 		}

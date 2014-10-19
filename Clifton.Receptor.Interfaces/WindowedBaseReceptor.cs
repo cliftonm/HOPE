@@ -74,6 +74,7 @@ namespace Clifton.Receptor.Interfaces
 		protected virtual void InitializeUI()
 		{
 			mycroParser = new Clifton.MycroParser.MycroParser();
+			mycroParser.AddInstance("form", this);
 			form = mycroParser.Load<Form>(displayFormFilename, this);
 			form.Show();
 

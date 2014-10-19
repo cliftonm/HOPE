@@ -53,6 +53,18 @@
             <SubType Name="Text" UniqueField="false" Ordinality="0" />
           </SubTypes>
         </SemanticType>
+        <SemanticType Name="Category" Alias="Category" UniqueField="false">
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="Text" UniqueField="false" Ordinality="0" />
+          </SubTypes>
+        </SemanticType>
+        <SemanticType Name="Note" Alias="Note" UniqueField="false">
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="Text" UniqueField="false" Ordinality="0" />
+          </SubTypes>
+        </SemanticType>
       </SemanticTypes>
     </SemanticTypesContainer>
     <SemanticTypesContainer Name="Messages">
@@ -314,6 +326,14 @@
           <NativeTypes />
           <SubTypes />
         </SemanticType>
+        <SemanticType Name="RSSFeedBookmark" UniqueField="true">
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="BookmarkNote" UniqueField="false" Ordinality="1" />
+            <SubType Name="BookmarkCategory" UniqueField="false" Ordinality="0" />
+            <SubType Name="RSSFeedUrl" UniqueField="false" Ordinality="2" />
+          </SubTypes>
+        </SemanticType>
       </SemanticTypes>
     </SemanticTypesContainer>
     <SemanticTypesContainer Name="Web">
@@ -345,6 +365,22 @@
             <NativeType Name="SemanticType" ImplementingType="string" UniqueField="false" />
           </NativeTypes>
           <SubTypes />
+        </SemanticType>
+      </SemanticTypes>
+    </SemanticTypesContainer>
+    <SemanticTypesContainer Name="UI">
+      <SemanticTypes>
+        <SemanticType Name="BookmarkCategory" Alias="Bookmark Category" UniqueField="true">
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="Category" UniqueField="false" Ordinality="0" />
+          </SubTypes>
+        </SemanticType>
+        <SemanticType Name="BookmarkNote" UniqueField="false">
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="Note" UniqueField="false" Ordinality="0" />
+          </SubTypes>
         </SemanticType>
       </SemanticTypes>
     </SemanticTypesContainer>

@@ -38,16 +38,29 @@ namespace FeedItemListReceptor
 		public override bool IsEdgeReceptor { get { return true; } }
 		public override string ConfigurationUI { get { return null; } }
 
+		[UserConfigurableProperty("MaxRecords")]
+		public string MaxRecords { get; set; }
+
+		// Other UI properties
+		public string BookmarkNote { get; set; }
+		public List<string> Categories { get; set; }
+		public string CategoryText { get; set; }
+
 		protected Dictionary<string, ItemStates> rowStateByUrl;
 
 		public FeedItemList(IReceptorSystem rsys)
 			: base(rsys, "feedItemList.xml")
 		{
+			MaxRecords = "40";			// The default.
+			Categories = new List<string>();
+
 			// The only protocol we receive.
 			AddReceiveProtocol("RSSFeedItem", (Action<dynamic>)(signal => ShowSignal(signal)));
+			AddReceiveProtocol("BookmarkCategory", (Action<dynamic>)(signal => Categories.Add(signal.Category.Text.Value)));
 			AddEmitProtocol("ExceptionMessage");
 			AddEmitProtocol("UrlVisited");
 			AddEmitProtocol("RSSFeedItemDisplayed");
+			AddEmitProtocol("RSSFeedBookmark");
 
 			rowStateByUrl = new Dictionary<string, ItemStates>();
 		}
@@ -69,6 +82,11 @@ namespace FeedItemListReceptor
 			// Hook the cell formatting event so we can color the rows on the fly, which
 			// compensates for when the user sorts by a column.
 			dgvSignals.CellFormatting += OnCellFormatting;
+		}
+
+		protected override string GetDisplayFormName()
+		{
+			return displayFormFilename;
 		}
 
 		protected override void OnFormClosing(object sender, FormClosingEventArgs e)
@@ -126,8 +144,11 @@ namespace FeedItemListReceptor
 		/// </summary>
 		protected override void ListenForProtocol()
 		{
-			ISemanticTypeStruct st = rsys.SemanticTypeSystem.GetSemanticTypeStruct(ProtocolName);
-			st.SemanticElements.ForEach(se => AddEmitProtocol(se.Name));
+			if (!String.IsNullOrEmpty(ProtocolName))
+			{
+				ISemanticTypeStruct st = rsys.SemanticTypeSystem.GetSemanticTypeStruct(ProtocolName);
+				st.SemanticElements.ForEach(se => AddEmitProtocol(se.Name));
+			}
 		}
 
 		public override void ProcessCarrier(ICarrier carrier)
@@ -238,6 +259,27 @@ namespace FeedItemListReceptor
 			string url = dgvSignals.Rows[e.RowIndex].Cells["RSSFeedItem.RSSFeedUrl.Url.Value"].Value.ToString();
 			rowStateByUrl[url] = ItemStates.Visited;
 			CreateCarrierIfReceiver("UrlVisited", signal => signal.Url.Value = url, false);
+		}
+
+		protected void LoadFeedItems(object sender, EventArgs args)
+		{
+		}
+
+		protected void ShowItemInCategory(object sender, EventArgs args)
+		{
+		}
+
+		protected void BookmarkItem(object sender, EventArgs args)
+		{
+			foreach (DataGridViewRow row in dgvSignals.SelectedRows)
+			{
+				CreateCarrierIfReceiver("RSSFeedBookmark", signal =>
+					{
+						signal.BookmarkCategory.Category.Text.Value = CategoryText;
+						signal.BookmarkNote.Note.Text.Value = BookmarkNote;
+						signal.RSSFeedUrl.Url.Value = row.Cells["RSSFeedItem.RSSFeedUrl.Url.Value"].Value.ToString();
+					});
+			}
 		}
 	}
 }
