@@ -108,16 +108,33 @@ namespace Clifton.Receptor.Interfaces
 		{
 			if (form != null)
 			{
+				Point loc = new Point(WindowX, WindowY);
+
 				// Only update if user has changed the size from its declarative value.
 				if (WindowX != 0 && WindowY != 0)
 				{
-					form.Location = new Point(WindowX, WindowY);
+					// If the starting coordinate is offscreen on this computer, then put it at (0,0)
+					if (!SystemInformation.VirtualScreen.Contains(loc))
+					{
+						loc = new Point(0, 0);
+					}
+
+					form.Location = loc;
 				}
 
 				// Only update if user has changed the size from its declarative value.
 				if (WindowWidth != 0 && WindowHeight != 0)
 				{
-					form.Size = new Size(WindowWidth, WindowHeight);
+					Size sz = new Size(WindowWidth, WindowHeight);
+					Size diff = SystemInformation.VirtualScreen.Size - sz;
+
+					// If the the width doesn't fit in the specified dimensions, then use 1/4 of the screen.
+					if ( (diff.Width < 0) || (diff.Height < 0) )
+					{
+						sz = new Size(SystemInformation.VirtualScreen.Width / 4, SystemInformation.VirtualScreen.Height / 4);
+					}
+
+					form.Size = sz;
 				}
 			}
 		}
