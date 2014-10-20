@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
@@ -315,12 +316,17 @@ namespace Clifton.ExtensionMethods
 			return result;
 		}
 
-		public static void AddIfUnique<T>(this IList<T> list, T item)
+		public static bool AddIfUnique<T>(this IList<T> list, T item)
 		{
+			bool ret = false;
+
 			if (!list.Contains(item))
 			{
 				list.Add(item);
+				ret = true;
 			}
+
+			return ret;
 		}
 
 		public static void RemoveLast<T>(this IList<T> list)
@@ -396,6 +402,27 @@ namespace Clifton.ExtensionMethods
 			while (clb.CheckedIndices.Count > 0)
 			{
 				clb.SetItemChecked(clb.CheckedIndices[0], false);
+			}
+		}
+
+		// From : http://stackoverflow.com/questions/1945461/how-do-i-sort-an-observable-collection
+		public static void Sort<T>(this ObservableCollection<T> observable) where T : IComparable<T>, IEquatable<T>
+		{
+			List<T> sorted = observable.OrderBy(x => x).ToList();
+
+			int ptr = 0;
+			while (ptr < sorted.Count)
+			{
+				if (!observable[ptr].Equals(sorted[ptr]))
+				{
+					T t = observable[ptr];
+					observable.RemoveAt(ptr);
+					observable.Insert(sorted.IndexOf(t), t);
+				}
+				else
+				{
+					ptr++;
+				}
 			}
 		}
 	}

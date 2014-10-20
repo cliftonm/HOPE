@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
@@ -56,11 +57,15 @@ namespace FeedItemListReceptor
 
 			// The only protocol we receive.
 			AddReceiveProtocol("RSSFeedItem", (Action<dynamic>)(signal => ShowSignal(signal)));
-			AddReceiveProtocol("BookmarkCategory", (Action<dynamic>)(signal => Categories.Add(signal.Category.Text.Value)));
+			
+			// TODO: This update the combobox for each category received -- can we have some way of putting all the records into a collection?
+			AddReceiveProtocol("BookmarkCategory", (Action<dynamic>)(signal => UpdateCategoryList(signal)));
+
 			AddEmitProtocol("ExceptionMessage");
 			AddEmitProtocol("UrlVisited");
 			AddEmitProtocol("RSSFeedItemDisplayed");
 			AddEmitProtocol("RSSFeedBookmark");
+			AddEmitProtocol("Query");
 
 			rowStateByUrl = new Dictionary<string, ItemStates>();
 		}
@@ -70,6 +75,10 @@ namespace FeedItemListReceptor
 			base.EndSystemInit();
 			ProtocolName = "RSSFeedItem";
 			UserConfigurationUpdated();
+
+			// Once the UI is initialized, load the categories.
+			// Get all the bookmark categories.
+			CreateCarrierIfReceiver("Query", signal => signal.QueryText = "RSSFeedBookmark");
 		}
 
 		protected override void InitializeUI()
@@ -119,6 +128,16 @@ namespace FeedItemListReceptor
 			}
 		}
 
+		protected void UpdateCategoryList(dynamic signal)
+		{
+			if (Categories.AddIfUnique((string)signal.Category.Text.Value))
+			{
+				ComboBox cbCategories = ((ComboBox)form.Controls.Find("cbCategories", false)[0]);
+				cbCategories.DataSource = null;			// reset
+				cbCategories.DataSource = Categories;
+			}
+		}
+
 		protected override void CreateViewerTable()
 		{
 			base.CreateViewerTable();
@@ -157,7 +176,7 @@ namespace FeedItemListReceptor
 
 			if (carrier.Protocol.DeclTypeName == "RSSFeedItem")
 			{
-				ShowSignal(carrier.Signal);
+				// ShowSignal(carrier.Signal);
 
 				// We are interested in the existence of the root and whether an UrlVisited ST exists on it.
 				// We determine the following:
@@ -271,14 +290,40 @@ namespace FeedItemListReceptor
 
 		protected void BookmarkItem(object sender, EventArgs args)
 		{
-			foreach (DataGridViewRow row in dgvSignals.SelectedRows)
+			if (!String.IsNullOrEmpty(CategoryText))
 			{
-				CreateCarrierIfReceiver("RSSFeedBookmark", signal =>
-					{
-						signal.BookmarkCategory.Category.Text.Value = CategoryText;
-						signal.BookmarkNote.Note.Text.Value = BookmarkNote;
-						signal.RSSFeedUrl.Url.Value = row.Cells["RSSFeedItem.RSSFeedUrl.Url.Value"].Value.ToString();
-					});
+				foreach (DataGridViewRow row in dgvSignals.SelectedRows)
+				{
+					CreateCarrierIfReceiver("RSSFeedBookmark", signal =>
+						{
+							signal.BookmarkCategory.Category.Text.Value = CategoryText;
+
+							if (!String.IsNullOrEmpty(BookmarkNote))
+							{
+								signal.BookmarkNote.Note.Text.Value = BookmarkNote;
+							}
+
+							signal.RSSFeedUrl.Url.Value = row.Cells["RSSFeedItem.RSSFeedUrl.Url.Value"].Value.ToString();
+						});
+				}
+
+				// Update to combobox last.
+				((ComboBox)form.Controls.Find("cbCategories", false)[0]).DataSource = null;
+				string txt = CategoryText;
+				Categories.AddIfUnique(txt);
+				Categories.Sort();
+				
+				// If we were to use a binding source:
+				// ((BindingSource)((ComboBox)form.Controls.Find("cbCategories", false)[0]).DataSource).Add(CategoryText);
+
+				ComboBox cbCategories = ((ComboBox)form.Controls.Find("cbCategories", false)[0]);
+
+				cbCategories.DataSource = Categories;
+				cbCategories.SelectedItem = txt;
+			}
+			else
+			{
+				MessageBox.Show("Please select or create a category.", "Action Required", MessageBoxButtons.OK, MessageBoxIcon.Hand);
 			}
 		}
 	}

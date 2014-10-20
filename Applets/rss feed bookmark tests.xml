@@ -7,25 +7,34 @@
             <ixm:ReceptorDef Name="Semantic Database" AssemblyName="SemanticDatabaseReceptor.dll" Enabled="True" Location="209, 440">
               <ixm:ReceiveProtocols>
                 <ixm:ReceiveProtocol Protocol="Query" Enabled="True" />
+                <ixm:ReceiveProtocol Protocol="RSSFeedBookmark" Enabled="True" />
               </ixm:ReceiveProtocols>
               <ixm:EmitProtocols>
                 <ixm:EmitProtocol Protocol="LoggerMessage" Enabled="True" />
                 <ixm:EmitProtocol Protocol="TextMessage" Enabled="True" />
                 <ixm:EmitProtocol Protocol="Text" Enabled="True" />
                 <ixm:EmitProtocol Protocol="ExceptionMessage" Enabled="True" />
+                <ixm:EmitProtocol Protocol="RSSFeedBookmark" Enabled="True" />
+                <ixm:EmitProtocol Protocol="BookmarkNote" Enabled="True" />
+                <ixm:EmitProtocol Protocol="Note" Enabled="True" />
+                <ixm:EmitProtocol Protocol="BookmarkCategory" Enabled="True" />
+                <ixm:EmitProtocol Protocol="Category" Enabled="True" />
+                <ixm:EmitProtocol Protocol="RSSFeedUrl" Enabled="True" />
+                <ixm:EmitProtocol Protocol="Url" Enabled="True" />
                 <ixm:EmitProtocol Protocol="RSSFeedItem" Enabled="True" />
                 <ixm:EmitProtocol Protocol="RSSFeedName" Enabled="True" />
                 <ixm:EmitProtocol Protocol="Name" Enabled="True" />
                 <ixm:EmitProtocol Protocol="RSSFeedTitle" Enabled="True" />
                 <ixm:EmitProtocol Protocol="Title" Enabled="True" />
-                <ixm:EmitProtocol Protocol="RSSFeedUrl" Enabled="True" />
-                <ixm:EmitProtocol Protocol="Url" Enabled="True" />
                 <ixm:EmitProtocol Protocol="RSSFeedDescription" Enabled="True" />
                 <ixm:EmitProtocol Protocol="Description" Enabled="True" />
                 <ixm:EmitProtocol Protocol="RSSFeedPubDate" Enabled="True" />
                 <ixm:EmitProtocol Protocol="RSSFeedAuthors" Enabled="True" />
                 <ixm:EmitProtocol Protocol="RSSFeedCategories" Enabled="True" />
               </ixm:EmitProtocols>
+              <ixm:UserConfigs>
+                <ixm:UserConfig Name="Protocols" Value="RSSFeedBookmark" />
+              </ixm:UserConfigs>
             </ixm:ReceptorDef>
             <ixm:ReceptorDef Name="Signal Creator" AssemblyName="SignalCreatorReceptor.dll" Enabled="True" Location="95, 443">
               <ixm:EmitProtocols>
@@ -64,6 +73,7 @@
                     <ixm:EmitProtocol Protocol="Note" Enabled="True" />
                     <ixm:EmitProtocol Protocol="BookmarkCategory" Enabled="True" />
                     <ixm:EmitProtocol Protocol="Category" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="Query" Enabled="True" />
                     <ixm:EmitProtocol Protocol="RSSFeedName" Enabled="True" />
                     <ixm:EmitProtocol Protocol="Name" Enabled="True" />
                     <ixm:EmitProtocol Protocol="RSSFeedTitle" Enabled="True" />
@@ -78,8 +88,8 @@
                     <ixm:UserConfig Name="MaxRecords" Value="40" />
                     <ixm:UserConfig Name="ProtocolName" Value="RSSFeedItem" />
                     <ixm:UserConfig Name="ShowProtocolPicker" Value="False" />
-                    <ixm:UserConfig Name="WindowX" Value="2478" />
-                    <ixm:UserConfig Name="WindowY" Value="736" />
+                    <ixm:UserConfig Name="WindowX" Value="144" />
+                    <ixm:UserConfig Name="WindowY" Value="50" />
                     <ixm:UserConfig Name="WindowWidth" Value="0" />
                     <ixm:UserConfig Name="WindowHeight" Value="0" />
                   </ixm:UserConfigs>
@@ -103,8 +113,8 @@
                     <ixm:UserConfig Name="ProtocolName" Value="RSSFeedBookmark" />
                     <ixm:UserConfig Name="ShowProtocolPicker" Value="True" />
                     <ixm:UserConfig Name="WindowName" Value="Bookmark Info" />
-                    <ixm:UserConfig Name="WindowX" Value="1963" />
-                    <ixm:UserConfig Name="WindowY" Value="736" />
+                    <ixm:UserConfig Name="WindowX" Value="145" />
+                    <ixm:UserConfig Name="WindowY" Value="360" />
                     <ixm:UserConfig Name="WindowWidth" Value="0" />
                     <ixm:UserConfig Name="WindowHeight" Value="0" />
                   </ixm:UserConfigs>
@@ -127,6 +137,7 @@
                 <ixm:PermeabilityDef Protocol="Note" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="BookmarkCategory" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="Category" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Query" Direction="Out" Permeable="True" />
                 <ixm:PermeabilityDef Protocol="Title" Direction="In" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="RSSFeedTitle" Direction="In" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="Name" Direction="In" Permeable="False" />
@@ -149,6 +160,11 @@
                 <ixm:PermeabilityDef Protocol="RSSFeedPubDate" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="RSSFeedAuthors" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="RSSFeedCategories" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedBookmark" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="BookmarkNote" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Note" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="BookmarkCategory" Direction="In" Permeable="True" />
+                <ixm:PermeabilityDef Protocol="Category" Direction="In" Permeable="False" />
               </ixm:Permeabilities>
             </ixm:MembraneDef>
           </ixm:Membranes>

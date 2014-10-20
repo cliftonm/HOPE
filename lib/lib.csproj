@@ -71,6 +71,7 @@
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="IMycroParserInstantiatedObject.cs" />
     <Compile Include="JoinExtensions.cs" />
+    <Compile Include="ObservableSortedList.cs" />
     <Compile Include="StringHelpers.cs">
       <SubType>Code</SubType>
     </Compile>

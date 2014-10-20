@@ -239,7 +239,11 @@ namespace CarrierListViewerReceptor
 		public override void ProcessCarrier(ICarrier carrier)
 		{
 			base.ProcessCarrier(carrier);
-			ShowSignal(carrier.Signal);
+
+			if (carrier.Protocol.DeclTypeName == ProtocolName)
+			{
+				ShowSignal(carrier.Signal);
+			}
 		}
 
 		/// <summary>
