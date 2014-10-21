@@ -282,7 +282,9 @@ namespace FeedItemListReceptor
 
 		protected void LoadFeedItems(object sender, EventArgs args)
 		{
-			CreateCarrierIfReceiver("Query", signal => signal.QueryText = "RSSFeedItem, UrlVisited, RSSFeedItemDisplayed order by RSSFeedPubDate desc, RSSFeedName");
+			dvSignals.Table.Clear();
+			string top = (!String.IsNullOrEmpty(MaxRecords) ? "top "+MaxRecords + " " : String.Empty);
+			CreateCarrierIfReceiver("Query", signal => signal.QueryText = top + "RSSFeedItem, UrlVisited, RSSFeedItemDisplayed order by RSSFeedPubDate desc, RSSFeedName");
 		}
 
 		protected void ShowItemInCategory(object sender, EventArgs args)
