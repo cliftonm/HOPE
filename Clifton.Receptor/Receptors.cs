@@ -490,6 +490,11 @@ namespace Clifton.Receptor
 				List<IReceptor> targets = new List<IReceptor>();
 				if (MasterReceptorConnectionList.TryGetValue(from, out targets))
 				{
+					// This annoying piece of code assumes that a receptor will have only one connection between "from" to "to".
+					// In the case of the semantic database, a "from" receptor can have multiple connections with the same semantic database receptor.
+					// In other words, the returned list consists of [n] identical instances, where [n] is the number of different protocols from "from" to the target receptor.
+					// To fix this problem, we get only the distinct instances.
+					targets = targets.Distinct().ToList();
 					// We're only interested in enabled receptors.
 					ret = targets.Any(r => r != from && r.Instance.Enabled && r.Instance.GetEnabledReceiveProtocols().Select(rp => rp.Protocol).Contains(protocol.DeclTypeName));
 				}
@@ -513,11 +518,17 @@ namespace Clifton.Receptor
 			List<IReceptor> targets;
 			ISemanticTypeStruct protocol = carrier.Protocol;
 
-			// When the try fails, it sets targets to null.
+			// This annoying piece of code assumes that a receptor will have only one connection between "from" to "to".
+			// In the case of the semantic database, a "from" receptor can have multiple connections with the same semantic database receptor.
+			// In other words, the returned list consists of [n] identical instances, where [n] is the number of different protocols from "from" to the target receptor.
 			if (!MasterReceptorConnectionList.TryGetValue(from, out targets))
 			{
+				// When the try fails, it sets targets to null.
 				targets = new List<IReceptor>();
 			}
+
+			// To fix the aformentioned problem, we get only the distinct instances.
+			targets = targets.Distinct().ToList();
 
 			// Only enabled receptors and receptors that are not the source of the carrier.
 			List<IReceptor> filteredTargets = targets.Where(r => r != from && r.Instance.Enabled && r.Instance.GetEnabledReceiveProtocols().Select(rq => rq.Protocol).Contains(protocol.DeclTypeName)).ToList();
