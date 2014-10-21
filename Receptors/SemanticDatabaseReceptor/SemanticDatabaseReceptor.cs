@@ -1112,6 +1112,7 @@ namespace SemanticDatabaseReceptor
 					catch
 					{
 						// Provide a more useful exception to the user rather than the one .NET will throw.
+						// TODO: Should this be a user popup error?
 						EmitException("The order by field " + orderByField + " cannot be resolved to a single native type.  It requires further specification to disambiguate from other semantic types.");
 					}
 				}

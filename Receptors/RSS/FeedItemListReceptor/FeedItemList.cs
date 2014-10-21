@@ -282,6 +282,7 @@ namespace FeedItemListReceptor
 
 		protected void LoadFeedItems(object sender, EventArgs args)
 		{
+			CreateCarrierIfReceiver("Query", signal => signal.QueryText = "RSSFeedItem, UrlVisited, RSSFeedItemDisplayed order by RSSFeedPubDate desc, RSSFeedName");
 		}
 
 		protected void ShowItemInCategory(object sender, EventArgs args)

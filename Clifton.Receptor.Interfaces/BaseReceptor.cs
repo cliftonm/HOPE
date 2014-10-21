@@ -424,11 +424,12 @@ namespace Clifton.Receptor.Interfaces
 		/// </summary>
 		protected void EmitException(string message)
 		{
-			CreateCarrierIfReceiver("Exception", signal =>
+			CreateCarrierIfReceiver("ExceptionMessage", signal =>
 			{
 				signal.ReceptorName = Name;
-				signal.Message = message;
+				signal.MessageTime = DateTime.Now;
 				signal.ProtocolName = currentProtocol;
+				signal.TextMessage.Text.Value = message;
 			});
 		}
 
