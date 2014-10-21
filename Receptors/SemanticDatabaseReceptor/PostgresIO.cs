@@ -153,5 +153,17 @@ namespace SemanticDatabaseReceptor
 		{
 			return "alter table " + st + " add foreign key (" + stField + ") references " + childTable + "(" + childField + ")";
 		}
+
+		public string AddLimitClause(string sql, string maxRecords)
+		{
+			string ret = sql;
+
+			if (!String.IsNullOrEmpty(maxRecords))
+			{
+				ret = sql + " limit " + maxRecords;
+			}
+
+			return ret;
+		}
 	}
 }

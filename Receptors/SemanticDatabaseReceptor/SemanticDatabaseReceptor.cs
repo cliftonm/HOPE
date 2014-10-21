@@ -715,6 +715,15 @@ namespace SemanticDatabaseReceptor
 		{
 			try
 			{
+				string maxRecords = null;
+
+				if (query.StartsWith("top"))
+				{
+					// The # of records.  The query string will be "top [x] [ST]" so we separate out [x] because it's between the first two spaces encountered in the string.
+					maxRecords = query.Between(' ', ' ');
+					query = query.RightOf(' ').RightOf(' ');		// remove the "top [x] "
+				}
+
 				// Types are to the left of any were and order by's.
 				List<string> types = query.LeftOf(" where ").LeftOf(" order by ").Split(',').Select(s => s.Trim()).ToList();
 				List<string> orderBy = new List<string>();
@@ -737,7 +746,7 @@ namespace SemanticDatabaseReceptor
 						throw new Exception("Protocol " + protocol + " is not defined.");
 					}
 
-					List<object> signal = QueryType(protocol, String.Empty, orderBy);
+					List<object> signal = QueryType(protocol, String.Empty, orderBy, maxRecords);
 
 					// Create a carrier for each of the signals in the returned record collection.
 					if (UnitTesting)
@@ -869,6 +878,7 @@ namespace SemanticDatabaseReceptor
 
 					string sqlQuery = "select " + String.Join(", ", fields0) + " \r\nfrom " + sts0.DeclTypeName + " \r\n" + String.Join(" \r\n", joins0);
 					sqlQuery = sqlQuery + " " + ParseOrderBy(orderBy, fqntAliases);
+					sqlQuery = dbio.AddLimitClause(sqlQuery, maxRecords);
 
 					// Perform the query:
 					// TODO: Separate function!
@@ -1046,7 +1056,7 @@ namespace SemanticDatabaseReceptor
 		/// <summary>
 		/// Return a list of dynamics that represents the semantic element instances in the resulting query set.
 		/// </summary>
-		protected List<object> QueryType(string protocol, string where, List<string> orderBy)
+		protected List<object> QueryType(string protocol, string where, List<string> orderBy, string maxRecords)
 		{
 			List<object> ret = new List<object>();
 
@@ -1061,6 +1071,7 @@ namespace SemanticDatabaseReceptor
 			// CRLF for pretty inspection.
 			string sqlQuery = "select " + String.Join(", ", fields) + " \r\nfrom " + sts.DeclTypeName + " \r\n" + String.Join(" \r\n", joins);
 			sqlQuery = sqlQuery + " " + ParseOrderBy(orderBy, fqntAliases);
+			sqlQuery = dbio.AddLimitClause(sqlQuery, maxRecords);
 
 			IDbCommand cmd = dbio.CreateCommand();
 			cmd.CommandText = sqlQuery;

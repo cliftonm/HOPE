@@ -31,5 +31,6 @@ namespace SemanticDatabaseReceptor
 		void Close();
 		int GetLastID(string tableName);
 		string Delimited(string name);			// Everybody seems to do it differently.
+		string AddLimitClause(string sql, string maxRecords);		// Note that for SQLServer, this must inject "top [x]" after "select".
 	}
 }

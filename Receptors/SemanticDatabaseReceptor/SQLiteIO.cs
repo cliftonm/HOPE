@@ -148,5 +148,17 @@ namespace SemanticDatabaseReceptor
 			// TODO: At some point, implement this.
 			return null;
 		}
+
+		public string AddLimitClause(string sql, string maxRecords)
+		{
+			string ret = sql;
+
+			if (!String.IsNullOrEmpty(maxRecords))
+			{
+				sql = sql + " limit " + maxRecords;	
+			}
+
+			return ret;
+		}
 	}
 }
