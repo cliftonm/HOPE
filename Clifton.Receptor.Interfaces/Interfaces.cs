@@ -33,6 +33,7 @@ namespace Clifton.Receptor.Interfaces
 	{
 		event EventHandler<EventArgs> ReceiveProtocolsChanged;
 		event EventHandler<EventArgs> EmitProtocolsChanged;
+		event EventHandler<EventArgs> SubnameChanged;
 
 		string Name { get; }
 		string Subname { get; }

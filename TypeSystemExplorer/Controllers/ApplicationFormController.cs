@@ -1164,6 +1164,7 @@ namespace TypeSystemExplorer.Controllers
 #pragma warning disable 67
 		public event EventHandler<EventArgs> ReceiveProtocolsChanged;
 		public event EventHandler<EventArgs> EmitProtocolsChanged;
+		public event EventHandler<EventArgs> SubnameChanged;
 #pragma warning restore 67
 
 		public string Name { get { return "System"; } }

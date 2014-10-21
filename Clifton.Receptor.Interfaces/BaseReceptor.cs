@@ -50,9 +50,21 @@ namespace Clifton.Receptor.Interfaces
 	{
 		public event EventHandler<EventArgs> ReceiveProtocolsChanged;
 		public event EventHandler<EventArgs> EmitProtocolsChanged;
+		public event EventHandler<EventArgs> SubnameChanged;
 
 		public abstract string Name { get; }
-		public virtual string Subname { get { return String.Empty; } }
+
+		private string subName = String.Empty;
+		public virtual string Subname
+		{ 
+			get { return subName; }
+			set
+			{
+				subName = value;
+				SubnameChanged.Fire(this, EventArgs.Empty);
+			}
+		}
+
 		public virtual bool IsEdgeReceptor { get { return false; } }
 		public virtual bool IsHidden { get { return false; } }
 		public virtual bool Enabled { get; set; }

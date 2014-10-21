@@ -36,6 +36,12 @@ namespace ATimerReceptor
 		[UserConfigurableProperty("ProtocolName:")]
 		public string ProtocolName { get; set; }
 
+		protected DateTime triggerTime;
+		protected int days = 0;
+		protected int hours = 0;
+		protected int minutes = 0;
+		protected int seconds = 0;
+
 		public TimerReceptor(IReceptorSystem rsys)
 			: base(rsys)
 		{
@@ -69,6 +75,7 @@ namespace ATimerReceptor
 			{
 				RemoveEmitProtocols();
 				AddEmitProtocol(ProtocolName);
+				DisposeOfTimer();
 				InitializeTimerInterval();
 			}
 			else
@@ -83,10 +90,10 @@ namespace ATimerReceptor
 		{
 			DisposeOfTimer();
 
-			int days = 0;
-			int hours = 0;
-			int minutes = 0;
-			int seconds = 0;
+			days = 0;
+			hours = 0;
+			minutes = 0;
+			seconds = 0;
 
 			Int32.TryParse(DaySpan, out days);
 			Int32.TryParse(HourSpan, out hours);
@@ -97,9 +104,10 @@ namespace ATimerReceptor
 
 			if (totalms > 0)
 			{
+				triggerTime = DateTime.Now + new TimeSpan(days, hours, minutes, seconds);
 				// Acquire a new timer.
 				timer = new Timer();
-				timer.Interval = totalms;
+				timer.Interval = 1000;
 				timer.Tick += FireEvent;
 				timer.Start();
 			}
@@ -117,10 +125,19 @@ namespace ATimerReceptor
 
 		protected void FireEvent(object sender, EventArgs e)
 		{
-			if (Enabled)
+			if (triggerTime <= DateTime.Now)
 			{
-				CreateCarrierIfReceiver(ProtocolName, signal => { });
+				triggerTime = DateTime.Now + new TimeSpan(days, hours, minutes, seconds);
+
+				if (Enabled)
+				{
+					CreateCarrierIfReceiver(ProtocolName, signal => { });
+				}
 			}
+
+			TimeSpan ts = triggerTime - DateTime.Now;
+
+			Subname = String.Format("{0}:{1}:{2:D2}:{3:D2}", ts.Days, ts.Hours, ts.Minutes, ts.Seconds);
 		}
 	}
 }

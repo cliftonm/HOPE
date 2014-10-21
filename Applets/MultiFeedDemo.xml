@@ -220,13 +220,13 @@
                     <ixm:EmitProtocol Protocol="RSSFeedCategories" Enabled="True" />
                   </ixm:EmitProtocols>
                   <ixm:UserConfigs>
-                    <ixm:UserConfig Name="MaxRecords" Value="40" />
+                    <ixm:UserConfig Name="MaxRecords" Value="20" />
                     <ixm:UserConfig Name="ProtocolName" Value="RSSFeedItem" />
                     <ixm:UserConfig Name="ShowProtocolPicker" Value="False" />
-                    <ixm:UserConfig Name="WindowX" Value="1984" />
-                    <ixm:UserConfig Name="WindowY" Value="193" />
+                    <ixm:UserConfig Name="WindowX" Value="973" />
+                    <ixm:UserConfig Name="WindowY" Value="175" />
                     <ixm:UserConfig Name="WindowWidth" Value="845" />
-                    <ixm:UserConfig Name="WindowHeight" Value="588" />
+                    <ixm:UserConfig Name="WindowHeight" Value="589" />
                   </ixm:UserConfigs>
                 </ixm:ReceptorDef>
                 <ixm:ReceptorDef Name="Web Page Viewer" AssemblyName="WebBrowserReceptor.dll" Enabled="False" Location="165, 131">
@@ -266,11 +266,11 @@
                 <ixm:PermeabilityDef Protocol="ExceptionMessage" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="TextMessage" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="Text" Direction="Out" Permeable="False" />
-                <ixm:PermeabilityDef Protocol="UrlVisited" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="UrlVisited" Direction="Out" Permeable="True" />
                 <ixm:PermeabilityDef Protocol="Url" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="RSSFeedItemDisplayed" Direction="Out" Permeable="True" />
                 <ixm:PermeabilityDef Protocol="RSSFeedUrl" Direction="Out" Permeable="False" />
-                <ixm:PermeabilityDef Protocol="RSSFeedBookmark" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedBookmark" Direction="Out" Permeable="True" />
                 <ixm:PermeabilityDef Protocol="BookmarkNote" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="Note" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="BookmarkCategory" Direction="Out" Permeable="False" />
@@ -293,26 +293,35 @@
           <ixm:Membranes>
             <ixm:MembraneDef Name="">
               <ixm:Receptors>
-                <ixm:ReceptorDef Name="Semantic Database" AssemblyName="SemanticDatabaseReceptor.dll" Enabled="True" Location="294, 443">
+                <ixm:ReceptorDef Name="Semantic Database" AssemblyName="SemanticDatabaseReceptor.dll" Enabled="True" Location="291, 449">
                   <ixm:ReceiveProtocols>
                     <ixm:ReceiveProtocol Protocol="Query" Enabled="True" />
                     <ixm:ReceiveProtocol Protocol="RSSFeedItem" Enabled="True" />
                     <ixm:ReceiveProtocol Protocol="UrlVisited" Enabled="True" />
                     <ixm:ReceiveProtocol Protocol="RSSFeedItemDisplayed" Enabled="True" />
+                    <ixm:ReceiveProtocol Protocol="RSSFeedItem" Enabled="True" />
+                    <ixm:ReceiveProtocol Protocol="UrlVisited" Enabled="True" />
+                    <ixm:ReceiveProtocol Protocol="RSSFeedItemDisplayed" Enabled="True" />
+                    <ixm:ReceiveProtocol Protocol="RSSFeedBookmark" Enabled="True" />
                   </ixm:ReceiveProtocols>
                   <ixm:EmitProtocols>
                     <ixm:EmitProtocol Protocol="LoggerMessage" Enabled="True" />
                     <ixm:EmitProtocol Protocol="TextMessage" Enabled="True" />
                     <ixm:EmitProtocol Protocol="Text" Enabled="False" />
                     <ixm:EmitProtocol Protocol="ExceptionMessage" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedBookmark" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="BookmarkNote" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="Note" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="BookmarkCategory" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="Category" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedUrl" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="Url" Enabled="True" />
                     <ixm:EmitProtocol Protocol="RSSFeedItem_UrlVisited_RSSFeedItemDisplayed" Enabled="True" />
                     <ixm:EmitProtocol Protocol="RSSFeedItem" Enabled="True" />
                     <ixm:EmitProtocol Protocol="RSSFeedName" Enabled="True" />
                     <ixm:EmitProtocol Protocol="Name" Enabled="True" />
                     <ixm:EmitProtocol Protocol="RSSFeedTitle" Enabled="True" />
                     <ixm:EmitProtocol Protocol="Title" Enabled="True" />
-                    <ixm:EmitProtocol Protocol="RSSFeedUrl" Enabled="True" />
-                    <ixm:EmitProtocol Protocol="Url" Enabled="True" />
                     <ixm:EmitProtocol Protocol="RSSFeedDescription" Enabled="True" />
                     <ixm:EmitProtocol Protocol="Description" Enabled="True" />
                     <ixm:EmitProtocol Protocol="RSSFeedPubDate" Enabled="True" />
@@ -322,10 +331,10 @@
                     <ixm:EmitProtocol Protocol="RSSFeedItemDisplayed" Enabled="True" />
                   </ixm:EmitProtocols>
                   <ixm:UserConfigs>
-                    <ixm:UserConfig Name="Protocols" Value="RSSFeedItem;UrlVisited;RSSFeedItemDisplayed" />
+                    <ixm:UserConfig Name="Protocols" Value="RSSFeedItem;UrlVisited;RSSFeedItemDisplayed;RSSFeedBookmark" />
                   </ixm:UserConfigs>
                 </ixm:ReceptorDef>
-                <ixm:ReceptorDef Name="Carrier List Viewer" AssemblyName="CarrierListViewerReceptor.dll" Enabled="True" Location="291, 357">
+                <ixm:ReceptorDef Name="Carrier List Viewer" AssemblyName="CarrierListViewerReceptor.dll" Enabled="True" Location="288, 363">
                   <ixm:ReceiveProtocols>
                     <ixm:ReceiveProtocol Protocol="LoggerMessage" Enabled="True" />
                   </ixm:ReceiveProtocols>
@@ -344,7 +353,7 @@
                     <ixm:UserConfig Name="WindowHeight" Value="300" />
                   </ixm:UserConfigs>
                 </ixm:ReceptorDef>
-                <ixm:ReceptorDef Name="Text Display" AssemblyName="TextDisplayReceptor.dll" Enabled="True" Location="399, 386">
+                <ixm:ReceptorDef Name="Text Display" AssemblyName="TextDisplayReceptor.dll" Enabled="True" Location="396, 392">
                   <ixm:ReceiveProtocols>
                     <ixm:ReceiveProtocol Protocol="Text" Enabled="True" />
                   </ixm:ReceiveProtocols>
@@ -373,12 +382,12 @@
                 <ixm:PermeabilityDef Protocol="ExceptionMessage" Direction="In" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="TextMessage" Direction="In" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="LoggerMessage" Direction="In" Permeable="False" />
-                <ixm:PermeabilityDef Protocol="RSSFeedItemDisplayed" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedItemDisplayed" Direction="In" Permeable="True" />
+                <ixm:PermeabilityDef Protocol="Query" Direction="In" Permeable="True" />
                 <ixm:PermeabilityDef Protocol="LoggerMessage" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="TextMessage" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="Text" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="ExceptionMessage" Direction="Out" Permeable="True" />
-                <ixm:PermeabilityDef Protocol="Query" Direction="In" Permeable="True" />
                 <ixm:PermeabilityDef Protocol="RSSFeedRefresh" Direction="In" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="RSSFeedItem_UrlVisited_RSSFeedItemDisplayed" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="RSSFeedItem" Direction="Out" Permeable="True" />
@@ -395,6 +404,13 @@
                 <ixm:PermeabilityDef Protocol="RSSFeedCategories" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="UrlVisited" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="RSSFeedItemDisplayed" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedBookmark" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="BookmarkNote" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Note" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="BookmarkCategory" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Category" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="UrlVisited" Direction="In" Permeable="True" />
+                <ixm:PermeabilityDef Protocol="RSSFeedBookmark" Direction="In" Permeable="True" />
               </ixm:Permeabilities>
             </ixm:MembraneDef>
           </ixm:Membranes>

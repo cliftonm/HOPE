@@ -844,12 +844,18 @@ namespace TypeSystemExplorer.Views
 			{
 				e.Receptor.Instance.EmitProtocolsChanged += ProtocolsChanged;
 				e.Receptor.Instance.ReceiveProtocolsChanged+= ProtocolsChanged;
+				e.Receptor.Instance.SubnameChanged += SubnameChanged;
 
 				receptorLocation[e.Receptor] = p;
 				CreateReceptorConnections();
 				RecalcMembranes();
 				Invalidate(true);
 			}
+		}
+
+		protected void SubnameChanged(object sender, EventArgs e)
+		{
+			Invalidate(true);
 		}
 
 		protected void ProtocolsChanged(object sender, EventArgs e)
