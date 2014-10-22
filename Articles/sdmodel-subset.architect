@@ -1,0 +1,791 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<architect-project version="1.0" appversion="1.0.7">
+ <project-name>sdmodel-subset</project-name>
+ <print-settings numCopies="1" zoom="1.0" pageNumbersPrinted="true" orientation="1" paperWidth="612.0" paperHeight="792.0" leftBorder="50.0" rightBorder="50.0" topBorder="50.0" bottomBorder="50.0" />
+ <project-data-sources>
+  <data-source id="DS0">
+   <property key="Logical" value="PlayPen Database" />
+  </data-source>
+  <data-source id="DS2">
+   <property key="Connection Type" value="PostgreSQL" />
+   <property key="Logical" value="HOPE" />
+   <property key="JDBC URL" value="jdbc:postgresql://localhost:5432/hope_semantic_database" />
+   <property key="UID" value="Interacx" />
+   <property key="PWD" value="laranzu" />
+   <property key="ca.sqlpower.architect.etl.kettle.database" value="" />
+   <property key="ca.sqlpower.architect.etl.kettle.port" value="" />
+   <property key="ca.sqlpower.architect.etl.kettle.hostname" value="" />
+   <property key="ca.sqlpower.architect.etl.kettle.repos.login" value="" />
+   <property key="ca.sqlpower.architect.etl.kettle.repos.password" value="" />
+  </data-source>
+ </project-data-sources>
+ <source-databases>
+  <database id="DB0" populated="true" UUID="25656a19-619e-40f1-b101-8847a3b96bf9" dbcs-ref="DS2" name="HOPE" physicalName="HOPE" >
+   <catalog id="CAT1" populated="true" UUID="6e0aed6f-19f9-4ff8-9b1e-946d19abc277" name="hope_semantic_database" nativeTerm="database" physicalName="hope_semantic_database" >
+    <schema id="SCH2" populated="false" UUID="b7962191-d291-48f9-b0a5-03322412e803" name="information_schema" nativeTerm="schema" physicalName="information_schema" >
+    </schema>
+    <schema id="SCH3" populated="false" UUID="231dab58-ce65-4b93-bfbe-1b98d96de299" name="pg_catalog" nativeTerm="schema" physicalName="pg_catalog" >
+    </schema>
+    <schema id="SCH4" populated="false" UUID="a7017bba-58e8-4e5e-b4ff-0a65c24ae3dd" name="pg_toast_temp_1" nativeTerm="schema" physicalName="pg_toast_temp_1" >
+    </schema>
+    <schema id="SCH5" populated="true" UUID="86dca628-492e-4c38-b2c5-6b34ac5d1021" name="public" nativeTerm="schema" physicalName="public" >
+     <table id="TAB6" populated="true" UUID="157e2259-c925-4843-ad31-f40fd36e84f0" name="description" objectType="TABLE" physicalName="description" >
+      <remarks></remarks>
+      <folder id="FOLTAB61" populated="true" name="Columns" physicalName="Columns" type="1">
+       <column id="COL7" populated="true" UUID="a3accbe4-b1ec-4ff4-a19e-2b6df42ce15a" autoIncrement="true" defaultValue="nextval(&apos;description_id_seq&apos;::regclass)" name="id" nullable="0" physicalName="id" precision="10" primaryKeySeq="0" referenceCount="1" scale="0" sourceDataTypeName="serial" type="4" >
+        <remarks></remarks>
+       </column>
+       <column id="COL8" populated="true" UUID="12939f7c-4180-46e6-95d4-173b0276c59e" autoIncrement="false" name="fk_textid" nullable="1" physicalName="fk_textid" precision="20" referenceCount="2" scale="0" sourceDataTypeName="int8" type="-5" >
+        <remarks></remarks>
+       </column>
+       </folder>
+       <folder id="FOLTAB63" populated="true" name="Exported Keys" physicalName="Exported Keys" type="3">
+       </folder>
+       <folder id="FOLTAB62" populated="true" name="Imported Keys" physicalName="Imported Keys" type="2">
+       </folder>
+       <folder id="FOLTAB64" populated="true" name="Indices" physicalName="Indices" type="4">
+       <index id="IDX9" populated="true" UUID="52f0b789-4443-41a7-b030-04f2f4c0984d" clustered="false" index-type="BTREE" name="description_pkey" physicalName="description_pkey" primaryKeyIndex="true" unique="true" >
+        <index-column id="IDC10" populated="true" UUID="ca33398f-85fa-4134-8d0a-fa8d84cf98cb" ascendingOrDescending="UNSPECIFIED" column-ref="COL7" name="id" physicalName="id" />
+       </index>
+      </folder>
+     </table>
+     <table id="TAB11" populated="true" UUID="f27482c2-ec56-4e0d-80c0-98c4503d91eb" name="name" objectType="TABLE" physicalName="name" >
+      <remarks></remarks>
+      <folder id="FOLTAB111" populated="true" name="Columns" physicalName="Columns" type="1">
+       <column id="COL12" populated="true" UUID="e4be4f6f-3ee7-4677-9e72-93496694a3ed" autoIncrement="true" defaultValue="nextval(&apos;name_id_seq&apos;::regclass)" name="id" nullable="0" physicalName="id" precision="10" primaryKeySeq="0" referenceCount="1" scale="0" sourceDataTypeName="serial" type="4" >
+        <remarks></remarks>
+       </column>
+       <column id="COL13" populated="true" UUID="26e4f14b-f4d9-4def-85d9-093b4703e3ac" autoIncrement="false" name="fk_textid" nullable="1" physicalName="fk_textid" precision="20" referenceCount="2" scale="0" sourceDataTypeName="int8" type="-5" >
+        <remarks></remarks>
+       </column>
+       </folder>
+       <folder id="FOLTAB113" populated="true" name="Exported Keys" physicalName="Exported Keys" type="3">
+       </folder>
+       <folder id="FOLTAB112" populated="true" name="Imported Keys" physicalName="Imported Keys" type="2">
+       </folder>
+       <folder id="FOLTAB114" populated="true" name="Indices" physicalName="Indices" type="4">
+       <index id="IDX14" populated="true" UUID="298764dc-b0bc-425e-9a8e-8894c003f9a1" clustered="false" index-type="BTREE" name="name_pkey" physicalName="name_pkey" primaryKeyIndex="true" unique="true" >
+        <index-column id="IDC15" populated="true" UUID="052a5853-936a-4237-8cd7-f834ee7bf069" ascendingOrDescending="UNSPECIFIED" column-ref="COL12" name="id" physicalName="id" />
+       </index>
+      </folder>
+     </table>
+     <table id="TAB16" populated="true" UUID="d3483d95-cd2c-4f16-8aad-7a3eca302ce2" name="rssfeedauthors" objectType="TABLE" physicalName="rssfeedauthors" >
+      <remarks></remarks>
+      <folder id="FOLTAB161" populated="true" name="Columns" physicalName="Columns" type="1">
+       <column id="COL17" populated="true" UUID="a1bb8138-91db-4021-a853-ced877c9bd22" autoIncrement="true" defaultValue="nextval(&apos;rssfeedauthors_id_seq&apos;::regclass)" name="id" nullable="0" physicalName="id" precision="10" primaryKeySeq="0" referenceCount="1" scale="0" sourceDataTypeName="serial" type="4" >
+        <remarks></remarks>
+       </column>
+       <column id="COL18" populated="true" UUID="f93973c1-a591-41bb-8412-fea3263f769f" autoIncrement="false" name="fk_textid" nullable="1" physicalName="fk_textid" precision="20" referenceCount="2" scale="0" sourceDataTypeName="int8" type="-5" >
+        <remarks></remarks>
+       </column>
+       </folder>
+       <folder id="FOLTAB163" populated="true" name="Exported Keys" physicalName="Exported Keys" type="3">
+       </folder>
+       <folder id="FOLTAB162" populated="true" name="Imported Keys" physicalName="Imported Keys" type="2">
+       </folder>
+       <folder id="FOLTAB164" populated="true" name="Indices" physicalName="Indices" type="4">
+       <index id="IDX19" populated="true" UUID="03532877-fb7b-4843-bc2f-857a2553adc1" clustered="false" index-type="BTREE" name="rssfeedauthors_pkey" physicalName="rssfeedauthors_pkey" primaryKeyIndex="true" unique="true" >
+        <index-column id="IDC20" populated="true" UUID="afceb2e4-2753-4ee3-a4d2-7f7b09ff5c1e" ascendingOrDescending="UNSPECIFIED" column-ref="COL17" name="id" physicalName="id" />
+       </index>
+      </folder>
+     </table>
+     <table id="TAB21" populated="true" UUID="650baec2-f410-4e64-a385-a4f7611c70e0" name="rssfeedcategories" objectType="TABLE" physicalName="rssfeedcategories" >
+      <remarks></remarks>
+      <folder id="FOLTAB211" populated="true" name="Columns" physicalName="Columns" type="1">
+       <column id="COL22" populated="true" UUID="7f6740e6-aadf-4cef-868d-d887ca7a69ab" autoIncrement="true" defaultValue="nextval(&apos;rssfeedcategories_id_seq&apos;::regclass)" name="id" nullable="0" physicalName="id" precision="10" primaryKeySeq="0" referenceCount="1" scale="0" sourceDataTypeName="serial" type="4" >
+        <remarks></remarks>
+       </column>
+       <column id="COL23" populated="true" UUID="efe63cb3-f5ef-473c-8b7d-5ea23e55c183" autoIncrement="false" name="fk_textid" nullable="1" physicalName="fk_textid" precision="20" referenceCount="2" scale="0" sourceDataTypeName="int8" type="-5" >
+        <remarks></remarks>
+       </column>
+       </folder>
+       <folder id="FOLTAB213" populated="true" name="Exported Keys" physicalName="Exported Keys" type="3">
+       </folder>
+       <folder id="FOLTAB212" populated="true" name="Imported Keys" physicalName="Imported Keys" type="2">
+       </folder>
+       <folder id="FOLTAB214" populated="true" name="Indices" physicalName="Indices" type="4">
+       <index id="IDX24" populated="true" UUID="c47af3b7-184b-4e26-905a-d9b8a3d3fbfd" clustered="false" index-type="BTREE" name="rssfeedcategories_pkey" physicalName="rssfeedcategories_pkey" primaryKeyIndex="true" unique="true" >
+        <index-column id="IDC25" populated="true" UUID="fc3b5046-d2ee-4e2f-961e-e6f42f89680f" ascendingOrDescending="UNSPECIFIED" column-ref="COL22" name="id" physicalName="id" />
+       </index>
+      </folder>
+     </table>
+     <table id="TAB26" populated="true" UUID="4a05c7c6-d433-4594-9b89-fe23d116c9c9" name="rssfeeddescription" objectType="TABLE" physicalName="rssfeeddescription" >
+      <remarks></remarks>
+      <folder id="FOLTAB261" populated="true" name="Columns" physicalName="Columns" type="1">
+       <column id="COL27" populated="true" UUID="e3cd80c3-2184-4f66-a83d-790333ad8432" autoIncrement="true" defaultValue="nextval(&apos;rssfeeddescription_id_seq&apos;::regclass)" name="id" nullable="0" physicalName="id" precision="10" primaryKeySeq="0" referenceCount="1" scale="0" sourceDataTypeName="serial" type="4" >
+        <remarks></remarks>
+       </column>
+       <column id="COL28" populated="true" UUID="eb6ddd4a-5dca-4309-8206-222ca5734a00" autoIncrement="false" name="fk_descriptionid" nullable="1" physicalName="fk_descriptionid" precision="20" referenceCount="2" scale="0" sourceDataTypeName="int8" type="-5" >
+        <remarks></remarks>
+       </column>
+       </folder>
+       <folder id="FOLTAB263" populated="true" name="Exported Keys" physicalName="Exported Keys" type="3">
+       </folder>
+       <folder id="FOLTAB262" populated="true" name="Imported Keys" physicalName="Imported Keys" type="2">
+       </folder>
+       <folder id="FOLTAB264" populated="true" name="Indices" physicalName="Indices" type="4">
+       <index id="IDX29" populated="true" UUID="b48429e1-15b5-4e1c-9b86-a5d842260bef" clustered="false" index-type="BTREE" name="rssfeeddescription_pkey" physicalName="rssfeeddescription_pkey" primaryKeyIndex="true" unique="true" >
+        <index-column id="IDC30" populated="true" UUID="eb2dbb8e-8a51-40f7-a957-b30e751b2a5d" ascendingOrDescending="UNSPECIFIED" column-ref="COL27" name="id" physicalName="id" />
+       </index>
+      </folder>
+     </table>
+     <table id="TAB31" populated="true" UUID="cd3e5767-1b01-4251-8669-9e97f8b0f5c4" name="rssfeeditem" objectType="TABLE" physicalName="rssfeeditem" >
+      <remarks></remarks>
+      <folder id="FOLTAB311" populated="true" name="Columns" physicalName="Columns" type="1">
+       <column id="COL32" populated="true" UUID="ee6d752a-a79f-428a-82fb-d3eb7d84accd" autoIncrement="true" defaultValue="nextval(&apos;rssfeeditem_id_seq&apos;::regclass)" name="id" nullable="0" physicalName="id" precision="10" primaryKeySeq="0" referenceCount="1" scale="0" sourceDataTypeName="serial" type="4" >
+        <remarks></remarks>
+       </column>
+       <column id="COL33" populated="true" UUID="25aaeafa-547b-4b40-946b-84f1b6cb63fb" autoIncrement="false" name="fk_rssfeednameid" nullable="1" physicalName="fk_rssfeednameid" precision="20" referenceCount="2" scale="0" sourceDataTypeName="int8" type="-5" >
+        <remarks></remarks>
+       </column>
+       <column id="COL34" populated="true" UUID="573c4da7-c71f-4f82-b571-ea5e264ec721" autoIncrement="false" name="fk_rssfeedtitleid" nullable="1" physicalName="fk_rssfeedtitleid" precision="20" referenceCount="2" scale="0" sourceDataTypeName="int8" type="-5" >
+        <remarks></remarks>
+       </column>
+       <column id="COL35" populated="true" UUID="67f75b86-e146-47a6-8d38-93297ebbdae6" autoIncrement="false" name="fk_rssfeedurlid" nullable="1" physicalName="fk_rssfeedurlid" precision="20" referenceCount="2" scale="0" sourceDataTypeName="int8" type="-5" >
+        <remarks></remarks>
+       </column>
+       <column id="COL36" populated="true" UUID="c9393fb6-d241-4728-9f4c-a15c25652d5f" autoIncrement="false" name="fk_rssfeeddescriptionid" nullable="1" physicalName="fk_rssfeeddescriptionid" precision="20" referenceCount="2" scale="0" sourceDataTypeName="int8" type="-5" >
+        <remarks></remarks>
+       </column>
+       <column id="COL37" populated="true" UUID="b3ec758f-c17e-4784-9b21-29a34ce40b5a" autoIncrement="false" name="fk_rssfeedpubdateid" nullable="1" physicalName="fk_rssfeedpubdateid" precision="20" referenceCount="2" scale="0" sourceDataTypeName="int8" type="-5" >
+        <remarks></remarks>
+       </column>
+       <column id="COL38" populated="true" UUID="6798bcfa-3107-453e-9a56-571fbb8e791e" autoIncrement="false" name="fk_rssfeedauthorsid" nullable="1" physicalName="fk_rssfeedauthorsid" precision="20" referenceCount="2" scale="0" sourceDataTypeName="int8" type="-5" >
+        <remarks></remarks>
+       </column>
+       <column id="COL39" populated="true" UUID="ff9ce3cb-393f-4930-be0d-c8dab112dd92" autoIncrement="false" name="fk_rssfeedcategoriesid" nullable="1" physicalName="fk_rssfeedcategoriesid" precision="20" referenceCount="2" scale="0" sourceDataTypeName="int8" type="-5" >
+        <remarks></remarks>
+       </column>
+       </folder>
+       <folder id="FOLTAB313" populated="true" name="Exported Keys" physicalName="Exported Keys" type="3">
+       </folder>
+       <folder id="FOLTAB312" populated="true" name="Imported Keys" physicalName="Imported Keys" type="2">
+       </folder>
+       <folder id="FOLTAB314" populated="true" name="Indices" physicalName="Indices" type="4">
+       <index id="IDX40" populated="true" UUID="4fe6e5b0-c196-4aae-a005-adb6c100e285" clustered="false" index-type="BTREE" name="rssfeeditem_pkey" physicalName="rssfeeditem_pkey" primaryKeyIndex="true" unique="true" >
+        <index-column id="IDC41" populated="true" UUID="0f8aa19d-251c-4694-b4c3-c637df66540b" ascendingOrDescending="UNSPECIFIED" column-ref="COL32" name="id" physicalName="id" />
+       </index>
+      </folder>
+     </table>
+     <table id="TAB42" populated="true" UUID="22468e6f-fe4c-4e65-978c-56312205a414" name="rssfeedname" objectType="TABLE" physicalName="rssfeedname" >
+      <remarks></remarks>
+      <folder id="FOLTAB421" populated="true" name="Columns" physicalName="Columns" type="1">
+       <column id="COL43" populated="true" UUID="fdae31b2-a86e-4192-9571-70962fe24342" autoIncrement="true" defaultValue="nextval(&apos;rssfeedname_id_seq&apos;::regclass)" name="id" nullable="0" physicalName="id" precision="10" primaryKeySeq="0" referenceCount="1" scale="0" sourceDataTypeName="serial" type="4" >
+        <remarks></remarks>
+       </column>
+       <column id="COL44" populated="true" UUID="8a855262-b64f-462d-a73e-5300567d5721" autoIncrement="false" name="fk_nameid" nullable="1" physicalName="fk_nameid" precision="20" referenceCount="2" scale="0" sourceDataTypeName="int8" type="-5" >
+        <remarks></remarks>
+       </column>
+       </folder>
+       <folder id="FOLTAB423" populated="true" name="Exported Keys" physicalName="Exported Keys" type="3">
+       </folder>
+       <folder id="FOLTAB422" populated="true" name="Imported Keys" physicalName="Imported Keys" type="2">
+       </folder>
+       <folder id="FOLTAB424" populated="true" name="Indices" physicalName="Indices" type="4">
+       <index id="IDX45" populated="true" UUID="3562588d-28e0-439d-8610-762b7cf63484" clustered="false" index-type="BTREE" name="rssfeedname_pkey" physicalName="rssfeedname_pkey" primaryKeyIndex="true" unique="true" >
+        <index-column id="IDC46" populated="true" UUID="705dc73e-fb62-43ba-a6d1-04244d505c37" ascendingOrDescending="UNSPECIFIED" column-ref="COL43" name="id" physicalName="id" />
+       </index>
+      </folder>
+     </table>
+     <table id="TAB47" populated="true" UUID="1ab55925-c842-443e-8122-12cd47e5b9dc" name="rssfeedpubdate" objectType="TABLE" physicalName="rssfeedpubdate" >
+      <remarks></remarks>
+      <folder id="FOLTAB471" populated="true" name="Columns" physicalName="Columns" type="1">
+       <column id="COL48" populated="true" UUID="6d8a34ff-b89d-42b1-9ff0-3c4d107f5c03" autoIncrement="true" defaultValue="nextval(&apos;rssfeedpubdate_id_seq&apos;::regclass)" name="id" nullable="0" physicalName="id" precision="10" primaryKeySeq="0" referenceCount="1" scale="0" sourceDataTypeName="serial" type="4" >
+        <remarks></remarks>
+       </column>
+       <column id="COL49" populated="true" UUID="3ce6951e-c20b-4ee7-b98f-71aed0929c6f" autoIncrement="false" name="value" nullable="1" physicalName="value" precision="35" referenceCount="1" scale="6" sourceDataTypeName="timestamptz" type="93" >
+        <remarks></remarks>
+       </column>
+       </folder>
+       <folder id="FOLTAB473" populated="true" name="Exported Keys" physicalName="Exported Keys" type="3">
+       </folder>
+       <folder id="FOLTAB472" populated="true" name="Imported Keys" physicalName="Imported Keys" type="2">
+       </folder>
+       <folder id="FOLTAB474" populated="true" name="Indices" physicalName="Indices" type="4">
+       <index id="IDX50" populated="true" UUID="8e752d18-0bc9-430a-a5bf-3a8fd5630892" clustered="false" index-type="BTREE" name="rssfeedpubdate_pkey" physicalName="rssfeedpubdate_pkey" primaryKeyIndex="true" unique="true" >
+        <index-column id="IDC51" populated="true" UUID="76e7e33e-ec18-4a2f-b842-22f5548b5def" ascendingOrDescending="UNSPECIFIED" column-ref="COL48" name="id" physicalName="id" />
+       </index>
+      </folder>
+     </table>
+     <table id="TAB52" populated="true" UUID="9d506499-87c0-437f-bfc5-f18c9b06508b" name="rssfeedtitle" objectType="TABLE" physicalName="rssfeedtitle" >
+      <remarks></remarks>
+      <folder id="FOLTAB521" populated="true" name="Columns" physicalName="Columns" type="1">
+       <column id="COL53" populated="true" UUID="8f2920c1-9f6f-4338-8fae-8e96d7068111" autoIncrement="true" defaultValue="nextval(&apos;rssfeedtitle_id_seq&apos;::regclass)" name="id" nullable="0" physicalName="id" precision="10" primaryKeySeq="0" referenceCount="1" scale="0" sourceDataTypeName="serial" type="4" >
+        <remarks></remarks>
+       </column>
+       <column id="COL54" populated="true" UUID="b7368013-b706-4f5d-8ad1-3cbe73c80371" autoIncrement="false" name="fk_titleid" nullable="1" physicalName="fk_titleid" precision="20" referenceCount="2" scale="0" sourceDataTypeName="int8" type="-5" >
+        <remarks></remarks>
+       </column>
+       </folder>
+       <folder id="FOLTAB523" populated="true" name="Exported Keys" physicalName="Exported Keys" type="3">
+       </folder>
+       <folder id="FOLTAB522" populated="true" name="Imported Keys" physicalName="Imported Keys" type="2">
+       </folder>
+       <folder id="FOLTAB524" populated="true" name="Indices" physicalName="Indices" type="4">
+       <index id="IDX55" populated="true" UUID="55d4e5ca-93b7-495d-9c5c-5bc8c469bbf0" clustered="false" index-type="BTREE" name="rssfeedtitle_pkey" physicalName="rssfeedtitle_pkey" primaryKeyIndex="true" unique="true" >
+        <index-column id="IDC56" populated="true" UUID="bfe73b52-aa62-4b4f-b1e7-ae228d96f0c6" ascendingOrDescending="UNSPECIFIED" column-ref="COL53" name="id" physicalName="id" />
+       </index>
+      </folder>
+     </table>
+     <table id="TAB57" populated="true" UUID="e1eeb723-2908-42c0-b359-0249ee487af0" name="rssfeedurl" objectType="TABLE" physicalName="rssfeedurl" >
+      <remarks></remarks>
+      <folder id="FOLTAB571" populated="true" name="Columns" physicalName="Columns" type="1">
+       <column id="COL58" populated="true" UUID="1842ba56-92e4-48dd-8b7a-bf65b2930a69" autoIncrement="true" defaultValue="nextval(&apos;rssfeedurl_id_seq&apos;::regclass)" name="id" nullable="0" physicalName="id" precision="10" primaryKeySeq="0" referenceCount="1" scale="0" sourceDataTypeName="serial" type="4" >
+        <remarks></remarks>
+       </column>
+       <column id="COL59" populated="true" UUID="2df086e2-32d5-4ea4-8719-7ecebbd08aac" autoIncrement="false" name="fk_urlid" nullable="1" physicalName="fk_urlid" precision="20" referenceCount="2" scale="0" sourceDataTypeName="int8" type="-5" >
+        <remarks></remarks>
+       </column>
+       </folder>
+       <folder id="FOLTAB573" populated="true" name="Exported Keys" physicalName="Exported Keys" type="3">
+       </folder>
+       <folder id="FOLTAB572" populated="true" name="Imported Keys" physicalName="Imported Keys" type="2">
+       </folder>
+       <folder id="FOLTAB574" populated="true" name="Indices" physicalName="Indices" type="4">
+       <index id="IDX60" populated="true" UUID="d864c6a6-7770-4e33-9289-2a3d6680dbfd" clustered="false" index-type="BTREE" name="rssfeedurl_pkey" physicalName="rssfeedurl_pkey" primaryKeyIndex="true" unique="true" >
+        <index-column id="IDC61" populated="true" UUID="72d6757a-2ae4-403c-997a-9c2bfba9117d" ascendingOrDescending="UNSPECIFIED" column-ref="COL58" name="id" physicalName="id" />
+       </index>
+      </folder>
+     </table>
+     <table id="TAB62" populated="true" UUID="e8f0557a-94cc-4aa3-99e9-48d0be6df7c7" name="text" objectType="TABLE" physicalName="text" >
+      <remarks></remarks>
+      <folder id="FOLTAB621" populated="true" name="Columns" physicalName="Columns" type="1">
+       <column id="COL63" populated="true" UUID="36a76816-f8d7-4abb-90bc-6bf0d9ec2f94" autoIncrement="true" defaultValue="nextval(&apos;text_id_seq&apos;::regclass)" name="id" nullable="0" physicalName="id" precision="10" primaryKeySeq="0" referenceCount="1" scale="0" sourceDataTypeName="serial" type="4" >
+        <remarks></remarks>
+       </column>
+       <column id="COL64" populated="true" UUID="4611b9cd-c1a6-45fb-9e1f-d1a0181ea29e" autoIncrement="false" name="value" nullable="1" physicalName="value" precision="2147483647" referenceCount="1" scale="0" sourceDataTypeName="text" type="12" >
+        <remarks></remarks>
+       </column>
+       </folder>
+       <folder id="FOLTAB623" populated="true" name="Exported Keys" physicalName="Exported Keys" type="3">
+       </folder>
+       <folder id="FOLTAB622" populated="true" name="Imported Keys" physicalName="Imported Keys" type="2">
+       </folder>
+       <folder id="FOLTAB624" populated="true" name="Indices" physicalName="Indices" type="4">
+       <index id="IDX65" populated="true" UUID="e8f75a60-e87a-4d7b-9dbf-5c0d8c7da6a1" clustered="false" index-type="BTREE" name="text_pkey" physicalName="text_pkey" primaryKeyIndex="true" unique="true" >
+        <index-column id="IDC66" populated="true" UUID="f3c96a06-26ee-4f53-ba9d-92ea08e5f6dc" ascendingOrDescending="UNSPECIFIED" column-ref="COL63" name="id" physicalName="id" />
+       </index>
+      </folder>
+     </table>
+     <table id="TAB67" populated="true" UUID="48df91a4-cbd9-49a1-acee-2c7664ecd770" name="title" objectType="TABLE" physicalName="title" >
+      <remarks></remarks>
+      <folder id="FOLTAB671" populated="true" name="Columns" physicalName="Columns" type="1">
+       <column id="COL68" populated="true" UUID="600c518a-c22d-4091-b5d8-f946181c3c2f" autoIncrement="true" defaultValue="nextval(&apos;title_id_seq&apos;::regclass)" name="id" nullable="0" physicalName="id" precision="10" primaryKeySeq="0" referenceCount="1" scale="0" sourceDataTypeName="serial" type="4" >
+        <remarks></remarks>
+       </column>
+       <column id="COL69" populated="true" UUID="d0c67c05-f586-43a8-9fde-92928d7c641d" autoIncrement="false" name="fk_textid" nullable="1" physicalName="fk_textid" precision="20" referenceCount="2" scale="0" sourceDataTypeName="int8" type="-5" >
+        <remarks></remarks>
+       </column>
+       </folder>
+       <folder id="FOLTAB673" populated="true" name="Exported Keys" physicalName="Exported Keys" type="3">
+       </folder>
+       <folder id="FOLTAB672" populated="true" name="Imported Keys" physicalName="Imported Keys" type="2">
+       </folder>
+       <folder id="FOLTAB674" populated="true" name="Indices" physicalName="Indices" type="4">
+       <index id="IDX70" populated="true" UUID="23b1a180-5e2b-41fa-a78e-592fe9f26141" clustered="false" index-type="BTREE" name="title_pkey" physicalName="title_pkey" primaryKeyIndex="true" unique="true" >
+        <index-column id="IDC71" populated="true" UUID="8cea849b-9b2d-4270-8deb-ef35a50b6520" ascendingOrDescending="UNSPECIFIED" column-ref="COL68" name="id" physicalName="id" />
+       </index>
+      </folder>
+     </table>
+     <table id="TAB72" populated="true" UUID="8edd6c7d-439f-4be3-b6c4-a25e3b4c58ea" name="url" objectType="TABLE" physicalName="url" >
+      <remarks></remarks>
+      <folder id="FOLTAB721" populated="true" name="Columns" physicalName="Columns" type="1">
+       <column id="COL73" populated="true" UUID="489942ec-544a-4e24-be19-e221f45d5afd" autoIncrement="true" defaultValue="nextval(&apos;url_id_seq&apos;::regclass)" name="id" nullable="0" physicalName="id" precision="10" primaryKeySeq="0" referenceCount="1" scale="0" sourceDataTypeName="serial" type="4" >
+        <remarks></remarks>
+       </column>
+       <column id="COL74" populated="true" UUID="02ac2a23-7638-4daf-ae3f-b6d40f97b978" autoIncrement="false" name="value" nullable="1" physicalName="value" precision="2147483647" referenceCount="1" scale="0" sourceDataTypeName="text" type="12" >
+        <remarks></remarks>
+       </column>
+       </folder>
+       <folder id="FOLTAB723" populated="true" name="Exported Keys" physicalName="Exported Keys" type="3">
+       </folder>
+       <folder id="FOLTAB722" populated="true" name="Imported Keys" physicalName="Imported Keys" type="2">
+       </folder>
+       <folder id="FOLTAB724" populated="true" name="Indices" physicalName="Indices" type="4">
+       <index id="IDX75" populated="true" UUID="523611c7-2007-478f-b55b-591d938ba53e" clustered="false" index-type="BTREE" name="url_pkey" physicalName="url_pkey" primaryKeyIndex="true" unique="true" >
+        <index-column id="IDC76" populated="true" UUID="8535f9a2-6004-411a-b9a5-f09a174bbd4c" ascendingOrDescending="UNSPECIFIED" column-ref="COL73" name="id" physicalName="id" />
+       </index>
+      </folder>
+     </table>
+     <table id="TAB77" populated="true" UUID="09ed0f80-efda-4e7e-86bb-3ddae0aa8a67" name="rssfeeditemdisplayed" objectType="TABLE" physicalName="rssfeeditemdisplayed" >
+      <remarks></remarks>
+      <folder id="FOLTAB771" populated="true" name="Columns" physicalName="Columns" type="1">
+       <column id="COL78" populated="true" UUID="57003852-b358-4998-be60-c6e4ab40e1e4" autoIncrement="true" defaultValue="nextval(&apos;rssfeeditemdisplayed_id_seq&apos;::regclass)" name="id" nullable="0" physicalName="id" precision="10" primaryKeySeq="0" referenceCount="1" scale="0" sourceDataTypeName="serial" type="4" >
+        <remarks></remarks>
+       </column>
+       <column id="COL79" populated="true" UUID="87b9a525-7d7e-42b7-b598-fba89492b319" autoIncrement="false" name="fk_rssfeedurlid" nullable="1" physicalName="fk_rssfeedurlid" precision="20" referenceCount="2" scale="0" sourceDataTypeName="int8" type="-5" >
+        <remarks></remarks>
+       </column>
+       </folder>
+       <folder id="FOLTAB773" populated="true" name="Exported Keys" physicalName="Exported Keys" type="3">
+       </folder>
+       <folder id="FOLTAB772" populated="true" name="Imported Keys" physicalName="Imported Keys" type="2">
+       </folder>
+       <folder id="FOLTAB774" populated="true" name="Indices" physicalName="Indices" type="4">
+       <index id="IDX80" populated="true" UUID="a265a278-aa08-4d65-9be4-b35477b9af7e" clustered="false" index-type="BTREE" name="rssfeeditemdisplayed_pkey" physicalName="rssfeeditemdisplayed_pkey" primaryKeyIndex="true" unique="true" >
+        <index-column id="IDC81" populated="true" UUID="635aef0c-088d-49c4-ace0-c42e3e9245cd" ascendingOrDescending="UNSPECIFIED" column-ref="COL78" name="id" physicalName="id" />
+       </index>
+      </folder>
+     </table>
+     <table id="TAB82" populated="true" UUID="03cc3761-6eb1-467b-b90a-c411cf5bd0c7" name="urlvisited" objectType="TABLE" physicalName="urlvisited" >
+      <remarks></remarks>
+      <folder id="FOLTAB821" populated="true" name="Columns" physicalName="Columns" type="1">
+       <column id="COL83" populated="true" UUID="ac3a01b6-da5b-4e81-9e92-9c5e917f778e" autoIncrement="true" defaultValue="nextval(&apos;urlvisited_id_seq&apos;::regclass)" name="id" nullable="0" physicalName="id" precision="10" primaryKeySeq="0" referenceCount="1" scale="0" sourceDataTypeName="serial" type="4" >
+        <remarks></remarks>
+       </column>
+       <column id="COL84" populated="true" UUID="f97fc168-5382-4b36-8b90-5601dbf489d5" autoIncrement="false" name="fk_urlid" nullable="1" physicalName="fk_urlid" precision="20" referenceCount="2" scale="0" sourceDataTypeName="int8" type="-5" >
+        <remarks></remarks>
+       </column>
+       </folder>
+       <folder id="FOLTAB823" populated="true" name="Exported Keys" physicalName="Exported Keys" type="3">
+       </folder>
+       <folder id="FOLTAB822" populated="true" name="Imported Keys" physicalName="Imported Keys" type="2">
+       </folder>
+       <folder id="FOLTAB824" populated="true" name="Indices" physicalName="Indices" type="4">
+       <index id="IDX85" populated="true" UUID="a1533412-fce1-444a-887c-47e95867d353" clustered="false" index-type="BTREE" name="urlvisited_pkey" physicalName="urlvisited_pkey" primaryKeyIndex="true" unique="true" >
+        <index-column id="IDC86" populated="true" UUID="b1850ea1-a796-4a64-8cf7-1a9a4f36bac8" ascendingOrDescending="UNSPECIFIED" column-ref="COL83" name="id" physicalName="id" />
+       </index>
+      </folder>
+     </table>
+    </schema>
+   </catalog>
+   <relationships>
+    <relationship id="REL87" populated="true" UUID="03411df6-664a-4fb5-b940-9abd29027b3d" deferrability="7" deleteRule="3" fk-table-ref="TAB26" fkCardinality="7" identifying="false" name="rssfeeddescription_fk_descriptionid_fkey" physicalName="rssfeeddescription_fk_descriptionid_fkey" pk-table-ref="TAB6" pkCardinality="2" updateRule="3" >
+     <column-mapping id="CMP88" populated="true" UUID="416b6a97-45dc-4954-ba2c-71eda55c39a8" fk-column-ref="COL28" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL7" />
+    </relationship>
+    <relationship id="REL89" populated="true" UUID="d0286e84-737c-498a-9aba-a6ddfa304048" deferrability="7" deleteRule="3" fk-table-ref="TAB42" fkCardinality="7" identifying="false" name="rssfeedname_fk_nameid_fkey" physicalName="rssfeedname_fk_nameid_fkey" pk-table-ref="TAB11" pkCardinality="2" updateRule="3" >
+     <column-mapping id="CMP90" populated="true" UUID="1fe08471-a079-48a3-960c-d4cbb9f283f5" fk-column-ref="COL44" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL12" />
+    </relationship>
+    <relationship id="REL91" populated="true" UUID="d0a66e30-21fd-466d-98d4-80900f8063dd" deferrability="7" deleteRule="3" fk-table-ref="TAB31" fkCardinality="7" identifying="false" name="rssfeeditem_fk_rssfeedauthorsid_fkey" physicalName="rssfeeditem_fk_rssfeedauthorsid_fkey" pk-table-ref="TAB16" pkCardinality="2" updateRule="3" >
+     <column-mapping id="CMP92" populated="true" UUID="e453c599-f6ea-4872-a820-0ec29fc486c5" fk-column-ref="COL38" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL17" />
+    </relationship>
+    <relationship id="REL93" populated="true" UUID="48e8b7d0-01a5-4729-97ec-01c5e2fc17fb" deferrability="7" deleteRule="3" fk-table-ref="TAB31" fkCardinality="7" identifying="false" name="rssfeeditem_fk_rssfeedcategoriesid_fkey" physicalName="rssfeeditem_fk_rssfeedcategoriesid_fkey" pk-table-ref="TAB21" pkCardinality="2" updateRule="3" >
+     <column-mapping id="CMP94" populated="true" UUID="04aa4b6f-f70d-4c72-a492-d9c8deeacb25" fk-column-ref="COL39" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL22" />
+    </relationship>
+    <relationship id="REL95" populated="true" UUID="7a719661-419b-4126-8a7b-4e504e36dd5f" deferrability="7" deleteRule="3" fk-table-ref="TAB31" fkCardinality="7" identifying="false" name="rssfeeditem_fk_rssfeeddescriptionid_fkey" physicalName="rssfeeditem_fk_rssfeeddescriptionid_fkey" pk-table-ref="TAB26" pkCardinality="2" updateRule="3" >
+     <column-mapping id="CMP96" populated="true" UUID="fc700f1f-eacc-46b7-b05c-ce35eaa1de9c" fk-column-ref="COL36" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL27" />
+    </relationship>
+    <relationship id="REL97" populated="true" UUID="aa6e7252-f675-42cc-9e7d-bafbdd606345" deferrability="7" deleteRule="3" fk-table-ref="TAB31" fkCardinality="7" identifying="false" name="rssfeeditem_fk_rssfeednameid_fkey" physicalName="rssfeeditem_fk_rssfeednameid_fkey" pk-table-ref="TAB42" pkCardinality="2" updateRule="3" >
+     <column-mapping id="CMP98" populated="true" UUID="4d5a60f2-efc1-4d04-ad50-1cd55b7823c0" fk-column-ref="COL33" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL43" />
+    </relationship>
+    <relationship id="REL99" populated="true" UUID="37708bb5-7d4a-4fb5-b9be-8ee8e23fa10e" deferrability="7" deleteRule="3" fk-table-ref="TAB31" fkCardinality="7" identifying="false" name="rssfeeditem_fk_rssfeedpubdateid_fkey" physicalName="rssfeeditem_fk_rssfeedpubdateid_fkey" pk-table-ref="TAB47" pkCardinality="2" updateRule="3" >
+     <column-mapping id="CMP100" populated="true" UUID="c57a92f5-56cd-4e05-bfed-85caa3b2e159" fk-column-ref="COL37" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL48" />
+    </relationship>
+    <relationship id="REL101" populated="true" UUID="b41aede7-e42f-4395-997f-d55a6b2edac7" deferrability="7" deleteRule="3" fk-table-ref="TAB31" fkCardinality="7" identifying="false" name="rssfeeditem_fk_rssfeedtitleid_fkey" physicalName="rssfeeditem_fk_rssfeedtitleid_fkey" pk-table-ref="TAB52" pkCardinality="2" updateRule="3" >
+     <column-mapping id="CMP102" populated="true" UUID="d6ddd5bb-4119-473e-a87a-eab05b06d348" fk-column-ref="COL34" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL53" />
+    </relationship>
+    <relationship id="REL103" populated="true" UUID="a9ef21ad-aca7-4044-bee8-75d0063f8e3b" deferrability="7" deleteRule="3" fk-table-ref="TAB31" fkCardinality="7" identifying="false" name="rssfeeditem_fk_rssfeedurlid_fkey" physicalName="rssfeeditem_fk_rssfeedurlid_fkey" pk-table-ref="TAB57" pkCardinality="2" updateRule="3" >
+     <column-mapping id="CMP104" populated="true" UUID="4f9a94d1-9664-41d2-b482-76e42fac54a8" fk-column-ref="COL35" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL58" />
+    </relationship>
+    <relationship id="REL105" populated="true" UUID="6b7ed550-4e33-417b-9799-4befb4fede96" deferrability="7" deleteRule="3" fk-table-ref="TAB77" fkCardinality="7" identifying="false" name="rssfeeditemdisplayed_fk_rssfeedurlid_fkey" physicalName="rssfeeditemdisplayed_fk_rssfeedurlid_fkey" pk-table-ref="TAB57" pkCardinality="2" updateRule="3" >
+     <column-mapping id="CMP106" populated="true" UUID="3d855dea-2f2a-4872-bf45-5277964dd15c" fk-column-ref="COL79" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL58" />
+    </relationship>
+    <relationship id="REL107" populated="true" UUID="d41d7ca7-3fd1-4381-b8d4-d5097ef15ea3" deferrability="7" deleteRule="3" fk-table-ref="TAB6" fkCardinality="7" identifying="false" name="description_fk_textid_fkey" physicalName="description_fk_textid_fkey" pk-table-ref="TAB62" pkCardinality="2" updateRule="3" >
+     <column-mapping id="CMP108" populated="true" UUID="a30b7b40-03a3-456b-aa99-265ca1b2c8fa" fk-column-ref="COL8" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL63" />
+    </relationship>
+    <relationship id="REL109" populated="true" UUID="ba538df6-3050-4e44-826b-c18037182d34" deferrability="7" deleteRule="3" fk-table-ref="TAB11" fkCardinality="7" identifying="false" name="name_fk_textid_fkey" physicalName="name_fk_textid_fkey" pk-table-ref="TAB62" pkCardinality="2" updateRule="3" >
+     <column-mapping id="CMP110" populated="true" UUID="7f494c4d-563b-4747-b0ab-d5251ed2e4b0" fk-column-ref="COL13" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL63" />
+    </relationship>
+    <relationship id="REL111" populated="true" UUID="e2b8d758-570f-432a-a482-ab4b09ef8ff5" deferrability="7" deleteRule="3" fk-table-ref="TAB16" fkCardinality="7" identifying="false" name="rssfeedauthors_fk_textid_fkey" physicalName="rssfeedauthors_fk_textid_fkey" pk-table-ref="TAB62" pkCardinality="2" updateRule="3" >
+     <column-mapping id="CMP112" populated="true" UUID="fe77d28d-e385-4878-8d2e-67bfa6b88698" fk-column-ref="COL18" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL63" />
+    </relationship>
+    <relationship id="REL113" populated="true" UUID="5a72737a-ec95-4cfa-947e-69d17e2043bb" deferrability="7" deleteRule="3" fk-table-ref="TAB21" fkCardinality="7" identifying="false" name="rssfeedcategories_fk_textid_fkey" physicalName="rssfeedcategories_fk_textid_fkey" pk-table-ref="TAB62" pkCardinality="2" updateRule="3" >
+     <column-mapping id="CMP114" populated="true" UUID="edcd0ef0-dd96-43e3-8bc7-188da2fccc8a" fk-column-ref="COL23" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL63" />
+    </relationship>
+    <relationship id="REL115" populated="true" UUID="bf703897-1483-4791-bd3b-4e61bb6f0e59" deferrability="7" deleteRule="3" fk-table-ref="TAB67" fkCardinality="7" identifying="false" name="title_fk_textid_fkey" physicalName="title_fk_textid_fkey" pk-table-ref="TAB62" pkCardinality="2" updateRule="3" >
+     <column-mapping id="CMP116" populated="true" UUID="f9f50a4b-93ba-4865-888b-41f25d53ec78" fk-column-ref="COL69" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL63" />
+    </relationship>
+    <relationship id="REL117" populated="true" UUID="9b999e91-57b9-4a62-999f-a01dd9430a3f" deferrability="7" deleteRule="3" fk-table-ref="TAB52" fkCardinality="7" identifying="false" name="rssfeedtitle_fk_titleid_fkey" physicalName="rssfeedtitle_fk_titleid_fkey" pk-table-ref="TAB67" pkCardinality="2" updateRule="3" >
+     <column-mapping id="CMP118" populated="true" UUID="778d728d-524c-4a9d-bcc8-100fe061aa8d" fk-column-ref="COL54" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL68" />
+    </relationship>
+    <relationship id="REL119" populated="true" UUID="d7067439-3cb1-4181-97f3-19b548c41f36" deferrability="7" deleteRule="3" fk-table-ref="TAB57" fkCardinality="7" identifying="false" name="rssfeedurl_fk_urlid_fkey" physicalName="rssfeedurl_fk_urlid_fkey" pk-table-ref="TAB72" pkCardinality="2" updateRule="3" >
+     <column-mapping id="CMP120" populated="true" UUID="b54ac97c-0ffd-4c43-99f4-c539bd3fc7c4" fk-column-ref="COL59" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL73" />
+    </relationship>
+    <relationship id="REL121" populated="true" UUID="7a272bdc-868b-42f7-a64a-298f3ef09f43" deferrability="7" deleteRule="3" fk-table-ref="TAB82" fkCardinality="7" identifying="false" name="urlvisited_fk_urlid_fkey" physicalName="urlvisited_fk_urlid_fkey" pk-table-ref="TAB72" pkCardinality="2" updateRule="3" >
+     <column-mapping id="CMP122" populated="true" UUID="32fb5161-5f7a-4980-a2a5-9e5bcb2afcee" fk-column-ref="COL84" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL73" />
+    </relationship>
+   </relationships>
+  </database>
+ </source-databases>
+ <target-database id="ppdb" dbcs-ref="DS0">
+  <table id="TAB124" populated="true" UUID="1bae16e6-f896-4b59-b3b7-aa8bcbe897e9" name="description" objectType="TABLE" physicalName="description" >
+   <remarks></remarks>
+   <folder id="FOLTAB1241" populated="true" name="Columns" physicalName="Columns" type="1">
+    <column id="COL125" populated="true" UUID="572ba0bb-8f8a-4e56-94a3-997dfc0afd44" autoIncrement="true" defaultValue="nextval(&apos;description_id_seq&apos;::regclass)" name="id" nullable="0" physicalName="id" precision="0" primaryKeySeq="0" referenceCount="1" scale="0" source-column-ref="COL7" sourceDataTypeName="serial" type="4" userDefinedTypeUUID="63b011c7-c81f-4c75-8271-632b3c87f727" >
+     <remarks></remarks>
+    </column>
+    <column id="COL126" populated="true" UUID="e9d55faf-72e6-438a-ab7e-20c9e58b97c1" autoIncrement="false" defaultValue="" name="fk_textid" nullable="0" physicalName="fk_textid" precision="0" referenceCount="2" scale="0" source-column-ref="COL8" sourceDataTypeName="int8" type="4" userDefinedTypeUUID="63b011c7-c81f-4c75-8271-632b3c87f727" >
+     <remarks></remarks>
+    </column>
+    </folder>
+    <folder id="FOLTAB1243" populated="true" name="Exported Keys" physicalName="Exported Keys" type="3">
+    </folder>
+    <folder id="FOLTAB1242" populated="true" name="Imported Keys" physicalName="Imported Keys" type="2">
+    </folder>
+    <folder id="FOLTAB1244" populated="true" name="Indices" physicalName="Indices" type="4">
+    <index id="IDX127" populated="true" UUID="809dfbcb-f9d7-4d96-bc28-af05d5fd71a4" clustered="false" index-type="BTREE" name="description_pkey" physicalName="description_pkey" primaryKeyIndex="true" unique="true" >
+     <index-column id="IDC128" populated="true" UUID="ff671ef7-a658-4aa4-93a1-a882273b3ced" ascendingOrDescending="UNSPECIFIED" column-ref="COL125" name="id" physicalName="id" />
+    </index>
+   </folder>
+  </table>
+  <table id="TAB129" populated="true" UUID="d65c1231-ebb8-44a5-9187-621b4f1f462a" name="name" objectType="TABLE" physicalName="name" >
+   <remarks></remarks>
+   <folder id="FOLTAB1291" populated="true" name="Columns" physicalName="Columns" type="1">
+    <column id="COL130" populated="true" UUID="eb97e58a-40ee-4544-a2ae-4f00eb433d74" autoIncrement="true" defaultValue="nextval(&apos;name_id_seq&apos;::regclass)" name="id" nullable="0" physicalName="id" precision="0" primaryKeySeq="0" referenceCount="1" scale="0" source-column-ref="COL12" sourceDataTypeName="serial" type="4" userDefinedTypeUUID="63b011c7-c81f-4c75-8271-632b3c87f727" >
+     <remarks></remarks>
+    </column>
+    <column id="COL131" populated="true" UUID="4d4b1250-f1c9-42cd-ac42-e3d218271e67" autoIncrement="false" defaultValue="" name="fk_textid" nullable="0" physicalName="fk_textid" precision="0" referenceCount="2" scale="0" source-column-ref="COL13" sourceDataTypeName="int8" type="4" userDefinedTypeUUID="63b011c7-c81f-4c75-8271-632b3c87f727" >
+     <remarks></remarks>
+    </column>
+    </folder>
+    <folder id="FOLTAB1293" populated="true" name="Exported Keys" physicalName="Exported Keys" type="3">
+    </folder>
+    <folder id="FOLTAB1292" populated="true" name="Imported Keys" physicalName="Imported Keys" type="2">
+    </folder>
+    <folder id="FOLTAB1294" populated="true" name="Indices" physicalName="Indices" type="4">
+    <index id="IDX132" populated="true" UUID="04dcfcad-e3d7-4348-a0cb-9490b406aa09" clustered="false" index-type="BTREE" name="name_pkey" physicalName="name_pkey" primaryKeyIndex="true" unique="true" >
+     <index-column id="IDC133" populated="true" UUID="7cbe6a7d-de65-44b0-ab1a-959d4e927ddf" ascendingOrDescending="UNSPECIFIED" column-ref="COL130" name="id" physicalName="id" />
+    </index>
+   </folder>
+  </table>
+  <table id="TAB134" populated="true" UUID="d161fc4c-1110-40dc-9464-973029de5685" name="rssfeeddescription" objectType="TABLE" physicalName="rssfeeddescription" >
+   <remarks></remarks>
+   <folder id="FOLTAB1341" populated="true" name="Columns" physicalName="Columns" type="1">
+    <column id="COL135" populated="true" UUID="449e6556-49b4-4e26-80c1-c5344c96dd54" autoIncrement="true" defaultValue="nextval(&apos;rssfeeddescription_id_seq&apos;::regclass)" name="id" nullable="0" physicalName="id" precision="0" primaryKeySeq="0" referenceCount="1" scale="0" source-column-ref="COL27" sourceDataTypeName="serial" type="4" userDefinedTypeUUID="63b011c7-c81f-4c75-8271-632b3c87f727" >
+     <remarks></remarks>
+    </column>
+    <column id="COL136" populated="true" UUID="28ac1287-362c-45c5-b898-067560e342af" autoIncrement="false" defaultValue="" name="fk_descriptionid" nullable="0" physicalName="fk_descriptionid" precision="0" referenceCount="2" scale="0" source-column-ref="COL28" sourceDataTypeName="int8" type="4" userDefinedTypeUUID="63b011c7-c81f-4c75-8271-632b3c87f727" >
+     <remarks></remarks>
+    </column>
+    </folder>
+    <folder id="FOLTAB1343" populated="true" name="Exported Keys" physicalName="Exported Keys" type="3">
+    </folder>
+    <folder id="FOLTAB1342" populated="true" name="Imported Keys" physicalName="Imported Keys" type="2">
+    </folder>
+    <folder id="FOLTAB1344" populated="true" name="Indices" physicalName="Indices" type="4">
+    <index id="IDX137" populated="true" UUID="d46f3bec-cc57-4280-afdb-c730f5860680" clustered="false" index-type="BTREE" name="rssfeeddescription_pkey" physicalName="rssfeeddescription_pkey" primaryKeyIndex="true" unique="true" >
+     <index-column id="IDC138" populated="true" UUID="44d8125e-b561-4489-b54e-cf637f1cd419" ascendingOrDescending="UNSPECIFIED" column-ref="COL135" name="id" physicalName="id" />
+    </index>
+   </folder>
+  </table>
+  <table id="TAB139" populated="true" UUID="0f9a0dc8-10fa-4f0f-87de-484889e47f79" name="rssfeeditem" objectType="TABLE" physicalName="rssfeeditem" >
+   <remarks></remarks>
+   <folder id="FOLTAB1391" populated="true" name="Columns" physicalName="Columns" type="1">
+    <column id="COL140" populated="true" UUID="10cddbb3-4399-4cfd-8398-02ac6e0e74f6" autoIncrement="true" defaultValue="nextval(&apos;rssfeeditem_id_seq&apos;::regclass)" name="id" nullable="0" physicalName="id" precision="0" primaryKeySeq="0" referenceCount="1" scale="0" source-column-ref="COL32" sourceDataTypeName="serial" type="4" userDefinedTypeUUID="63b011c7-c81f-4c75-8271-632b3c87f727" >
+     <remarks></remarks>
+    </column>
+    <column id="COL141" populated="true" UUID="461f2dd1-ddb5-4d09-9b0e-049c0498dfc5" autoIncrement="false" defaultValue="" name="fk_rssfeednameid" nullable="0" physicalName="fk_rssfeednameid" precision="0" referenceCount="2" scale="0" source-column-ref="COL33" sourceDataTypeName="int8" type="4" userDefinedTypeUUID="63b011c7-c81f-4c75-8271-632b3c87f727" >
+     <remarks></remarks>
+    </column>
+    <column id="COL142" populated="true" UUID="4d5d1043-fbdb-4c25-b8c7-3bd1e629b11e" autoIncrement="false" defaultValue="" name="fk_rssfeedtitleid" nullable="0" physicalName="fk_rssfeedtitleid" precision="0" referenceCount="2" scale="0" source-column-ref="COL34" sourceDataTypeName="int8" type="4" userDefinedTypeUUID="63b011c7-c81f-4c75-8271-632b3c87f727" >
+     <remarks></remarks>
+    </column>
+    <column id="COL143" populated="true" UUID="a94d657f-2ab5-4cd4-9f1c-9a1885b31156" autoIncrement="false" defaultValue="" name="fk_rssfeedurlid" nullable="0" physicalName="fk_rssfeedurlid" precision="0" referenceCount="2" scale="0" source-column-ref="COL35" sourceDataTypeName="int8" type="4" userDefinedTypeUUID="63b011c7-c81f-4c75-8271-632b3c87f727" >
+     <remarks></remarks>
+    </column>
+    <column id="COL144" populated="true" UUID="667c1c1b-289d-4a05-90a7-e1cb373127f5" autoIncrement="false" defaultValue="" name="fk_rssfeeddescriptionid" nullable="0" physicalName="fk_rssfeeddescriptionid" precision="0" referenceCount="2" scale="0" source-column-ref="COL36" sourceDataTypeName="int8" type="4" userDefinedTypeUUID="63b011c7-c81f-4c75-8271-632b3c87f727" >
+     <remarks></remarks>
+    </column>
+    <column id="COL145" populated="true" UUID="b61df3db-4e80-4af9-8883-61b36c978e74" autoIncrement="false" defaultValue="" name="fk_rssfeedpubdateid" nullable="0" physicalName="fk_rssfeedpubdateid" precision="0" referenceCount="1" scale="0" source-column-ref="COL37" sourceDataTypeName="int8" type="4" userDefinedTypeUUID="63b011c7-c81f-4c75-8271-632b3c87f727" >
+     <remarks></remarks>
+    </column>
+    <column id="COL146" populated="true" UUID="9e5db7d5-2aae-4fd5-bf44-7ca3aad65d04" autoIncrement="false" defaultValue="" name="fk_rssfeedauthorsid" nullable="0" physicalName="fk_rssfeedauthorsid" precision="0" referenceCount="1" scale="0" source-column-ref="COL38" sourceDataTypeName="int8" type="4" userDefinedTypeUUID="63b011c7-c81f-4c75-8271-632b3c87f727" >
+     <remarks></remarks>
+    </column>
+    <column id="COL147" populated="true" UUID="8d0afed8-5889-4bed-9f4b-7907438e8deb" autoIncrement="false" defaultValue="" name="fk_rssfeedcategoriesid" nullable="0" physicalName="fk_rssfeedcategoriesid" precision="0" referenceCount="1" scale="0" source-column-ref="COL39" sourceDataTypeName="int8" type="4" userDefinedTypeUUID="63b011c7-c81f-4c75-8271-632b3c87f727" >
+     <remarks></remarks>
+    </column>
+    </folder>
+    <folder id="FOLTAB1393" populated="true" name="Exported Keys" physicalName="Exported Keys" type="3">
+    </folder>
+    <folder id="FOLTAB1392" populated="true" name="Imported Keys" physicalName="Imported Keys" type="2">
+    </folder>
+    <folder id="FOLTAB1394" populated="true" name="Indices" physicalName="Indices" type="4">
+    <index id="IDX148" populated="true" UUID="46faa89f-b44a-4dfa-9e67-6040f0795dbe" clustered="false" index-type="BTREE" name="rssfeeditem_pkey" physicalName="rssfeeditem_pkey" primaryKeyIndex="true" unique="true" >
+     <index-column id="IDC149" populated="true" UUID="d4ce979e-aa81-46f6-87da-1b11f572743b" ascendingOrDescending="UNSPECIFIED" column-ref="COL140" name="id" physicalName="id" />
+    </index>
+   </folder>
+  </table>
+  <table id="TAB150" populated="true" UUID="f135dd9a-f938-4fc0-8127-fe8e859c5b17" name="rssfeedname" objectType="TABLE" physicalName="rssfeedname" >
+   <remarks></remarks>
+   <folder id="FOLTAB1501" populated="true" name="Columns" physicalName="Columns" type="1">
+    <column id="COL151" populated="true" UUID="d0957670-fe51-420e-95bf-826b8ad50f7b" autoIncrement="true" defaultValue="nextval(&apos;rssfeedname_id_seq&apos;::regclass)" name="id" nullable="0" physicalName="id" precision="0" primaryKeySeq="0" referenceCount="1" scale="0" source-column-ref="COL43" sourceDataTypeName="serial" type="4" userDefinedTypeUUID="63b011c7-c81f-4c75-8271-632b3c87f727" >
+     <remarks></remarks>
+    </column>
+    <column id="COL152" populated="true" UUID="6b4da3d0-9789-4e21-9e25-dba86e831571" autoIncrement="false" defaultValue="" name="fk_nameid" nullable="0" physicalName="fk_nameid" precision="0" referenceCount="2" scale="0" source-column-ref="COL44" sourceDataTypeName="int8" type="4" userDefinedTypeUUID="63b011c7-c81f-4c75-8271-632b3c87f727" >
+     <remarks></remarks>
+    </column>
+    </folder>
+    <folder id="FOLTAB1503" populated="true" name="Exported Keys" physicalName="Exported Keys" type="3">
+    </folder>
+    <folder id="FOLTAB1502" populated="true" name="Imported Keys" physicalName="Imported Keys" type="2">
+    </folder>
+    <folder id="FOLTAB1504" populated="true" name="Indices" physicalName="Indices" type="4">
+    <index id="IDX153" populated="true" UUID="2795e426-df2f-4809-ae0f-3f40433343b8" clustered="false" index-type="BTREE" name="rssfeedname_pkey" physicalName="rssfeedname_pkey" primaryKeyIndex="true" unique="true" >
+     <index-column id="IDC154" populated="true" UUID="54351a71-3639-4480-b395-f38f09c0d37c" ascendingOrDescending="UNSPECIFIED" column-ref="COL151" name="id" physicalName="id" />
+    </index>
+   </folder>
+  </table>
+  <table id="TAB155" populated="true" UUID="430c3dd2-8422-4b7a-b6be-5ffae1c59da0" name="rssfeedtitle" objectType="TABLE" physicalName="rssfeedtitle" >
+   <remarks></remarks>
+   <folder id="FOLTAB1551" populated="true" name="Columns" physicalName="Columns" type="1">
+    <column id="COL156" populated="true" UUID="78d30f8d-7adf-43c6-8e65-5b3dde4b8fee" autoIncrement="true" defaultValue="nextval(&apos;rssfeedtitle_id_seq&apos;::regclass)" name="id" nullable="0" physicalName="id" precision="0" primaryKeySeq="0" referenceCount="1" scale="0" source-column-ref="COL53" sourceDataTypeName="serial" type="4" userDefinedTypeUUID="63b011c7-c81f-4c75-8271-632b3c87f727" >
+     <remarks></remarks>
+    </column>
+    <column id="COL157" populated="true" UUID="fa4e8e5b-213c-41d4-ad41-7400c346f842" autoIncrement="false" defaultValue="" name="fk_titleid" nullable="0" physicalName="fk_titleid" precision="0" referenceCount="2" scale="0" source-column-ref="COL54" sourceDataTypeName="int8" type="4" userDefinedTypeUUID="63b011c7-c81f-4c75-8271-632b3c87f727" >
+     <remarks></remarks>
+    </column>
+    </folder>
+    <folder id="FOLTAB1553" populated="true" name="Exported Keys" physicalName="Exported Keys" type="3">
+    </folder>
+    <folder id="FOLTAB1552" populated="true" name="Imported Keys" physicalName="Imported Keys" type="2">
+    </folder>
+    <folder id="FOLTAB1554" populated="true" name="Indices" physicalName="Indices" type="4">
+    <index id="IDX158" populated="true" UUID="2dfdb044-ac59-42bd-a323-984f0ede2d57" clustered="false" index-type="BTREE" name="rssfeedtitle_pkey" physicalName="rssfeedtitle_pkey" primaryKeyIndex="true" unique="true" >
+     <index-column id="IDC159" populated="true" UUID="74983865-65d3-4b73-a447-d26ba915d658" ascendingOrDescending="UNSPECIFIED" column-ref="COL156" name="id" physicalName="id" />
+    </index>
+   </folder>
+  </table>
+  <table id="TAB160" populated="true" UUID="593e3f94-22dd-4139-b4e5-7aa6517347f7" name="rssfeedurl" objectType="TABLE" physicalName="rssfeedurl" >
+   <remarks></remarks>
+   <folder id="FOLTAB1601" populated="true" name="Columns" physicalName="Columns" type="1">
+    <column id="COL161" populated="true" UUID="07155e81-adfd-4420-a384-af7346b62533" autoIncrement="true" defaultValue="nextval(&apos;rssfeedurl_id_seq&apos;::regclass)" name="id" nullable="0" physicalName="id" precision="0" primaryKeySeq="0" referenceCount="1" scale="0" source-column-ref="COL58" sourceDataTypeName="serial" type="4" userDefinedTypeUUID="63b011c7-c81f-4c75-8271-632b3c87f727" >
+     <remarks></remarks>
+    </column>
+    <column id="COL162" populated="true" UUID="5158da57-6510-4873-8db1-c2e40ead2d79" autoIncrement="false" defaultValue="" name="fk_urlid" nullable="0" physicalName="fk_urlid" precision="0" referenceCount="2" scale="0" source-column-ref="COL59" sourceDataTypeName="int8" type="4" userDefinedTypeUUID="63b011c7-c81f-4c75-8271-632b3c87f727" >
+     <remarks></remarks>
+    </column>
+    </folder>
+    <folder id="FOLTAB1603" populated="true" name="Exported Keys" physicalName="Exported Keys" type="3">
+    </folder>
+    <folder id="FOLTAB1602" populated="true" name="Imported Keys" physicalName="Imported Keys" type="2">
+    </folder>
+    <folder id="FOLTAB1604" populated="true" name="Indices" physicalName="Indices" type="4">
+    <index id="IDX163" populated="true" UUID="68036900-eb88-4ae1-b1b8-94a35cddaa63" clustered="false" index-type="BTREE" name="rssfeedurl_pkey" physicalName="rssfeedurl_pkey" primaryKeyIndex="true" unique="true" >
+     <index-column id="IDC164" populated="true" UUID="fb69a70a-4d54-4016-9cff-6df11f3966a8" ascendingOrDescending="UNSPECIFIED" column-ref="COL161" name="id" physicalName="id" />
+    </index>
+   </folder>
+  </table>
+  <table id="TAB165" populated="true" UUID="bd8e65e2-8e9c-4b78-8e3f-e89d660b3702" name="text" objectType="TABLE" physicalName="text" >
+   <remarks></remarks>
+   <folder id="FOLTAB1651" populated="true" name="Columns" physicalName="Columns" type="1">
+    <column id="COL166" populated="true" UUID="c7e68793-9fa2-489f-a416-3fb821e8348b" autoIncrement="true" defaultValue="nextval(&apos;text_id_seq&apos;::regclass)" name="id" nullable="0" physicalName="id" precision="0" primaryKeySeq="0" referenceCount="1" scale="0" source-column-ref="COL63" sourceDataTypeName="serial" type="4" userDefinedTypeUUID="63b011c7-c81f-4c75-8271-632b3c87f727" >
+     <remarks></remarks>
+    </column>
+    <column id="COL167" populated="true" UUID="b013ea8a-73e8-4f18-82b8-f6cb59935140" autoIncrement="false" defaultValue="" name="value" nullable="1" physicalName="value" precision="0" referenceCount="1" scale="0" source-column-ref="COL64" sourceDataTypeName="text" type="2005" userDefinedTypeUUID="9c22ed40-2868-4d9e-96ca-789234a53c8f" >
+     <remarks></remarks>
+    </column>
+    </folder>
+    <folder id="FOLTAB1653" populated="true" name="Exported Keys" physicalName="Exported Keys" type="3">
+    </folder>
+    <folder id="FOLTAB1652" populated="true" name="Imported Keys" physicalName="Imported Keys" type="2">
+    </folder>
+    <folder id="FOLTAB1654" populated="true" name="Indices" physicalName="Indices" type="4">
+    <index id="IDX168" populated="true" UUID="7fd35b5b-cc45-4967-9662-bdf42550b7ca" clustered="false" index-type="BTREE" name="text_pkey" physicalName="text_pkey" primaryKeyIndex="true" unique="true" >
+     <index-column id="IDC169" populated="true" UUID="99484812-0a84-47d6-bf6d-4d59908f6b1e" ascendingOrDescending="UNSPECIFIED" column-ref="COL166" name="id" physicalName="id" />
+    </index>
+   </folder>
+  </table>
+  <table id="TAB170" populated="true" UUID="d874eb55-7d86-486d-9d39-fc784a96e742" name="title" objectType="TABLE" physicalName="title" >
+   <remarks></remarks>
+   <folder id="FOLTAB1701" populated="true" name="Columns" physicalName="Columns" type="1">
+    <column id="COL171" populated="true" UUID="6fad5144-1fd6-42e0-927e-338c57a6f7f3" autoIncrement="true" defaultValue="nextval(&apos;title_id_seq&apos;::regclass)" name="id" nullable="0" physicalName="id" precision="0" primaryKeySeq="0" referenceCount="1" scale="0" source-column-ref="COL68" sourceDataTypeName="serial" type="4" userDefinedTypeUUID="63b011c7-c81f-4c75-8271-632b3c87f727" >
+     <remarks></remarks>
+    </column>
+    <column id="COL172" populated="true" UUID="1f19bca5-7093-4412-b886-7760ec55fe5f" autoIncrement="false" defaultValue="" name="fk_textid" nullable="0" physicalName="fk_textid" precision="0" referenceCount="2" scale="0" source-column-ref="COL69" sourceDataTypeName="int8" type="4" userDefinedTypeUUID="63b011c7-c81f-4c75-8271-632b3c87f727" >
+     <remarks></remarks>
+    </column>
+    </folder>
+    <folder id="FOLTAB1703" populated="true" name="Exported Keys" physicalName="Exported Keys" type="3">
+    </folder>
+    <folder id="FOLTAB1702" populated="true" name="Imported Keys" physicalName="Imported Keys" type="2">
+    </folder>
+    <folder id="FOLTAB1704" populated="true" name="Indices" physicalName="Indices" type="4">
+    <index id="IDX173" populated="true" UUID="58fed200-417e-44c4-9b5f-e9caaf08e89e" clustered="false" index-type="BTREE" name="title_pkey" physicalName="title_pkey" primaryKeyIndex="true" unique="true" >
+     <index-column id="IDC174" populated="true" UUID="99eefd46-0aee-4cd7-a650-a82c30f334c9" ascendingOrDescending="UNSPECIFIED" column-ref="COL171" name="id" physicalName="id" />
+    </index>
+   </folder>
+  </table>
+  <table id="TAB175" populated="true" UUID="559a8f9e-e5cf-4634-837c-142a4ed87b2c" name="url" objectType="TABLE" physicalName="url" >
+   <remarks></remarks>
+   <folder id="FOLTAB1751" populated="true" name="Columns" physicalName="Columns" type="1">
+    <column id="COL176" populated="true" UUID="16720aff-4e56-47cb-bdb7-dfc82494308d" autoIncrement="true" defaultValue="nextval(&apos;url_id_seq&apos;::regclass)" name="id" nullable="0" physicalName="id" precision="0" primaryKeySeq="0" referenceCount="1" scale="0" source-column-ref="COL73" sourceDataTypeName="serial" type="4" userDefinedTypeUUID="63b011c7-c81f-4c75-8271-632b3c87f727" >
+     <remarks></remarks>
+    </column>
+    <column id="COL177" populated="true" UUID="28ac4158-d43e-463c-9b61-6ff6435dfcea" autoIncrement="false" defaultValue="" name="value" nullable="1" physicalName="value" precision="0" referenceCount="1" scale="0" source-column-ref="COL74" sourceDataTypeName="text" type="2005" userDefinedTypeUUID="9c22ed40-2868-4d9e-96ca-789234a53c8f" >
+     <remarks></remarks>
+    </column>
+    </folder>
+    <folder id="FOLTAB1753" populated="true" name="Exported Keys" physicalName="Exported Keys" type="3">
+    </folder>
+    <folder id="FOLTAB1752" populated="true" name="Imported Keys" physicalName="Imported Keys" type="2">
+    </folder>
+    <folder id="FOLTAB1754" populated="true" name="Indices" physicalName="Indices" type="4">
+    <index id="IDX178" populated="true" UUID="9c702cfa-db91-4180-b3de-0425cb8222f4" clustered="false" index-type="BTREE" name="url_pkey" physicalName="url_pkey" primaryKeyIndex="true" unique="true" >
+     <index-column id="IDC179" populated="true" UUID="ddad9cf1-1ed6-4132-b37c-1cb7448ecde6" ascendingOrDescending="UNSPECIFIED" column-ref="COL176" name="id" physicalName="id" />
+    </index>
+   </folder>
+  </table>
+  <table id="TAB180" populated="true" UUID="c616d34c-15cf-44fb-a4d4-50cc14465fdb" name="rssfeeditemdisplayed" objectType="TABLE" physicalName="rssfeeditemdisplayed" >
+   <remarks></remarks>
+   <folder id="FOLTAB1801" populated="true" name="Columns" physicalName="Columns" type="1">
+    <column id="COL181" populated="true" UUID="fd09fafd-1f64-4ab6-b067-c047bf9facf6" autoIncrement="true" defaultValue="nextval(&apos;rssfeeditemdisplayed_id_seq&apos;::regclass)" name="id" nullable="0" physicalName="id" precision="0" primaryKeySeq="0" referenceCount="1" scale="0" source-column-ref="COL78" sourceDataTypeName="serial" type="4" userDefinedTypeUUID="63b011c7-c81f-4c75-8271-632b3c87f727" >
+     <remarks></remarks>
+    </column>
+    <column id="COL182" populated="true" UUID="d58f8a3d-4fdc-4369-8c78-c9ae3daa76d4" autoIncrement="false" defaultValue="" name="fk_rssfeedurlid" nullable="1" physicalName="fk_rssfeedurlid" precision="0" referenceCount="2" scale="0" source-column-ref="COL79" sourceDataTypeName="int8" type="-5" userDefinedTypeUUID="433cc8af-284d-4abb-8ef7-08ebcb34dbf1" >
+     <remarks></remarks>
+    </column>
+    </folder>
+    <folder id="FOLTAB1803" populated="true" name="Exported Keys" physicalName="Exported Keys" type="3">
+    </folder>
+    <folder id="FOLTAB1802" populated="true" name="Imported Keys" physicalName="Imported Keys" type="2">
+    </folder>
+    <folder id="FOLTAB1804" populated="true" name="Indices" physicalName="Indices" type="4">
+    <index id="IDX183" populated="true" UUID="fdb00df9-3cbd-400c-9fba-32cdd1f96ee7" clustered="false" index-type="BTREE" name="rssfeeditemdisplayed_pkey" physicalName="rssfeeditemdisplayed_pkey" primaryKeyIndex="true" unique="true" >
+     <index-column id="IDC184" populated="true" UUID="d1ae68a8-2b66-4ece-8744-c86d2a04ea9b" ascendingOrDescending="UNSPECIFIED" column-ref="COL181" name="id" physicalName="id" />
+    </index>
+   </folder>
+  </table>
+  <table id="TAB185" populated="true" UUID="0438b3bc-0435-4427-8c8f-06689b4c49a0" name="urlvisited" objectType="TABLE" physicalName="urlvisited" >
+   <remarks></remarks>
+   <folder id="FOLTAB1851" populated="true" name="Columns" physicalName="Columns" type="1">
+    <column id="COL186" populated="true" UUID="886583cd-36d6-43dc-a52f-6c5c6fc02e02" autoIncrement="true" defaultValue="nextval(&apos;urlvisited_id_seq&apos;::regclass)" name="id" nullable="0" physicalName="id" precision="0" primaryKeySeq="0" referenceCount="1" scale="0" source-column-ref="COL83" sourceDataTypeName="serial" type="4" userDefinedTypeUUID="63b011c7-c81f-4c75-8271-632b3c87f727" >
+     <remarks></remarks>
+    </column>
+    <column id="COL187" populated="true" UUID="45ef8fce-1b23-4a36-b013-d5c09773e75a" autoIncrement="false" defaultValue="" name="fk_urlid" nullable="1" physicalName="fk_urlid" precision="0" referenceCount="2" scale="0" source-column-ref="COL84" sourceDataTypeName="int8" type="-5" userDefinedTypeUUID="433cc8af-284d-4abb-8ef7-08ebcb34dbf1" >
+     <remarks></remarks>
+    </column>
+    </folder>
+    <folder id="FOLTAB1853" populated="true" name="Exported Keys" physicalName="Exported Keys" type="3">
+    </folder>
+    <folder id="FOLTAB1852" populated="true" name="Imported Keys" physicalName="Imported Keys" type="2">
+    </folder>
+    <folder id="FOLTAB1854" populated="true" name="Indices" physicalName="Indices" type="4">
+    <index id="IDX188" populated="true" UUID="418da9c8-7119-4b67-845e-ef183048b9a8" clustered="false" index-type="BTREE" name="urlvisited_pkey" physicalName="urlvisited_pkey" primaryKeyIndex="true" unique="true" >
+     <index-column id="IDC189" populated="true" UUID="6a674760-e1fe-44a4-8493-21709a5405a1" ascendingOrDescending="UNSPECIFIED" column-ref="COL186" name="id" physicalName="id" />
+    </index>
+   </folder>
+  </table>
+  <relationships>
+   <relationship id="REL190" populated="true" UUID="0293c98a-6dc6-4e0d-8b38-eb99aecee327" deferrability="7" deleteRule="3" fk-table-ref="TAB134" fkCardinality="7" identifying="false" name="rssfeeddescription_fk_descriptionid_fkey" physicalName="rssfeeddescription_fk_descriptionid_fkey" pk-table-ref="TAB124" pkCardinality="2" updateRule="3" >
+    <column-mapping id="CMP191" populated="true" UUID="f72c86c8-3659-41ce-87d7-f1b4d06caeae" fk-column-ref="COL136" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL125" />
+   </relationship>
+   <relationship id="REL192" populated="true" UUID="7c25e54a-9c46-43ce-9cf3-d7385733efaa" deferrability="7" deleteRule="3" fk-table-ref="TAB150" fkCardinality="7" identifying="false" name="rssfeedname_fk_nameid_fkey" physicalName="rssfeedname_fk_nameid_fkey" pk-table-ref="TAB129" pkCardinality="2" updateRule="3" >
+    <column-mapping id="CMP193" populated="true" UUID="10aef9f2-aa92-4482-9a03-3a0bf9c6233b" fk-column-ref="COL152" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL130" />
+   </relationship>
+   <relationship id="REL194" populated="true" UUID="d82a189a-622d-4f8f-b833-62c354daf20f" deferrability="7" deleteRule="3" fk-table-ref="TAB139" fkCardinality="7" identifying="false" name="rssfeeditem_fk_rssfeeddescriptionid_fkey" physicalName="rssfeeditem_fk_rssfeeddescriptionid_fkey" pk-table-ref="TAB134" pkCardinality="2" updateRule="3" >
+    <column-mapping id="CMP195" populated="true" UUID="b41152ce-577a-4498-a0f9-3ab875b65355" fk-column-ref="COL144" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL135" />
+   </relationship>
+   <relationship id="REL196" populated="true" UUID="a90dc7ed-e06a-4cba-847d-a88d5d3a8d65" deferrability="7" deleteRule="3" fk-table-ref="TAB139" fkCardinality="7" identifying="false" name="rssfeeditem_fk_rssfeednameid_fkey" physicalName="rssfeeditem_fk_rssfeednameid_fkey" pk-table-ref="TAB150" pkCardinality="2" updateRule="3" >
+    <column-mapping id="CMP197" populated="true" UUID="f559a823-8ef0-4e7a-81f7-2f6a2546d3f4" fk-column-ref="COL141" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL151" />
+   </relationship>
+   <relationship id="REL198" populated="true" UUID="d988837e-a893-48db-ab09-2c616dec0f90" deferrability="7" deleteRule="3" fk-table-ref="TAB139" fkCardinality="7" identifying="false" name="rssfeeditem_fk_rssfeedtitleid_fkey" physicalName="rssfeeditem_fk_rssfeedtitleid_fkey" pk-table-ref="TAB155" pkCardinality="2" updateRule="3" >
+    <column-mapping id="CMP199" populated="true" UUID="c1e7e798-31a1-4b22-b7a8-d75ccd52c86b" fk-column-ref="COL142" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL156" />
+   </relationship>
+   <relationship id="REL200" populated="true" UUID="9f300cff-5670-4de8-9b39-6005ea178a39" deferrability="7" deleteRule="3" fk-table-ref="TAB139" fkCardinality="7" identifying="false" name="rssfeeditem_fk_rssfeedurlid_fkey" physicalName="rssfeeditem_fk_rssfeedurlid_fkey" pk-table-ref="TAB160" pkCardinality="2" updateRule="3" >
+    <column-mapping id="CMP201" populated="true" UUID="4e899e62-5386-4191-8016-9da8f11dc34f" fk-column-ref="COL143" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL161" />
+   </relationship>
+   <relationship id="REL202" populated="true" UUID="c94ab311-afb1-419f-a2bc-ae10e8d8f6c1" deferrability="7" deleteRule="3" fk-table-ref="TAB180" fkCardinality="7" identifying="false" name="rssfeeditemdisplayed_fk_rssfeedurlid_fkey" physicalName="rssfeeditemdisplayed_fk_rssfeedurlid_fkey" pk-table-ref="TAB160" pkCardinality="2" updateRule="3" >
+    <column-mapping id="CMP203" populated="true" UUID="f9ac913d-bce4-4e1c-87d7-48f818f7052b" fk-column-ref="COL182" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL161" />
+   </relationship>
+   <relationship id="REL204" populated="true" UUID="335ceed2-0137-4b0c-b8ac-58ad82b50dc6" deferrability="7" deleteRule="3" fk-table-ref="TAB124" fkCardinality="7" identifying="false" name="description_fk_textid_fkey" physicalName="description_fk_textid_fkey" pk-table-ref="TAB165" pkCardinality="2" updateRule="3" >
+    <column-mapping id="CMP205" populated="true" UUID="3f9b44db-8083-4927-9109-19ac8cbdb666" fk-column-ref="COL126" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL166" />
+   </relationship>
+   <relationship id="REL206" populated="true" UUID="80ec98ff-ea2b-4d63-97af-8cd4eb70ec74" deferrability="7" deleteRule="3" fk-table-ref="TAB129" fkCardinality="7" identifying="false" name="name_fk_textid_fkey" physicalName="name_fk_textid_fkey" pk-table-ref="TAB165" pkCardinality="2" updateRule="3" >
+    <column-mapping id="CMP207" populated="true" UUID="84b14823-7d35-40d4-9de7-86903bf1911e" fk-column-ref="COL131" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL166" />
+   </relationship>
+   <relationship id="REL208" populated="true" UUID="aca7db05-c6ad-4ffa-882d-53ade194f682" deferrability="7" deleteRule="3" fk-table-ref="TAB170" fkCardinality="7" identifying="false" name="title_fk_textid_fkey" physicalName="title_fk_textid_fkey" pk-table-ref="TAB165" pkCardinality="2" updateRule="3" >
+    <column-mapping id="CMP209" populated="true" UUID="157c2c56-c838-4e64-b97c-f35865ff24fe" fk-column-ref="COL172" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL166" />
+   </relationship>
+   <relationship id="REL210" populated="true" UUID="7fcad776-aab8-438a-8857-de675dc2f779" deferrability="7" deleteRule="3" fk-table-ref="TAB155" fkCardinality="7" identifying="false" name="rssfeedtitle_fk_titleid_fkey" physicalName="rssfeedtitle_fk_titleid_fkey" pk-table-ref="TAB170" pkCardinality="2" updateRule="3" >
+    <column-mapping id="CMP211" populated="true" UUID="6710633c-9358-4f02-8396-ab5a28f7fbf0" fk-column-ref="COL157" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL171" />
+   </relationship>
+   <relationship id="REL212" populated="true" UUID="eb2dfe99-9ade-48ed-a17c-16a6a5fc3733" deferrability="7" deleteRule="3" fk-table-ref="TAB160" fkCardinality="7" identifying="false" name="rssfeedurl_fk_urlid_fkey" physicalName="rssfeedurl_fk_urlid_fkey" pk-table-ref="TAB175" pkCardinality="2" updateRule="3" >
+    <column-mapping id="CMP213" populated="true" UUID="9d98e96e-24ce-4113-8931-7999dcc8ab11" fk-column-ref="COL162" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL176" />
+   </relationship>
+   <relationship id="REL214" populated="true" UUID="9b687710-835d-4061-806a-a8dc415b390e" deferrability="7" deleteRule="3" fk-table-ref="TAB185" fkCardinality="7" identifying="false" name="urlvisited_fk_urlid_fkey" physicalName="urlvisited_fk_urlid_fkey" pk-table-ref="TAB175" pkCardinality="2" updateRule="3" >
+    <column-mapping id="CMP215" populated="true" UUID="dbd724e0-7c70-4325-b60a-7069b37cfcdc" fk-column-ref="COL187" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL176" />
+   </relationship>
+  </relationships>
+ </target-database>
+ <ddl-generator type="ca.sqlpower.architect.ddl.GenericDDLGenerator" allow-connection="true"> </ddl-generator>
+ <liquibase-settings useSeparateChangeSets="false" generateId="false" idStart="1"/>
+ <create-kettle-job-settings filePath="" jobName="" schemaName="" kettleJoinType="0" savingToFile="true" />
+ <play-pen zoom="1.0" viewportX="0" viewportY="0" relationship-style="rectilinear" names-displayLogicalNames="true" showPrimaryTag="true" showForeignTag="true" showAlternateTag="true" columnVisibility="ALL" relationshipLabelVisibility="true">
+  <table-pane table-ref="TAB124" x="405" y="300" bgColor="0xf0f0f0" fgColor="0x000000" rounded="false" dashed="false"/>
+  <table-pane table-ref="TAB129" x="116" y="300" bgColor="0xf0f0f0" fgColor="0x000000" rounded="false" dashed="false"/>
+  <table-pane table-ref="TAB134" x="416" y="420" bgColor="0xf0f0f0" fgColor="0x000000" rounded="false" dashed="false"/>
+  <table-pane table-ref="TAB139" x="433" y="530" bgColor="0xf0f0f0" fgColor="0x000000" rounded="false" dashed="false"/>
+  <table-pane table-ref="TAB150" x="119" y="421" bgColor="0xf0f0f0" fgColor="0x000000" rounded="false" dashed="false"/>
+  <table-pane table-ref="TAB155" x="270" y="421" bgColor="0xf0f0f0" fgColor="0x000000" rounded="false" dashed="false"/>
+  <table-pane table-ref="TAB160" x="621" y="424" bgColor="0xf0f0f0" fgColor="0x000000" rounded="false" dashed="false"/>
+  <table-pane table-ref="TAB165" x="456" y="164" bgColor="0xf0f0f0" fgColor="0x000000" rounded="false" dashed="false"/>
+  <table-pane table-ref="TAB170" x="260" y="301" bgColor="0xf0f0f0" fgColor="0x000000" rounded="false" dashed="false"/>
+  <table-pane table-ref="TAB175" x="612" y="165" bgColor="0xf0f0f0" fgColor="0x000000" rounded="false" dashed="false"/>
+  <table-pane table-ref="TAB180" x="699" y="518" bgColor="0xf0f0f0" fgColor="0x000000" rounded="false" dashed="false"/>
+  <table-pane table-ref="TAB185" x="709" y="268" bgColor="0xf0f0f0" fgColor="0x000000" rounded="false" dashed="false"/>
+  <table-link relationship-ref="REL190" pkConnection="0.5968992248062015" fkConnection="0.40993788819875776" rLineColor="0x000000" pkLabelText="" fkLabelText="" orientation="132"/>
+  <table-link relationship-ref="REL194" pkConnection="0.4906832298136646" fkConnection="0.3147208121827411" rLineColor="0x000000" pkLabelText="" fkLabelText="" orientation="132"/>
+  <table-link relationship-ref="REL196" pkConnection="0.6592592592592592" fkConnection="0.2765957446808511" rLineColor="0x000000" pkLabelText="" fkLabelText="" orientation="36"/>
+  <table-link relationship-ref="REL192" pkConnection="0.5426356589147286" fkConnection="0.48148148148148145" rLineColor="0x000000" pkLabelText="" fkLabelText="" orientation="132"/>
+  <table-link relationship-ref="REL198" pkConnection="0.6141732283464567" fkConnection="0.12690355329949238" rLineColor="0x000000" pkLabelText="" fkLabelText="" orientation="132"/>
+  <table-link relationship-ref="REL200" pkConnection="0.371900826446281" fkConnection="0.6453900709219859" rLineColor="0x000000" pkLabelText="" fkLabelText="" orientation="20"/>
+  <table-link relationship-ref="REL204" pkConnection="0.6595744680851063" fkConnection="0.8682170542635659" rLineColor="0x000000" pkLabelText="" fkLabelText="" orientation="132"/>
+  <table-link relationship-ref="REL206" pkConnection="0.49122807017543857" fkConnection="0.5503875968992248" rLineColor="0x000000" pkLabelText="" fkLabelText="" orientation="130"/>
+  <table-link relationship-ref="REL210" pkConnection="0.6666666666666666" fkConnection="0.5984251968503937" rLineColor="0x000000" pkLabelText="" fkLabelText="" orientation="132"/>
+  <table-link relationship-ref="REL208" pkConnection="0.24468085106382978" fkConnection="0.813953488372093" rLineColor="0x000000" pkLabelText="" fkLabelText="" orientation="132"/>
+  <table-link relationship-ref="REL212" pkConnection="0.5319148936170213" fkConnection="0.35537190082644626" rLineColor="0x000000" pkLabelText="" fkLabelText="" orientation="132"/>
+  <table-link relationship-ref="REL202" pkConnection="0.5614035087719298" fkConnection="0.581081081081081" rLineColor="0x000000" pkLabelText="" fkLabelText="" orientation="129"/>
+  <table-link relationship-ref="REL214" pkConnection="0.5614035087719298" fkConnection="0.3392857142857143" rLineColor="0x000000" pkLabelText="" fkLabelText="" orientation="129"/>
+ </play-pen>
+ <critic-manager>
+  <critic-grouping platformType="Generic" enabled="true">
+   <critic-settings class="ca.sqlpower.architect.ddl.critic.impl.PrimaryKeyCritic" severity="ERROR"/>
+   <critic-settings class="ca.sqlpower.architect.ddl.critic.impl.RelationshipMappingTypeCritic" severity="ERROR"/>
+   <critic-settings class="ca.sqlpower.architect.ddl.critic.impl.EmptyRelationshipCritic" severity="ERROR"/>
+   <critic-settings class="ca.sqlpower.architect.ddl.critic.impl.AlphaNumericNameCritic" severity="ERROR"/>
+   <critic-settings class="ca.sqlpower.architect.ddl.critic.impl.AlphaNumericSequenceNameCritic" severity="ERROR"/>
+   <critic-settings class="ca.sqlpower.architect.ddl.critic.impl.SetDefaultOnColumnWithNoDefaultCritic" severity="ERROR"/>
+   <critic-settings class="ca.sqlpower.architect.ddl.critic.impl.SetNullOnNonNullableColumnCritic" severity="ERROR"/>
+   <critic-settings class="ca.sqlpower.architect.ddl.critic.impl.DuplicateNameCritic" severity="ERROR"/>
+  </critic-grouping>
+  <critic-grouping platformType="DB2" enabled="true">
+   <critic-settings class="ca.sqlpower.architect.ddl.critic.impl.DB2UnsupportedFeaturesCritic" severity="ERROR"/>
+  </critic-grouping>
+  <critic-grouping platformType="H2" enabled="true">
+   <critic-settings class="ca.sqlpower.architect.ddl.critic.impl.H2UnsupportedFeaturesCritic" severity="ERROR"/>
+  </critic-grouping>
+  <critic-grouping platformType="HSQLDB" enabled="true">
+   <critic-settings class="ca.sqlpower.architect.ddl.critic.impl.HSQLDBUnsupportedFeaturesCritic" severity="ERROR"/>
+  </critic-grouping>
+  <critic-grouping platformType="MySQL" enabled="true">
+   <critic-settings class="ca.sqlpower.architect.ddl.critic.impl.MySQLCommentCritic" severity="ERROR"/>
+   <critic-settings class="ca.sqlpower.architect.ddl.critic.impl.MySQLReservedWordsCritic" severity="ERROR"/>
+   <critic-settings class="ca.sqlpower.architect.ddl.critic.impl.MySQLUnsupportedFeaturesCritic" severity="ERROR"/>
+  </critic-grouping>
+  <critic-grouping platformType="Oracle" enabled="true">
+   <critic-settings class="ca.sqlpower.architect.ddl.critic.impl.OraclePhysicalNameCritic" severity="ERROR"/>
+   <critic-settings class="ca.sqlpower.architect.ddl.critic.impl.OracleReservedWordsCritic" severity="ERROR"/>
+   <critic-settings class="ca.sqlpower.architect.ddl.critic.impl.OracleUnsupportedFeaturesCritic" severity="ERROR"/>
+  </critic-grouping>
+  <critic-grouping platformType="PostgreSQL" enabled="true">
+   <critic-settings class="ca.sqlpower.architect.ddl.critic.impl.PostgreSQLReservedWordsCritic" severity="ERROR"/>
+  </critic-grouping>
+  <critic-grouping platformType="SQL Server" enabled="true">
+   <critic-settings class="ca.sqlpower.architect.ddl.critic.impl.SQLServerUnsupportedFeaturesCritic" severity="ERROR"/>
+   <critic-settings class="ca.sqlpower.architect.ddl.critic.impl.SQLServerReservedWordsCritic" severity="ERROR"/>
+  </critic-grouping>
+  <critic-grouping platformType="SQL Server 2000" enabled="true">
+   <critic-settings class="ca.sqlpower.architect.ddl.critic.impl.SQLServer2000UnsupportedFeaturesCritic" severity="ERROR"/>
+  </critic-grouping>
+  <critic-grouping platformType="SQL Server 2005" enabled="true">
+   <critic-settings class="ca.sqlpower.architect.ddl.critic.impl.SQLServer2005UnsupportedFeaturesCritic" severity="ERROR"/>
+  </critic-grouping>
+ </critic-manager>
+ <profiles topNCount="10">
+  </profiles>
+  <olap>
+  </olap>
+  <olap-gui>
+  </olap-gui>
+</architect-project>
