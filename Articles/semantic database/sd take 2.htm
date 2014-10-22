@@ -1,0 +1,667 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>New Page 1</title>
+</head>
+
+<body>
+
+<p align="center">Semantic Database</p>
+<p align="center">Concept<br>
+Architecture<br>
+Implementation<br>
+<br>
+<i>“No word has a value that can be identified independently of what else is in 
+its vicinity.”</i></p>
+<h2>Introduction</h2>
+<p>This article discusses the concept of a semantic database in several 
+sections:</p>
+<ul>
+	<li>Discussion of the concept and need for a semantic database</li>
+	<li>Architectural Implications</li>
+	<li>Implementation on top of an RDBMS</li>
+	<li>Demonstration of a semantic database in action using the
+	<a href="http://www.higherorderprogramming.com/">HOPE</a> IDE</li>
+</ul>
+<p>As many of my readers will be used to by now, this is definitely going to be 
+a walk on the wild side.&nbsp; The concepts, architecture, and implementation 
+will hopefully challenge your preconceptions of what data is, and by corollary, 
+what a semantic database is.</p>
+<p>The reader will hopefully also forgive the rather deep foray into a 
+non-technical discussion regarding semantics, as it is important to convey the 
+necessary foundational information.</p>
+<h3>What is a Semantics?</h3>
+<p>Semantics is an emerging field of research and development in information 
+science, however, the concept has been around for a lot longer than computers!&nbsp;
+To begin with, semantics is the branch of linguistics and logic concerned with 
+meaning.&nbsp; This can be broken down into three major categories:</p>
+<ul>
+	<li>Formal Semantics<ul>
+		<li>Logical aspects of meaning:<ul>
+			<li>Sense</li>
+			<li>Reference</li>
+			<li>Implication</li>
+			<li>Logical form</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+	<li>Lexical Semantics<ul>
+		<li>Word meaning</li>
+		<li>Word relations</li>
+	</ul>
+	</li>
+	<li>Conceptual Semantics<ul>
+		<li>Cognitive structure of meaning</li>
+	</ul>
+	</li>
+</ul>
+<p>Or, to put it a bit more concretely:</p>
+<ul>
+	<li>Semantics is the study of meaning</li>
+	<li>It focuses on the relationship between:<ul>
+		<li>Signifiers: words, phrases, signs and symbols</li>
+		<li>
+		
+		<p>Denotation: what they stand for</li>
+	</ul>
+	</li>
+</ul>
+<p align="center"><img border="0" src="key-small.jpg" width="94" height="33"></p>
+<p><i>“No word has a value that can be identified independently of what else 
+is in its vicinity.”</i> <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+-- (de Saussure, Ferdinand, 1916, The Course of General Linguistics)</p>
+<h3>What is the Typical Concept of a Semantic Database?</h3>
+<p>First off, the term &quot;semantic database&quot; is classically used in conjunction 
+with the phrase &quot;semantic data model<sup>1</sup>&quot;.&nbsp; And when you see the 
+phrase &quot;semantic data&quot;, this usually implies some association with the Semantic 
+Web<sup>2</sup>, the Web Ontology Language (OWL)<sup>3</sup>, and the Resource 
+Description Format (RDF)<sup>4</sup>.</p>
+<h4>The Semantic Web</h4>
+<p><i>&quot;The semantic web is a vision of information that can be readily 
+interpreted by machines, so machines can perform more of the tedious work 
+involved in finding, combining, and acting upon information on the web.&nbsp; 
+The Semantic Web, as originally envisioned, is a system that enables machines to 
+&quot;understand&quot; and respond to complex human requests based on their meaning. Such 
+an &quot;understanding&quot; requires that the relevant information sources be 
+semantically structured.&quot;</i><sup>2</sup></p>
+<h4>OWL and RDF</h4>
+<p>Unfortunately, the original concept and phrase, coined by Tim Berners-Lee 
+(also the inventor of the World Wide Web) has been somewhat hijacked by OWL and 
+RDF.&nbsp; OWL and RDF primarily focus on what is known as &quot;triples&quot; -- 
+subject-predicate-object expressions, where &quot;[t]he subject denotes the resource, 
+and the predicate denotes traits or aspects of the resource and expresses a 
+relationship between the subject and the object.&quot;<sup>4</sup>&nbsp; The roots of 
+this can be traced to the 1960's, when &quot;Richard Montague proposed a system for 
+defining semantic entries in the lexicon in terms of the lambda calculus. In 
+these terms, the syntactic parse of the sentence John ate every bagel would 
+consist of a subject (John) and a predicate (ate every bagel); Montague 
+demonstrated that the meaning of the sentence altogether could be decomposed 
+into the meanings of its parts and in relatively few rules of combination.&quot;<sup>8</sup> </p>
+<p>However, this correlates very poorly with the pure concept of semantics, 
+especially with regards to relationships and structure.&nbsp; While a 
+subject-predicate-object expression defines the relationship between the subject 
+and object, it in no way defines the relationship <i>between</i> subjects, and
+<i>between</i> objects.&nbsp; Furthermore, an S-P-O also fails to express the <i>composition</i>, 
+or <i>structure</i> of an object or subject, which, from a semantic perspective, 
+is critical.</p>
+<p>Obviously one can, with little thought, create a database of 
+subject-predicate-object triples.&nbsp; One can then even query the database for 
+kinds of relationships (via their predicates) that subject have to all objects 
+in the domain (or objects and their subjects.)&nbsp; The problem is, this 
+approach leaves one open to the challenges of the semantic web: &quot;vastness, 
+vagueness, uncertainty, inconsistency, and deceit.&quot;<sup>2</sup> Why?&nbsp; 
+Because triples do not actually convey much meaning in a machine usable sense 
+and are therefore prone to the aforementioned issues.&nbsp; 
+Ironically, while a triple includes the relationship between subject and object, 
+it does not say anything about the structure of the subject or the object (or 
+even the predicate, which could have its own structure as well.)&nbsp; Take, for 
+example, the issue of underspecification:</p>
+<p><i>&quot;...meanings are not complete without some elements of context. To take an 
+example of one word, red, its meaning in a phrase such as red book is similar to 
+many other usages, and can be viewed as compositional.[6] However, the colours 
+implied in phrases such as red wine (very dark), and red hair (coppery), or red 
+soil, or red skin are very different. Indeed, these colours by themselves would 
+not be called red by native speakers. These instances are contrastive, so red 
+wine is so called only in comparison with the other kind of wine (which also is 
+not white for the same reasons).&quot;</i><sup>6</sup></p>
+<p>If the full structure is persisted along with the data (&quot;red&quot;):</p>
+<p><img border="0" src="colors.png" width="589" height="152"></p>
+<p>and that structure is retrieved when querying for, say &quot;things that are red&quot;, 
+then its meaning is not ambiguous.&nbsp; However, we note that the parent 
+elements are valueless -- they are only placeholders referencing the child 
+element &quot;Color.&quot;</p>
+<h3>What is the Correct Concept of a Semantic Database?</h3>
+<p>Like Alice in Wonderland, we have to go down a few rabbit holes to figure 
+this out.&nbsp; </p>
+<p align="center"><img border="0" src="key-small.jpg" width="94" height="33"></p>
+<p><i>&quot;Many sites are generated from structured data, which is often stored in 
+databases. When this data is formatted into HTML, it becomes very difficult to 
+recover the original structured data. Many applications, especially search 
+engines, can benefit greatly from direct access to this structured data.&quot;</i><sup>5</sup></p>
+<p>In other words, by exposing the semantics of the data, machines can then 
+utilize the information in more interesting ways than just storing it or 
+displaying it.&nbsp; A classic example is a website that contains a phone 
+number.&nbsp; If the phone number is has a semantic tag, then your smart phone 
+can easily offer it up as number to dial.&nbsp; Contrast this with the hoops an 
+application has to go through to scan a page and find text that matches any 
+number of styles of presenting a phone number, validating that it is actually a 
+number rather than a math expression that looks like &quot;619-555-1212&quot;, etc.</p>
+<h4>Structured Data</h4>
+<p>In the above quote, you'll notice the phrase &quot;<i>recover the original 
+structured data.</i>&quot;&nbsp; This implies that the data has structure -- it's not 
+just a field, but the fields mean something and can have sub-structures -- in 
+other words, the structured data is a tree.</p>
+<p>Here's a couple examples:</p>
+<p align="center"><img border="0" src="latlon.png" width="188" height="244">&nbsp;&nbsp;&nbsp;&nbsp;
+<img border="0" src="sphone.png" width="432" height="169" style="margin-bottom:40px"></p>
+<p>Next, we need to understand the concept of &quot;ontology&quot;, a term that is often 
+involved in discussions regarding semantics.</p>
+<h4>Ontology</h4>
+<p align="center"><img border="0" src="key-small.jpg" width="94" height="33"></p>
+<p><i>&quot;An ontology is an explicit specification of a conceptualization.&quot;<br>
+</i>&nbsp; -- Gruber, Tom (1993); &quot;A Translation Approach to Portable Ontology 
+Specifications&quot;, in Knowledge Acquisition, 5: 199-199</p>
+<p>Earlier I pointed out that the S-P-O triple does not define the relationship <i>
+between</i> subjects, and
+<i>between</i> objects.&nbsp; This is where ontology comes in.&nbsp; While in 
+the abstract, &quot;ontology&quot; means &quot;the branch of metaphysics dealing with the 
+nature of being,&quot; in information science,<i> &quot;an ontology is defined as a formal, explicit specification of a shared 
+conceptualization. It provides a common vocabulary to denote the types, 
+properties and interrelationships of concepts in a domain.&quot;</i><sup>9</sup><i> </i>And notice:<i> &quot;Ontologies are the structural frameworks for organizing information and 
+are used in ...the <u>Semantic Web</u>...&quot;&nbsp; </i></p>
+<p>Semantics are useful for understanding the structure of a &quot;thing&quot;, however we 
+need ontologies to relate things with other things.&nbsp; Therefore, one would expect that 
+a semantic database be relational -- it should be able to relate structured data 
+into ontologies.</p>
+<p>Here is an example instance of the Friend of a Friend<sup>10</sup> ontology (from the
+W3C SKOS Core Guide<sup>11</sup>):</p>
+<p align="center"><img border="0" src="foaf.png" width="613" height="506"></p>
+<p>The SKOS Core Vocabulary defines two properties of a semantic relationship:</p>
+<ol>
+	<li>The relationship between the two structures defines one as being 
+	&quot;broader&quot; or &quot;narrower&quot; with relation to the other</li>
+	<li>An associative relationship, in which the two structures are &quot;related&quot; 
+</li>
+</ol>
+<p>In the world of the semantic web, and RDF Schema (RDFS)<sup>12</sup> is used 
+to describe ontologies &quot;...otherwise called RDF vocabularies, intended to 
+structure RDF resources. These resources can be saved in a triplestore to reach 
+them with the query language SPARQL.&quot;<sup>12</sup>&nbsp; For example: &quot;A typical 
+example of an rdfs:Class is foaf:Person in the Friend of a Friend (FOAF) 
+vocabulary. An instance of foaf:Person is a resource that is linked to the class 
+foaf:Person using the rdf:type property, such as in the following formal 
+expression of the natural language sentence : 'John is a Person'.&quot;<sup>12</sup></p>
+<p align="center"><img border="0" src="key-small.jpg" width="94" height="33"></p>
+<p>We see two concepts emerging:</p>
+<ol>
+	<li>The relationship between data structures is itself a hierarchical 
+	structure</li>
+<li>A semantic structure can be associated with another structure to create 
+ontologies</li>
+</ol>
+<p>This guides us in understanding what a semantic database should provide.</p>
+<h3>Semantic Database </h3>
+<p>In a semantic database (going back to the very early definition of 
+semantics), the schema:</p>
+<ol>
+	<li>describes denotations</li>
+	<li>describes relationships between denotations</li>
+</ol>
+<p>The job of the database then is to associate signifiers (values) to those 
+denotations.&nbsp; Therefore:</p>
+<ol>
+	<li>Structure resolves to concrete properties to which instance values can 
+	be associated</li>
+</ol>
+<p align="center"><img border="0" src="key-small.jpg" width="94" height="33"></p>
+<p>Importantly though, <i>the structure is instantiated with each instance.</i>&nbsp; 
+This allows the structure to be retrieved along with the value(s).&nbsp; We will 
+see what this means (and why what I'm implementing is going to seem so 
+controversial) later.</p>
+<h3>Why not use a Relational Database?</h3>
+<p>In the implementation section of this article, I'll be working a lot with RSS 
+feeds, so let's take a look at a typical implementation in an RDBMS for 
+persisting an RSS Feed and its entries.&nbsp; First off, the schema probably 
+looks something like this:</p>
+<table border="0" width="100%">
+	<tr>
+		<td>
+		<ul>
+			<li>RSS_Feed_Name<ul>
+				<li>Name : text</li>
+			</ul>
+			</li>
+			<li>RSS_Feed_Item<ul>
+				<li>FK_RSS_Feed_Name</li>
+				<li>Title : text</li>
+				<li>Description: text</li>
+				<li>PubDate : date</li>
+				<li>Url : text</li>
+			</ul>
+			</li>
+			<li>RSS_UI<ul>
+				<li>FK_RSS_Feed_Item</li>
+				<li>Visited : bool</li>
+				<li>Displayed : bool</li>
+			</ul>
+			</li>
+		</ul>
+		</td>
+		<td>
+		<p align="center">
+		<img border="0" src="rdbms1.png" width="324" height="132"></td>
+	</tr>
+</table>
+<p>(Here the RSS_UI is intended to persist whether a feed item has been 
+displayed previously in a list or whether it is a new feed, and whether the user 
+actually visited the URL associated with the feed item.)</p>
+<p>Notice how the field names are high level abstractions.&nbsp; Given the field 
+name, one has no idea whether the &quot;Title&quot; refers to an RSS feed, a book, or a 
+the title given to a person.&nbsp; Adding &quot;RSS_Feed_&quot; to the field names is 
+cumbersome and non-traditional.&nbsp; Furthermore, when we perform the query 
+&quot;select * from RSS_Feed_Item&quot;, we get a collection of rows in the order that the 
+fields were described in the schema.&nbsp; However, these are just values -- we 
+all too often forget that the data returned has actually no semantic meaning, it 
+is the UI that labels the columns for us so we know what the data is.&nbsp; </p>
+<p align="center"><img border="0" src="key-small.jpg" width="94" height="33"></p>
+<p>Even more importantly, in an RDBMS, relationships are driven by:</p>
+<ul>
+	<li>Cardinality</li>
+	<li>Normalization rules</li>
+	<li>&quot;Logical&quot; groupings of fields</li>
+</ul>
+<p>This process can be so automatic when we create a schema that we are hardly 
+consciously aware that we are doing it.&nbsp; The result are associations that 
+are not semantic but rather abstracted, un-natural structural relationships, 
+(ideally) restricted to established foreign key declarations.</p>
+<p>However, as we will see, we can implement a semantic database on top of an 
+RDBMS.</p>
+<h3>Why not use a NoSQL Database?</h3>
+<p>NoSQL databases are document-oriented and they do not support relationships 
+between documents such that one can construct a query that consists of joins 
+that is handled by the database engine.&nbsp; Instead, in a NoSQL database, 
+joins are resolved by the client, which requires potentially numerous round 
+trips to the database to acquire all the information and then build it into a 
+coherent structure.&nbsp; This makes NoSQL database completely unsuitable for 
+the task at hand.</p>
+<h3>Why not use a Graph Database?</h3>
+<p>Graph databases do seem to be a possibility and will be investigated further.&nbsp; 
+If we read about Neo4j:</p>
+<p>From Neo4j's website:</p>
+<p><i>&quot;...a graph is just a collection of vertices and edges—or, in less 
+intimidating language,a set of nodes and the relationships that connect them. 
+Graphs represent entities as nodes and the ways in which those entities relate 
+to the world as relationships.&quot; -</i> Robinson, Ian, &amp; Webber, Jim, &amp; Eifrem, 
+Emil (2013). <i>Graph Databases.</i> O'Reilly, pg 1 (free download
+<a href="http://www.graphdatabases.com/">here</a>.)</p>
+<p>Importantly, with regards to traditional relational databases:</p>
+<p><i>&quot;...relational databases were initially designed to codify paper forms and 
+tabular structures—something they do exceedingly well—they struggle when 
+attempting to model the ad hoc, exceptional relationships that crop up in the 
+real world. Ironically, relational databases deal poorly with relationships.&nbsp; 
+Relationships do exist in the vernacular of relational databases, but only as a 
+means of joining tables. In our discussion of connected data in the previous 
+chapter, we mentioned we often need to disambiguate the semantics of the 
+relationships that connect entities, as well as qualify their weight or 
+strength. Relational relations do nothing of the sort.&quot; </i>- (ibid, pg 11)</p>
+<p>And:</p>
+<p><i>&quot;Relationships are first-class citizens of the graph data model, unlike 
+other database management systems, which require us to infer connections between 
+entities using contrived properties such as foreign keys, or out-of-band 
+processing like map-reduce. By assembling the simple abstractions of nodes and 
+relationships into connected structures, graph databases enable us to build 
+arbitrarily sophisticated models that map closely to our problem domain. The 
+resulting models are simpler and at the same time more expressive than those 
+produced using traditional relational databases and the other NOSQL stores.&quot;</i> 
+- (ibid, pg 6)</p>
+<p>However, it would appear that a typical graph database focuses on the ontology of information 
+-- it has no 
+concept of the actual structures that define the properties of a node.&nbsp; 
+This is a result of the concept of &quot;facts&quot;:&nbsp; <i>&quot;When two or more domain 
+entities interact for a period of time, a fact emerges. We represent these facts 
+as separate nodes, with connections to each of the entities engaged in that 
+fact.&quot;</i> - (ibid, pg 66)</p>
+<p>We can see this in the examples given for creating a graph database.&nbsp; 
+From pg 41:</p>
+<p align="center"><img border="0" src="graphdb1.png" width="337" height="137"></p>
+<p>We have &quot;fact&quot; nodes:</p>
+<ul>
+	<li>William Shakespeare</li>
+<li>The Tempest</li>
+	<li>Juilias Ceasar</li>
+</ul>
+<p>This information lacks semantic context, for example indicating that 
+&quot;William Shakespeare&quot; is a playwright or that &quot;The Tempest&quot; is a play.&nbsp; 
+Interestingly, this semantic information becomes an arbitrary label in the
+Cypher<sup>14</sup> query 
+fragment <code>bard=node:author(lastname='Shakespeare')</code>.&nbsp; From the 
+query we can determine that William Shakespeare is a bard, however, this 
+information is completely lost in the graph database!&nbsp; </p>
+<p>To put it another way, if we follow the &quot;fact&quot; best practice, it becomes 
+impossible to query a graph database for data by specifying a semantic context.&nbsp; 
+I cannot ask the graph database &quot;show me all the people that are bards&quot; unless I 
+explicitly create a node called &quot;bard&quot; with a relationship to William 
+Shakespeare.&nbsp; This problem stems partially from the fact that a graph 
+database represents a specific domain: <i>&quot;By assembling the simple abstractions 
+of nodes and relationships into connected structures, graph databases enable us 
+to build arbitrarily sophisticated models that map closely to our problem 
+domain.&quot;</i> - (ibid, pg 6).&nbsp; At best, we can say a node with properties &quot;firstname&quot; 
+and &quot;lastname&quot; represents a &quot;person&quot;, but we can say nothing else about that 
+person, such as distinguishing the person from the playwright, the producer, or 
+the actor, <i>except</i> through a relationship with another concrete node, 
+where the relationship provides further semantic meaning, such as &quot;wrote_play&quot;, 
+or &quot;produced_play&quot; or &quot;acted_in&quot;.&nbsp; </p>
+<p>Therefore, with regards to semantic structure, a graph database, while an 
+excellent tool for creating ontologies of concrete entities, is not appropriate 
+for abstract structural elements that have semantic significance but no values 
+(which would have to be represented as nodes without properties), nor does a 
+graph database properly semanticize property values, except as &quot;field names&quot; 
+which, like traditional databases, the semantics are not accessible as part of 
+the data.</p>
+<p>Nonetheless, there is much guidance in the literature on graph databases that 
+is valuable when designing a semantic database, and that is:</p>
+<p align="center"><img border="0" src="key-small.jpg" width="94" height="33"></p>
+<p><i>There is relevant meaning in the connections between semantic structures 
+that comprise the ontology.</i> </p>
+<h2>A Semantic Database Architecture</h2>
+<p>Now that we hopefully have some foundational understanding of semantics and 
+ontologies, we can begin to architect a semantic database.&nbsp; Of primary 
+importance is that a semantic database defines the natural structure of a 
+concept.&nbsp; Thus, using our RSS_Feed_Item example:</p>
+<ul>
+	<li>RSS_Feed_Item<ul>
+		<li>RSS_Feed_Name<ul>
+			<li>Name<ul>
+				<li>Text<ul>
+					<li>Value : text</li>
+				</ul>
+			</li>
+			</ul>
+		</li>
+		</ul>
+	</li>
+	<li>RSS_Feed_Title<ul>
+		<li>Title<ul>
+				<li>Text<ul>
+					<li>Value : text</li>
+				</ul>
+			</li>
+			</ul>
+		</li>
+		</ul>
+	</li>
+	<li>RSS_Feed_Description<ul>
+		<li>Description<ul>
+				<li>Text<ul>
+					<li>Value : text</li>
+				</ul>
+			</li>
+			</ul>
+		</li>
+		</ul>
+	</li>
+	<li>RSS_Feed_PubDate<ul>
+		<li>Publication_Date<ul>
+			<li>Date<ul>
+					<li>Value : date</li>
+				</ul>
+			</li>
+			</ul>
+		</li>
+		</ul>
+	</li>
+	<li>RSS_Feed_Url<ul>
+		<li>URL<ul>
+				<li>Text (see comment below)<ul>
+					<li>Value : text</li>
+				</ul>
+			</li>
+			</ul>
+		</li>
+		</ul>
+	</li>
+	</ul>
+</li>
+</ul>
+<p>It certainly can also be argued that &quot;URL&quot; should be broken down into scheme 
+name, domain name and resource path, but we'll keep it simple for now.</p>
+<p align="center"><img border="0" src="key-small.jpg" width="94" height="33"></p>
+<p align="left">The first thing to note with this structure is that queries can 
+queries can be made at any level in the structure with varying degrees of 
+meaning loss.&nbsp; For example, the query “select URL from RSS_Feed_Url” has 
+some contextual loss, as we still know that the values are associated with a URL 
+structure, but URL is no longer identified as being an RSS Feed URL.&nbsp; A 
+query like “select Value from URL” has complete contextual loss -- all we get 
+back are a collection of strings.&nbsp; Incidentally, this is the equivalent of 
+querying an RDBMS “select URL from RSS_Feed_Item”.&nbsp; In the semantic 
+database implementation that I propose here, the query &quot;select Value from URL&quot; 
+would actually not be possible because Value is a native type, not a semantic 
+type.</p>
+<h3 align="left">Using and RDMS to host a Semantic Database</h3>
+<p align="left">However, a semantic database can be built on top of an RDBMS.&nbsp; 
+We can leverage useful features of an RDBMS:</p>
+<ul>
+	<li>
+	<p align="left">foreign key constraints</p></li>
+	<li>
+	<p align="left">server-side joins</p></li>
+	<li>
+	<p align="left">unique key constraints</p></li>
+	<li>
+	<p align="left">unique key indexing</p></li>
+</ul>
+<p align="left">When hosted by an RDBMS, we see the following artificts:</p>
+<ul>
+	<li>
+	<p align="left">Tables represent structure</p></li>
+	<li>
+	<p align="left">Foreign keys describe sub-structures</p></li>
+	<li>
+	<p align="left">Joins are used to join together structures</p></li>
+	<li>
+	<p align="left">In a left join, all-null native types for a semantic type takes on 
+	the specific meaning that there 
+	is no structure instance</p></li>
+</ul>
+<p align="center"><img border="0" src="key-small.jpg" width="94" height="33"></p>
+<p>Contrary to an RDBMS, where relationships are driven by cardinality, 
+normalization, and logical structuring of fields, in a semantic database, 
+relationships are driven by the semantic structure itself.&nbsp; This, by its 
+very nature, allows a semantic database to be more adaptive to new structures 
+that encapsulate new meaning.</p>
+<h3>Unfolding a Semantic Database Structure</h3>
+<p>Using the RSS feed example, an unfolded structure of tables in a database 
+would look something like this:</p>
+<p><img border="0" src="struct1.png" width="798" height="324"><br>
+<br>
+Notice that there are only two tables with actual values (Text and URL).&nbsp; 
+Everything else is &quot;substrate&quot; - it's there only for its structural relevance 
+and consists only of foreign keys pointing the next layer of generalized 
+concept.&nbsp; While most structures have 1:1 relationships with their 
+generalization, we see that RSS_Feed_Item is a composite of four distinct 
+structures (this is its specific ontology.)&nbsp; In object oriented terms, we 
+can clearly see the &quot;is a kind of&quot; and &quot;has a&quot; relationships.</p>
+<p>The typical structure however is illustrated more cleanly as a tree:</p>
+<p><img border="0" src="struct2.png" width="687" height="354"></p>
+<h3>Implementation in an RDBMS</h3>
+<p>This is what the schema looks like in an RDBMS (and this is where I really 
+start getting the &quot;you're crazy&quot; looks):</p>
+<p><img border="0" src="sdmodel-subset.png" width="744" height="526"><br>
+Two things stand out:</p>
+<table border="0" width="100%">
+	<tr>
+		<td width="302">
+		<img border="0" src="rssfeeditem.png" width="199" height="142"></td>
+		<td>The “deepest” semantic types are almost always composed just of 
+		foreign keys.</td>
+	</tr>
+	<tr>
+		<td width="302"><img border="0" src="nt1.png" width="251" height="57"></td>
+		<td>Tables with native types are very “thin”, having very few fields.</td>
+	</tr>
+</table>
+<p align="center"><img border="0" src="key-small.jpg" width="94" height="33"></p>
+<p align="left">What's interesting about this implementation is that we can now 
+ask some potentially useful questions:</p>
+<ul>
+	<li>
+	<p align="left">What are all the URL’s in the database?</p></li>
+	<li>
+	<p align="left">What are the URL’s we have visited?</p></li>
+	<li>
+	<p align="left">What URL’s are associated with feeds?</p></li>
+	<li>
+	<p align="left">What are all the values of “Title”?</p></li>
+	<li>
+	<p align="left">What are all the feed names?</p></li>
+</ul>
+<p>These are not questions that we can necessarily ask of an RDBMS, especially 
+when a more general concept like &quot;URL&quot; is embedded as a field across multiple 
+tables: RSS Feed URL's, browser bookmark URL's, document embedded URL's, etc.&nbsp; 
+Even a well-architected database will have its limitations.</p>
+<p>Furthermore, because of how the more general semantic types are joined to 
+contextual types, we can ask:</p>
+<ul>
+	<li>Which feed items have I visited?</li>
+	<li>Which feed items are bookmarked (I did not show the bookmark semantic 
+	types in the diagram)</li>
+</ul>
+<p>Even more importantly (as an example), when we visit a page in a browser, we 
+can use the same more generalized URL type with a specialized &quot;browser visited&quot; 
+type, allowing us to ask specifically:</p>
+<ul>
+	<li>What are all the feed items I've visited?</li>
+	<li>What are all the web pages I've visited directly in my browser?</li>
+	<li>What are all the URL's in total that I've visited?</li>
+</ul>
+<p>Hopeful this demonstrates how a semantic database can adapt to new structures 
+that then creates new contexts that can then be queried in new ways.&nbsp; </p>
+<h3>Some Benefits of a Semantic Database</h3>
+<ul>
+	<li>By preserving semantic structure, we can query the database at different 
+	levels of semantic meaning, from very specific to very general.<ul>
+		<li>For example, the semantic type “Title” is very general but allows us 
+		to ask “what are all the values of things having the meaning “Title”?</li>
+	</ul>
+	</li>
+	<li>By inspecting the relationships, we can ask “what are the things having 
+	“Title” in their meaning?</li>
+	<li>When we query the database, we don’t just get back a list of records – 
+	we get back fully “rehydrated” semantic types.</li>
+	<li>In actual implementation, the need for an ORM layer is eliminated:<ul>
+		<li>We pass in semantic structures as actual C# objects</li>
+		<li>We get back semantic structures as actual C# objects</li>
+	</ul>
+	</li>
+</ul>
+<h3>Some Drawbacks of a Semantic Database</h3>
+<ul>
+	<li>Tables and their fields are organized by hierarchical rather than 
+	logical structure:<ul>
+		<li>We usually think about organizing information into logical 
+		associations and relationships</li>
+		<li>Hierarchical organization creates many more tables<ul>
+			<li>The number of joins in a query can degrade performance.</li>
+			<li>Multiple insert operations are required to create the semantic 
+			type’s hierarchy. </li>
+		</ul>
+		</li>
+		<li>Designing hierarchies isn’t easy<ul>
+			<li>We need to learn how to think about multiple levels of 
+			abstraction.</li>
+			<li>We need to think carefully about unique native types and unique 
+			semantic types.</li>
+		</ul>
+		</li>
+		<li>Writing SQL queries by hand is painful:<ul>
+			<li>lots of joins, often with multiple references to the native type 
+			tables making it hard to keep track of which FK join is associated 
+			with what meaning-value.</li>
+		</ul>
+		</li>
+		<li>Writing insert statements by hand is even more painful:<ul>
+			<li>multiple inserts from the bottom up, requiring the ID of the 
+			child table to populate the foreign key in the parent table.</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+</ul>
+<h3>Addressing Some of the Drawbacks</h3>
+<p>A Semantic Database engine can address some of these drawbacks:</p>
+<ul>
+	<li>Automating SQL query generation<ul>
+		<li>Hides the hierarchy and table joins</li>
+	</ul>
+	</li>
+	<li>Automating SQL inserts<ul>
+		<li>Managing all the necessary FK ID’s</li>
+	</ul>
+	</li>
+	<li>Improving Performance<ul>
+		<li>Caching queries so the engine doesn’t have to re-create the SQL 
+		statement every time.</li>
+		<li>Use prepared statements so the server isn’t parsing and analyzing 
+		the query statement every time it’s used.</li>
+	</ul>
+	</li>
+</ul>
+<p>&nbsp;</p>
+<p><br>
+&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<h2>References</h2>
+<p>1 - Semantic Data -
+<a href="http://en.wikipedia.org/wiki/Semantic_data_model">
+http://en.wikipedia.org/wiki/Semantic_data_model</a><br>
+2 - Semantic Web - <a href="http://en.wikipedia.org/wiki/Semantic_Web">
+http://en.wikipedia.org/wiki/Semantic_Web</a> <br>
+3 - Web Ontology Language -
+<a href="http://en.wikipedia.org/wiki/Web_Ontology_Language">
+http://en.wikipedia.org/wiki/Web_Ontology_Language</a><br>
+4 - Resource Description Format -
+<a href="http://en.wikipedia.org/wiki/Resource_Description_Framework">
+http://en.wikipedia.org/wiki/Resource_Description_Framework</a><br>
+5 - schema.org -
+<a href="http://www.schema.org/">schema.org</a><br>
+6 - Semantics - <a href="http://en.wikipedia.org/wiki/Semantics">
+http://en.wikipedia.org/wiki/Semantics</a><br>
+7 - Tim Berners-Lee - <a href="http://en.wikipedia.org/wiki/Tim_Berners-Lee">
+http://en.wikipedia.org/wiki/Tim_Berners-Lee</a><br>
+8 - Semantics - <a href="http://en.wikipedia.org/wiki/Semantics">
+http://en.wikipedia.org/wiki/Semantics</a><br>
+9 - Ontology - 
+<a href="http://en.wikipedia.org/wiki/Ontology_(information_science)">Ontology 
+(information science)</a><br>
+10 - Friend of a Friend - <a href="http://www.foaf-project.org/">
+Friend of a Friend</a><br>
+11 - W3C SKOS Core Guild -
+<a href="http://www.w3.org/TR/2005/WD-swbp-skos-core-guide-20051102/">W3C SKOS 
+Core Guide</a><br>
+12 - RDF Schema - <a href="http://en.wikipedia.org/wiki/RDF_Schema">
+http://en.wikipedia.org/wiki/RDF_Schema</a><br>
+13 - Neo4j -
+<a href="http://neo4j.com/blog/and-now-for-something-completely-different-using-owl-with-neo4j/">
+http://neo4j.com/</a><br>
+14 - Cypher -
+<a href="http://docs.neo4j.org/chunked/snapshot/cypher-query-lang.html">Cypher</a> </p></p>
+
+</body>
+
+</html>
