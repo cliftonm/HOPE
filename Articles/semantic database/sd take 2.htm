@@ -70,7 +70,7 @@ meaning.&nbsp; This can be broken down into three major categories:</p>
 	</li>
 </ul>
 <p align="center"><img border="0" src="key-small.jpg" width="94" height="33"></p>
-<p><i>“No word has a value that can be identified independently of what else 
+<p align="center"><i>“No word has a value that can be identified independently of what else 
 is in its vicinity.”</i> <br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
 -- (de Saussure, Ferdinand, 1916, The Course of General Linguistics)</p>
@@ -138,7 +138,7 @@ element &quot;Color.&quot;</p>
 <p>Like Alice in Wonderland, we have to go down a few rabbit holes to figure 
 this out.&nbsp; </p>
 <p align="center"><img border="0" src="key-small.jpg" width="94" height="33"></p>
-<p><i>&quot;Many sites are generated from structured data, which is often stored in 
+<p align="center"><i>&quot;Many sites are generated from structured data, which is often stored in 
 databases. When this data is formatted into HTML, it becomes very difficult to 
 recover the original structured data. Many applications, especially search 
 engines, can benefit greatly from direct access to this structured data.&quot;</i><sup>5</sup></p>
@@ -162,7 +162,7 @@ other words, the structured data is a tree.</p>
 involved in discussions regarding semantics.</p>
 <h4>Ontology</h4>
 <p align="center"><img border="0" src="key-small.jpg" width="94" height="33"></p>
-<p><i>&quot;An ontology is an explicit specification of a conceptualization.&quot;<br>
+<p align="center"><i>&quot;An ontology is an explicit specification of a conceptualization.&quot;<br>
 </i>&nbsp; -- Gruber, Tom (1993); &quot;A Translation Approach to Portable Ontology 
 Specifications&quot;, in Knowledge Acquisition, 5: 199-199</p>
 <p>Earlier I pointed out that the S-P-O triple does not define the relationship <i>
@@ -365,13 +365,33 @@ the data.</p>
 <p>Nonetheless, there is much guidance in the literature on graph databases that 
 is valuable when designing a semantic database, and that is:</p>
 <p align="center"><img border="0" src="key-small.jpg" width="94" height="33"></p>
-<p><i>There is relevant meaning in the connections between semantic structures 
+<p align="center"><i>There is relevant meaning in the connections between semantic structures 
 that comprise the ontology.</i> </p>
 <h2>A Semantic Database Architecture</h2>
-<p>Now that we hopefully have some foundational understanding of semantics and 
-ontologies, we can begin to architect a semantic database.&nbsp; Of primary 
-importance is that a semantic database defines the natural structure of a 
-concept.&nbsp; Thus, using our RSS_Feed_Item example:</p>
+<p>In the above discussion, we come to several important observations:</p>
+<ol>
+	<li>An ontology emphases the relationship of entities rather than defining 
+	the entity structure.</li>
+	<li>Semantics emphasizes the structure but not the relationships between 
+	structures (the ontology.)</li>
+</ol>
+<p>Furthermore, with regards to current database options:</p>
+<ol>
+	<li>Graph databases typically capture ontologies of facts rather than 
+	semantics and their structures</li>
+	<li>Relational databases capture &quot;logical&quot; relationships rather than 
+	&quot;natural&quot; semantic structures and ontologies</li>
+	<li>NoSQL databases require that the client provides the implementation for 
+	supporting relationships, the only support NoSQL provides is a very limited 
+	&quot;document ID&quot; scaffolding.</li>
+</ol>
+<p>What is needed is with regards to a semantic database is:</p>
+<ol>
+	<li>The ability to create ontologies from semantics</li>
+	<li>The ability to define the natural structure of the semantic elements</li>
+</ol>
+<p>Using our RSS_Feed_Item example, we can put together a mockup of what the 
+natural structure of the concept &quot;RSS_Feed_Item&quot; looks like:</p>
 <ul>
 	<li>RSS_Feed_Item<ul>
 		<li>RSS_Feed_Name<ul>
@@ -427,8 +447,8 @@ concept.&nbsp; Thus, using our RSS_Feed_Item example:</p>
 	</ul>
 </li>
 </ul>
-<p>It certainly can also be argued that &quot;URL&quot; should be broken down into scheme 
-name, domain name and resource path, but we'll keep it simple for now.</p>
+<p>(It certainly can also be argued that &quot;URL&quot; should be broken down into scheme 
+name, domain name and resource path, but we'll keep it simple for now.)</p>
 <p align="center"><img border="0" src="key-small.jpg" width="94" height="33"></p>
 <p align="left">The first thing to note with this structure is that queries can 
 queries can be made at any level in the structure with varying degrees of 
@@ -454,7 +474,7 @@ We can leverage useful features of an RDBMS:</p>
 	<li>
 	<p align="left">unique key indexing</p></li>
 </ul>
-<p align="left">When hosted by an RDBMS, we see the following artificts:</p>
+<p align="left">When hosted by an RDBMS, we see the following artifacts:</p>
 <ul>
 	<li>
 	<p align="left">Tables represent structure</p></li>
@@ -466,6 +486,13 @@ We can leverage useful features of an RDBMS:</p>
 	<p align="left">In a left join, all-null native types for a semantic type takes on 
 	the specific meaning that there 
 	is no structure instance</p></li>
+	<li>
+	<p align="left">The primary key is almost exclusively relegated to the role 
+	of resolving joins through the foreign key</p></li>
+	<li>
+	<p align="left">There is significant more emphasis on the unique key (single 
+	field or composite) for performing insert, update, and delete transactions 
+	on native types.</p></li>
 </ul>
 <p align="center"><img border="0" src="key-small.jpg" width="94" height="33"></p>
 <p>Contrary to an RDBMS, where relationships are driven by cardinality, 
@@ -483,8 +510,15 @@ Everything else is &quot;substrate&quot; - it's there only for its structural re
 and consists only of foreign keys pointing the next layer of generalized 
 concept.&nbsp; While most structures have 1:1 relationships with their 
 generalization, we see that RSS_Feed_Item is a composite of four distinct 
-structures (this is its specific ontology.)&nbsp; In object oriented terms, we 
-can clearly see the &quot;is a kind of&quot; and &quot;has a&quot; relationships.</p>
+structures (this is its specific ontology.)&nbsp; </p>
+<p align="center"><img border="0" src="key-small.jpg" width="94" height="33"></p>
+<p>In object oriented terms, we can clearly see the &quot;is a kind of&quot; and &quot;has a&quot; 
+relationships, however, it should be noted that a semantic database is in no way 
+an implementation of an OODBMS, again for the same reason -- objects tend to be 
+logical constructs for the convenience of the programmer rather than natural 
+semantic constructs.&nbsp; However, a semantic structure quite naturally fits 
+into the OO paradigm.</p>
+<h3>Folding a Semantic Database Structure</h3>
 <p>The typical structure however is illustrated more cleanly as a tree:</p>
 <p><img border="0" src="struct2.png" width="687" height="354"></p>
 <h3>Implementation in an RDBMS</h3>
@@ -610,21 +644,13 @@ that then creates new contexts that can then be queried in new ways.&nbsp; </p>
 	</ul>
 	</li>
 </ul>
-<p>&nbsp;</p>
-<p><br>
-&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
+<h2>Prototyping and Implementation</h2>
+<h3>Semantic Type Editor</h3>
+<h3>Unit tests</h3>
+<h3>Creating Tables</h3>
+<h3>Inserting Data</h3>
+<h3>Querying Single Types</h3>
+<h3>Querying Joined Types</h3>
 <p>&nbsp;</p>
 <h2>References</h2>
 <p>1 - Semantic Data -
