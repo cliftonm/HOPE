@@ -176,17 +176,13 @@ namespace SemanticDatabaseTests
 
 		protected void DropTable(string tableName)
 		{
-			IDbConnection conn = sdr.Connection;
-			IDbCommand cmd = conn.CreateCommand();
-			cmd.CommandText = "drop table "+tableName;
-
 			try
 			{
-				cmd.ExecuteNonQuery();
+				sdr.dbio.DropTable(sdr, tableName);
 			}
-			catch
+			catch(Exception ex)
 			{
-				// Ignore missing table exceptions
+				// Ignore missing table errors.
 			}
 		}
 
@@ -199,6 +195,7 @@ namespace SemanticDatabaseTests
 			InitializeSDRTests(() => InitLatLonNonUnique());
 
 			// Initialize the Semantic Data Receptor with the signal it should be listening to.
+			DropTable("Restaurant");
 			DropTable("LatLon");
 			sdr.Protocols = "LatLon";
 			sdr.ProtocolsUpdated();
@@ -238,6 +235,7 @@ namespace SemanticDatabaseTests
 			InitializeSDRTests(() => InitLatLonUniqueFields());
 
 			// Initialize the Semantic Data Receptor with the signal it should be listening to.
+			DropTable("Restaurant");
 			DropTable("LatLon");
 			sdr.Protocols = "LatLon";
 			sdr.ProtocolsUpdated();
@@ -546,6 +544,7 @@ namespace SemanticDatabaseTests
 			InitializeSDRTests(() => InitLatLonNonUnique());
 
 			// Initialize the Semantic Data Receptor with the signal it should be listening to.
+			DropTable("Restaurant");		// Dependent table we have to remove first.
 			DropTable("LatLon");
 			sdr.Protocols = "LatLon";
 			sdr.ProtocolsUpdated();

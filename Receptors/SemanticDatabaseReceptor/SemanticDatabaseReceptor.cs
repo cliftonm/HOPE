@@ -405,19 +405,42 @@ namespace SemanticDatabaseReceptor
 			sts.SemanticElements.ForEach(child => CreateIfMissing(child.Name, tableNames, fkSql));
 		}
 
+		/// <summary>
+		/// Create the table for the specified semantic structure, adding any SQL statements for making foreign key associations.
+		/// </summary>
 		protected void CreateTable(string st, List<string> fkSql)
 		{
+			// Fields and their types:
 			List<Tuple<string, Type>> fieldTypes = new List<Tuple<string, Type>>();
+
+			// Get the structure object backing the structure name.
 			ISemanticTypeStruct sts = rsys.SemanticTypeSystem.GetSemanticTypeStruct(st);
 
+			CreateFkSql(sts, fieldTypes, fkSql);
+			CreateNativeTypes(sts, fieldTypes);
+			dbio.CreateTable(this, st, fieldTypes);
+		}
+
+		/// <summary>
+		/// Any reference to a child semantic element is implemented as a foreign key.
+		/// Returns any foreign key creation sql statements in fkSql.
+		/// </summary>
+		protected void CreateFkSql(ISemanticTypeStruct sts, List<Tuple<string, Type>> fieldTypes, List<string> fkSql)
+		{
 			// Create FK's for child SE's.
 			sts.SemanticElements.ForEach(child =>
 			{
 				string fkFieldName = "FK_" + child.Name + "ID";
 				fieldTypes.Add(new Tuple<string, Type>(fkFieldName, typeof(long)));
-				fkSql.Add(dbio.GetForeignKeySql(st, fkFieldName, child.Name, "ID"));
+				fkSql.Add(dbio.GetForeignKeySql(sts.DeclTypeName, fkFieldName, child.Name, "ID"));
 			});
+		}
 
+		/// <summary>
+		/// The supported native types are simple field name - Type tuples.
+		/// </summary>
+		protected void CreateNativeTypes(ISemanticTypeStruct sts, List<Tuple<string, Type>> fieldTypes)
+		{
 			// Create fields for NT's.
 			sts.NativeTypes.ForEach(child =>
 				{
@@ -429,13 +452,11 @@ namespace SemanticDatabaseReceptor
 					}
 					else
 					{
-						// TODO: The reason for the try-catch is to deal with implementing types we don't support yet, like List<dynamic>
+						// TODO: The reason for the try-catch is to deal with implementing types we don't support yet, like List<SomeType>
 						// For now, we create a stub type.
 						fieldTypes.Add(new Tuple<string, Type>(child.Name, typeof(string)));
 					}
 				});
-
-			dbio.CreateTable(this, st, fieldTypes);
 		}
 
 		protected void VerifyColumns(string st)

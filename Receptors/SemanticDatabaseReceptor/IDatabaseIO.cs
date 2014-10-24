@@ -21,6 +21,11 @@ namespace SemanticDatabaseReceptor
 		void CreateDBIfMissing(string databaseFilename);
 
 		void CreateTable(ISemanticDatabase sdb, string st, List<Tuple<string, Type>> fieldTypes);
+
+		/// <summary>
+		/// Used by unit testing.
+		/// </summary>
+		void DropTable(ISemanticDatabase sdb, string tableName);
 		string GetForeignKeySql(string st, string stField, string childTable, string childField);
 		void OpenDB(string connectionString);
 		List<string> GetTables(ISemanticDatabase sdb);

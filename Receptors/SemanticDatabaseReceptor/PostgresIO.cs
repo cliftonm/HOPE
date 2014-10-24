@@ -165,5 +165,10 @@ namespace SemanticDatabaseReceptor
 
 			return ret;
 		}
+
+		public void DropTable(ISemanticDatabase sdb, string tableName)
+		{
+			Execute(sdb, "drop table " + Delimited(tableName));
+		}
 	}
 }
