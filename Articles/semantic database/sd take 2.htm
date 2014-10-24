@@ -581,16 +581,16 @@ that then creates new contexts that can then be queried in new ways.&nbsp; </p>
 		<li>For example, the semantic type “Title” is very general but allows us 
 		to ask “what are all the values of things having the meaning “Title”?</li>
 	</ul>
-	</li>
-	<li>By inspecting the relationships, we can ask “what are the things having 
-	“Title” in their meaning?</li>
+</li>
+<li>By inspecting the relationships, we can ask “what are the things having 
+“Title” in their meaning?</li>
 	<li>When we query the database, we don’t just get back a list of records – 
 	we get back fully “rehydrated” semantic types.</li>
-	<li>In actual implementation, the need for an ORM layer is eliminated:<ul>
+<li>In actual implementation, the need for an ORM layer is eliminated:<ul>
 		<li>We pass in semantic structures as actual C# objects</li>
 		<li>We get back semantic structures as actual C# objects</li>
 	</ul>
-	</li>
+</li>
 </ul>
 <h3>Some Drawbacks of a Semantic Database</h3>
 <ul>
@@ -616,14 +616,14 @@ that then creates new contexts that can then be queried in new ways.&nbsp; </p>
 			tables making it hard to keep track of which FK join is associated 
 			with what meaning-value.</li>
 		</ul>
-		</li>
-		<li>Writing insert statements by hand is even more painful:<ul>
+	</li>
+	<li>Writing insert statements by hand is even more painful:<ul>
 			<li>multiple inserts from the bottom up, requiring the ID of the 
 			child table to populate the foreign key in the parent table.</li>
 		</ul>
-		</li>
-	</ul>
 	</li>
+	</ul>
+</li>
 </ul>
 <h3>Addressing Some of the Drawbacks</h3>
 <p>A Semantic Database engine can address some of these drawbacks:</p>
@@ -631,31 +631,245 @@ that then creates new contexts that can then be queried in new ways.&nbsp; </p>
 	<li>Automating SQL query generation<ul>
 		<li>Hides the hierarchy and table joins</li>
 	</ul>
-	</li>
-	<li>Automating SQL inserts<ul>
+</li>
+<li>Automating SQL inserts<ul>
 		<li>Managing all the necessary FK ID’s</li>
 	</ul>
-	</li>
-	<li>Improving Performance<ul>
+</li>
+<li>Improving Performance<ul>
 		<li>Caching queries so the engine doesn’t have to re-create the SQL 
 		statement every time.</li>
 		<li>Use prepared statements so the server isn’t parsing and analyzing 
 		the query statement every time it’s used.</li>
 	</ul>
-	</li>
+</li>
 </ul>
 <h2>Prototyping and Implementation</h2>
-<h3>Semantic Type Editor</h3>
-<h3>Unit tests</h3>
-<h3>Creating Tables</h3>
-<h3>Inserting Data</h3>
-<h3>Querying Single Types</h3>
-<h3>Querying Joined Types</h3>
+<p>A semantic database naturally deals with semantic structures.&nbsp; As I've 
+already implemented a great deal of the infrastructure in the Higher Order 
+Programming Environment (HOPE) project (the up to date list of articles can be 
+found by visiting
+<a href="http://www.higherorderprogramming.com/developers-1-1-2/">here</a>), I 
+will be taking advantage of that code base.</p>
+<p align="center"><img border="0" src="key-small.jpg" width="94" height="33"></p>
+<p>It is highly recommended that the introductory articles are reviewed to help 
+understand the following code.&nbsp; In the real demonstration that follows this 
+section, I'll be taking advantage of the semantic editor and various &quot;receptor&quot; 
+components, the semantic database being implemented as one such receptor.</p>
+<h3>Unit Tests</h3>
+<p>Unit tests are vital for verifying the expected behaviors when the user is 
+expecting to trust our ability to properly persist and retrieve data (which is 
+one of the reasons I'm also building this on top of an RDBMS rather than writing 
+a completely new semantic database implementation.)&nbsp; Unit tests are also a 
+good way of introducing the concepts and implementation of the semantic 
+database.&nbsp; </p>
+<p>You will notice the unit test structure as, basically:</p>
+<ul>
+	<li>Clean up the database for every test - this involves dropping tables</li>
+	<li>Create the semantic structures and their configurations that will test 
+	the desired behaviors</li>
+	<li>Register these structures with the semantic database - this creates the 
+	backing tables</li>
+	<li>Perform the desired transactions</li>
+	<li>Verify the results.</li>
+</ul>
+<p>An important consideration when working with any RDBMS, and this is true with 
+regards to the semantic database as well, is the concept of unique keys, either 
+single or composite fields.&nbsp; However, the semantic database also implements 
+the concept of unique key &quot;types&quot;, where the type is the semantic element.&nbsp; 
+This creates some interesting behaviors for which need to test, and the tests 
+will help to document how to use the unique key field / type configurations.</p>
+<h4>Database Configuration</h4>
+<p>If you run the tests with a SQLite database, there is no configuration 
+required -- the database file is created automatically and there are no 
+permission issues.&nbsp; The semantic database also supports Postgres, which 
+requires that:</p>
+<ol>
+	<li>a &quot;postgres.config&quot; file be placed in the &quot;HOPE\UnitTests\SemanticDatabaseTests\bin\Debug&quot; 
+	folder.&nbsp; This file should consist of two lines:<ol>
+		<li>The username</li>
+		<li>The password</li>
+	</ol>
+</li>
+<li>You will also need to manually create an empty database (no tables) called &quot;test_semantic_database&quot;</li>
+</ol>
+	<h4>Creating Tables From Semantic Structures</h4>
+<p>This code:</p>
+<pre>InitializeSDRTests(() =&gt; InitLatLonNonUnique());
+sdr.Protocols = &quot;LatLon&quot;;
+sdr.ProtocolsUpdated();
+</pre>
+<p>initializes the semantic database receptor and defines a semantic structure 
+for &quot;LatLon&quot;.&nbsp; When <code>ProtocolsUpdated</code> is called, the semantic database 
+creates the table &quot;LatLon&quot; with two fields, &quot;latitude&quot; and &quot;longitude&quot;.&nbsp; 
+Tables are automatically created when a new semantic type is encountered.&nbsp; 
+In this particular case, the semantic structure is instantiated thus:</p>
+<pre>protected void InitLatLonNonUnique()
+{
+  SemanticTypeStruct sts = Helpers.CreateSemanticType(&quot;LatLon&quot;, false, decls, structs);
+  Helpers.CreateNativeType(sts, &quot;latitude&quot;, &quot;double&quot;, false);
+  Helpers.CreateNativeType(sts, &quot;longitude&quot;, &quot;double&quot;, false);
+}</pre>
+<p>For our purposes, we won't worry about what decls or structs are, you can 
+inspect the code in detail if you want to find out.&nbsp; The salient point is 
+that a structure &quot;LatLon&quot; is created with two native types, both doubles, called 
+&quot;latitude&quot; and &quot;longitude.&quot;&nbsp; Neither the structure nor the native types are 
+defined as unique.&nbsp; </p>
+<p><img border="0" src="note.png" width="24" height="32">&nbsp; While it seems odd, the reason strings are used for type names 
+-- rather than, 
+say, <code>typeof(double)</code> -- is because we're actually simulating what 
+would normally be done in the semantic editor, which, being a user interface 
+component, works mostly with strings for the names of things.</p>
+<p><img border="0" src="database.png" width="32" height="32">The database 
+implementation for creating the tables from a semantic structure is:</p>
+<pre>/// &lt;summary&gt;
+/// Create the table for the specified semantic structure, adding any SQL statements for making foreign key associations.
+/// &lt;/summary&gt;
+protected void CreateTable(string st, List&lt;string&gt; fkSql)
+{
+  // Fields and their types:
+  List&lt;Tuple&lt;string, Type&gt;&gt; fieldTypes = new List&lt;Tuple&lt;string, Type&gt;&gt;();
+
+  // Get the structure object backing the structure name.
+  ISemanticTypeStruct sts = rsys.SemanticTypeSystem.GetSemanticTypeStruct(st);
+
+  CreateFkSql(sts, fieldTypes, fkSql);
+  CreateNativeTypes(sts, fieldTypes);
+  dbio.CreateTable(this, st, fieldTypes);
+}
+
+/// &lt;summary&gt;
+/// Any reference to a child semantic element is implemented as a foreign key.
+/// Returns any foreign key creation sql statements in fkSql.
+/// &lt;/summary&gt;
+protected void CreateFkSql(ISemanticTypeStruct sts, List&lt;Tuple&lt;string, Type&gt;&gt; fieldTypes, List&lt;string&gt; fkSql)
+{
+  // Create FK's for child SE's.
+  sts.SemanticElements.ForEach(child =&gt;
+  {
+    string fkFieldName = &quot;FK_&quot; + child.Name + &quot;ID&quot;;
+    fieldTypes.Add(new Tuple&lt;string, Type&gt;(fkFieldName, typeof(long)));
+    fkSql.Add(dbio.GetForeignKeySql(sts.DeclTypeName, fkFieldName, child.Name, &quot;ID&quot;));
+  });
+}
+
+/// &lt;summary&gt;
+/// The supported native types are simple field name - Type tuples.
+/// &lt;/summary&gt;
+protected void CreateNativeTypes(ISemanticTypeStruct sts, List&lt;Tuple&lt;string, Type&gt;&gt; fieldTypes)
+{
+  // Create fields for NT's.
+  sts.NativeTypes.ForEach(child =&gt;
+  {
+    Type t = child.GetImplementingType(rsys.SemanticTypeSystem);
+
+    if (t != null)
+    {
+      fieldTypes.Add(new Tuple&lt;string, Type&gt;(child.Name, t));
+    }
+    else
+    {
+      // TODO: The reason for the try-catch is to deal with implementing types we don't support yet, like List&lt;SomeType&gt;
+      // For now, we create a stub type.
+      fieldTypes.Add(new Tuple&lt;string, Type&gt;(child.Name, typeof(string)));
+    }
+  });
+}</pre>
+<p><img border="0" src="note.png" width="24" height="32"> The object <code>dbio</code> 
+is an interface supporting the connection and syntax nuances for different 
+physical databases such as SQLite, Postgres, SQL Server, etc.</p>
+<p>Once created, we can inspect the database for, in this case, a very simple implementation.&nbsp; 
+Here's what Postgres says about the table created by the above code:</p>
+<pre>CREATE TABLE latlon
+(
+  id serial NOT NULL,
+  latitude double precision,
+  longitude double precision,
+  CONSTRAINT latlon_pkey PRIMARY KEY (id)
+)</pre>
+<p>Each of our unit tests drops tables and recreates them to clear out the data 
+from previous tests.</p>
+<h4>A Simple Non-Unique Key Insert Test</h4>
+<p>This test verifies that when we insert identical information, we get two 
+records back:</p>
+<pre>/// &lt;summary&gt;
+/// Verifies that a non-unique ST with 2 NT's generates multiple records for the same data.
+/// &lt;/summary&gt;
+[TestMethod]
+public void SimpleNonUniqueInsert()
+{
+  InitializeSDRTests(() =&gt; InitLatLonNonUnique());
+
+  // Initialize the Semantic Data Receptor with the signal it should be listening to.
+  DropTable(&quot;Restaurant&quot;);
+  DropTable(&quot;LatLon&quot;);
+  sdr.Protocols = &quot;LatLon&quot;;
+  sdr.ProtocolsUpdated();
+
+  // Create the signal.
+  ICarrier carrier = Helpers.CreateCarrier(rsys, &quot;LatLon&quot;, signal =&gt;
+  {
+    signal.latitude = 1.0;
+    signal.longitude = 2.0;
+  });
+
+  // Let's see what the SDR does.
+  sdr.ProcessCarrier(carrier);
+  IDbConnection conn = sdr.Connection;
+
+  int count;
+  IDbCommand cmd = conn.CreateCommand();
+  cmd.CommandText = &quot;SELECT count(*) from LatLon&quot;;
+  count = Convert.ToInt32(cmd.ExecuteScalar());
+  Assert.AreEqual(1, count, &quot;Expected 1 LatLon record.&quot;);
+
+  // Insert another, identical record. We should now have two records.
+  sdr.ProcessCarrier(carrier);
+  cmd.CommandText = &quot;SELECT count(*) from LatLon&quot;;
+  count = Convert.ToInt32(cmd.ExecuteScalar());
+  Assert.AreEqual(2, count, &quot;Expected 2 LatLon records.&quot;);
+
+  sdr.Terminate();
+}</pre>
+<p><img border="0" src="note.png" width="24" height="32"> In the above code, a 
+&quot;carrier&quot; is created.&nbsp; Carriers are like little messenger pigeons that are 
+used to communicate between receptors.&nbsp; Because the semantic database is 
+implemented within a receptor, we have to pretend to send it a message.&nbsp; 
+You can review <a href="http://www.higherorderprogramming.com/developers-1-1-2/">
+the previous articles on HOPE</a> to learn more about carriers, protocols, and 
+signals, but the basic idea here is that we are creating a carrier for the 
+protocol &quot;LatLon&quot; (whose semantic structure we defined earlier) and assigning 
+values to the native type fields.&nbsp; The semantic engine generates the C# 
+code for each semantic structure and instantiates it for us.&nbsp; Taking 
+advantage of the <code>dynamic</code> keyword, we can then assign values to the properties
+without requiring a C# <code>interface</code> declaration.</p>
+<p><img border="0" src="note.png" width="24" height="32">The reason we don't 
+explicitly state &quot;insert&quot; somewhere in this carrier is because in the grand 
+scheme of things, all we want to do is listen for particular semantic instances 
+(protocol-signal), and if we see one, we persist it.&nbsp; The front-end UI 
+allows us to choose which semantic types we persist, but the advantage is that 
+any &quot;receptor&quot; emitting a particular protocol doesn't care about whether it's 
+persisted or not -- basically, we've turned persistence into an optional 
+component, decoupling it completely from any other computational units.&nbsp; 
+This also means that we can implement different persistence mechanisms, 
+traditional RDBMS, graph, even NoSQL, Excel export, etc.</p>
+<p><img border="0" src="database.png" width="32" height="32">What's going on 
+when we pass in a semantic structure?&nbsp; This triggers the insert algorithm 
+(update is not yet implemented.)&nbsp; </p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<h4>Creating Tables</h4>
+<h4>Inserting Data</h4>
+<h4>Querying Single Types</h4>
+<h4>Querying Joined Types</h4>
+<h2>A Real Demonstration</h2>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
 <p>&nbsp;</p>
 <h2>References</h2>
 <p>1 - Semantic Data -
 <a href="http://en.wikipedia.org/wiki/Semantic_data_model">
-http://en.wikipedia.org/wiki/Semantic_data_model</a><br>
+http://en.wikipedia.org/wiki/Semantic_data_modell</a><br>
 2 - Semantic Web - <a href="http://en.wikipedia.org/wiki/Semantic_Web">
 http://en.wikipedia.org/wiki/Semantic_Web</a> <br>
 3 - Web Ontology Language -
@@ -684,8 +898,7 @@ Core Guide</a><br>
 http://en.wikipedia.org/wiki/RDF_Schema</a><br>
 13 - Neo4j -
 <a href="http://neo4j.com/blog/and-now-for-something-completely-different-using-owl-with-neo4j/">
-http://neo4j.com/</a><br>
-14 - Cypher -
+http://neo4j.com/</a><br>14 - Cypher -
 <a href="http://docs.neo4j.org/chunked/snapshot/cypher-query-lang.html">Cypher</a> </p></p>
 
 </body>
