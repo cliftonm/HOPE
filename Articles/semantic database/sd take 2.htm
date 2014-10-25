@@ -1330,11 +1330,215 @@ structure value.</p>
 <p><img border="0" src="unittest.png" width="14" height="32"> If you thought 
 inserting data was complicated, getting it back out of the database is even more 
 complicated because of the inferences that the semantic database makes regarding 
-how to join to disparate semantic structures.&nbsp; Let's start with something 
-basic:</p>
+how to join to disparate semantic structures.&nbsp; Querying consists of:</p>
+<ul>
+	<li>Determining the native type fields</li>
+<li>Build the list of joins required to drill down into child elements</li>
+	<li>Resolve physical table and field names in the order by clause</li>
+<li>Resolve physical table and field names in the where clause (currently not 
+implemented)</li>
+	<li>Add the database-specific implementation of a row return limit</li>
+<li>In a multi-structure join, infer the linkages between structures and 
+implement them as additional table joins</li>
+	<li>Execute the query</li>
+<li>Hydrate semantic instances with the data from each returned row</li>
+</ul>
+<p>Let's start with a basic 
+single structure query:</p>
+<pre>[TestMethod]
+public void SimpleQuery()
+{
+  InitializeSDRTests(() =&gt; InitLatLonNonUnique());
+
+  // Initialize the Semantic Data Receptor with the signal it should be listening to.
+  DropTable(&quot;Restaurant&quot;); // Dependent table we have to remove first.
+  DropTable(&quot;LatLon&quot;);
+  sdr.Protocols = &quot;LatLon&quot;;
+  sdr.ProtocolsUpdated();
+  sdr.UnitTesting = true;
+
+  // Create the signal.
+  ICarrier latLonCarrier = Helpers.CreateCarrier(rsys, &quot;LatLon&quot;, signal =&gt;
+  {
+    signal.latitude = 1.0;
+    signal.longitude = 2.0;
+  });
+
+  sdr.ProcessCarrier(latLonCarrier);
+
+  // Create the query
+  ICarrier queryCarrier = Helpers.CreateCarrier(rsys, &quot;Query&quot;, signal =&gt;
+  {
+    signal.QueryText = &quot;LatLon&quot;;
+  });
+
+  sdr.ProcessCarrier(queryCarrier);
+  List&lt;QueuedCarrierAction&gt; queuedCarriers = rsys.QueuedCarriers;
+  Assert.AreEqual(1, queuedCarriers.Count, &quot;Expected one signal to be returned.&quot;);
+  dynamic retSignal = queuedCarriers[0].Carrier.Signal;
+  Assert.AreEqual(1.0, retSignal.latitude, &quot;Wrong data for latitude.&quot;);
+  Assert.AreEqual(2.0, retSignal.longitude, &quot;Wrong data for longitude.&quot;);
+}</pre>
+<p><img border="0" src="note.png" width="24" height="32"> Because we're using 
+the HOPE architecture, there is actually no receiving carrier for the resulting 
+record, so we inspect the queue, which is simpler than adding the necessary 
+scaffolding in our unit tests to receive the carrier.</p>
+<p><img border="0" src="database.png" width="32" height="32"> The 
+single-structure query implementation is basically what you would expect:</p>
+<pre>protected void QueryDatabase(string query)
+{
+  string maxRecords = null;
+  List&lt;string&gt; types;
+  List&lt;string&gt; orderBy;
+
+  Preprocess(query, out maxRecords, out types, out orderBy);
+
+  // We only have one protocol to query, so we can create the protocol directly since it's already defined.
+  if (types.Count() == 1)
+  {
+    string protocol = types[0];
+    AddEmitProtocol(protocol); // identical protocols are ignored.
+    ISemanticTypeStruct sts = rsys.SemanticTypeSystem.GetSemanticTypeStruct(protocol);
+    List&lt;object&gt; signals = QueryType(protocol, String.Empty, orderBy, maxRecords);
+    EmitSignals(signals, sts);
+  }
+  else ...</pre>
+<p><img border="0" src="note.png" width="24" height="32"> Again, because the 
+semantic database is actually a receptor, any newly encountered protocol is 
+added to the list of protocols that the database emits.&nbsp; Hence the line 
+<code>AddEmitProtocol</code>.</p>
+<p>The method <code>QueryType</code> puts all the pieces together to execute the 
+query:</p>
+<pre>/// &lt;summary&gt;
+/// Return a list of objects that represents the semantic element instances (signals) in the resulting query set.
+/// &lt;/summary&gt;
+protected List&lt;object&gt; QueryType(string protocol, string where, List&lt;string&gt; orderBy, string maxRecords)
+{
+  // We build the query by recursing through the semantic structure.
+  ISemanticTypeStruct sts = rsys.SemanticTypeSystem.GetSemanticTypeStruct(protocol);
+  List&lt;string&gt; fields = new List&lt;string&gt;();
+  List&lt;string&gt; joins = new List&lt;string&gt;();
+  Dictionary&lt;ISemanticTypeStruct, int&gt; structureUseCounts = new Dictionary&lt;ISemanticTypeStruct, int&gt;();
+  List&lt;Tuple&lt;string, string&gt;&gt; fqntAliases = new List&lt;Tuple&lt;string, string&gt;&gt;();
+
+  BuildQuery(sts, fields, joins, structureUseCounts, sts.DeclTypeName, fqntAliases);
+  string sqlQuery = CreateSqlStatement(sts, fields, joins, fqntAliases, where, orderBy, maxRecords);
+
+  List&lt;object&gt; ret = PopulateSignals(sqlQuery, sts);
+
+  return ret;
+}</pre>
+<p>Very important in this process is the recursive <code>BuildQuery</code>, which traverses 
+the semantic structure, following child elements and creating the necessary 
+joins as well as picking up any native types along the way:</p>
+<pre>/// &lt;summary&gt;
+/// Recurses the semantic structure to generate the native type fields and the semantic element joins.
+/// fqntAliases -- fully qualified native type and it's actual alias in the field list.
+/// &lt;/summary&gt;
+protected void BuildQuery(ISemanticTypeStruct sts, List&lt;string&gt; fields, List&lt;string&gt; joins, Dictionary&lt;ISemanticTypeStruct, int&gt; structureUseCounts, string fqn, List&lt;Tuple&lt;string, string&gt;&gt; fqntAliases)
+{
+  // Add native type fields.
+  string parentName = GetUseName(sts, structureUseCounts);
+  sts.NativeTypes.ForEach(nt =&gt;
+  {
+    string qualifiedFieldName = fqn + &quot;.&quot; + nt.Name;
+    string qualifiedAliasFieldName = parentName + &quot;.&quot; + nt.Name;
+    fields.Add(qualifiedAliasFieldName);
+    fqntAliases.Add(new Tuple&lt;string, string&gt;(qualifiedFieldName, qualifiedAliasFieldName));
+  });
+
+  sts.SemanticElements.ForEach(child =&gt;
+  {
+    ISemanticTypeStruct childsts = child.Element.Struct; // rsys.SemanticTypeSystem.GetSemanticTypeStruct(child.Name);
+    IncrementUseCount(childsts, structureUseCounts);
+    string asChildName = GetUseName(childsts, structureUseCounts);
+    joins.Add(&quot;left join &quot; + childsts.DeclTypeName + &quot; as &quot; + asChildName + &quot; on &quot; + asChildName + &quot;.ID = &quot; + parentName + &quot;.FK_&quot; + childsts.DeclTypeName + &quot;ID&quot;);
+    BuildQuery(childsts, fields, joins, structureUseCounts, fqn+&quot;.&quot;+childsts.DeclTypeName, fqntAliases);
+  });
+}</pre>
+<p>Once that's done, the actual SQL select statement can be created:</p>
+<pre>protected string CreateSqlStatement(ISemanticTypeStruct sts, List&lt;string&gt; fields, List&lt;string&gt; joins, List&lt;Tuple&lt;string, string&gt;&gt; fqntAliases, string where, List&lt;string&gt; orderBy, string maxRecords)
+{
+  // CRLF for pretty inspection.
+  string sqlQuery = &quot;select &quot; + String.Join(&quot;, &quot;, fields) + &quot; \r\nfrom &quot; + sts.DeclTypeName + &quot; \r\n&quot; + String.Join(&quot; \r\n&quot;, joins);
+  sqlQuery = sqlQuery + &quot; &quot; + ParseOrderBy(orderBy, fqntAliases);
+  sqlQuery = dbio.AddLimitClause(sqlQuery, maxRecords);
+
+  return sqlQuery;
+}</pre>
+<p>Once we've acquired the reader, we can iterate through the records and create 
+the signals to be emitted:</p>
+<pre>protected List&lt;object&gt; PopulateSignals(string sqlQuery, ISemanticTypeStruct sts)
+{
+  List&lt;object&gt; ret = new List&lt;object&gt;();
+  IDataReader reader = AcquireReader(sqlQuery);
+
+  while (reader.Read())
+  {
+    object outsignal = rsys.SemanticTypeSystem.Create(sts.DeclTypeName);
+    int counter = 0; // For a single table join, counter is always 0.
+    // Populate the signal with the columns in each record read.
+    Populate(sts, outsignal, reader, ref counter);
+    ret.Add(outsignal);
+  }
+
+  reader.Close();
+
+  return ret;
+}</pre>
+<p>The actual population of the signal's fields is again recursive and dependent 
+upon the same order in which fields were generated for the query statement.&nbsp; 
+Here we are using reflection to set the values as we drill into the semantic 
+structure:</p>
+<pre>/// &lt;summary&gt;
+/// Recursively populates the values into the signal. The recursion algorithm here must match exactly the same
+/// form as the recursion algorithm in BuildQuery, as the correlation between field names and their occurrance
+/// in the semantic structure is relied upon. For now at least.
+/// Returns true if there are any non-null NT valus.
+/// &lt;/summary&gt;
+protected bool Populate(ISemanticTypeStruct sts, object signal, IDataReader reader, ref int parmNumber)
+{
+  List&lt;object&gt; vals = new List&lt;object&gt;();
+  bool anyNonNull = false;
+
+  for (int i = 0; i &lt; sts.NativeTypes.Count; i++)
+  {
+    vals.Add(reader[parmNumber++]);
+  }
+
+  // Add native type fields. Use a foreach loop because ref types can't be used in lambda expressions.
+  sts.NativeTypes.ForEachWithIndex((nt, idx) =&gt;
+  {
+    object val = vals[idx];
+
+    if (val != DBNull.Value)
+    {
+      Assert.TryCatch(() =&gt; nt.SetValue(rsys.SemanticTypeSystem, signal, val), (ex) =&gt; EmitException(ex));
+      anyNonNull = true;
+    }
+  });
+
+  foreach (ISemanticElement child in sts.SemanticElements)
+  {
+    ISemanticTypeStruct childsts = child.Element.Struct;
+    PropertyInfo piSub = signal.GetType().GetProperty(child.Name);
+    object childSignal = piSub.GetValue(signal);
+    anyNonNull |= Populate(childsts, childSignal, reader, ref parmNumber);
+  }
+
+  return anyNonNull;
+}</pre>
+<p><img border="0" src="note.png" width="24" height="32">&nbsp; In the single 
+structure query, we don't really care whether there are any non-null fields.&nbsp; 
+The return value of the Populate method is however used when working with 
+multi-structure queries.</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
 <p>&nbsp;</p>
 <h2>Conclusion</h2>
-<p>As this article has </p>
+<p>&nbsp;</p>
 <p>&nbsp;</p>
 <h2>References</h2>
 <p>1 - Semantic Data -

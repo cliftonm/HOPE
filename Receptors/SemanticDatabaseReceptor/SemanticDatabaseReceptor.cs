@@ -749,8 +749,43 @@ namespace SemanticDatabaseReceptor
 
 		// ------ Query -------
 
+		protected void Preprocess(string query, out string maxRecords, out List<string> types, out List<string> orderBy)
+		{
+			maxRecords = String.Empty;
+
+			if (query.StartsWith("top"))
+			{
+				// The # of records.  The query string will be "top [x] [ST]" so we separate out [x] because it's between the first two spaces encountered in the string.
+				maxRecords = query.Between(' ', ' ');
+				query = query.RightOf(' ').RightOf(' ');		// remove the "top [x] "
+			}
+
+			// Types are to the left of any were and order by's.
+			types = query.LeftOf(" where ").LeftOf(" order by ").Split(',').Select(s => s.Trim()).ToList();
+			orderBy = new List<string>();
+			string strOrderBy = query.RightOf(" order by ");
+
+			if (!String.IsNullOrEmpty(strOrderBy))
+			{
+				orderBy.AddRange(strOrderBy.Split(',').Select(s => s.Trim()));
+			}
+		}
+
+		protected void EmitSignals(List<object> signals, ISemanticTypeStruct sts)
+		{
+			// Create a carrier for each of the signals in the returned record collection.
+			if (UnitTesting)
+			{
+				signals.ForEach(s => rsys.CreateCarrier(this, sts, s));
+			}
+			else
+			{
+				signals.ForEach(s => rsys.CreateCarrierIfReceiver(this, sts, s));
+			}
+		}
+
 		/// <summary>
-		/// Query is of the form ST [,ST] [where {where clause}] [order by {ST [,ST]}
+		/// Query is of the form [top n] ST [,ST] [where {where clause}] [order by {ST [,ST]}
 		/// The ST's in the where and order by must resolve to single NT elements, otherwise they must be fully qualified ST.NT names.
 		/// </summary>
 		/// <param name="query"></param>
@@ -759,23 +794,10 @@ namespace SemanticDatabaseReceptor
 			try
 			{
 				string maxRecords = null;
+				List<string> types;
+				List<string> orderBy;
 
-				if (query.StartsWith("top"))
-				{
-					// The # of records.  The query string will be "top [x] [ST]" so we separate out [x] because it's between the first two spaces encountered in the string.
-					maxRecords = query.Between(' ', ' ');
-					query = query.RightOf(' ').RightOf(' ');		// remove the "top [x] "
-				}
-
-				// Types are to the left of any were and order by's.
-				List<string> types = query.LeftOf(" where ").LeftOf(" order by ").Split(',').Select(s => s.Trim()).ToList();
-				List<string> orderBy = new List<string>();
-				string strOrderBy = query.RightOf(" order by ");
-
-				if (!String.IsNullOrEmpty(strOrderBy))
-				{
-					orderBy.AddRange(strOrderBy.Split(',').Select(s => s.Trim()));
-				}
+				Preprocess(query, out maxRecords, out types, out orderBy);
 
 				// We only have one protocol to query, so we can create the protocol directly since it's already defined.
 				if (types.Count() == 1)
@@ -783,23 +805,8 @@ namespace SemanticDatabaseReceptor
 					string protocol = types[0];
 					AddEmitProtocol(protocol);		// identical protocols are ignored.
 					ISemanticTypeStruct sts = rsys.SemanticTypeSystem.GetSemanticTypeStruct(protocol);
-
-					if (!rsys.SemanticTypeSystem.VerifyProtocolExists(protocol))
-					{
-						throw new Exception("Protocol " + protocol + " is not defined.");
-					}
-
-					List<object> signal = QueryType(protocol, String.Empty, orderBy, maxRecords);
-
-					// Create a carrier for each of the signals in the returned record collection.
-					if (UnitTesting)
-					{
-						signal.ForEach(s => rsys.CreateCarrier(this, sts, s));
-					}
-					else
-					{
-						signal.ForEach(s => rsys.CreateCarrierIfReceiver(this, sts, s));
-					}
+					List<object> signals = QueryType(protocol, String.Empty, orderBy, maxRecords);
+					EmitSignals(signals, sts);
 				}
 				else if (types.Count() > 1)
 				{
@@ -1097,12 +1104,10 @@ namespace SemanticDatabaseReceptor
 		}
 
 		/// <summary>
-		/// Return a list of dynamics that represents the semantic element instances in the resulting query set.
+		/// Return a list of objects that represents the semantic element instances (signals) in the resulting query set.
 		/// </summary>
 		protected List<object> QueryType(string protocol, string where, List<string> orderBy, string maxRecords)
 		{
-			List<object> ret = new List<object>();
-
 			// We build the query by recursing through the semantic structure.
 			ISemanticTypeStruct sts = rsys.SemanticTypeSystem.GetSemanticTypeStruct(protocol);
 			List<string> fields = new List<string>();
@@ -1110,23 +1115,22 @@ namespace SemanticDatabaseReceptor
 			Dictionary<ISemanticTypeStruct, int> structureUseCounts = new Dictionary<ISemanticTypeStruct, int>();
 			List<Tuple<string, string>> fqntAliases = new List<Tuple<string, string>>();
 			BuildQuery(sts, fields, joins, structureUseCounts, sts.DeclTypeName, fqntAliases);
+			string sqlQuery = CreateSqlStatement(sts, fields, joins, fqntAliases, where, orderBy, maxRecords);
+			List<object> ret = PopulateSignals(sqlQuery, sts);
 
-			// CRLF for pretty inspection.
-			string sqlQuery = "select " + String.Join(", ", fields) + " \r\nfrom " + sts.DeclTypeName + " \r\n" + String.Join(" \r\n", joins);
-			sqlQuery = sqlQuery + " " + ParseOrderBy(orderBy, fqntAliases);
-			sqlQuery = dbio.AddLimitClause(sqlQuery, maxRecords);
+			return ret;
+		}
 
-			IDbCommand cmd = dbio.CreateCommand();
-			cmd.CommandText = sqlQuery;
-			LogSqlStatement(sqlQuery);
-			IDataReader reader = cmd.ExecuteReader();
+		protected List<object> PopulateSignals(string sqlQuery, ISemanticTypeStruct sts)
+		{
+			List<object> ret = new List<object>();
+			IDataReader reader = AcquireReader(sqlQuery);
 
-			// Populate the signal with the columns in each record read.
 			while (reader.Read())
 			{
-				ISemanticTypeStruct outprotocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct(protocol);
-				object outsignal = rsys.SemanticTypeSystem.Create(protocol);
-				int counter = 0;
+				object outsignal = rsys.SemanticTypeSystem.Create(sts.DeclTypeName);
+				int counter = 0;		// For a single table join, counter is always 0.
+				// Populate the signal with the columns in each record read.
 				Populate(sts, outsignal, reader, ref counter);
 				ret.Add(outsignal);
 			}
@@ -1134,6 +1138,29 @@ namespace SemanticDatabaseReceptor
 			reader.Close();
 
 			return ret;
+		}
+
+		/// <summary>
+		/// Return a reader for the specified query.
+		/// </summary>
+		protected IDataReader AcquireReader(string sqlQuery)
+		{
+			IDbCommand cmd = dbio.CreateCommand();
+			cmd.CommandText = sqlQuery;
+			LogSqlStatement(sqlQuery);
+			IDataReader reader = cmd.ExecuteReader();
+
+			return reader;
+		}
+
+		protected string CreateSqlStatement(ISemanticTypeStruct sts, List<string> fields, List<string> joins, List<Tuple<string, string>> fqntAliases, string where, List<string> orderBy, string maxRecords)
+		{
+			// CRLF for pretty inspection.
+			string sqlQuery = "select " + String.Join(", ", fields) + " \r\nfrom " + sts.DeclTypeName + " \r\n" + String.Join(" \r\n", joins);
+			sqlQuery = sqlQuery + " " + ParseOrderBy(orderBy, fqntAliases);
+			sqlQuery = dbio.AddLimitClause(sqlQuery, maxRecords);
+
+			return sqlQuery;
 		}
 
 		protected string ParseOrderBy(List<string> orderBy, List<Tuple<string, string>> fqntAliases)
