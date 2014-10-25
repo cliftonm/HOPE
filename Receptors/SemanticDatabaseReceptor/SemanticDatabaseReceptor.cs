@@ -262,8 +262,6 @@ namespace SemanticDatabaseReceptor
 			}
 
 			string st = carrier.Protocol.DeclTypeName;
-			// List<TableFieldValues> tfvList = CreateTableFieldValueList(st, carrier.Signal);
-			// List<TableFieldValues> tfvUniqueFieldList = tfvList.Where(t => t.UniqueField || t.FieldValues.Any(fv=>fv.UniqueField && fv.Type==FieldValueType.NativeType)).ToList();
 
 			// Get the STS for the carrier's protocol:
 			ISemanticTypeStruct sts = rsys.SemanticTypeSystem.GetSemanticTypeStruct(st);
@@ -508,112 +506,129 @@ namespace SemanticDatabaseReceptor
 			}
 		}
 
+		/// <summary>
+		/// Drills into any child semantic elements, accumulating foreign keys for each level in the semantic hierarchy.
+		/// When all children are inserted/updated, the parent can be inserted.
+		/// </summary>
 		protected int ProcessSTS(Dictionary<ISemanticTypeStruct, List<FKValue>> stfkMap, ISemanticTypeStruct sts, object signal, bool childAsUnique = false)
+		{
+			// Drill into each child ST and assign the return ID to this ST's FK for the child table name.
+			ProcessChildren(stfkMap, sts, signal, childAsUnique);
+
+			// Having processed all child ST's, We can now make the same determination of
+			// whether the record needs to check for uniqueness, however at this level,
+			// we need to write out both ST and any NT values in the current ST structure.
+			// This is very similar to an ST without child ST's, but here we also use ST's that are designated as unique to build the composite key.
+			int id = ArbitrateUniqueness(stfkMap, sts, signal, childAsUnique);
+
+			return id;
+		}
+
+		/// <summary>
+		/// For each child that has a non-null signal, process its children.
+		/// </summary>
+		protected void ProcessChildren(Dictionary<ISemanticTypeStruct, List<FKValue>> stfkMap, ISemanticTypeStruct sts, object signal, bool childAsUnique)
+		{
+			sts.SemanticElements.ForEach(child =>
+			{
+				// Get the child signal and STS and check it, returning a new or existing ID for the entry.
+				ISemanticTypeStruct childsts = child.Element.Struct; // rsys.SemanticTypeSystem.GetSemanticTypeStruct(child.Name);
+				object childSignal = GetChildSignal(signal, child);
+
+				// We don't insert null child signals.
+				if (childSignal != null)
+				{
+					int id = ProcessSTS(stfkMap, childsts, childSignal, (sts.Unique || childAsUnique));
+					RegisterForeignKeyID(stfkMap, sts, child, id);
+				}
+			});
+		}
+
+		/// <summary>
+		/// Based on whether a semantic element is unique or whether the foreign key fields or native types are unique, we determine how to determine uniqueness.
+		/// We always perform an insert if there is no way to determine whether the record is unique.
+		/// If it is unique, the ID of the existing record is returned.
+		/// </summary>
+		/// <param name="stfkMap"></param>
+		protected int ArbitrateUniqueness(Dictionary<ISemanticTypeStruct, List<FKValue>> stfkMap, ISemanticTypeStruct sts, object signal, bool childAsUnique)
 		{
 			int id = -1;
 
-			// Is this ST a bottom-most ST, such that it only implements native types?
-			if (sts.HasSemanticTypes)
+			if (sts.Unique || childAsUnique)
 			{
-				// Nope, we're somewehere higher up.
-				// Drill into each child ST and assign the return ID to this ST's FK for the child table name.
-				sts.SemanticElements.ForEach(child =>
-					{
-						// Get the child signal and STS and check it, returning a new or existing ID for the entry.
-						ISemanticTypeStruct childsts = child.Element.Struct; // rsys.SemanticTypeSystem.GetSemanticTypeStruct(child.Name);
-						PropertyInfo piSub = signal.GetType().GetProperty(child.Name);
-						object childSignal = piSub.GetValue(signal);
-
-						if (childSignal != null)
-						{
-							id = ProcessSTS(stfkMap, childsts, childSignal, (sts.Unique || childAsUnique));
-
-							// Associate the ID to this ST's FK for that child table.
-							string fieldName = "FK_" + child.Name + "ID";
-
-							if (!stfkMap.ContainsKey(sts))
-							{
-								stfkMap[sts] = new List<FKValue>();
-							}
-
-							stfkMap[sts].Add(new FKValue(fieldName, id, child.UniqueField));
-						}
-					});
-
-				// Having processed all child ST's, We can now make the same determination of
-				// whether the record needs to check for uniqueness, however at this level,
-				// we need to write out both ST and any NT values in the current ST structure.
-				// This is very similar to an ST without child ST's, but here we also use ST's that are designated as unique to build the composite key.
-				if (sts.Unique || childAsUnique)
-				{
-					// All FK's and NT's of this ST are considered part of the composite key.
-					// Get all NT's specifically for this ST (no recursive drilldown)
-					List<IFullyQualifiedNativeType> fieldValues = rsys.SemanticTypeSystem.GetFullyQualifiedNativeTypeValues(signal, sts.DeclTypeName, false);
-					bool exists = QueryUniqueness(stfkMap, sts, signal, fieldValues, out id, true);
-
-					if (!exists)
-					{
-						id = Insert(stfkMap, sts, signal);
-					}
-				}
-				else if (sts.SemanticElements.Any(se => se.UniqueField) || sts.NativeTypes.Any(nt => nt.UniqueField))
-				{
-					// Get only unique NT's specifically for this ST (no recursive drilldown)
-					List<IFullyQualifiedNativeType> fieldValues = rsys.SemanticTypeSystem.GetFullyQualifiedNativeTypeValues(signal, sts.DeclTypeName, false).Where(fqnt => fqnt.NativeType.UniqueField).ToList();
-					bool exists = QueryUniqueness(stfkMap, sts, signal, fieldValues, out id);
-
-					if (!exists)
-					{
-						id = Insert(stfkMap, sts, signal);
-					}
-				}
-				else
-				{
-					// No composite key, so just insert the ST.
-					id = Insert(stfkMap, sts, signal);
-				}
+				// All FK's and NT's of this ST are considered part of the composite key.
+				// Get all NT's specifically for this ST (no recursive drilldown)
+				// False here indicates that we only want the native types for this ST -- we aren't recursing into child ST's.
+				List<IFullyQualifiedNativeType> fieldValues = rsys.SemanticTypeSystem.GetFullyQualifiedNativeTypeValues(signal, sts.DeclTypeName, false);
+				// True indicates that all FK's comprise the composite FK (in addition to unique NT's.)
+				id = InsertIfRecordDoesntExist(stfkMap, sts, signal, fieldValues, true);
+			}
+			else if (sts.SemanticElements.Any(se => se.UniqueField) || sts.NativeTypes.Any(nt => nt.UniqueField))
+			{
+				// Get only unique NT's specifically for this ST (no recursive drilldown)
+				// Note that a unique semantic element will automatically set the unique field for its native type children, subchildren, etc.
+				// False here indicates that we only want the native types for this ST -- we aren't recursing into child ST's.
+				List<IFullyQualifiedNativeType> fieldValues = rsys.SemanticTypeSystem.GetFullyQualifiedNativeTypeValues(signal, sts.DeclTypeName, false).Where(fqnt => fqnt.NativeType.UniqueField).ToList();
+				// False indicates that only those FK's marked as unique comprise the composite FK (in addition to unique NT's.)
+				id = InsertIfRecordDoesntExist(stfkMap, sts, signal, fieldValues, false);
 			}
 			else
 			{
-				// Is this ST designated as unique?
-				if (sts.Unique || childAsUnique)
-				{
-					// If so, then we treat all NT's as a composite unique key.
-					// Do lookup to see if the already exists exists.
-					// Use all NT fields.  Recurse can be true because we know we don't have any child ST's.
-					List<IFullyQualifiedNativeType> fieldValues = rsys.SemanticTypeSystem.GetFullyQualifiedNativeTypeValues(signal, sts.DeclTypeName);
-					bool exists = QueryUniqueness(stfkMap, sts, signal, fieldValues, out id);
-
-					if (!exists)
-					{
-						// If no record, create it.
-						id = Insert(stfkMap, sts, signal);
-					}
-				}
-				else if (sts.NativeTypes.Any(nt => nt.UniqueField))
-				{
-					// If any NT's are designated as unique, then we also have a way of identifying a record.
-					// Do lookup to see if the record already exists.
-					// Use just the unique fields.
-					List<IFullyQualifiedNativeType> fieldValues = rsys.SemanticTypeSystem.GetFullyQualifiedNativeTypeValues(signal, sts.DeclTypeName).Where(fqnt => fqnt.NativeType.UniqueField).ToList();
-					bool exists = QueryUniqueness(stfkMap, sts, signal, fieldValues, out id);
-
-					if (!exists)
-					{
-						// If no record, create it.
-						id = Insert(stfkMap, sts, signal);
-					}
-				}
-				else
-				{
-					// No unique fields, so we just insert the record.
-					id = Insert(stfkMap, sts, signal);
-
-					// The ID can now be returned as the FK for any parent ST.
-				}
+				// No SE's or NT's are unique, so just insert the ST, as we cannot make a determination regarding uniqueness.
+				id = Insert(stfkMap, sts, signal);
 			}
 
 			return id;
+		}
+
+		/// <summary>
+		/// Insert the record if it doesn't exist.
+		/// </summary>
+		protected int InsertIfRecordDoesntExist(Dictionary<ISemanticTypeStruct, List<FKValue>> stfkMap, ISemanticTypeStruct sts, object signal, List<IFullyQualifiedNativeType> fieldValues, bool allFKs)
+		{
+			int id = -1;
+			bool exists = QueryUniqueness(stfkMap, sts, signal, fieldValues, out id, allFKs);
+
+			if (!exists)
+			{
+				id = Insert(stfkMap, sts, signal);
+			}
+
+			return id;
+		}
+
+		/// <summary>
+		/// Given a signal and the child element, returns the value of the child instance.
+		/// </summary>
+		protected object GetChildSignal(object signal, ISemanticElement child)
+		{
+			PropertyInfo piSub = signal.GetType().GetProperty(child.Name);
+			object childSignal = piSub.GetValue(signal);
+
+			return childSignal;
+		}
+
+		/// <summary>
+		/// Registers a foreign key name and value to be associated with the specified semantic structure, which is used when the ST is inserted
+		/// after all child elements have been resolved.
+		/// </summary>
+		protected void RegisterForeignKeyID(Dictionary<ISemanticTypeStruct, List<FKValue>> stfkMap, ISemanticTypeStruct sts, ISemanticElement child, int id)
+		{
+			// Associate the ID to this ST's FK for that child table.
+			string fieldName = "FK_" + child.Name + "ID";
+			CreateKeyIfMissing(stfkMap, sts);
+			stfkMap[sts].Add(new FKValue(fieldName, id, child.UniqueField));
+		}
+
+		/// <summary>
+		/// Creates the key and intializes the value instance if the key is missing from the semantic type foreign key map.
+		/// </summary>
+		protected void CreateKeyIfMissing(Dictionary<ISemanticTypeStruct, List<FKValue>> stfkMap, ISemanticTypeStruct sts)
+		{
+			if (!stfkMap.ContainsKey(sts))
+			{
+				stfkMap[sts] = new List<FKValue>();
+			}
 		}
 
 		protected int Insert(Dictionary<ISemanticTypeStruct, List<FKValue>> stfkMap, ISemanticTypeStruct sts, object signal)
@@ -666,55 +681,22 @@ namespace SemanticDatabaseReceptor
 			return id;
 		}
 
-		protected bool QueryUniqueness(Dictionary<ISemanticTypeStruct, List<FKValue>> stfkMap, ISemanticTypeStruct sts, object signal, List<IFullyQualifiedNativeType> uniqueFieldValues, out int id, bool allPKs = false)
+		/// <summary>
+		/// Build and execute a select statement that determines if the record, based on a composite key, already exists.
+		/// If so, return the ID of the record.
+		/// </summary>
+		protected bool QueryUniqueness(Dictionary<ISemanticTypeStruct, List<FKValue>> stfkMap, ISemanticTypeStruct sts, object signal, List<IFullyQualifiedNativeType> uniqueFieldValues, out int id, bool allFKs = false)
 		{
 			id = -1;
 			bool ret = false;
-
-			// Get ST's to insert as FK_ID's:
 			List<FKValue> fkValues;
 			bool hasFKValues = stfkMap.TryGetValue(sts, out fkValues);
-			/*
-						// If we have no NT's or ST FK's to determine uniqueness (this is valid) then return false: not unique.
-						if (uniqueFieldValues.Count == 0 && (!hasFKValues || (hasFKValues && fkValues.Where(fk => fk.UniqueField || allPKs).Count() == 0)))
-						{
-							return false;
-						}
-			*/
-			StringBuilder sb = new StringBuilder("select id from " + dbio.Delimited(sts.DeclTypeName) + " where ");
-
-			// Put NT fields into "where" clause.
-			sb.Append(String.Join(" and ", uniqueFieldValues.Select(f => dbio.Delimited(f.Name) + " = @" + f.Name)));
-
-			// Put unique ST fields into "where" clause.
-			if (hasFKValues && fkValues.Any(fk => fk.UniqueField || allPKs))
-			{
-				if (uniqueFieldValues.Count > 0) sb.Append(" and ");
-				sb.Append(String.Join(" and ", fkValues.Where(fk => fk.UniqueField || allPKs).Select(fk => dbio.Delimited(fk.FieldName) + " = @" + fk.FieldName)));
-			}
-
-			IDbCommand cmd = dbio.CreateCommand();
-
-			// Populate parameters:
-			uniqueFieldValues.ForEach(fv => cmd.Parameters.Add(dbio.CreateParameter(fv.Name, fv.Value)));
-
-			if (hasFKValues && fkValues.Any(fk => fk.UniqueField || allPKs))
-			{
-				fkValues.Where(fk => fk.UniqueField || allPKs).ForEach(fk => cmd.Parameters.Add(dbio.CreateParameter(fk.FieldName, fk.ID)));
-			}
-
+			StringBuilder sb = BuildUniqueQueryStatement(hasFKValues, fkValues, sts, uniqueFieldValues, allFKs); 
+			IDbCommand cmd = AddParametersToCommand(uniqueFieldValues, hasFKValues, fkValues, allFKs);
 			cmd.CommandText = sb.ToString();
 			LogSqlStatement(cmd.CommandText);
-			object oid = null;
-
-			try
-			{
-				oid = cmd.ExecuteScalar();
-			}
-			catch (Exception ex)
-			{
-			}
-
+			
+			object oid = cmd.ExecuteScalar();
 			ret = (oid != null);
 
 			if (ret)
@@ -723,6 +705,46 @@ namespace SemanticDatabaseReceptor
 			}
 
 			return ret;
+		}
+
+		/// <summary>
+		/// Build the query string to test for uniqueness from NT and SE (FK) unique fields.
+		/// </summary>
+		protected StringBuilder BuildUniqueQueryStatement(bool hasFKValues, List<FKValue> fkValues, ISemanticTypeStruct sts, List<IFullyQualifiedNativeType> uniqueFieldValues, bool allFKs)
+		{
+			// Get ST's to insert as FK_ID's:
+			StringBuilder sb = new StringBuilder("select id from " + dbio.Delimited(sts.DeclTypeName) + " where ");
+
+			// Put NT fields into "where" clause.
+			sb.Append(String.Join(" and ", uniqueFieldValues.Select(f => dbio.Delimited(f.Name) + " = @" + f.Name)));
+
+			// Put unique ST fields into "where" clause.
+			if (hasFKValues && fkValues.Any(fk => fk.UniqueField || allFKs))
+			{
+				if (uniqueFieldValues.Count > 0) sb.Append(" and ");
+				sb.Append(String.Join(" and ", fkValues.Where(fk => fk.UniqueField || allFKs).Select(fk => dbio.Delimited(fk.FieldName) + " = @" + fk.FieldName)));
+			}
+
+			return sb;
+		}
+
+		/// <summary>
+		/// Returns a command with unique NT and FK values set in the parameter list.
+		/// </summary>
+		/// <returns></returns>
+		protected IDbCommand AddParametersToCommand(List<IFullyQualifiedNativeType> uniqueFieldValues, bool hasFKValues, List<FKValue> fkValues, bool allFKs)
+		{
+			IDbCommand cmd = dbio.CreateCommand();
+
+			// Populate parameters:
+			uniqueFieldValues.ForEach(fv => cmd.Parameters.Add(dbio.CreateParameter(fv.Name, fv.Value)));
+
+			if (hasFKValues && fkValues.Any(fk => fk.UniqueField || allFKs))
+			{
+				fkValues.Where(fk => fk.UniqueField || allFKs).ForEach(fk => cmd.Parameters.Add(dbio.CreateParameter(fk.FieldName, fk.ID)));
+			}
+
+			return cmd;
 		}
 
 		// ------ Query -------

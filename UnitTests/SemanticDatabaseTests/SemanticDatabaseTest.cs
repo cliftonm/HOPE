@@ -94,14 +94,20 @@ namespace SemanticDatabaseTests
 
 		protected void InitRestaurantUniqueLatLonAndParentSTElement()
 		{
-			SemanticTypeStruct stsRest = Helpers.CreateSemanticType("Restaurant", true, decls, structs);
-			
-			// child ST LatLon is NOT declared to be unique, but is actually treated as unique because Restaurant, the parent ST, is declared unique.
-			SemanticTypeStruct stsLatLon = Helpers.CreateSemanticType("LatLon", false, decls, structs);			
-
+			SemanticTypeStruct stsRest = Helpers.CreateSemanticType("Restaurant", false, decls, structs);
+			SemanticTypeStruct stsLatLon = Helpers.CreateSemanticType("LatLon", true, decls, structs);			
 			Helpers.CreateNativeType(stsLatLon, "latitude", "double", false);
 			Helpers.CreateNativeType(stsLatLon, "longitude", "double", false);
 			Helpers.CreateSemanticElement(stsRest, "LatLon", true);											// The element LatLon in Restaurant is unique.
+		}
+
+		protected void InitRestaurantUniqueParentSTElement()
+		{
+			SemanticTypeStruct stsRest = Helpers.CreateSemanticType("Restaurant", true, decls, structs);
+			SemanticTypeStruct stsLatLon = Helpers.CreateSemanticType("LatLon", false, decls, structs);
+			Helpers.CreateNativeType(stsLatLon, "latitude", "double", false);
+			Helpers.CreateNativeType(stsLatLon, "longitude", "double", false);
+			Helpers.CreateSemanticElement(stsRest, "LatLon", false);											// The element LatLon in Restaurant is unique.
 		}
 
 		// TODO: We should also test a unique single field in an multi-field ST.
@@ -432,7 +438,7 @@ namespace SemanticDatabaseTests
 			count = Convert.ToInt32(cmd.ExecuteScalar());
 			Assert.AreEqual(1, count, "Expected 1 Restaurant record.");
 
-			// Insert another, identical record.  We should still have one record.
+			// Insert another, identical record.  We should have two records.
 			sdr.ProcessCarrier(carrier);
 			cmd.CommandText = "SELECT count(*) from LatLon";
 			count = Convert.ToInt32(cmd.ExecuteScalar());
@@ -498,7 +504,7 @@ namespace SemanticDatabaseTests
 		[TestMethod]
 		public void TwoLevelUniqueParentSTInsert()
 		{
-			InitializeSDRTests(() => InitRestaurantUniqueLatLonAndParentSTElement());
+			InitializeSDRTests(() => InitRestaurantUniqueParentSTElement());
 
 			// Initialize the Semantic Data Receptor with the signal it should be listening to.
 			DropTable("Restaurant");
@@ -739,6 +745,7 @@ namespace SemanticDatabaseTests
 		{
 			DropTable("Url");
 			DropTable("Visited");
+			DropTable("Displayed");
 			DropTable("RSSFeedUrl");
 			DropTable("RSSFeedItemDisplayed");
 

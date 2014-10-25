@@ -22,9 +22,15 @@ sections:</p>
 	<li>Discussion of the concept and need for a semantic database</li>
 	<li>Architectural Implications</li>
 	<li>Implementation on top of an RDBMS</li>
-	<li>Demonstration of a semantic database in action using the
-	<a href="http://www.higherorderprogramming.com/">HOPE</a> IDE</li>
+	<li>Unit tests to vet basic insert and query operations (we'll leave update 
+	and delete for later)</li>
 </ul>
+<p>Part II will demonstrate the semantic database in action in the
+<a href="http://www.higherorderprogramming.com/developers-1-1-2/">Higher Order 
+Programming Environment</a> with a useful application.&nbsp; If you are 
+unfamiliar with HOPE,
+<a href="http://www.higherorderprogramming.com/developers-1-1-2/">this page</a> 
+will refer you to the other articles here on Code Project.</p>
 <p>As many of my readers will be used to by now, this is definitely going to be 
 a walk on the wild side.&nbsp; The concepts, architecture, and implementation 
 will hopefully challenge your preconceptions of what data is, and by corollary, 
@@ -32,7 +38,10 @@ what a semantic database is.</p>
 <p>The reader will hopefully also forgive the rather deep foray into a 
 non-technical discussion regarding semantics, as it is important to convey the 
 necessary foundational information.</p>
-<h3>What is a Semantics?</h3>
+<h3>Where's the Code?</h3>
+<p>As usual, the code can be cloned or forked from
+<a href="https://github.com/cliftonm/HOPE">GitHub</a>.</p>
+<h2>What is a Semantics?</h2>
 <p>Semantics is an emerging field of research and development in information 
 science, however, the concept has been around for a lot longer than computers!&nbsp;
 To begin with, semantics is the branch of linguistics and logic concerned with 
@@ -131,10 +140,11 @@ not white for the same reasons).&quot;</i><sup>6</sup></p>
 <p>If the full structure is persisted along with the data (&quot;red&quot;):</p>
 <p><img border="0" src="colors.png" width="589" height="152"></p>
 <p>and that structure is retrieved when querying for, say &quot;things that are red&quot;, 
-then its meaning is not ambiguous.&nbsp; However, we note that the parent 
+then its meaning is not ambiguous.&nbsp; </p>
+<p><img border="0" src="note.png" width="24" height="32"> We note that the parent 
 elements are valueless -- they are only placeholders referencing the child 
 element &quot;Color.&quot;</p>
-<h3>What is the Correct Concept of a Semantic Database?</h3>
+<h3>What is the &quot;Correct&quot; Concept of a Semantic Database?</h3>
 <p>Like Alice in Wonderland, we have to go down a few rabbit holes to figure 
 this out.&nbsp; </p>
 <p align="center"><img border="0" src="key-small.jpg" width="94" height="33"></p>
@@ -204,7 +214,7 @@ expression of the natural language sentence : 'John is a Person'.&quot;<sup>12</
 ontologies</li>
 </ol>
 <p>This guides us in understanding what a semantic database should provide.</p>
-<h3>Semantic Database </h3>
+<h2>A Semantic Database </h2>
 <p>In a semantic database (going back to the very early definition of 
 semantics), the schema:</p>
 <ol>
@@ -366,7 +376,7 @@ the data.</p>
 is valuable when designing a semantic database, and that is:</p>
 <p align="center"><img border="0" src="key-small.jpg" width="94" height="33"></p>
 <p align="center"><i>There is relevant meaning in the connections between semantic structures 
-that comprise the ontology.</i> </p>
+comprising the ontology.</i> </p>
 <h2>A Semantic Database Architecture</h2>
 <p>In the above discussion, we come to several important observations:</p>
 <ol>
@@ -461,7 +471,7 @@ querying an RDBMS “select URL from RSS_Feed_Item”.&nbsp; In the semantic
 database implementation that I propose here, the query &quot;select Value from URL&quot; 
 would actually not be possible because Value is a native type, not a semantic 
 type.</p>
-<h3 align="left">Using and RDMS to host a Semantic Database</h3>
+<h3 align="left">Using an RDMS to host a Semantic Database</h3>
 <p align="left">However, a semantic database can be built on top of an RDBMS.&nbsp; 
 We can leverage useful features of an RDBMS:</p>
 <ul>
@@ -525,6 +535,7 @@ into the OO paradigm.</p>
 <p>This is what the schema looks like in an RDBMS (and this is where I really 
 start getting the &quot;you're crazy&quot; looks):</p>
 <p><img border="0" src="sdmodel-subset.png" width="744" height="526"><br>
+<img border="0" src="note.png" width="24" height="32">&nbsp;
 Two things stand out:</p>
 <table border="0" width="100%">
 	<tr>
@@ -790,7 +801,7 @@ Here's what Postgres says about the table created by the above code:</p>
 <p>Each of our unit tests drops tables and recreates them to clear out the data 
 from previous tests.</p>
 <h4>A Simple Non-Unique Key Insert Test</h4>
-<p>This test verifies that when we insert identical information, we get two 
+<p><img border="0" src="unittest.png" width="14" height="32">&nbsp; This test verifies that when we insert identical information, we get two 
 records back:</p>
 <pre>/// &lt;summary&gt;
 /// Verifies that a non-unique ST with 2 NT's generates multiple records for the same data.
@@ -854,17 +865,476 @@ component, decoupling it completely from any other computational units.&nbsp;
 This also means that we can implement different persistence mechanisms, 
 traditional RDBMS, graph, even NoSQL, Excel export, etc.</p>
 <p><img border="0" src="database.png" width="32" height="32">What's going on 
-when we pass in a semantic structure?&nbsp; This triggers the insert algorithm 
-(update is not yet implemented.)&nbsp; </p>
+when we pass in a semantic structure?&nbsp; This triggers the insert/update 
+algorithm, though we'll be focusing only on inserts in this article.&nbsp; The 
+exposed &quot;API&quot; function sets up some initial state variables and calls a 
+recursive method:</p>
+<pre>string st = carrier.Protocol.DeclTypeName;
+
+// Get the STS for the carrier's protocol:
+ISemanticTypeStruct sts = rsys.SemanticTypeSystem.GetSemanticTypeStruct(st);
+Dictionary&lt;ISemanticTypeStruct, List&lt;FKValue&gt;&gt; stfkMap = new Dictionary&lt;ISemanticTypeStruct, List&lt;FKValue&gt;&gt;();
+
+ProcessSTS(stfkMap, sts, carrier.Signal);</pre>
+<p>Structures need to be inserted into the database from the bottom up to ensure 
+foreign key integrity.&nbsp; The method <code>ProcessSTS</code>&nbsp; does this 
+by drilling down to the lowest structural elements -- the ones that implement 
+only native types.&nbsp; The top level function is straight forward, recursing 
+into child semantic elements until the semantic element &quot;bottoms out&quot; into just 
+native types:</p>
+<pre>/// &lt;summary&gt;
+/// Drills into any child semantic elements, accumulating foreign keys for each level in the semantic hierarchy.
+/// When all children are inserted/updated, the parent can be inserted.
+/// &lt;/summary&gt;
+protected int ProcessSTS(Dictionary&lt;ISemanticTypeStruct, List&lt;FKValue&gt;&gt; stfkMap, ISemanticTypeStruct sts, object signal, bool childAsUnique = false)
+{
+  // Drill into each child ST and assign the return ID to this ST's FK for the child table name.
+  ProcessChildren(stfkMap, sts, signal, childAsUnique);
+
+  // Having processed all child ST's, We can now make the same determination of
+  // whether the record needs to check for uniqueness, however at this level,
+  // we need to write out both ST and any NT values in the current ST structure.
+  // This is very similar to an ST without child ST's, but here we also use ST's that are designated as unique to build the composite key.
+  int id = ArbitrateUniqueness(stfkMap, sts, signal, childAsUnique);
+
+return id;
+}</pre>
+<p>When the algorithm bottoms out, the data is checked for unique semantic 
+elements and native types, which determines whether to allow duplicates to be 
+inserted and whether to perform an update or an insert.&nbsp; </p>
+<p>As the algorithm works back up the semantic tree, the id's of the children 
+are accumulated so that they can populate the parent's foreign key fields:</p>
+<pre>/// &lt;summary&gt;
+/// For each child that has a non-null signal, process its children.
+/// &lt;/summary&gt;
+protected void ProcessChildren(Dictionary&lt;ISemanticTypeStruct, List&lt;FKValue&gt;&gt; stfkMap, ISemanticTypeStruct sts, object signal, bool childAsUnique)
+{
+  sts.SemanticElements.ForEach(child =&gt;
+  {
+    // Get the child signal and STS and check it, returning a new or existing ID for the entry.
+    ISemanticTypeStruct childsts = child.Element.Struct; // rsys.SemanticTypeSystem.GetSemanticTypeStruct(child.Name);
+    object childSignal = GetChildSignal(signal, child);
+
+    // We don't insert null child signals.
+    if (childSignal != null)
+    {
+      int id = ProcessSTS(stfkMap, childsts, childSignal, (sts.Unique || childAsUnique));
+      RegisterForeignKeyID(stfkMap, sts, child, id);
+    }
+  });
+}</pre>
+<p>Each child ID is associated with its name (auto-generated by the semantic 
+database engine) and its parent semantic element, such that each semantic 
+element has a list of 0 or more foreign key relations when all the children have 
+been processed:</p>
+<pre>/// &lt;summary&gt;
+/// Registers a foreign key name and value to be associated with the specified semantic structure, which is used when the ST is inserted
+/// after all child elements have been resolved.
+/// &lt;/summary&gt;
+protected void RegisterForeignKeyID(Dictionary&lt;ISemanticTypeStruct, List&lt;FKValue&gt;&gt; stfkMap, ISemanticTypeStruct sts, ISemanticElement child, int id)
+{
+  // Associate the ID to this ST's FK for that child table.
+  string fieldName = &quot;FK_&quot; + child.Name + &quot;ID&quot;;
+  CreateKeyIfMissing(stfkMap, sts);
+  stfkMap[sts].Add(new FKValue(fieldName, id, child.UniqueField));
+}
+</pre>
+<p>The unique native type, semantic element (the foreign key and all child, 
+grandchild, etc elements and native types) and semantic structure (all child, 
+grandchild, etc elements and native types) is arbitrated by checking various 
+flags that are set for the specific semantic structure or by its parent.&nbsp; I 
+realize that was a mouthful, so let's look at the code:</p>
+<pre>	/// &lt;summary&gt;
+/// Based on whether a semantic element is unique or whether the foreign key fields or native types are unique, we determine how to determine uniqueness.
+/// We always perform an insert if there is no way to determine whether the record is unique.
+/// If it is unique, the ID of the existing record is returned.
+/// &lt;/summary&gt;
+/// &lt;param name=&quot;stfkMap&quot;&gt;&lt;/param&gt;
+protected int ArbitrateUniqueness(Dictionary&lt;ISemanticTypeStruct, List&lt;FKValue&gt;&gt; stfkMap, ISemanticTypeStruct sts, object signal, bool childAsUnique)
+{
+  int id = -1;
+
+  if (sts.Unique || childAsUnique)
+  {
+    // All FK's and NT's of this ST are considered part of the composite key.
+    // Get all NT's specifically for this ST (no recursive drilldown)
+    List&lt;IFullyQualifiedNativeType&gt; fieldValues = rsys.SemanticTypeSystem.GetFullyQualifiedNativeTypeValues(signal, sts.DeclTypeName, false);
+    id = InsertIfRecordDoesntExist(stfkMap, sts, signal, fieldValues, true);
+  }
+  else if (sts.SemanticElements.Any(se =&gt; se.UniqueField) || sts.NativeTypes.Any(nt =&gt; nt.UniqueField))
+  {
+    // Get only unique NT's specifically for this ST (no recursive drilldown)
+    // Note that a unique semantic element will automatically set the unique field for its native type children, subchildren, etc.
+    List&lt;IFullyQualifiedNativeType&gt; fieldValues = rsys.SemanticTypeSystem.GetFullyQualifiedNativeTypeValues(signal, sts.DeclTypeName, false).Where(fqnt =&gt; fqnt.NativeType.UniqueField).ToList();
+    id = InsertIfRecordDoesntExist(stfkMap, sts, signal, fieldValues, true);
+  }
+  else
+  {
+    // No SE's or NT's are unique, so just insert the ST, as we cannot make a determination regarding uniqueness.
+    id = Insert(stfkMap, sts, signal);
+  }
+
+  return id;
+}</pre>
+<p><img border="0" src="note.png" width="24" height="32"> Not obvious is the 
+fact that GetFullyQualifiedNativeTypeValues is returning structures that carry 
+forward the parent element's uniqueness flag.&nbsp; </p>
+<p>We have three states:</p>
+<ol>
+	<li>The structure or a parent structure is flagged as unique.&nbsp; This 
+	treats all foreign key and native type fields as comprising the composite 
+	unique key.</li>
+	<li>One or more child elements (implemented as a foreign key) is unique or 
+	one or more native type elements is unique.&nbsp; The unique composite key 
+	consists exclusively of the unique foreign key and native type fields.</li>
+	<li>There is no unique key.&nbsp; In this case, the structure is always 
+	inserted.</li>
+</ol>
+<p>Once we have some unique fields, we test to see whether it's unique and, if 
+so insert it:</p>
+<pre>/// &lt;summary&gt;
+/// Insert the record if it doesn't exist.
+/// &lt;/summary&gt;
+protected int InsertIfRecordDoesntExist(Dictionary&lt;ISemanticTypeStruct, List&lt;FKValue&gt;&gt; stfkMap, ISemanticTypeStruct sts, object signal, List&lt;IFullyQualifiedNativeType&gt; fieldValues, bool childAsUnique)
+{
+  int id = -1;
+  bool exists = QueryUniqueness(stfkMap, sts, signal, fieldValues, out id, true);
+
+  if (!exists)
+  {
+    id = Insert(stfkMap, sts, signal);
+  }
+
+  return id;
+}</pre>
+<p>The new record's primary key ID is returned or the existing ID is returned.</p>
+<pre>/// &lt;summary&gt;
+/// Build and execute a select statement that determines if the record, based on a composite key, already exists.
+/// If so, return the ID of the record.
+/// &lt;/summary&gt;
+protected bool QueryUniqueness(Dictionary&lt;ISemanticTypeStruct, List&lt;FKValue&gt;&gt; stfkMap, ISemanticTypeStruct sts, object signal, List&lt;IFullyQualifiedNativeType&gt; uniqueFieldValues, out int id, bool allFKs = false)
+{
+  id = -1;
+  bool ret = false;
+  List&lt;FKValue&gt; fkValues;
+  bool hasFKValues = stfkMap.TryGetValue(sts, out fkValues);
+  StringBuilder sb = BuildUniqueQueryStatement(hasFKValues, fkValues, sts, uniqueFieldValues, allFKs); 
+  IDbCommand cmd = AddParametersToCommand(uniqueFieldValues, hasFKValues, fkValues, allFKs);
+  cmd.CommandText = sb.ToString();
+  LogSqlStatement(cmd.CommandText);
+
+  object oid = cmd.ExecuteScalar();
+  ret = (oid != null);
+
+  if (ret)
+  {
+    id = Convert.ToInt32(oid);
+  }
+
+  return ret;
+}</pre>
+<p>And finally, if an insert is required, we have this rather unwieldy piece of 
+code to actually perform the insert:</p>
+<pre>protected int Insert(Dictionary&lt;ISemanticTypeStruct, List&lt;FKValue&gt;&gt; stfkMap, ISemanticTypeStruct sts, object signal)
+{
+  // Get native types to insert:
+  List&lt;IFullyQualifiedNativeType&gt; ntFieldValues = rsys.SemanticTypeSystem.GetFullyQualifiedNativeTypeValues(signal, sts.DeclTypeName, false);
+  StringBuilder sb = new StringBuilder(&quot;insert into &quot; + sts.DeclTypeName + &quot; (&quot;);
+  sb.Append(String.Join(&quot;, &quot;, ntFieldValues.Select(f =&gt; f.Name)));
+
+  // Get ST's to insert as FK_ID's:
+  List&lt;FKValue&gt; fkValues;
+  bool hasFKValues = stfkMap.TryGetValue(sts, out fkValues);
+
+  if (hasFKValues &amp;&amp; fkValues.Count &gt; 0)
+  {
+    // Join in the FK_ID field names.
+    if (ntFieldValues.Count &gt; 0) sb.Append(&quot;, &quot;);
+    sb.Append(string.Join(&quot;, &quot;, fkValues.Select(fkv =&gt; fkv.FieldName)));
+  }
+
+  // Setup NT field values:
+  sb.Append(&quot;) values (&quot;);
+  sb.Append(String.Join(&quot;, &quot;, ntFieldValues.Select(f =&gt; &quot;@&quot; + f.Name)));
+
+  // Setup ST FK parameters:
+  if (hasFKValues &amp;&amp; fkValues.Count &gt; 0)
+  {
+    if (ntFieldValues.Count &gt; 0) sb.Append(&quot;, &quot;);
+    sb.Append(string.Join(&quot;, &quot;, fkValues.Select(fkv =&gt; &quot;@&quot; + fkv.FieldName)));
+  }
+
+  sb.Append(&quot;)&quot;);
+  IDbCommand cmd = dbio.CreateCommand();
+
+  // Assign NT values:
+  ntFieldValues.ForEach(fv =&gt; cmd.Parameters.Add(dbio.CreateParameter(fv.Name, fv.Value)));
+
+  // Assign FK values:
+  if (hasFKValues &amp;&amp; fkValues.Count &gt; 0)
+  {
+    fkValues.ForEach(fkv =&gt; cmd.Parameters.Add(dbio.CreateParameter(fkv.FieldName, fkv.ID)));
+  }
+
+  cmd.CommandText = sb.ToString();
+  LogSqlStatement(cmd.CommandText);
+  cmd.ExecuteNonQuery();
+
+  int id = dbio.GetLastID(sts.DeclTypeName);
+
+  return id;
+}</pre>
+<h4>A Simple Unique Key Insert Test</h4>
+<p><img border="0" src="unittest.png" width="14" height="32">&nbsp; This test verifies that when we 
+attempt to insert two identical records, the semantic database detects this, 
+based on our semantic structure configuration, and ignores the second insert 
+because it's a duplicate record.</p>
+<p>Recall how the non-unique LatLon semantic structure was initialized:</p>
+<pre>protected void InitLatLonNonUnique()
+{
+  SemanticTypeStruct sts = Helpers.CreateSemanticType(&quot;LatLon&quot;, false, decls, structs);
+  Helpers.CreateNativeType(sts, &quot;latitude&quot;, &quot;double&quot;, false);
+  Helpers.CreateNativeType(sts, &quot;longitude&quot;, &quot;double&quot;, false);
+}</pre>
+<p>In this unit test, we initialize the structure slightly differently:</p>
+<pre>protected void InitLatLonUniqueFields()
+{
+SemanticTypeStruct sts = Helpers.CreateSemanticType(&quot;LatLon&quot;, false, decls, structs);
+Helpers.CreateNativeType(sts, &quot;latitude&quot;, &quot;double&quot;, <font color="#FF0000"><b>true</b></font>);
+Helpers.CreateNativeType(sts, &quot;longitude&quot;, &quot;double&quot;, <font color="#FF0000"><b>true</b></font>);
+}<b>
+);
+</b>  Helpers.CreateNativeType(sts, &quot;longitude&quot;, &quot;double&quot;, true);
+}</pre>
+<p>Notice in this structure, we are declaring that the native type fields are 
+both unique.&nbsp; This composite key comprises the unique fields, and we see 
+that the semantic database ends up inserting only one record.</p>
+<h4>A Simple Unique Structure Insert Test</h4>
+<p><img border="0" src="unittest.png" width="14" height="32">&nbsp; Again, this test verifies that when we 
+attempt to insert two identical records, the semantic database detects this, 
+based on our semantic structure configuration, and ignores the second insert 
+because it's a duplicate record.&nbsp; In this case though, it is the semantic 
+structure itself that is flagged as unique:</p>
+<pre>protected void InitLatLonUniqueST()
+{
+  SemanticTypeStruct sts = Helpers.CreateSemanticType(&quot;LatLon&quot;, <font color="#FF0000"><b>true</b></font>, decls, structs);
+  Helpers.CreateNativeType(sts, &quot;latitude&quot;, &quot;double&quot;, false);
+  Helpers.CreateNativeType(sts, &quot;longitude&quot;, &quot;double&quot;, false);
+}</pre>
+<p>Here we're testing (in a simple way) that if a structure is declared as 
+unique, then we don't have to bother setting any native type fields <i>anywhere 
+in the hierarchy from here on</i> as unique.</p>
+<h4>Two-Level Non-Unique Insert Test</h4>
+<p><img border="0" src="unittest.png" width="14" height="32">&nbsp; Here we do 
+something a bit more interesting -- we're going create a simple two-level 
+structure: a parent &quot;Restaurant&quot; and a child &quot;LatLon&quot;, and verify that we get 
+two records in both the Restaurant and LatLon tables.&nbsp; </p>
+<p>First, let's look at the initialization of the semantic structure:</p>
+<pre>protected void InitRestaurantLatLonNonUnique()
+{
+  SemanticTypeStruct stsRest = Helpers.CreateSemanticType(&quot;Restaurant&quot;, false, decls, structs);
+  SemanticTypeStruct stsLatLon = Helpers.CreateSemanticType(&quot;LatLon&quot;, false, decls, structs);
+  Helpers.CreateNativeType(stsLatLon, &quot;latitude&quot;, &quot;double&quot;, false);
+  Helpers.CreateNativeType(stsLatLon, &quot;longitude&quot;, &quot;double&quot;, false);
+  Helpers.CreateSemanticElement(stsRest, &quot;LatLon&quot;, false);
+}</pre>
+<p>We see that &quot;Restaurant&quot; has a &quot;LatLon&quot; element which is comprised of two 
+native types, &quot;latitude&quot; and &quot;longitude&quot;.&nbsp; Notice that &quot;Restaurant&quot; doesn't 
+have any native types itself -- we don't really need or want any for this 
+particular test -- we want to start simply.</p>
+<p><img border="0" src="database.png" width="32" height="32">On the database 
+side, the semantic database creates the following tables (as described by 
+Postgres):</p>
+<pre>CREATE TABLE restaurant
+(
+  id serial NOT NULL,
+  fk_latlonid bigint,
+  CONSTRAINT restaurant_pkey PRIMARY KEY (id),
+  CONSTRAINT restaurant_fk_latlonid_fkey FOREIGN KEY (fk_latlonid)
+  REFERENCES latlon (id) MATCH SIMPLE
+  ON UPDATE NO ACTION ON DELETE NO ACTION
+)</pre>
+<p>Notice the foreign key to the LatLon table (annoyingly, Postgres turns all 
+tables and fields into lowercase).</p>
+<p>The LatLon table hasn't changed:</p>
+<pre>CREATE TABLE latlon
+(
+id serial NOT NULL,
+latitude double precision,
+longitude double precision,
+CONSTRAINT latlon_pkey PRIMARY KEY (id)
+)</pre>
+<p>This unit test initializes the semantic structure slightly differently now 
+because LatLon is an element of Restaurant:</p>
+<pre>[TestMethod]
+public void TwoLevelNonUniqueSTInsert()
+{
+  InitializeSDRTests(() =&gt; InitRestaurantLatLonNonUnique());
+
+  // Initialize the Semantic Data Receptor with the signal it should be listening to.
+  DropTable(&quot;Restaurant&quot;);
+  DropTable(&quot;LatLon&quot;);
+  sdr.Protocols = &quot;LatLon; Restaurant&quot;;
+  sdr.ProtocolsUpdated();
+
+  // Create the signal.
+  ICarrier carrier = Helpers.CreateCarrier(rsys, &quot;Restaurant&quot;, signal =&gt;
+  {
+<font color="#FF0000"><b>    signal.LatLon.latitude = 1.0;
+    signal.LatLon.longitude = 2.0;
+</b></font>  });
+
+  // Let's see what the SDR does.
+  sdr.ProcessCarrier(carrier);
+  IDbConnection conn = sdr.Connection;
+
+  int count;
+  IDbCommand cmd = conn.CreateCommand();
+  cmd.CommandText = &quot;SELECT count(*) from LatLon&quot;;
+  count = Convert.ToInt32(cmd.ExecuteScalar());
+  Assert.AreEqual(1, count, &quot;Expected 1 LatLon record.&quot;);
+  cmd.CommandText = &quot;SELECT count(*) from Restaurant&quot;;
+  count = Convert.ToInt32(cmd.ExecuteScalar());
+  Assert.AreEqual(1, count, &quot;Expected 1 Restaurant record.&quot;);
+
+  // Insert another, identical record. We should still have one record.
+  sdr.ProcessCarrier(carrier);
+  cmd.CommandText = &quot;SELECT count(*) from LatLon&quot;;
+  count = Convert.ToInt32(cmd.ExecuteScalar());
+  Assert.AreEqual(2, count, &quot;Expected 2 LatLon record.&quot;);
+  cmd.CommandText = &quot;SELECT count(*) from Restaurant&quot;;
+  count = Convert.ToInt32(cmd.ExecuteScalar());
+  Assert.AreEqual(2, count, &quot;Expected 2 Restaurant records.&quot;);
+
+  sdr.Terminate();
+}</pre>
+<h4>Two-Level Unique Structure Insert Test</h4>
+<p><img border="0" src="unittest.png" width="14" height="32">&nbsp; Next, we 
+want to see what happens when we create the LatLon structure, indicating that it 
+is unique:</p>
+<pre>protected void InitRestaurantLatLonUniqueChildST()
+{
+  SemanticTypeStruct stsRest = Helpers.CreateSemanticType(&quot;Restaurant&quot;, false, decls, structs);
+  SemanticTypeStruct stsLatLon = Helpers.CreateSemanticType(&quot;LatLon&quot;, <font color="#FF0000"><b>true</b></font>, decls, structs); // child ST LatLon is declared to be unique.
+  Helpers.CreateNativeType(stsLatLon, &quot;latitude&quot;, &quot;double&quot;, false);
+  Helpers.CreateNativeType(stsLatLon, &quot;longitude&quot;, &quot;double&quot;, false);
+  Helpers.CreateSemanticElement(stsRest, &quot;LatLon&quot;, false); // The element LatLon in Restaurant is NOT unique.
+}</pre>
+<p>As expected, when we attempt to insert two duplicate records, that LatLon 
+structure is inserted only once and we get two Restaurant records pointing to 
+the same LatLon record:</p>
+<pre>int count;
+IDbCommand cmd = conn.CreateCommand();
+cmd.CommandText = &quot;SELECT count(*) from LatLon&quot;;
+count = Convert.ToInt32(cmd.ExecuteScalar());
+Assert.AreEqual(1, count, &quot;Expected 1 LatLon record.&quot;);
+cmd.CommandText = &quot;SELECT count(*) from Restaurant&quot;;
+count = Convert.ToInt32(cmd.ExecuteScalar());
+Assert.AreEqual(1, count, &quot;Expected 1 Restaurant record.&quot;);
+
+// Insert another, identical record. We should still have one record.
+sdr.ProcessCarrier(carrier);
+cmd.CommandText = &quot;SELECT count(*) from LatLon&quot;;
+count = Convert.ToInt32(cmd.ExecuteScalar());
+Assert.AreEqual(1, count, &quot;Expected 1 LatLon record.&quot;);
+cmd.CommandText = &quot;SELECT count(*) from Restaurant&quot;;
+count = Convert.ToInt32(cmd.ExecuteScalar());
+Assert.AreEqual(2, count, &quot;Expected 2 Restaurant records.&quot;);</pre>
+<h4>Two-Level Unique Element Insert Test</h4>
+<p><img border="0" src="unittest.png" width="14" height="32">&nbsp; A variation 
+on this theme is creating the Restaurant-LatLon structure such that the LatLon
+<i>element</i> of the Restaurant structure is declared unique.&nbsp; In concrete 
+terms, this tells the semantic database that the foreign key field &quot;fk_latlonid&quot; 
+is a unique field.&nbsp; We initialize the structure in code like this:</p>
+<pre>protected void InitRestaurantLatLonUniqueParentSTElement()
+{
+  SemanticTypeStruct stsRest = Helpers.CreateSemanticType(&quot;Restaurant&quot;, false, decls, structs);
+  SemanticTypeStruct stsLatLon = Helpers.CreateSemanticType(&quot;LatLon&quot;, false, decls, structs); // child ST LatLon is declared to NOT be unique.
+  Helpers.CreateNativeType(stsLatLon, &quot;latitude&quot;, &quot;double&quot;, false);
+  Helpers.CreateNativeType(stsLatLon, &quot;longitude&quot;, &quot;double&quot;, false);
+  Helpers.CreateSemanticElement(stsRest, &quot;LatLon&quot;, <font color="#FF0000"><b>true</b></font>); // The element LatLon in Restaurant is unique.
+}</pre>
+<p>Here's our test (the earlier part of the test code is the same as in the 
+previous cases):</p>
+<pre>int count;
+IDbCommand cmd = conn.CreateCommand();
+cmd.CommandText = &quot;SELECT count(*) from LatLon&quot;;
+count = Convert.ToInt32(cmd.ExecuteScalar());
+Assert.AreEqual(1, count, &quot;Expected 1 LatLon record.&quot;);
+cmd.CommandText = &quot;SELECT count(*) from Restaurant&quot;;
+count = Convert.ToInt32(cmd.ExecuteScalar());
+Assert.AreEqual(1, count, &quot;Expected 1 Restaurant record.&quot;);
+
+// Insert another, identical record. We should have two records.
+sdr.ProcessCarrier(carrier);
+cmd.CommandText = &quot;SELECT count(*) from LatLon&quot;;
+count = Convert.ToInt32(cmd.ExecuteScalar());
+Assert.AreEqual(2, count, &quot;Expected 2 LatLon records.&quot;);
+cmd.CommandText = &quot;SELECT count(*) from Restaurant&quot;;
+count = Convert.ToInt32(cmd.ExecuteScalar());
+Assert.AreEqual(2, count, &quot;Expected 2 Restaurant records.&quot;);</pre>
+<p>Because only the foreign key is unique, we will be inserting two LatLon 
+records, as there are no fields declared unique in LatLon.&nbsp; Because this 
+returns a new ID, the foreign key field is not unique, causing a second entry in 
+the Restaurant table.</p>
+<h4>Two-Level Unique Element <i>and Structure </i>Insert Test</h4>
+<p><img border="0" src="unittest.png" width="14" height="32">&nbsp; Finally, we 
+test the combination where both the Restaurant's <i>element</i> LatLon (ie, it's 
+foreign key) <i>and</i> the LatLon structure itself are unique.&nbsp; Here's how 
+we configure the semantic structure:</p>
+<pre>protected void InitRestaurantUniqueLatLonAndParentSTElement()
+{
+  SemanticTypeStruct stsRest = Helpers.CreateSemanticType(&quot;Restaurant&quot;, false, decls, structs);
+  SemanticTypeStruct stsLatLon = Helpers.CreateSemanticType(&quot;LatLon&quot;, <font color="#FF0000"><b>true</b></font>, decls, structs); 
+  Helpers.CreateNativeType(stsLatLon, &quot;latitude&quot;, &quot;double&quot;, false);
+  Helpers.CreateNativeType(stsLatLon, &quot;longitude&quot;, &quot;double&quot;, false);
+  Helpers.CreateSemanticElement(stsRest, &quot;LatLon&quot;, <font color="#FF0000"><b>true</b></font>); // The element LatLon in Restaurant is unique.
+}</pre>
+<p>Now we see that, because the structure LatLon is unique <i>and</i> the LatLon 
+element in Restaurant is unique (implemented as the foreign key) we get one 
+Restaurant record and one LatLon record when we attempt to insert two identical 
+records:</p>
+<pre>int count;
+IDbCommand cmd = conn.CreateCommand();
+cmd.CommandText = &quot;SELECT count(*) from LatLon&quot;;
+count = Convert.ToInt32(cmd.ExecuteScalar());
+Assert.AreEqual(1, count, &quot;Expected 1 LatLon record.&quot;);
+cmd.CommandText = &quot;SELECT count(*) from Restaurant&quot;;
+count = Convert.ToInt32(cmd.ExecuteScalar());
+Assert.AreEqual(1, count, &quot;Expected 1 Restaurant record.&quot;);
+
+// Insert another, identical record. We should still have one record.
+sdr.ProcessCarrier(carrier);
+cmd.CommandText = &quot;SELECT count(*) from LatLon&quot;;
+count = Convert.ToInt32(cmd.ExecuteScalar());
+Assert.AreEqual(1, count, &quot;Expected 1 LatLon record.&quot;);
+cmd.CommandText = &quot;SELECT count(*) from Restaurant&quot;;
+count = Convert.ToInt32(cmd.ExecuteScalar());
+Assert.AreEqual(1, count, &quot;Expected 1 Restaurant record.&quot;);</pre>
+<p><img border="0" src="quiz.png" width="47" height="64"> Since this is all very 
+complicated, let's test your comprehension.&nbsp; What happens when the semantic 
+structure is declared like this:</p>
+<pre>protected void InitRestaurantUniqueLatLonAndParentSTElement()
+{
+  SemanticTypeStruct stsRest = Helpers.CreateSemanticType(&quot;Restaurant&quot;, <font color="#FF0000"><b>true</b></font>, decls, structs);
+  SemanticTypeStruct stsLatLon = Helpers.CreateSemanticType(&quot;LatLon&quot;, false, decls, structs); 
+  Helpers.CreateNativeType(stsLatLon, &quot;latitude&quot;, &quot;double&quot;, false);
+  Helpers.CreateNativeType(stsLatLon, &quot;longitude&quot;, &quot;double&quot;, false);
+  Helpers.CreateSemanticElement(stsRest, &quot;LatLon&quot;, true); // The element LatLon in Restaurant is unique.
+}</pre>
+<p>Yes indeed, because the Restaurant structure is itself declared as unique, 
+every child element inherits its parent's uniqueness, and again we will insert 
+only one actual record for two or more attempts of a duplicate semantic 
+structure value.</p>
+<h3>A Simple Query Test</h3>
+<p><img border="0" src="unittest.png" width="14" height="32"> If you thought 
+inserting data was complicated, getting it back out of the database is even more 
+complicated because of the inferences that the semantic database makes regarding 
+how to join to disparate semantic structures.&nbsp; Let's start with something 
+basic:</p>
 <p>&nbsp;</p>
-<p>&nbsp;</p>
-<h4>Creating Tables</h4>
-<h4>Inserting Data</h4>
-<h4>Querying Single Types</h4>
-<h4>Querying Joined Types</h4>
-<h2>A Real Demonstration</h2>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
+<h2>Conclusion</h2>
+<p>As this article has </p>
 <p>&nbsp;</p>
 <h2>References</h2>
 <p>1 - Semantic Data -
