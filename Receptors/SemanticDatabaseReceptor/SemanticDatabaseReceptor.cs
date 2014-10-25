@@ -493,8 +493,7 @@ namespace SemanticDatabaseReceptor
 			{
 				string fieldName = "FK_" + child.Name + "ID";
 				tfvEntry.FieldValues.Add(new FieldValue(tfvEntry, fieldName, null, child.Element.Struct.Unique, FieldValueType.SemanticType));
-				PropertyInfo piSub = signal.GetType().GetProperty(child.Name);
-				object childSignal = piSub.GetValue(signal);
+				object childSignal = GetChildSignal(signal, child);
 				CreateTableFieldValueList(tfvList, child.Name, childSignal);
 			});
 
@@ -606,6 +605,12 @@ namespace SemanticDatabaseReceptor
 			object childSignal = piSub.GetValue(signal);
 
 			return childSignal;
+		}
+
+		protected void SetValue(object signal, string propertyName, object val)
+		{
+			PropertyInfo pi0 = signal.GetType().GetProperty(propertyName);
+			pi0.SetValue(signal, val);
 		}
 
 		/// <summary>
@@ -810,26 +815,18 @@ namespace SemanticDatabaseReceptor
 				}
 				else if (types.Count() > 1)
 				{
-					// TODO: Move this into separate functions:
-
 					// Joins require creating dynamic semantic types.
 					// Define a new protocol consisting of a root placeholder semantic element with n children,
 					// one child for each of the joined semantic types.
 
 					// First we need to find common structures between each of the specified structures.
 					Dictionary<string, List<Tuple<ISemanticTypeStruct, ISemanticTypeStruct>>> stSemanticTypes = new Dictionary<string, List<Tuple<ISemanticTypeStruct, ISemanticTypeStruct>>>();
-
-					// For each root type, get all the sub-ST's.
-					foreach (string st in types)
-					{
-						stSemanticTypes[st] = rsys.SemanticTypeSystem.GetAllSemanticTypes(st);
-					}
-
 					Dictionary<TypeIntersection, List<ISemanticTypeStruct>> typeIntersectionStructs = new Dictionary<TypeIntersection, List<ISemanticTypeStruct>>();
-					List<TypeIntersection> joinOrder = GetJoinOrder(types, stSemanticTypes, typeIntersectionStructs);
+					Dictionary<ISemanticTypeStruct, int> structureUseCounts = new Dictionary<ISemanticTypeStruct, int>();
+
+					List<TypeIntersection> joinOrder = DiscoverJoinOrder(types, stSemanticTypes, typeIntersectionStructs);
 
 					// Since we always start with the first ST in the join list as the base type:
-					Dictionary<ISemanticTypeStruct, int> structureUseCounts = new Dictionary<ISemanticTypeStruct, int>();
 					List<ISemanticTypeStruct> sharedStructs = typeIntersectionStructs[joinOrder[0]];
 					ISemanticTypeStruct sharedStruct = sharedStructs[0];
 					string baseType = joinOrder[0].BaseType;
@@ -842,20 +839,14 @@ namespace SemanticDatabaseReceptor
 					List<string> fields0 = new List<string>();
 					List<string> joins0 = new List<string>();
 					List<Tuple<string, string>> fqntAliases = new List<Tuple<string, string>>();
+
 					BuildQuery(sts0, fields0, joins0, structureUseCounts, sts0.DeclTypeName, fqntAliases);
 
 					// Now we're ready to join the other ST's, which are always joinOrder[joinIdx].JoinType.
 					for (int joinIdx = 0; joinIdx < joinOrder.Count; joinIdx++)
 					{
 						string joinType = joinOrder[joinIdx].JoinType;
-
-						// If we've changed the "base" type, then update parent0 and parent0ElementUnique.
-						if (joinOrder[joinIdx].BaseType != baseType)
-						{
-							baseType = joinOrder[joinIdx].BaseType;
-							parent0 = stSemanticTypes[baseType].Single(t => t.Item1 == sharedStruct).Item2;
-							parent0ElementUnique = parent0.SemanticElements.Any(se => se.Name == sharedStruct.DeclTypeName && se.UniqueField);
-						}
+						FixupBaseType(stSemanticTypes, sharedStruct, joinOrder, joinIdx, ref baseType, ref parent0, ref parent0ElementUnique);
 
 						sharedStructs = typeIntersectionStructs[joinOrder[joinIdx]];
 
@@ -872,6 +863,8 @@ namespace SemanticDatabaseReceptor
 						// If both reference a non-unique structure, we get an intersection, but then we need to check the parent to see if the element is unique for both paths.
 
 						// TODO: At the moment, we just pick the first shared structure.  At some point we want to pick one that can work with FK's first, then NT unique key values if we can't find an FK join.
+						// TODO: If there's more than one shared structure, try an pick the one that is unique or who's parent is a unique element.
+						// TODO: Write a unit test for this.
 						sharedStruct = sharedStructs[0];
 
 						// Find the parent for each root query given the shared structure.
@@ -879,8 +872,6 @@ namespace SemanticDatabaseReceptor
 						ISemanticTypeStruct parent1 = stSemanticTypes[joinType].Single(t => t.Item1 == sharedStruct).Item2;
 						bool parent1ElementUnique = parent1.SemanticElements.Any(se => se.Name == sharedStruct.DeclTypeName && se.UniqueField);
 
-						// TODO: If there's more than one shared structure, try an pick the one that is unique or who's parent is a unique element.
-						// TODO: Write a unit test for this.
 						// If the shared structure is unique, or the elements referencing the structure are unique in both parents, then we can use the FK ID between the two parent ST's to join the structures.
 						// Otherwise, we have to use the NT values in each structure.
 						if ((sharedStruct.Unique) || (parent0ElementUnique && parent1ElementUnique))
@@ -917,6 +908,7 @@ namespace SemanticDatabaseReceptor
 							{
 								joins0.Add("left join " + parent1.DeclTypeName + " on " + parent1.DeclTypeName + ".FK_" + sharedStruct.DeclTypeName + "ID = " + rightSideTableName + ".FK_" + sharedStruct.DeclTypeName + "ID");
 							}
+
 							joins0.AddRange(joins1);
 						}
 						else
@@ -930,89 +922,7 @@ namespace SemanticDatabaseReceptor
 					sqlQuery = sqlQuery + " " + ParseOrderBy(orderBy, fqntAliases);
 					sqlQuery = dbio.AddLimitClause(sqlQuery, maxRecords);
 
-					// Perform the query:
-					// TODO: Separate function!
-
-					IDbCommand cmd = dbio.CreateCommand();
-					cmd.CommandText = sqlQuery;
-					LogSqlStatement(sqlQuery);
-					IDataReader reader = cmd.ExecuteReader();
-
-					// Populate the signal with the columns in each record read.
-					// Wrap this so we can close the reader if there are any problems.
-					try
-					{
-						while (reader.Read())
-						{
-							int counter = 0;
-							List<object> joinSignals = new List<object>();
-
-							// The resulting fields are in the order of how they're populated based on our join list.
-							// Since we're hard-coding a 2 type joins...
-							ISemanticTypeStruct outprotocol0 = rsys.SemanticTypeSystem.GetSemanticTypeStruct(types[0]);
-							object outsignal0 = rsys.SemanticTypeSystem.Create(types[0]);
-							Populate(outprotocol0, outsignal0, reader, ref counter);
-
-							for (int joinIdx = 0; joinIdx < joinOrder.Count; joinIdx++)
-							{
-								string joinType = joinOrder[joinIdx].JoinType;
-								ISemanticTypeStruct outprotocol1 = rsys.SemanticTypeSystem.GetSemanticTypeStruct(joinType);
-								object outsignal1 = rsys.SemanticTypeSystem.Create(joinType);
-
-								bool anyNonNull1 = Populate(outprotocol1, outsignal1, reader, ref counter);
-
-								// If all native type values are null in the resulting ST, then this is a join with no record, so set the signal to null.
-								if (!anyNonNull1)
-								{
-									outsignal1 = null;
-								}
-
-								joinSignals.Add(outsignal1);
-							}
-
-							// Now create a custom type if it doesn't already exist.  The custom type name is formed from the type names in the join.
-							string customTypeName = String.Join("_", types);
-
-							if (!rsys.SemanticTypeSystem.VerifyProtocolExists(customTypeName))
-							{
-								rsys.SemanticTypeSystem.CreateCustomType(customTypeName, types);
-								AddEmitProtocol(customTypeName);		// We now emit this custom protocol.
-							}
-
-							ISemanticTypeStruct outprotocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct(customTypeName);
-							object outsignal = rsys.SemanticTypeSystem.Create(customTypeName);
-
-							// Assign our signals to the children of the custom type.  
-							// TODO: Again, self-joins will fail here.
-							PropertyInfo pi0 = outsignal.GetType().GetProperty(types[0]);
-							pi0.SetValue(outsignal, outsignal0);
-
-							for (int joinIdx = 0; joinIdx < joinOrder.Count; joinIdx++)
-							{
-								string joinType = joinOrder[joinIdx].JoinType;
-								PropertyInfo pi1 = outsignal.GetType().GetProperty(joinType);
-								pi1.SetValue(outsignal, joinSignals[joinIdx]);
-							}
-
-							// Finally!  Create the carrier:
-							if (UnitTesting)
-							{
-								rsys.CreateCarrier(this, outprotocol, outsignal);
-							}
-							else
-							{
-								rsys.CreateCarrierIfReceiver(this, outprotocol, outsignal);
-							}
-						}
-					}
-					catch (Exception ex)
-					{
-						EmitException(ex);
-					}
-					finally
-					{
-						reader.Close();
-					}
+					ReadResults(sqlQuery, types, joinOrder);
 				}
 				else
 				{
@@ -1026,6 +936,138 @@ namespace SemanticDatabaseReceptor
 			}
 		}
 
+		private void ReadResults(string sqlQuery, List<string> types, List<TypeIntersection> joinOrder)
+		{
+			IDbCommand cmd = dbio.CreateCommand();
+			cmd.CommandText = sqlQuery;
+			LogSqlStatement(sqlQuery);
+			IDataReader reader = cmd.ExecuteReader();
+
+			// Populate the signal with the columns in each record read.
+			// Wrap this so we can close the reader if there are any problems.
+			try
+			{
+				while (reader.Read())
+				{
+					int counter = 0;
+					List<object> joinSignals = new List<object>();
+
+					// The resulting fields are in the order of how they're populated based on our join list.
+					object outsignal0 = PopulateStructure(types[0], reader, ref counter);
+					PopulateJoinStructures(joinSignals, joinOrder, reader, ref counter);
+
+					// Now create a custom type if it doesn't already exist.  The custom type name is formed from the type names in the join.
+					ISemanticTypeStruct outprotocol;
+					object outsignal = CreateCustomType(types, out outprotocol);
+
+					// Assign our signals to the children of the custom type.  
+					// TODO: Again, self-joins will fail here.
+					SetValue(outsignal, types[0], outsignal0);
+					SetJoinedSignals(outsignal, joinOrder, joinSignals);
+
+					// Finally!  Create the carrier:
+					if (UnitTesting)
+					{
+						rsys.CreateCarrier(this, outprotocol, outsignal);
+					}
+					else
+					{
+						rsys.CreateCarrierIfReceiver(this, outprotocol, outsignal);
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				EmitException(ex);
+			}
+			finally
+			{
+				reader.Close();
+			}
+		}
+
+		protected void SetJoinedSignals(object outsignal, List<TypeIntersection> joinOrder, List<object> joinSignals)
+		{
+			for (int joinIdx = 0; joinIdx < joinOrder.Count; joinIdx++)
+			{
+				string joinType = joinOrder[joinIdx].JoinType;
+				SetValue(outsignal, joinType, joinSignals[joinIdx]);
+			}
+		}
+
+		protected void PopulateJoinStructures(List<object> joinSignals, List<TypeIntersection> joinOrder, IDataReader reader, ref int counter)
+		{
+			for (int joinIdx = 0; joinIdx < joinOrder.Count; joinIdx++)
+			{
+				string joinType = joinOrder[joinIdx].JoinType;
+				object outsignal1 = PopulateStructure(joinType, reader, ref counter);
+				joinSignals.Add(outsignal1);
+			}
+		}
+
+		/// <summary>
+		/// Create, if it doesn't exist, the custom type to handle the resulting joined results.
+		/// </summary>
+		protected object CreateCustomType(List<string> types, out ISemanticTypeStruct outprotocol)
+		{
+			string customTypeName = String.Join("_", types);
+
+			if (!rsys.SemanticTypeSystem.VerifyProtocolExists(customTypeName))
+			{
+				rsys.SemanticTypeSystem.CreateCustomType(customTypeName, types);
+				AddEmitProtocol(customTypeName);		// We now emit this custom protocol.
+			}
+
+			outprotocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct(customTypeName);
+			object outsignal = rsys.SemanticTypeSystem.Create(customTypeName);
+
+			return outsignal;
+		}
+
+		/// <summary>
+		/// Populate the structure at the specified index, setting the return signal to null if all fields for that structure are null.
+		/// </summary>
+		protected object PopulateStructure(string type, IDataReader reader, ref int counter)
+		{
+			ISemanticTypeStruct outprotocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct(type);
+			object outsignal = rsys.SemanticTypeSystem.Create(type);
+			bool anyNonNull = Populate(outprotocol, outsignal, reader, ref counter);
+
+			if (!anyNonNull)
+			{
+				outsignal = null;
+			}
+
+			return outsignal;
+		}
+
+		protected void FixupBaseType(Dictionary<string, List<Tuple<ISemanticTypeStruct, ISemanticTypeStruct>>> stSemanticTypes, ISemanticTypeStruct sharedStruct, List<TypeIntersection> joinOrder, int joinIdx, ref string baseType, ref ISemanticTypeStruct parent0, ref bool parent0ElementUnique)
+		{
+			// If we've changed the "base" type, then update parent0 and parent0ElementUnique.
+			if (joinOrder[joinIdx].BaseType != baseType)
+			{
+				baseType = joinOrder[joinIdx].BaseType;
+				parent0 = stSemanticTypes[baseType].Single(t => t.Item1 == sharedStruct).Item2;
+				parent0ElementUnique = parent0.SemanticElements.Any(se => se.Name == sharedStruct.DeclTypeName && se.UniqueField);
+			}
+		}
+
+		protected List<TypeIntersection> DiscoverJoinOrder(List<string> types, Dictionary<string, List<Tuple<ISemanticTypeStruct, ISemanticTypeStruct>>> stSemanticTypes, Dictionary<TypeIntersection, List<ISemanticTypeStruct>> typeIntersectionStructs)
+		{
+			// For each root type, get all the sub-ST's.
+			foreach (string st in types)
+			{
+				stSemanticTypes[st] = rsys.SemanticTypeSystem.GetAllSemanticTypes(st);
+			}
+
+			List<TypeIntersection> joinOrder = GetJoinOrder(types, stSemanticTypes, typeIntersectionStructs);
+
+			return joinOrder;
+		}
+
+		/// <summary>
+		/// Iterate until all joins are resolved.
+		/// </summary>
 		protected List<TypeIntersection> GetJoinOrder(List<string> types, Dictionary<string, List<Tuple<ISemanticTypeStruct, ISemanticTypeStruct>>> stSemanticTypes, Dictionary<TypeIntersection, List<ISemanticTypeStruct>> typeIntersectionStructs)
 		{
 			// We assume that the first ST is always the "base" ST, and everything else is joined to it or to other ST's.
@@ -1045,6 +1087,7 @@ namespace SemanticDatabaseReceptor
 			// Assume idx 0 is the base.
 			int baseIdx = 0;
 
+			// Do we have any types left to join?
 			while (typesToJoin.Count > 0)
 			{
 				int idx = 0;
@@ -1088,15 +1131,8 @@ namespace SemanticDatabaseReceptor
 				}
 				else
 				{
-					// Start with the next possible base and search again.
-					++baseIdx;
-
-					// If we've gone through the entire list...
-					if (baseIdx >= types.Count)
-					{
-						// TODO: Determine what type failed to join.
-						throw new Exception("Cannot find a common type for the required join.");
-					}
+					// TODO: Determine what type failed to join so we can put out a more intelligent exception.
+					throw new Exception("Cannot find a common type for the required join.");
 				}
 			}
 
@@ -1309,8 +1345,7 @@ namespace SemanticDatabaseReceptor
 				foreach (ISemanticElement child in sts.SemanticElements)
 				{
 					ISemanticTypeStruct childsts = child.Element.Struct;
-					PropertyInfo piSub = signal.GetType().GetProperty(child.Name);
-					object childSignal = piSub.GetValue(signal);
+					object childSignal = GetChildSignal(signal, child);
 					anyNonNull |= Populate(childsts, childSignal, reader, ref parmNumber);
 				}
 			}

@@ -40,7 +40,8 @@ non-technical discussion regarding semantics, as it is important to convey the
 necessary foundational information.</p>
 <h3>Where's the Code?</h3>
 <p>As usual, the code can be cloned or forked from
-<a href="https://github.com/cliftonm/HOPE">GitHub</a>.</p>
+<a href="https://github.com/cliftonm/HOPE">GitHub</a>.&nbsp; In Part II, I'll 
+have a branch specific to the code that goes along with that article.</p>
 <h2>What is a Semantics?</h2>
 <p>Semantics is an emerging field of research and development in information 
 science, however, the concept has been around for a lot longer than computers!&nbsp;
@@ -1531,14 +1532,579 @@ protected bool Populate(ISemanticTypeStruct sts, object signal, IDataReader read
 <p><img border="0" src="note.png" width="24" height="32">&nbsp; In the single 
 structure query, we don't really care whether there are any non-null fields.&nbsp; 
 The return value of the Populate method is however used when working with 
-multi-structure queries.</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<h2>Conclusion</h2>
-<p>&nbsp;</p>
+multi-structure queries, as all-null fields for a structure sets the structure 
+to null.&nbsp; Also, <code>parmNumber</code> is again something that comes 
+into play in a multi-structure query.</p>
+<h3>Alias Query Test</h3>
+<p><img border="0" src="unittest.png" width="14" height="32"> This test does a 
+simple check that table and field name aliases are used.&nbsp; The semantic 
+structure is set up as follows:</p>
+<pre>protected void InitPersonStruct()
+{
+  SemanticTypeStruct stsText = Helpers.CreateSemanticType(&quot;Text&quot;, false, decls, structs);
+  Helpers.CreateNativeType(stsText, &quot;Value&quot;, &quot;string&quot;, false);
+
+  SemanticTypeStruct stsFirstName = Helpers.CreateSemanticType(&quot;FirstName&quot;, false, decls, structs);
+  Helpers.CreateSemanticElement(stsFirstName, &quot;Text&quot;, false);
+
+  SemanticTypeStruct stsLastName = Helpers.CreateSemanticType(&quot;LastName&quot;, false, decls, structs);
+  Helpers.CreateSemanticElement(stsLastName, &quot;Text&quot;, false);
+
+  SemanticTypeStruct stsPerson = Helpers.CreateSemanticType(&quot;Person&quot;, false, decls, structs);
+  Helpers.CreateSemanticElement(stsPerson, &quot;LastName&quot;, false);
+  Helpers.CreateSemanticElement(stsPerson, &quot;FirstName&quot;, false);
+}</pre>
+<p>Here, Person consists of FirstName and LastName, both of which reference the 
+Text structure.&nbsp; This requires two joins to the Text table which means the 
+table has to be aliased.&nbsp; The field name, being the same, must be aliased 
+as well.&nbsp; </p>
+<p><img border="0" src="database.png" width="32" height="32"> In the semantic 
+database, this is accomplished by keeping track of the table usage and 
+incrementing a counter for each usage:</p>
+<pre>/// &lt;summary&gt;
+/// Append the use counter if it exists.
+/// &lt;/summary&gt;
+protected string GetUseName(ISemanticTypeStruct sts, Dictionary&lt;ISemanticTypeStruct, int&gt; structureUseCounts)
+{
+  int count;
+  string ret = sts.DeclTypeName;
+
+  if (structureUseCounts.TryGetValue(sts, out count))
+  {
+    ret = ret + count;
+  }
+
+  return ret;
+}</pre>
+<p>The resulting query looks like this:</p>
+<pre>select <font color="#FF0000"><b>Text1</b></font>.Value, <font color="#FF0000"><b>Text2</b></font>.Value 
+from Person 
+left join LastName as <font color="#FF0000"><b>LastName1</b></font> on LastName1.ID = Person.FK_LastNameID 
+left join Text as <font color="#FF0000"><b>Text1</b></font> on Text1.ID = LastName1.FK_TextID 
+left join FirstName as <font color="#FF0000"><b>FirstName1</b></font> on FirstName1.ID = Person.FK_FirstNameID 
+left join Text as <font color="#FF0000"><b>Text2</b></font> on Text2.ID = FirstName1.FK_TextID </pre>
+<p>Notice the &quot;as&quot; statements.&nbsp; For convenience, every table is aliased.&nbsp; 
+This is essential for multi-structure joins.</p>
+<h3>Unique Key Join</h3>
+<p><img border="0" src="unittest.png" width="14" height="32">&nbsp; There are 
+three ways to join structures: by their unique key fields, the structure being 
+declared unique, or by a structure's unique elements.&nbsp; The latter two 
+resolve to unique key fields, but still requires testing (the test after this 
+one.)&nbsp; Here, we test that a shared structure, which is declared as unique, 
+allows the semantic database to infer that the two parent structures can be 
+joined.&nbsp; The structures are defined like this:</p>
+<pre>protected void InitFeedUrlWithUniqueStruct()
+{
+  SemanticTypeStruct stsUrl = Helpers.CreateSemanticType(&quot;Url&quot;, <font color="#FF0000"><b>true</b></font>, decls, structs);
+  Helpers.CreateNativeType(stsUrl, &quot;Value&quot;, &quot;string&quot;, false);
+
+  SemanticTypeStruct stsVisited = Helpers.CreateSemanticType(&quot;Visited&quot;, false, decls, structs);
+  Helpers.CreateSemanticElement(stsVisited, &quot;Url&quot;, false);
+  Helpers.CreateNativeType(stsVisited, &quot;Count&quot;, &quot;int&quot;, false);
+
+  SemanticTypeStruct stsFeedUrl = Helpers.CreateSemanticType(&quot;RSSFeedUrl&quot;, false, decls, structs);
+  Helpers.CreateSemanticElement(stsFeedUrl, &quot;Url&quot;, false);
+}</pre>
+<p>A common structure, Url, is created as being unique.&nbsp; Both the Visited 
+and RSSFeedURl structures reference Url.&nbsp; </p>
+<p>The unit test sets up two &quot;feed&quot; entries:</p>
+<ul>
+	<li><a href="http://localhost">http://localhost</a></li>
+	<li><a href="http://www.codeproject.com">http://www.codeproject.com</a></li>
+</ul>
+<p>However, the visited only references <a href="http://localhost">
+http://localhost</a> (sorry Code Project!)</p>
+<pre>protected void TwoStructureJoinTest()
+{
+  DropTable(&quot;Url&quot;);
+  DropTable(&quot;Visited&quot;);
+  DropTable(&quot;RSSFeedUrl&quot;);
+
+  sdr.Protocols = &quot;RSSFeedUrl; Visited&quot;;
+  sdr.ProtocolsUpdated();
+  sdr.UnitTesting = true;
+
+  // The schema defines that:
+  // URL is a unique structure
+  // RSSFeedUrl.Url is unique (no duplicates pointing to the same Url)
+  // Visited.Url is unique (no duplicates pointing to the same Url)
+
+  ICarrier feedUrlCarrier1 = Helpers.CreateCarrier(rsys, &quot;RSSFeedUrl&quot;, signal =&gt;
+  {
+    signal.Url.Value = &quot;http://localhost&quot;;
+  });
+
+  // A URL we will not be joining on because we don't have a Visited record.
+  ICarrier feedUrlCarrier2 = Helpers.CreateCarrier(rsys, &quot;RSSFeedUrl&quot;, signal =&gt;
+  {
+    signal.Url.Value = &quot;http://www.codeproject.com&quot;;
+  });
+
+  ICarrier visitedCarrier = Helpers.CreateCarrier(rsys, &quot;Visited&quot;, signal =&gt;
+  {
+    signal.Url.Value = &quot;http://localhost&quot;;
+    signal.Count = 1; // non-zero value to make sure that we're not getting a default value back.
+  });
+
+  sdr.ProcessCarrier(feedUrlCarrier1);
+  sdr.ProcessCarrier(feedUrlCarrier2);
+  sdr.ProcessCarrier(visitedCarrier);
+
+  // Create the query
+  ICarrier queryCarrier = Helpers.CreateCarrier(rsys, &quot;Query&quot;, signal =&gt;
+  {
+    // *** The order here is important, because the second join will be a left join ***
+    // TODO: This needs to be exposed to the user somehow.
+    signal.QueryText = &quot;RSSFeedUrl, Visited&quot;;
+  });
+
+  sdr.ProcessCarrier(queryCarrier);
+  List&lt;QueuedCarrierAction&gt; queuedCarriers = rsys.QueuedCarriers;
+  Assert.AreEqual(2, queuedCarriers.Count, &quot;Expected two signals to be returned.&quot;);
+
+  // The result, using a left join, is:
+
+  // &quot;http://localhost&quot;; 1; &quot;http://localhost&quot;
+  // &quot;http://www.codeproject.com&quot;; ; &quot;&quot; &lt;-- notice the Visited portion is null!
+
+  // This is a new ST that isn't defined in our schema.
+  dynamic retSignal = queuedCarriers[0].Carrier.Signal;
+  Assert.AreEqual(&quot;http://localhost&quot;, retSignal.RSSFeedUrl.Url.Value, &quot;Unexpected URL value.&quot;);
+  Assert.AreEqual(1, retSignal.Visited.Count);
+
+  retSignal = queuedCarriers[1].Carrier.Signal;
+  Assert.AreEqual(&quot;http://www.codeproject.com&quot;, retSignal.RSSFeedUrl.Url.Value, &quot;Unexpected URL value.&quot;);
+  Assert.AreEqual(null, retSignal.Visited);
+}</pre>
+<p><img border="0" src="database.png" width="32" height="32"> We see from the 
+query how it is joining the two tables:</p>
+<pre>select Url1.Value, Visited.Count, Url2.Value 
+from RSSFeedUrl 
+left join Url as Url1 on Url1.ID = RSSFeedUrl.FK_UrlID 
+left join Visited on Visited.FK_UrlID = RSSFeedUrl.FK_UrlID 
+left join Url as Url2 on Url2.ID = Visited.FK_UrlID </pre>
+<p>And note how the data is returned:</p>
+<p><img border="0" src="query1.png" width="517" height="120"></p>
+<p><img border="0" src="note.png" width="24" height="32"> The second row shows 
+us the we do not have an associated Visited record for
+<a href="http://www.codeproject.com">http://www.codeproject.com</a>.&nbsp; 
+Because the Visited structure's fields are all null, the semantic database sets 
+the instance to null, which is tested here:</p>
+<pre>  retSignal = queuedCarriers[1].Carrier.Signal;
+  Assert.AreEqual(&quot;http://www.codeproject.com&quot;, retSignal.RSSFeedUrl.Url.Value, &quot;Unexpected URL value.&quot;);
+  <font color="#FF0000"><b>Assert.AreEqual(null, retSignal.Visited);</b></font></pre>
+<p><img border="0" src="note.png" width="24" height="32"> Also observe that the 
+structure returned has been created at runtime by the semantic database.&nbsp; 
+The returning signal consists of a root semantic type whose elements are the 
+joined structures.&nbsp; Thus, in the above query, we get back the following 
+structure:</p>
+<p><img border="0" src="query2.png" width="288" height="84"></p>
+<p>Or, as I prefer to diagram semantic structures so that the native types are 
+all at the top:</p>
+<p><img border="0" src="query3.png" width="288" height="216"></p>
+<p><img border="0" src="database.png" width="32" height="32"> What happens we 
+try to join multiple semantic structures?</p>
+<p>First, we need to discover the correct join order, such that tables are 
+declared in the SQL join before they are referenced.&nbsp; While this is not a 
+requirement for all database engines, I have noted that SQLite is definitely not 
+happy if it sees a reference to table that hasn't been declared in a join yet.&nbsp; 
+So, we can now begin walking through the code in this path:</p>
+<pre>else if (types.Count() &gt; 1)
+{
+  // First we need to find common structures between each of the specified structures.
+  Dictionary&lt;string, List&lt;Tuple&lt;ISemanticTypeStruct, ISemanticTypeStruct&gt;&gt;&gt; stSemanticTypes = new Dictionary&lt;string, List&lt;Tuple&lt;ISemanticTypeStruct, ISemanticTypeStruct&gt;&gt;&gt;();
+  Dictionary&lt;TypeIntersection, List&lt;ISemanticTypeStruct&gt;&gt; typeIntersectionStructs = new Dictionary&lt;TypeIntersection, List&lt;ISemanticTypeStruct&gt;&gt;();
+  Dictionary&lt;ISemanticTypeStruct, int&gt; structureUseCounts = new Dictionary&lt;ISemanticTypeStruct, int&gt;();
+
+  List&lt;TypeIntersection&gt; joinOrder = DiscoverJoinOrder(types, stSemanticTypes, typeIntersectionStructs);
+  ...</pre>
+<p>DiscoverJoinOrder looks simple...</p>
+<pre>protected List&lt;TypeIntersection&gt; DiscoverJoinOrder(List&lt;string&gt; types, Dictionary&lt;string, List&lt;Tuple&lt;ISemanticTypeStruct, ISemanticTypeStruct&gt;&gt;&gt; stSemanticTypes, Dictionary&lt;TypeIntersection, List&lt;ISemanticTypeStruct&gt;&gt; typeIntersectionStructs)
+{
+  // For each root type, get all the sub-ST's.
+  foreach (string st in types)
+  {
+    stSemanticTypes[st] = rsys.SemanticTypeSystem.GetAllSemanticTypes(st);
+  }
+
+  List&lt;TypeIntersection&gt; joinOrder = GetJoinOrder(types, stSemanticTypes, typeIntersectionStructs);
+
+  return joinOrder;
+}</pre>
+<p>... but it's deceptive, because the real work is in <code>GetJoinOrder</code>.&nbsp; 
+This function is not very efficient, but it gets the job done for now.&nbsp; The 
+concept is:</p>
+<ol>
+	<li>Starting with the first structure (the root structure), try and join it 
+	with some other following structure. </li>
+	<li>Once we've found a shared structure, remove it from the list and start 
+	over again, trying to resolve the next structure in the join list.</li>
+</ol>
+<p>This process ensures that we create joins so that they are declared before 
+being referenced by other joins:</p>
+<pre>/// &lt;summary&gt;
+/// Iterate until all joins are resolved.
+/// &lt;/summary&gt;
+protected List&lt;TypeIntersection&gt; GetJoinOrder(List&lt;string&gt; types, Dictionary&lt;string, List&lt;Tuple&lt;ISemanticTypeStruct, ISemanticTypeStruct&gt;&gt;&gt; stSemanticTypes, Dictionary&lt;TypeIntersection, List&lt;ISemanticTypeStruct&gt;&gt; typeIntersectionStructs)
+{
+  // We assume that the first ST is always the &quot;base&quot; ST, and everything else is joined to it or to other ST's.
+  // This requires that we process joins 1..n in a specific order to ensure that joins to ST's are first defined, then referenced.
+  // TODO: We do not have a test for that.
+  List&lt;TypeIntersection&gt; joinOrder = new List&lt;TypeIntersection&gt;();
+  List&lt;string&gt; typesToJoin = new List&lt;string&gt;();
+
+  // We need to join all these types.
+  // These may become &quot;base&quot; types if we have a dependency like:
+  // 1 depends on 2, and 2 depends on 0.
+  // To resolve 1, we first discover that 2 depends on 0
+  // We then iterate again with 2 as the base type and discover that we can now join 1 as a dependency on 2.
+  // The resulting order is then 0, 2, 1.
+  typesToJoin.AddRange(types.Skip(1));
+
+  // Assume idx 0 is the base.
+  int baseIdx = 0;
+
+  // Do we have any types left to join?
+  while (typesToJoin.Count &gt; 0)
+  {
+    int idx = 0;
+    bool found = false;
+
+    // Easier to debug if we don't use anonymous methods. Better for stack traces on exceptions too!
+    foreach (string typeToJoin in types)
+    {
+      // Skip any type that we already found a join for (it won't be in the list.)
+      if (!typesToJoin.Contains(typeToJoin))
+      {
+        ++idx;
+        continue;
+      }
+
+      // Returns a list of intersecting ST's between the base ST and another ST.
+      List&lt;ISemanticTypeStruct&gt; sharedStructs = stSemanticTypes[types[baseIdx]].Select(t1 =&gt; t1.Item1).Intersect(stSemanticTypes[types[idx]].Select(t2 =&gt; t2.Item1)).ToList();
+
+      // If we have shared structure...
+      if (sharedStructs.Count &gt; 0)
+      {
+        // TODO: We still need to verify that we have unique keys in which to accomplish a join.
+        // Write a test for this.
+        // (For now, we always assume that we do)
+        TypeIntersection typeIntersection = new TypeIntersection(types[baseIdx], types[idx]);
+        typeIntersectionStructs[typeIntersection] = sharedStructs;
+        joinOrder.Add(typeIntersection);
+        typesToJoin.Remove(types[idx]);
+        found = true;
+        // Try next type.
+        break;
+      }
+
+      ++idx;
+    }
+
+    if (found)
+    {
+      // Start with the base again.
+      baseIdx = 0;
+    }
+    else
+    {
+      // TODO: Determine what type failed to join so we can put out a more intelligent exception.
+      throw new Exception(&quot;Cannot find a common type for the required join.&quot;);
+    }
+  }
+
+  return joinOrder;
+}</pre>
+<p>We continue setting up various structures that will be used for constructing 
+the full query and build the pieces for the first (root) semantic structure:</p>
+<pre>// Since we always start with the first ST in the join list as the base type:
+List&lt;ISemanticTypeStruct&gt; sharedStructs = typeIntersectionStructs[joinOrder[0]];
+ISemanticTypeStruct sharedStruct = sharedStructs[0];
+string baseType = joinOrder[0].BaseType;
+
+ISemanticTypeStruct parent0 = stSemanticTypes[baseType].Single(t =&gt; t.Item1 == sharedStruct).Item2;
+bool parent0ElementUnique = parent0.SemanticElements.Any(se =&gt; se.Name == sharedStruct.DeclTypeName &amp;&amp; se.UniqueField);
+
+// Build the query pieces for the first type:
+ISemanticTypeStruct sts0 = rsys.SemanticTypeSystem.GetSemanticTypeStruct(baseType);
+List&lt;string&gt; fields0 = new List&lt;string&gt;();
+List&lt;string&gt; joins0 = new List&lt;string&gt;();
+List&lt;Tuple&lt;string, string&gt;&gt; fqntAliases = new List&lt;Tuple&lt;string, string&gt;&gt;();
+
+BuildQuery(sts0, fields0, joins0, structureUseCounts, sts0.DeclTypeName, fqntAliases);</pre>
+<p>We now have the set of fields and required joins to populate those fields for 
+the first structure.</p>
+<p>We then iterate through the remaining structures, in the order determined 
+earlier:</p>
+<pre>// Now we're ready to join the other ST's, which are always joinOrder[joinIdx].JoinType.
+for (int joinIdx = 0; joinIdx &lt; joinOrder.Count; joinIdx++)
+{
+  string joinType = joinOrder[joinIdx].JoinType;
+  FixupBaseType(stSemanticTypes, sharedStruct, joinOrder, joinIdx, ref baseType, ref parent0, ref parent0ElementUnique);</pre>
+<p>It's necessary to always keep track of what structure we're joining to.&nbsp; 
+If structure 0 is joined with structure 1, but structure 2 joins with structure 
+1, then we to update our &quot;base&quot; type so that it is now structure 1.&nbsp; This 
+is what <code>FixupBaseType</code> does:</p>
+<pre>protected void FixupBaseType(Dictionary&lt;string, List&lt;Tuple&lt;ISemanticTypeStruct, ISemanticTypeStruct&gt;&gt;&gt; stSemanticTypes, ISemanticTypeStruct sharedStruct, List&lt;TypeIntersection&gt; joinOrder, int joinIdx, ref string baseType, ref ISemanticTypeStruct parent0, ref bool parent0ElementUnique)
+{
+  // If we've changed the &quot;base&quot; type, then update parent0 and parent0ElementUnique.
+  if (joinOrder[joinIdx].BaseType != baseType)
+  {
+    baseType = joinOrder[joinIdx].BaseType;
+    parent0 = stSemanticTypes[baseType].Single(t =&gt; t.Item1 == sharedStruct).Item2;
+    parent0ElementUnique = parent0.SemanticElements.Any(se =&gt; se.Name == sharedStruct.DeclTypeName &amp;&amp; se.UniqueField);
+  }
+}</pre>
+<p>It ensures that the table we are &quot;joining on&quot; is the right-hand side of the 
+join declaration.</p>
+<p>Next, we obtain the shared structure between the &quot;base&quot; structure and the 
+structure to which we're joining to.&nbsp; There's more code comments here than 
+code:</p>
+<pre>sharedStructs = typeIntersectionStructs[joinOrder[joinIdx]];
+
+// If the shared structure is a unique field in both parent structures, then we can do then join with the FK_ID's rather than the underlying data.
+// So, for example, in the UniqueKeyJoinQuery unit test, we can join RSSFeedItem and Visited with:
+// &quot;join [one of the tables] on RSSFeedItem.FK_UrlID = Visited.FK_UrlID&quot; (ignoring aliased table names)
+// IMPORTANT: Where the parent tables in the &quot;on&quot; statement are the parents of the respective shared structure, not the root query structure name (which just so happens to be the same in this case.)
+
+// If there is NOT a unique key at either or both ends, then we have to drill into all native types at the joined structure level for both query paths, which would look like:
+// &quot;join [one of the tables] on Url1.Value = Url2.Value [and...]&quot; where the and aggregates all the NT values shared between the two query paths.
+// Notice that here it is VITAL that we figure out the aliases for each query path.
+
+// Interestingly, if both reference is unique structure, we get an intersection.
+// If both reference a non-unique structure, we get an intersection, but then we need to check the parent to see if the element is unique for both paths.
+
+// TODO: At the moment, we just pick the first shared structure. At some point we want to pick one that can work with FK's first, then NT unique key values if we can't find an FK join.
+// TODO: If there's more than one shared structure, try an pick the one that is unique or who's parent is a unique element.
+// TODO: Write a unit test for this.
+sharedStruct = sharedStructs[0];</pre>
+<p>A shared structure requires that we obtain the parent structures which have a 
+semantic element that matches the shared structure:</p>
+<pre>// Find the parent for each root query given the shared structure.
+ISemanticTypeStruct parent1 = stSemanticTypes[joinType].Single(t =&gt; t.Item1 == sharedStruct).Item2;
+bool parent1ElementUnique = parent1.SemanticElements.Any(se =&gt; se.Name == sharedStruct.DeclTypeName &amp;&amp; se.UniqueField);</pre>
+<p><img border="0" src="note.png" width="24" height="32"> Because we're always 
+drilling into the entire semantic structure for a particular structure, this 
+piece of code does something very deceptive -- it allows us to find the parent
+<i>anywhere </i>in the structure tree.&nbsp; This is very important, because we 
+can join semantic structures &quot;at the hip&quot;, as it were -- in other words, 
+anywhere where the shared structure is encountered between the two semantic 
+trees.</p>
+<p>At this point we also have two important flags:</p>
+<ul>
+	<li>parent0ElementUnique</li>
+	<li>parent1ElementUnique</li>
+</ul>
+<p>This is important because it informs the process that we can use foreign keys 
+for the joins rather than native type unique fields.&nbsp; We see this test 
+performed next:</p>
+<pre>// If the shared structure is unique, or the elements referencing the structure are unique in both parents, then we can use the FK ID between the two parent ST's to join the structures.
+// Otherwise, we have to use the NT values in each structure.
+if ((sharedStruct.Unique) || (parent0ElementUnique &amp;&amp; parent1ElementUnique))
+{
+...</pre>
+<p>If we know that the shared structure is declared unique, or that we have 
+unique elements for both parents, we can use the foreign key values to join the 
+two tables.&nbsp; First, we build up the fields and joins for table we are 
+joining:</p>
+<pre>// Build the query pieces for the second type, preserving counts so we don't accidentally re-use an alias.
+ISemanticTypeStruct sts1 = rsys.SemanticTypeSystem.GetSemanticTypeStruct(joinType);
+List&lt;string&gt; fields1 = new List&lt;string&gt;();
+List&lt;string&gt; joins1 = new List&lt;string&gt;();
+
+BuildQuery(sts1, fields1, joins1, structureUseCounts, sts1.DeclTypeName, fqntAliases);
+fields0.AddRange(fields1);</pre>
+<p>Those fields are added to our &quot;master&quot; set of fields being queried.</p>
+<p>Next, we construct the structure-structure join:</p>
+<pre>// Note the root element of the second structure is always aliased as &quot;1&quot;.
+// TODO: This doesn't handle self joins. Scenario? Unit test? Test and throw exception?
+// IMPORTANT: In Postgres, we note that the join that declares the table referenced in joins1 must be joined first.
+// TODO: We use a left join here because we want to include records from the first table that may not match with the second table. This should be user definable, perhaps the way Oracle used to do it with the &quot;+&quot; to indicate a left join rather than an inner join.
+// TODO: The root table name of the second table (parent1) doesn't need an &quot;as&quot; because it will only be referenced once (like in the &quot;from&quot; clause for parent0), however, this means 
+// that we can't join the same type twice. When will this be an issue?
+
+// Except for types in the query itself, we need to aliased type.
+string rightSideTableName = parent0.DeclTypeName;
+
+if (!types.Contains(parent0.DeclTypeName))
+{
+  rightSideTableName = parent0.DeclTypeName + &quot;1&quot;; // TODO: But do we need to know which alias, out of a possibility of aliases, to choose from???
+}
+
+if (sharedStruct.DeclTypeName == parent0.DeclTypeName)
+{
+  // The right side should, in this case, be the ID, not an FK, as the left side is joining to the actual table rather than both referencing a common shared FK.
+  joins0.Add(&quot;left join &quot; + parent1.DeclTypeName + &quot; on &quot; + parent1.DeclTypeName + &quot;.FK_&quot; + sharedStruct.DeclTypeName + &quot;ID = &quot; + rightSideTableName + &quot;.ID&quot;);
+}
+else
+{
+  joins0.Add(&quot;left join &quot; + parent1.DeclTypeName + &quot; on &quot; + parent1.DeclTypeName + &quot;.FK_&quot; + sharedStruct.DeclTypeName + &quot;ID = &quot; + rightSideTableName + &quot;.FK_&quot; + sharedStruct.DeclTypeName + &quot;ID&quot;);
+}
+
+joins0.AddRange(joins1);</pre>
+<p>And finally, we add the joins specific for the second structure -- these are 
+joins for drilling into the structure, not for joining two structures together:</p>
+<pre>joins0.AddRange(joins1);</pre>
+<p>And amusingly, because I've not had to do this yet, joining by unique native 
+types is not implemented:</p>
+<pre>else
+{
+  // TODO: Implement a join based on NT unique key values, as we're joining an ST with only NT's.
+  throw new Exception(&quot;Non-FK joins are currently not supported.&quot;);
+}</pre>
+<p>Finally, after all the table joins have been created, we finish the SQL 
+statement and begin reading the results:</p>
+<pre>string sqlQuery = &quot;select &quot; + String.Join(&quot;, &quot;, fields0) + &quot; \r\nfrom &quot; + sts0.DeclTypeName + &quot; \r\n&quot; + String.Join(&quot; \r\n&quot;, joins0);
+sqlQuery = sqlQuery + &quot; &quot; + ParseOrderBy(orderBy, fqntAliases);
+sqlQuery = dbio.AddLimitClause(sqlQuery, maxRecords);
+
+ReadResults(sqlQuery);</pre>
+<p>We read the root structure and all the joined structures, building the 
+resulting new semantic structure culminating (finally!) in emitting a carrier 
+with the custom protocol and the signal:</p>
+<pre>while (reader.Read())
+{
+  int counter = 0;
+  List&lt;object&gt; joinSignals = new List&lt;object&gt;();
+
+  // The resulting fields are in the order of how they're populated based on our join list.
+  object outsignal0 = PopulateStructure(types[0], reader, ref counter);
+  PopulateJoinStructures(joinSignals, joinOrder, reader, ref counter);
+
+  // Now create a custom type if it doesn't already exist. The custom type name is formed from the type names in the join.
+  ISemanticTypeStruct outprotocol;
+  object outsignal = CreateCustomType(types, out outprotocol);
+
+  // Assign our signals to the children of the custom type. 
+  // TODO: Again, self-joins will fail here.
+  SetValue(outsignal, types[0], outsignal0);
+  SetJoinedSignals(outsignal, joinOrder, joinSignals);
+
+  // Finally! Create the carrier:
+  rsys.CreateCarrier(this, outprotocol, outsignal);
+}</pre>
+<p><img border="0" src="note.png" width="24" height="32">&nbsp; Note that this 
+creates a carrier for each row.&nbsp; Implementing a collection of 
+protocol-signals that can be placed onto a single carrier is on the todo list.</p>
+<h3>Three Structure Join Test</h3>
+<p><img border="0" src="unittest.png" width="14" height="32">&nbsp; This all 
+becomes more interesting when testing, for example, a three structure join, set 
+up like this:</p>
+<pre>protected void InitFeedUrlWithUniqueElements()
+{
+  SemanticTypeStruct stsUrl = Helpers.CreateSemanticType(&quot;Url&quot;, false, decls, structs);
+  Helpers.CreateNativeType(stsUrl, &quot;Value&quot;, &quot;string&quot;, true);
+
+  SemanticTypeStruct stsVisited = Helpers.CreateSemanticType(&quot;Visited&quot;, false, decls, structs);
+  Helpers.CreateSemanticElement(stsVisited, &quot;Url&quot;, true);
+  Helpers.CreateNativeType(stsVisited, &quot;Count&quot;, &quot;int&quot;, false);
+
+  // For 3 ST join tests.
+  SemanticTypeStruct stsDisplayed = Helpers.CreateSemanticType(&quot;Displayed&quot;, false, decls, structs);
+  Helpers.CreateSemanticElement(stsDisplayed, &quot;Url&quot;, true);
+
+  SemanticTypeStruct stsFeedUrl = Helpers.CreateSemanticType(&quot;RSSFeedUrl&quot;, false, decls, structs);
+  Helpers.CreateSemanticElement(stsFeedUrl, &quot;Url&quot;, true);
+}</pre>
+<p>This test sets up four structures: Url, Visited, Displayed, and RSSFeedUrl:</p>
+<pre>protected void ThreeSemanticTypesJoinTest()
+{
+  DropTable(&quot;Url&quot;);
+  DropTable(&quot;Visited&quot;);
+  DropTable(&quot;Displayed&quot;);
+  DropTable(&quot;RSSFeedUrl&quot;);
+  DropTable(&quot;RSSFeedItemDisplayed&quot;);
+
+  sdr.Protocols = &quot;RSSFeedUrl; Visited; Displayed&quot;;
+  sdr.ProtocolsUpdated();
+  sdr.UnitTesting = true;
+
+  // The schema defines that:
+  // URL is a unique structure
+  // RSSFeedUrl.Url is unique (no duplicates pointing to the same Url)
+  // Visited.Url is unique (no duplicates pointing to the same Url)
+
+  ICarrier feedUrlCarrier1 = Helpers.CreateCarrier(rsys, &quot;RSSFeedUrl&quot;, signal =&gt;
+  {
+    signal.Url.Value = &quot;http://localhost&quot;;
+  });
+
+  // A URL we will not be joining on because we don't have a Visited record.
+  ICarrier feedUrlCarrier2 = Helpers.CreateCarrier(rsys, &quot;RSSFeedUrl&quot;, signal =&gt;
+  {
+    signal.Url.Value = &quot;http://www.codeproject.com&quot;;
+  });
+
+  ICarrier visitedCarrier = Helpers.CreateCarrier(rsys, &quot;Visited&quot;, signal =&gt;
+  {
+    signal.Url.Value = &quot;http://localhost&quot;;
+    signal.Count = 1; // non-zero value to make sure that we're not getting a default value back.
+  });
+
+  ICarrier displayedCarrier = Helpers.CreateCarrier(rsys, &quot;Displayed&quot;, signal =&gt;
+  {
+    signal.Url.Value = &quot;http://www.codeproject.com&quot;;
+  });
+
+  sdr.ProcessCarrier(feedUrlCarrier1);
+  sdr.ProcessCarrier(feedUrlCarrier2);
+  sdr.ProcessCarrier(visitedCarrier);
+  sdr.ProcessCarrier(displayedCarrier);
+
+  // Create the query
+  ICarrier queryCarrier = Helpers.CreateCarrier(rsys, &quot;Query&quot;, signal =&gt;
+  {
+    // *** The order here is important, because the second join will be a left join ***
+    // TODO: This needs to be exposed to the user somehow.
+    signal.QueryText = &quot;RSSFeedUrl, Visited, Displayed&quot;;
+  });
+
+  sdr.ProcessCarrier(queryCarrier);
+  List&lt;QueuedCarrierAction&gt; queuedCarriers = rsys.QueuedCarriers;
+  Assert.AreEqual(2, queuedCarriers.Count, &quot;Expected two signals to be returned.&quot;);
+
+  // The result, using a left join, is:
+
+  // &quot;http://localhost&quot;; 1; &quot;http://localhost&quot;
+  // &quot;http://www.codeproject.com&quot;; ; &quot;&quot; &lt;-- notice the Visited portion is null, however the &quot;displayed&quot; portion is NOT null.
+
+  // This is a new ST that isn't defined in our schema.
+  dynamic retSignal = queuedCarriers[0].Carrier.Signal;
+  Assert.AreEqual(&quot;http://localhost&quot;, retSignal.RSSFeedUrl.Url.Value, &quot;Unexpected URL value.&quot;);
+  Assert.AreEqual(1, retSignal.Visited.Count);
+  Assert.AreEqual(null, retSignal.Displayed);
+
+  retSignal = queuedCarriers[1].Carrier.Signal;
+  Assert.AreEqual(&quot;http://www.codeproject.com&quot;, retSignal.RSSFeedUrl.Url.Value, &quot;Unexpected URL value.&quot;);
+  Assert.AreEqual(null, retSignal.Visited);
+  Assert.AreNotEqual(null, retSignal.Displayed);
+}  </pre>
+<p>The resulting query looks like this:</p>
+<pre>select Url1.Value, Visited.Count, Url2.Value, Url3.Value 
+from RSSFeedUrl 
+left join Url as Url1 on Url1.ID = RSSFeedUrl.FK_UrlID 
+left join Visited on Visited.FK_UrlID = RSSFeedUrl.FK_UrlID 
+left join Url as Url2 on Url2.ID = Visited.FK_UrlID 
+left join Displayed on Displayed.FK_UrlID = RSSFeedUrl.FK_UrlID 
+left join Url as Url3 on Url3.ID = Displayed.FK_UrlID </pre>
+<p>with the data being returned looking like this:</p>
+<p><img border="0" src="query4.png" width="650" height="119"></p>
+<h2>To Be Continued...</h2>
+<p>While there are several important todo's in the code, we have a sufficient 
+implementation to actually do something useful.&nbsp; In a
+<a href="http://www.codeproject.com/Articles/797457/The-Semantic-Web-and-Natural-Language-Processing">
+previous article</a>, I explored RSS Feeds in relationship to natural language 
+processing.&nbsp; In the next article, we'll use the semantic database to put 
+together a feed reader application that includes persistence of &quot;visited&quot; and 
+&quot;displayed&quot; states.&nbsp; We'll look at:</p>
+<ul>
+	<li>the semantic structures to support the application</li>
+	<li>the receptors used</li>
+	<li>how to add diagnostics while building HOPE applets</li>
+	<li>viewing the SQL generated by the database engine</li>
+</ul>
+<p>As a teaser, here's a screenshot of the applet, processing five different 
+&quot;tech&quot; feeds:</p>
 <p>&nbsp;</p>
 <h2>References</h2>
 <p>1 - Semantic Data -

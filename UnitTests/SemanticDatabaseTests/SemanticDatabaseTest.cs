@@ -813,6 +813,5 @@ namespace SemanticDatabaseTests
 			Assert.AreEqual(null, retSignal.Visited);
 			Assert.AreNotEqual(null, retSignal.Displayed);
 		}
-
 	}
 }
