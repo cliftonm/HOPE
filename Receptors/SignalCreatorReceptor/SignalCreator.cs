@@ -32,6 +32,7 @@ namespace SignalCreatorReceptor
 		public SignalCreator(IReceptorSystem rsys)
 			: base(rsys)
 		{
+			AddReceiveProtocol("Resend", (Action<dynamic>)(s => Resend()));
 		}
 
 		public override void EndSystemInit()
@@ -71,6 +72,14 @@ namespace SignalCreatorReceptor
 			}
 
 			return ret;
+		}
+
+		protected void Resend()
+		{
+			if (Enabled)
+			{
+				CreateCarrier(ProtocolName, signal => signal.QueryText = Data);
+			}
 		}
 	}
 }

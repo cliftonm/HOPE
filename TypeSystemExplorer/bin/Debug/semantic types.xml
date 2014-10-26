@@ -382,6 +382,10 @@
             <SubType Name="Note" UniqueField="false" Ordinality="0" />
           </SubTypes>
         </SemanticType>
+        <SemanticType Name="Resend" UniqueField="false">
+          <NativeTypes />
+          <SubTypes />
+        </SemanticType>
       </SemanticTypes>
     </SemanticTypesContainer>
   </SemanticTypesContainer>

@@ -515,61 +515,70 @@ namespace Clifton.Receptor
 		/// </summary>
 		protected List<IReceptor> GetTargetReceptorsFor(IReceptor from, ICarrier carrier)
 		{
-			List<IReceptor> targets;
-			ISemanticTypeStruct protocol = carrier.Protocol;
-
-			// This annoying piece of code assumes that a receptor will have only one connection between "from" to "to".
-			// In the case of the semantic database, a "from" receptor can have multiple connections with the same semantic database receptor.
-			// In other words, the returned list consists of [n] identical instances, where [n] is the number of different protocols from "from" to the target receptor.
-			if (!MasterReceptorConnectionList.TryGetValue(from, out targets))
-			{
-				// When the try fails, it sets targets to null.
-				targets = new List<IReceptor>();
-			}
-
-			// To fix the aformentioned problem, we get only the distinct instances.
-			targets = targets.Distinct().ToList();
-
-			// Only enabled receptors and receptors that are not the source of the carrier.
-			List<IReceptor> filteredTargets = targets.Where(r => r != from && r.Instance.Enabled && r.Instance.GetEnabledReceiveProtocols().Select(rq => rq.Protocol).Contains(protocol.DeclTypeName)).ToList();
-
-			// Will have a count of 0 if the receptor is the system receptor, ie, carrier animations or other protocols.
-			// TODO: This seems kludgy, is there a better way of working with this?
-			// Also, if the emitting receptor doesn't declare its protocol, this count will be 0, leading to potentially strange results.
-			// For example, comment out the persistence receptors "IDReturn" and run the feed reader example.  You'll see that TWO items
-			// are returned as matching "RSSFeed" table name and for reasons unknown at the moment, protocolReceptorMap has two entries that qualify.
-			if (filteredTargets.Count == 0)
-			{
-				// When the try fails, it sets targets to null.
-				if (protocolReceptorMap.TryGetValue(protocol.DeclTypeName, out targets))
-				{
-					filteredTargets = targets.Where(r => r.Instance.Enabled && (r != from) && true).ToList();
-					// Remove disabled receive protocols.
-					filteredTargets = filteredTargets.Where(r => r.Instance.GetReceiveProtocols().Exists(p => p.Protocol == protocol.DeclTypeName && p.Enabled)).ToList();
-				}
-			}
-
 			// Lastly, filter the list by qualified receptors that are not the source of the carrier.
 			List<IReceptor> newTargets = new List<IReceptor>();
 
-			filteredTargets.Where(r=>r != from && r.Instance.Enabled).ForEach(t =>
+			// From can be null if we're changing the layout during the time when carriers are being processed,
+			// specifically, when a receptor is moved into or out of a membrane or the receptor is taken off the surface.
+			if (from != null)
+			{
+				List<IReceptor> targets;
+				ISemanticTypeStruct protocol = carrier.Protocol;
+
+				// This annoying piece of code assumes that a receptor will have only one connection between "from" to "to".
+				// In the case of the semantic database, a "from" receptor can have multiple connections with the same semantic database receptor.
+				// In other words, the returned list consists of [n] identical instances, where [n] is the number of different protocols from "from" to the target receptor.
+				if (!MasterReceptorConnectionList.TryGetValue(from, out targets))
 				{
-					// Get the list of receive actions and filters for the specific protocol.
-					var receiveList = t.Instance.GetEnabledReceiveProtocols().Where(rp => rp.Protocol == protocol.DeclTypeName);
-					receiveList.ForEach(r =>
-						{
-							// If qualified, add to the final target list.
-							if (r.Qualifier(carrier.Signal))
+					// When the try fails, it sets targets to null.
+					targets = new List<IReceptor>();
+				}
+
+				// To fix the aformentioned problem, we get only the distinct instances.
+				targets = targets.Distinct().ToList();
+
+				// Only enabled receptors and receptors that are not the source of the carrier.
+				List<IReceptor> filteredTargets = targets.Where(r => r != from && r.Instance.Enabled && r.Instance.GetEnabledReceiveProtocols().Select(rq => rq.Protocol).Contains(protocol.DeclTypeName)).ToList();
+
+				// Will have a count of 0 if the receptor is the system receptor, ie, carrier animations or other protocols.
+				// TODO: This seems kludgy, is there a better way of working with this?
+				// Also, if the emitting receptor doesn't declare its protocol, this count will be 0, leading to potentially strange results.
+				// For example, comment out the persistence receptors "IDReturn" and run the feed reader example.  You'll see that TWO items
+				// are returned as matching "RSSFeed" table name and for reasons unknown at the moment, protocolReceptorMap has two entries that qualify.
+				if (filteredTargets.Count == 0)
+				{
+					// When the try fails, it sets targets to null.
+					if (protocolReceptorMap.TryGetValue(protocol.DeclTypeName, out targets))
+					{
+						filteredTargets = targets.Where(r => r.Instance.Enabled && (r != from) && true).ToList();
+						// Remove disabled receive protocols.
+						filteredTargets = filteredTargets.Where(r => r.Instance.GetReceiveProtocols().Exists(p => p.Protocol == protocol.DeclTypeName && p.Enabled)).ToList();
+					}
+				}
+
+				filteredTargets.Where(r => r != from && r.Instance.Enabled).ForEach(t =>
+					{
+						// Get the list of receive actions and filters for the specific protocol.
+						var receiveList = t.Instance.GetEnabledReceiveProtocols().Where(rp => rp.Protocol == protocol.DeclTypeName);
+						receiveList.ForEach(r =>
 							{
-								newTargets.Add(t);
-							}
-						});
-				});
+								// If qualified, add to the final target list.
+								if (r.Qualifier(carrier.Signal))
+								{
+									newTargets.Add(t);
+								}
+							});
+					});
 
-			// filteredTargets = filteredTargets.Where(t => t.Instance.GetReceiveProtocols().Any(rp => (rp.Protocol == protocol.DeclTypeName) && rp.Qualifier(carrier.Signal))).ToList();
+				// filteredTargets = filteredTargets.Where(t => t.Instance.GetReceiveProtocols().Any(rp => (rp.Protocol == protocol.DeclTypeName) && rp.Qualifier(carrier.Signal))).ToList();
 
-			// Get the targets of the single receive protocol that matches the DeclTypeName and whose qualifier returns true.
-			// filteredTargets = filteredTargets.Where(t => t.Instance.GetReceiveProtocols().Single(rp => rp.Protocol == protocol.DeclTypeName).Qualifier(carrier.Signal)).ToList();
+				// Get the targets of the single receive protocol that matches the DeclTypeName and whose qualifier returns true.
+				// filteredTargets = filteredTargets.Where(t => t.Instance.GetReceiveProtocols().Single(rp => rp.Protocol == protocol.DeclTypeName).Qualifier(carrier.Signal)).ToList();
+			}
+			else
+			{
+				// TODO: Should we log this error so we can further inspect the effects that it may have on processing carriers?
+			}
 
 			return newTargets;
 		}
