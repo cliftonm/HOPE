@@ -307,7 +307,7 @@ namespace FeedItemListReceptor
 							}
 
 							signal.RSSFeedUrl.Url.Value = row.Cells["RSSFeedItem.RSSFeedUrl.Url.Value"].Value.ToString();
-						});
+						}, false);
 				}
 
 				// Update to combobox last.
