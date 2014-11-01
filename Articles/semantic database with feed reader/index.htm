@@ -334,7 +334,150 @@ browser to that page, creating the form if it doesn't exist.&nbsp; The only
     &lt;/wf:Controls&gt;
   &lt;/wf:Form&gt;
 &lt;/MycroXaml&gt;</pre>
-<p>Again, nothing complicated.</p>
+<h3>Step 3: More Feed Readers</h3>
+<p>We'll add a few more feed reader:</p>
+<p>Gigaom: <a href="https://gigaom.com/feed/">https://gigaom.com/feed/</a></p>
+<p>Wired: <a href="http://feeds.wired.com/wired/index">
+http://feeds.wired.com/wired/index</a></p>
+<p>InfoWorld: <a href="http://www.infoworld.com/index.rss">
+http://www.infoworld.com/index.rss</a></p>
+<p>Ars Technica:
+<a href="http://feeds.arstechnica.com/arstechnica/technology-lab?format=xml">
+http://feeds.arstechnica.com/arstechnica/technology-lab?format=xml</a></p>
+<p>In each new feed reader, we disable the URL and RSSFeedUrl protocols from 
+being emitted, otherwise these are received by the Web Page Viewer and the Feed 
+Reader receptors respectively (try saying &quot;receptors respectively five times 
+real fast.)&nbsp; You can arrange the receptors as you like:</p>
+<p align="center"><img border="0" src="feeds1.png" width="444" height="366"></p>
+<p>And enjoy a list of all recent items:</p>
+<p align="center"><img border="0" src="feeds2.png" width="555" height="363"></p>
+<h3>Step 4: Refreshing Feeds</h3>
+<p>It would be nice The Feed Reader receptors re-acquired the feed at some 
+regular interval.&nbsp; Fortunately, the Feed Reader receptor will respond to an RSSFeedRefresh protocol.&nbsp; 
+We can emit this protocol at a timed interval by adding an Interval Timer 
+receptor:</p>
+<p align="center"><img border="0" src="timer1.png" width="143" height="171"></p>
+<p>and configuring to emit RSSFeedRefresh every 30 minutes:</p>
+<p align="center"><img border="0" src="timer2.png" width="480" height="160"></p>
+<p>Once the protocol is specified, we observe how the Interval Timer receptor 
+emits this protocol to the Feed Reader receptors.&nbsp; The UI also displays the 
+countdown:</p>
+<p align="center"><img border="0" src="timer3.png" width="450" height="451"></p>
+<h3>Behind the Scenes</h3>
+<h4>The Feed Reader Receptor</h4>
+<p>The RSSFeedRefresh protocol is a semantic structure with no structure!&nbsp; 
+It is simply a protocol -- there are no sub-types.</p>
+<p>In the Feed Reader receptor, receiving this protocol:</p>
+<pre>AddReceiveProtocol(&quot;RSSFeedRefresh&quot;, (Action&lt;dynamic&gt;)(s =&gt; AcquireFeed(lastFeedUrl)));</pre>
+<p>Causes the feed to be re-acquired.</p>
+<p><img border="0" src="note.png" width="24" height="32"> The reason we 
+implement don't implement automatic refresh in the Feed Reader receptor is that 
+we want to maintain a separation of concerns.&nbsp; Why should the Feed Reader 
+receptor know anything about re-acquiring the feed at some designated interval?&nbsp; 
+This paints the receptor into a corner, as there may be a variety of different 
+ways we want to trigger re-acquiring the feed, having nothing to do with timers!</p>
+<h4>The Interval Timer Receptor</h4>
+<p>This receptor is very simple as well -- it configures a Timer to fire every 
+second (so that the UI can be updated) and, when the elapsed time occurs, it 
+fires the carrier with the specified protocol.&nbsp; Note that the signal has no 
+values.</p>
+<pre>protected void FireEvent(object sender, EventArgs e)
+{
+  if (triggerTime &lt;= DateTime.Now)
+  {
+    triggerTime = DateTime.Now + new TimeSpan(days, hours, minutes, seconds);
+
+    if (Enabled)
+    {
+      CreateCarrierIfReceiver(ProtocolName, signal =&gt; { });
+    }
+  }
+
+  TimeSpan ts = triggerTime - DateTime.Now;
+
+  Subname = String.Format(&quot;{0}:{1}:{2:D2}:{3:D2}&quot;, ts.Days, ts.Hours, ts.Minutes, ts.Seconds);
+}</pre>
+<h3>Step 5 - Adding Persistence</h3>
+<p>This has all been fine, but we need to get to the meat of the matter now, 
+which is adding persistence.&nbsp; So, instead of displaying the feed items with 
+a Carrier List Viewer, we'll replace this receptor with the Semantic Database 
+receptor, and remove the Web Page Viewer.&nbsp; Drag the Carrier List Viewer and 
+Web Page Viewer receptors off the surface, and they will be removed.</p>
+<p align="center"><img border="0" src="sd1.png" width="441" height="287"></p>
+<p>Next, add the Semantic Database receptor:</p>
+<p align="center"><img border="0" src="sd2.png" width="150" height="195"></p>
+<p>Once the receptor is on the surface, we can configure it for which protocols 
+(semantic structures) we want to persist.&nbsp; The only semantic structure 
+we're interested in is &quot;RSSFeedItem&quot;, so we configure it to persist that 
+semantic type:</p>
+<p align="center"><img border="0" src="sd3.png" width="480" height="330"></p>
+<p>Once this is done, we note that the Feed Reader receptors are emitting 
+RSSFeedItem to the Semantic Database receptor:</p>
+<p align="center"><img border="0" src="sd4.png" width="438" height="353"></p>
+<h3>Behind the Scenes</h3>
+<p align="center"><img border="0" src="key-small.jpg" width="94" height="33"></p>
+<p>There isn't any &quot;Behind the Scenes&quot; here.&nbsp; We haven't written any code 
+in the Feed Reader receptors to communicate to a database, the signals are now 
+persisted by the fact that we have a receptor (the Semantic Database in this 
+case) listening to the protocol that the Feed Reader emits.&nbsp; In other 
+words, we can add persistence anywhere in the application by listening to the 
+protocols that the receptors emit.</p>
+<p>Furthermore, the Semantic Database receptor automatically checks to see if 
+the supporting tables exist for the protocols that it listens to, and if they 
+don't, it creates the necessary tables.</p>
+<p>Of course, saying there's nothing going on behind the scenes is a bit of a 
+lie -- there's a lot going on in the Semantic Database receptor, which I've 
+described in
+<a href="http://www.codeproject.com/Articles/832959/Semantic-Database-Concept-Architecture-and-Impleme">
+the previous article</a>.</p>
+<h3>Step 6: Add some Logging</h3>
+<p>Let's add some logging capability.&nbsp; The Semantic Database emits the SQL 
+statements that it generates, and we want to look at those, so we'll add a 
+Carrier List Viewer receptor and a Text Display receptor:</p>
+<p align="center"><img border="0" src="logging1.png" width="149" height="250"></p>
+<p>The result (after configuring the Carrier List Viewer to receive 
+LoggerMessage protocols) is something of a mess because just about every 
+receptor has some logging output:</p>
+<p align="center"><img border="0" src="logger2.png" width="461" height="531"></p>
+<p>Instead of turning off selective protocols in all the Feed Readers, let's put 
+the Carrier List Viewer and Semantic Database into its own membrane:</p>
+<p align="center"><img border="0" src="logger3.png" width="463" height="551"></p>
+<p>Now, we just turn off the Text protocol in the Semantic Database and, by 
+double clicking anywhere in the membrane, we enable RSSFeedItem as a protocol 
+that can permeate into the membrane:</p>
+<p align="center"><img border="0" src="logger4.png" width="500" height="300"></p>
+<p>Giving us the desired configuration:</p>
+<p align="center"><img border="0" src="logger5.png" width="454" height="543"></p>
+<p>Now we just wait 5 more minutes for the signals to refresh and see what the 
+log file shows us the database is doing.&nbsp; In the meantime, let's look at 
+the log to see what the Semantic Database did with a SQLite database (it's nice 
+to work with SQLite because you can simply delete the entire file and start from 
+fresh.)&nbsp; We note first that it created the various tables necessary for the 
+RSSFeedItem structure:</p>
+<p align="center"><img border="0" src="logger6.png" width="634" height="450"></p>
+<p>and indeed we see these tables using the SQLite Database Browser:</p>
+<p align="center"><img border="0" src="logger7.png" width="291" height="366"></p>
+<p>Next, once the feeds re-acquire (the signals by the Semantic Database are its 
+checking the database schema against the semantic schema):</p>
+<p align="center"><img border="0" src="logger8.png" width="468" height="525"></p>
+<p>We see (just once, when the database is created, because most of this will be 
+duplicate data on subsequent re-acquisitions) a lot of checks for uniqueness and 
+a lot of insert statements:</p>
+<p align="center"><img border="0" src="logger9.png" width="453" height="445"></p>
+<p>You can see the semantic structure for the RSSFeedItem being built up.&nbsp; 
+It's a lot of transactions because the RSSFeedItem structure is rather deep and 
+we have to test every record for uniqueness since the we know the Feed Reader 
+will be re-acquiring the same feed items much of the time.</p>
+<p><img border="0" src="smiley.png" width="32" height="32"> Happily, we didn't 
+have to code these statements, we didn't have to create a complicated ORM and 
+populate objects, we didn't have to figure out the data model before hand -- the 
+Semantic Database takes care of automating all of these processes.&nbsp; </p>
+<p>Of course, in reality, it's never that easy!</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
 <p>&nbsp;</p>
 <p>&nbsp;</p>
 <p>&nbsp;</p>
