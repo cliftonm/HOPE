@@ -4,15 +4,15 @@
   xmlns:r="Clifton.Receptor, Clifton.Receptor"
   xmlns:def="def"
   xmlns:ref="ref">
-  <wf:Form Text="Feed Reader Configuration" Size="480, 190" StartPosition="CenterScreen" ShowInTaskbar="false" MinimizeBox="false" MaximizeBox="false">
+  <wf:Form def:Name="form" Text="Feed Reader Configuration" Size="480, 190" StartPosition="CenterScreen" ShowInTaskbar="false" MinimizeBox="false" MaximizeBox="false">
     <wf:Controls>
       <wf:Label Text="Feed Name:" Location="20, 23" Size="70, 15"/>
-      <wf:TextBox def:Name="tbFeedName" Location="92, 20" Size="150, 20"/>
+      <wf:TextBox def:Name="tbFeedName" Location="92, 20" Size="250, 20" Anchor="Top, Left, Right"/>
       <wf:Label Text="Feed URL:" Location="20, 48" Size="70, 15"/>
-      <wf:TextBox def:Name="tbFeedUrl" Location="92, 45" Size="250, 20"/>
-      <wf:CheckBox def:Name="ckEnabled" Text="Enabled?" Location="20, 120" Size="80, 25"/>
-      <wf:Button Text="Save" Location="360, 10" Size="80, 25" Click="OnReceptorConfigOK"/>
-      <wf:Button Text="Cancel" Location="360, 40" Size="80, 25" Click="OnReceptorConfigCancel"/>
+      <wf:TextBox def:Name="tbFeedUrl" Location="92, 45" Size="250, 20" Anchor="Top, Left, Right"/>
+      <wf:CheckBox def:Name="ckEnabled" Text="Enabled?" Location="20, 120" Size="80, 25" Anchor="Left, Bottom"/>
+      <wf:Button def:Name="btnSave" Text="Save" Location="360, 10" Size="80, 25" Click="OnReceptorConfigOK" Anchor="Top, Right"/>
+      <wf:Button def:Name="btnCancel" Text="Cancel" Location="360, 40" Size="80, 25" Click="OnReceptorConfigCancel" Anchor="Top, Right"/>
     </wf:Controls>
     <r:PropertyControlMap def:Name="ControlMap">
       <r:Entries>
@@ -20,6 +20,8 @@
         <r:PropertyControlEntry PropertyName="FeedName" ControlName="tbFeedName" ControlPropertyName="Text"/>
       </r:Entries>
     </r:PropertyControlMap>
+    <wf:Form ref:Name="form" AcceptButton="{btnSave}"/>
+    <wf:Form ref:Name="form" CancelButton="{btnCancel}"/>
   </wf:Form>
 </MycroXaml>
 

@@ -987,7 +987,7 @@ namespace TypeSystemExplorer.Views
 					dtTransmit.Columns.Add(new DataColumn("Protocol", typeof(string)));
 					dtTransmit.Columns.Add(new DataColumn("Enabled", typeof(bool)));
 
-					receptor.Instance.GetReceiveProtocols().ForEach(rq =>
+					receptor.Instance.GetReceiveProtocols().OrderBy(q => q.Protocol).ForEach(rq =>
 					{
 						DataRow row = dtReceive.NewRow();
 						row[0] = rq.Protocol;
@@ -995,7 +995,7 @@ namespace TypeSystemExplorer.Views
 						dtReceive.Rows.Add(row);
 					});
 
-					receptor.Instance.GetEmittedProtocols().ForEach(ep =>
+					receptor.Instance.GetEmittedProtocols().OrderBy(q => q.Protocol).ForEach(ep =>
 					{
 						DataRow row = dtTransmit.NewRow();
 						row[0] = ep.Protocol;

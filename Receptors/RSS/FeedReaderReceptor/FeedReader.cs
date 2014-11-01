@@ -138,7 +138,6 @@ namespace FeedReaderReceptor
 					signal.MessageTime = DateTime.Now;
 				});
 
-
 			return feed;
 #endif
 		}

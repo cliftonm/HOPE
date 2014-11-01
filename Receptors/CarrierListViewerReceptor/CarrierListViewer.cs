@@ -62,6 +62,12 @@ namespace CarrierListViewerReceptor
 			ListenForProtocol();
 		}
 
+		public override void PrepopulateConfig(MycroParser mp)
+		{
+			base.PrepopulateConfig(mp);
+			PopulateProtocolComboBox(mp);
+		}
+
 		/// <summary>
 		/// When the user configuration fields have been updated, reset the protocol we are listening for.
 		/// Return false if configuration is invalid.
@@ -70,6 +76,7 @@ namespace CarrierListViewerReceptor
 		{
 			bool ret = true;
 			base.UserConfigurationUpdated();
+			ConfigureBasedOnSelectedProtocol();
 
 			if (oldShowProtocolPicker != ShowProtocolPicker)
 			{
@@ -85,13 +92,7 @@ namespace CarrierListViewerReceptor
 
 				ret = rsys.SemanticTypeSystem.VerifyProtocolExists(ProtocolName);
 
-				if (ret)
-				{
-					CreateViewerTable();
-					ListenForProtocol();
-					UpdateCaption();
-				}
-				else
+				if (!ret)
 				{
 					ConfigurationError = "The semantic type '" + ProtocolName + "' is not defined.";
 				}
@@ -139,16 +140,21 @@ namespace CarrierListViewerReceptor
 
 			if (ShowProtocolPicker)
 			{
-				cbProtocols = (ComboBox)mycroParser.ObjectCollection["cbProtocols"];
-				List<string> types = rsys.SemanticTypeSystem.SemanticTypes.Keys.ToList();
-				types.Sort();
-				cbProtocols.DataSource = types;
+				PopulateProtocolComboBox(mycroParser);
 				cbProtocols.SelectedValueChanged += cbProtocols_SelectedValueChanged;
+			}
+		}
 
-				if (!String.IsNullOrEmpty(ProtocolName))
-				{
-					cbProtocols.SelectedItem = ProtocolName;
-				}
+		protected void PopulateProtocolComboBox(MycroParser mycroParser)
+		{
+			cbProtocols = (ComboBox)mycroParser.ObjectCollection["cbProtocols"];
+			List<string> types = rsys.SemanticTypeSystem.SemanticTypes.Keys.ToList();
+			types.Sort();
+			cbProtocols.DataSource = types;
+
+			if (!String.IsNullOrEmpty(ProtocolName))
+			{
+				cbProtocols.SelectedItem = ProtocolName;
 			}
 		}
 
@@ -156,6 +162,11 @@ namespace CarrierListViewerReceptor
 		/// This event will not fire unless an item from the list is selected.
 		/// </summary>
 		protected void cbProtocols_SelectedValueChanged(object sender, EventArgs e)
+		{
+			ConfigureBasedOnSelectedProtocol();
+		}
+
+		protected void ConfigureBasedOnSelectedProtocol()
 		{
 			ProtocolName = cbProtocols.SelectedValue.ToString();
 			CreateViewerTable();
@@ -249,7 +260,6 @@ namespace CarrierListViewerReceptor
 		/// <summary>
 		/// Add a record to the existing view showing the signal's content.
 		/// </summary>
-		/// <param name="signal"></param>
 		protected void ShowSignal(dynamic signal)
 		{
 			form.IfNull(() => ReinitializeUI());
@@ -261,6 +271,7 @@ namespace CarrierListViewerReceptor
 				{
 					DataTable dt = dvSignals.Table;
 					DataRow row = dt.NewRow();
+
 					colValues.ForEach(cv =>
 						{
 							try
@@ -282,6 +293,8 @@ namespace CarrierListViewerReceptor
 			}
 		}
 
+		// TODO: This is horrid: optimize this so we just put the new row values into the existing clause.
+		// Don't create a new view every time either!
 		/// <summary>
 		/// Returns true if the row, based on the unique key field list, already exists.
 		/// </summary>
@@ -321,15 +334,15 @@ namespace CarrierListViewerReceptor
 			return ret;
 		}
 
+		// TODO: We could modify this implementation to simply emit the input signal if we had a map of rows to signals.
 		/// <summary>
 		/// Emit a semantic protocol with the value in the selected row and the column determined by the semantic element name.
 		/// </summary>
 		protected virtual void OnCellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
 		{
 			ISemanticTypeStruct st = rsys.SemanticTypeSystem.GetSemanticTypeStruct(ProtocolName);
-			List<IFullyQualifiedNativeType> ntList = rsys.SemanticTypeSystem.GetFullyQualifiedNativeTypes(ProtocolName);
-			ISemanticTypeStruct outprotocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct(ProtocolName);
 			dynamic outsignal = rsys.SemanticTypeSystem.Create(ProtocolName);
+			List<IFullyQualifiedNativeType> ntList = rsys.SemanticTypeSystem.GetFullyQualifiedNativeTypes(ProtocolName);
 			
 			ntList.ForEach(nt =>
 				{

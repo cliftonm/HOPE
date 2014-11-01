@@ -30,3 +30,9 @@ Semantic Database:
 	Query prefix (like "top 40")
 	Query where clause
 
+
+
+Set up the CLV to receive RSSFeedTitle
+Trigger the FR
+Change the CLV to receive RSSFeedItem
+Notice there are pending feeds!
