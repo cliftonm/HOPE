@@ -1,0 +1,345 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Semantic Database</title>
+</head>
+
+<body>
+
+<p>Semantic Database: Use Case</p>
+<p>Watch the Video!</p>
+<p>Grab the Code!</p>
+<h2>Introduction</h2>
+<p>This is Part II of the article series on semantic database (Part I is 
+<a href="http://www.codeproject.com/Articles/832959/Semantic-Database-Concept-Architecture-and-Impleme">
+here</a>.)&nbsp; In this article, we will again visit the idea of a feed reader 
+(which I
+<a href="http://www.codeproject.com/Articles/797457/The-Semantic-Web-and-Natural-Language-Processing">
+earlier wrote</a> about with regards to Natural Language Processing) but this 
+time, we'll focus on the persistence and querying of semantic information using 
+the Semantic Database that I wrote about in Part I.</p>
+<p>The format for this article will be basically be a text-based tutorial of 
+the video but with some additional &quot;behind the scenes&quot; code examples.&nbsp; This 
+pattern is repeated throughout the article to illustrate what is going on in the 
+receptors for each step.</p>
+<p>It is assumed that you are familiar with the HOPE concept.&nbsp; If not, 
+visit the <a href="http://www.higherorderprogramming.com">HOPE website</a> for tutorials, 
+links to articles on Code Project, white papers, etc.</p>
+<h2>Semantic Types and Their Structure</h2>
+<p>&nbsp;</p>
+<h2>Creating A Feed Reader Applet</h2>
+<p>For each of the steps in this tutorial, there is a corresponding applet file, 
+so you can load the applet and play with just the behavior in that step.</p>
+<h3>Step 1: The Basics First</h3>
+<p>Creating a basic feed reader applet requires only two receptors:</p>
+<ul>
+	<li>Feed Reader</li>
+	<li>Carrier List Viewer</li>
+</ul>
+<p>In the HOPE IDE, select the Carrier List Viewer and the Feed Reader receptors 
+and click the Add button:</p>
+<p align="center"><img border="0" src="create1.png" width="163" height="357"></p>
+<p>This creates two receptors on the HOPE surface, as well as an un-initialized 
+viewer:</p>
+<p align="center"><img border="0" src="create2.png" width="384" height="265"></p>
+<p align="left">Double-clicking on the Carrier List Viewer brings up its 
+configuration UI:</p>
+<p align="center"><img border="0" src="create3.png" width="480" height="160"></p>
+<p>Enter &quot;Code Project&quot; for the window name and select the semantic type 
+RSSFeedItem, as we want to be displaying feed items emitted by the feed reader.&nbsp; 
+When we save the configuration, notice that the list viewer's columns are now 
+configured based on the selected semantic type:</p>
+<p align="center"><img border="0" src="create4.png" width="516" height="102"></p>
+<p>Also notice that the surface now shows the two receptors to be interacting 
+with each other.&nbsp; From the View menu, we'll select &quot;Show Semantics&quot; to see 
+what the protocols are, thus revealing:</p>
+<p align="center"><img border="0" src="create5.png" width="308" height="92"></p>
+<p>We want to disable the RSSFeedUrl signal from being emitted by the carrier 
+list viewer.&nbsp; Why?&nbsp; Because later, when we interact with the List 
+Viewer by double-clicking on a feed item to display it in a browser page, we 
+don't want the feed URL to be sent to the Feed Reader, which would re-trigger a 
+read operation (the Feed Reader can receive this semantic structure, aka 
+protocol, as a way to programmatically trigger the Feed Reader.)</p>
+<p>To disable this protocol, right-click on the Carrier List Viewer and uncheck 
+the protocl RSSFeedUrl:</p>
+<p align="center"><img border="0" src="create6.png" width="359" height="225"></p>
+<p>We now see that this protocol is no longer being received by the Feed Reader:</p>
+<p align="center"><img border="0" src="create7.png" width="290" height="75"></p>
+<p>Now let's configure the Feed Reader receptor.&nbsp; Double-click on it and 
+enter the URL for the Code Project Article feed (<a href="http://www.codeproject.com/WebServices/ArticleRSS.aspx">http://www.codeproject.com/WebServices/ArticleRSS.aspx</a>):</p>
+<p align="center"><img border="0" src="create8.png" width="544" height="139"></p>
+<p>Click on Save, and notice that, after a few seconds, the list view populates 
+with the items in the feed.&nbsp; You will see the items sent to the list viewer 
+is as little red triangles:</p>
+<p align="center"><img border="0" src="create9.png" width="313" height="102"></p>
+<p>And observe the items in the List Viewer:</p>
+<p align="center"><img border="0" src="create10.png" width="741" height="390"></p>
+<p>This applet is saved as &quot;Step 1 - The Basics&quot; and, whenever you load it into 
+the HOPE IDE, it will re-acquire the feed and display the articles.</p>
+<p align="center"><img border="0" src="key-small.jpg" width="94" height="33"></p>
+<p>When you work with semantic structures, you gain a lot of flexibility in the 
+ways data can be presented.&nbsp; One of the simplest options is to inspect a 
+particular sub-type of a semantic structure.&nbsp; For example, we can configure 
+the Carrier List Viewer to respond to any other protocol in 
+the RSSFeedItem semantic structure.&nbsp; If we want to view only RSS Titles, 
+which is one of the semantic structure of which RSSFeedItem is composed, simply 
+change the semantic type to &quot;RSSFeedTitle&quot;:</p>
+<p align="center">&nbsp;<img border="0" src="create11.png" width="480" height="160"></p>
+<p>Now, when we receive feeds, we only see their titles:</p>
+<p align="center"><img border="0" src="create12.png" width="476" height="354"></p>
+<p><img border="0" src="important.png" width="38" height="32"> We will take 
+advantage of this capability later on when we create custom ontology queries (a 
+fancier word than &quot;relationships&quot; or &quot;table joins&quot;, and in my opinion, more 
+accurate when dealing with a semantic database, and besides, I enjoy creating 
+buzzword bingo terms as much as the next guy.)</p>
+<h3>Behind the Scenes</h3>
+<h4>The Feed Reader</h4>
+<p>The feed reader reads the feed asynchronously, returning a SyndicationFeed 
+object:</p>
+<pre>protected async Task&lt;SyndicationFeed&gt; GetFeedAsync(string feedUrl)
+{
+  CreateCarrier(&quot;LoggerMessage&quot;, signal =&gt; 
+  {
+    signal.TextMessage.Text.Value = &quot;Acquiring feed &quot; + feedUrl + &quot;.&quot;;
+    signal.MessageTime = DateTime.Now;
+  });
+
+  SyndicationFeed feed = await Task.Run(() =&gt;
+  {
+    // To handle this error:
+    // For security reasons DTD is prohibited in this XML document. To enable DTD processing set the DtdProcessing property on XmlReaderSettings to Parse and pass the settings into XmlReader.Create method.
+    XmlReaderSettings settings = new XmlReaderSettings();
+    settings.XmlResolver = null;
+    settings.DtdProcessing = DtdProcessing.Ignore;
+
+    XmlReader xr = XmlReader.Create(feedUrl);
+    SyndicationFeed sfeed = SyndicationFeed.Load(xr);
+    xr.Close();
+
+    return sfeed;
+  });
+
+  CreateCarrier(&quot;LoggerMessage&quot;, signal =&gt;
+  {
+    signal.TextMessage.Text.Value = &quot;Feed &quot; + feedUrl + &quot; has &quot; + feed.Items.Count().ToString() + &quot; items.&quot;;
+    signal.MessageTime = DateTime.Now;
+  });
+
+  return feed;
+}</pre>
+<p>You'll note some logging messages as well.&nbsp; Once the reader acquires the 
+items, it creates carriers with the RSSFeedItem protocol and populates the 
+signal with the syndication feed items:</p>
+<pre>protected void EmitFeedItems(SyndicationFeed feed, int maxItems = Int32.MaxValue)
+{
+  // Allow -1 to also represent max items.
+  int max = (maxItems == -1 ? feed.Items.Count() : maxItems);
+  max = Math.Min(max, feed.Items.Count()); // Which ever is less.
+
+  feed.Items.ForEachWithIndexOrUntil((item, idx) =&gt;
+  {
+    CreateCarrier(&quot;RSSFeedItem&quot;, signal =&gt;
+    {
+      signal.RSSFeedName.Name.Text.Value = FeedName;
+      signal.RSSFeedTitle.Title.Text.Value = item.Title.Text;
+      signal.RSSFeedUrl.Url.Value = item.Links[0].Uri.ToString();
+      signal.RSSFeedDescription.Description.Text.Value = item.Summary.Text;
+      signal.RSSFeedAuthors.Text.Value = String.Join(&quot;, &quot;, item.Authors.Select(a =&gt; a.Name));
+      signal.RSSFeedCategories.Text.Value = String.Join(&quot;, &quot;, item.Categories.Select(c =&gt; c.Name));
+      signal.RSSFeedPubDate.Value = item.PublishDate.LocalDateTime;
+      });
+  }, ((item, idx) =&gt; idx &gt;= max));
+}</pre>
+<h4>The Carrier List Viewer</h4>
+<p>On the receiving side, the Carrier List Viewer is paying attention to the 
+protocol that we configured earlier:</p>
+<pre>protected void ConfigureBasedOnSelectedProtocol()
+{
+  ProtocolName = cbProtocols.SelectedValue.ToString();
+  CreateViewerTable();
+  ListenForProtocol();
+  UpdateCaption();
+}</pre>
+<p>The workhorse function here is <code>CreateViewerTable</code>, which queries 
+the semantic structure (drilling down into sub-types) and displaying, based on 
+the ordinality property value set in the schema, the columns.&nbsp; Column names 
+use aliases, again as determined by the Alias property in the schema.</p>
+<pre>protected virtual void CreateViewerTable()
+{
+  if (!String.IsNullOrEmpty(ProtocolName))
+  {
+    DataTable dt = new DataTable();
+    List&lt;IFullyQualifiedNativeType&gt; columns = rsys.SemanticTypeSystem.GetFullyQualifiedNativeTypes(ProtocolName).OrderBy(fqn=&gt;fqn.Ordinality).ToList();
+uniqueKey.Clear();
+
+    columns.ForEach(col =&gt;
+    {
+      try
+      {
+        DataColumn dc = new DataColumn(col.FullyQualifiedName, col.NativeType.GetImplementingType(rsys.SemanticTypeSystem));
+
+        // If no alias, then use the FQN, skipping the root protocol name.
+        String.IsNullOrEmpty(col.Alias).Then(() =&gt; dc.Caption = col.FullyQualifiedName.RightOf('.')).Else(() =&gt; dc.Caption = col.Alias);
+        dt.Columns.Add(dc);
+        col.UniqueField.Then(() =&gt; uniqueKey.Add(col));
+      }
+      catch
+      {
+        // If the implementing type is not known by the native type system (for example, List&lt;dynamic&gt; used in the WeatherInfo protocol, we ignore it.
+        // TODO: We need a way to support implementing lists and displaying them in the viewer as a sub-collection.
+        // WeatherInfo protocol is a good example.
+      }
+    });
+
+    dvSignals = new DataView(dt);
+    dgvSignals.DataSource = dvSignals;
+
+    foreach(DataColumn dc in dt.Columns)
+    {
+      dgvSignals.Columns[dc.ColumnName].HeaderText = dc.Caption;
+    }
+  }
+}    </pre>
+<p>When the Carrier List Viewer receives a signal of the specified semantic 
+structure (aka protocol), it populates a row of the grid, as long as that row is 
+not a duplicate.&nbsp; Duplicates are determined by whether the semantic 
+structure has flagged the structure, element, and/or native types as unique 
+(refer to the
+<a href="http://www.codeproject.com/Articles/832959/Semantic-Database-Concept-Architecture-and-Impleme">
+article on Semantic Databases</a> for a discussion of this.)</p>
+<pre>protected void ShowSignal(dynamic signal)
+{
+  form.IfNull(() =&gt; ReinitializeUI());
+  List&lt;IFullyQualifiedNativeType&gt; colValues = rsys.SemanticTypeSystem.GetFullyQualifiedNativeTypeValues(signal, ProtocolName);
+
+  if (!RowExists(colValues))
+  {
+    try
+    {
+      DataTable dt = dvSignals.Table;
+      DataRow row = dt.NewRow();
+      colValues.ForEach(cv =&gt;
+      {
+        try
+        {
+          row[cv.FullyQualifiedName] = cv.Value;
+        }
+        catch
+        {
+          // Ignore columns we can't handle.
+          // TODO: Fix this at some point. WeatherInfo protocol is a good example.
+        }
+      });
+    dt.Rows.Add(row);
+    }
+    catch (Exception ex)
+    {
+      EmitException(ex);
+    }
+  }
+}</pre>
+<h3>Step 2: Viewing the Feed Item in a Browser</h3>
+<p>Obviously we will want to view the feed items that interest us.&nbsp; By 
+default, when we double click on the Carrier List Viewer, it will emit the 
+protocol and sub-protocols to any receptor listening to those protocols.&nbsp; 
+In our case, let's use a web page viewer, which is a simple viewer based on .NET's 
+<code>WebBrowser</code> control.&nbsp; First, we add the Web Page Viewer 
+receptor to the surface by selecting it and clicking Add:</p>
+<p align="center"><img border="0" src="browser1.png" width="151" height="218"></p>
+<p>Notice that the sub-protocol &quot;Url&quot; is being received by our new receptor from 
+both the Carrier List Viewer and the Feed Reader:</p>
+<p align="center"><img border="0" src="browser2.png" width="289" height="211"></p>
+<p>We don't the Web Page Viewer displaying every page that the Feed Reader emits 
+as part of the RSSFeedItem protocol, so we'll right-click on the Feed Reader and 
+disable the Url semantic type:</p>
+<p align="center"><img border="0" src="browser3.png" width="355" height="222"></p>
+<p>We now see the desired configuration:</p>
+<p align="center"><img border="0" src="browser4.png" width="291" height="216"></p>
+<p>Lastly, when we double-click on an item in the list, we get a browser window 
+with the item content:</p>
+<p align="center"><img border="0" src="browser5.png" width="592" height="547"></p>
+<p align="center"><img border="0" src="key-small.jpg" width="94" height="33"></p>
+<p align="left">One of the key aspects of the HOPE system is that receptors are 
+lightweight components.&nbsp; For example, instead of using the Web Page Viewer 
+receptor, we could instead have used the Web Page Launcher receptor, which would 
+launch the page as a tab in your browser.&nbsp; It is this component-oriented 
+(another buzzword!) development approach, coupled with the full semantics of the 
+data, that makes it so easy to build applications.</p>
+<h3 align="left">Behind the Scenes</h3>
+<h4 align="left">The Carrier List Viewer Receptor</h4>
+<p align="left">What happens when we double-click on an item in the viewer?&nbsp; 
+Essentially, the opposite occurs, where the signal is reconstructed from the 
+selected row:</p>
+<pre>protected virtual void OnCellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
+{
+  ISemanticTypeStruct st = rsys.SemanticTypeSystem.GetSemanticTypeStruct(ProtocolName);
+  dynamic outsignal = rsys.SemanticTypeSystem.Create(ProtocolName);
+  List&lt;IFullyQualifiedNativeType&gt; ntList = rsys.SemanticTypeSystem.GetFullyQualifiedNativeTypes(ProtocolName);
+
+  ntList.ForEach(nt =&gt;
+  {
+    // Store the value into the signal using the FQN.
+    string colName = nt.FullyQualifiedName;
+
+    // Columns that can't be mapped to native types directly (like lists) are not part of the data table.
+    if (dgvSignals.Columns.Contains(colName))
+    {
+      rsys.SemanticTypeSystem.SetFullyQualifiedNativeTypeValue(outsignal, nt.FullyQualifiedNameSansRoot, dvSignals[e.RowIndex][colName]);
+    }
+  });
+
+  // Send the record on its way.
+  rsys.CreateCarrier(this, st, outsignal);
+}</pre>
+<h3>The Web Pager Viewer Receptor</h3>
+<p>The implementation here is trivial, so I'll show you the whole class:</p>
+<pre>public class WebBrowserReceptor : WindowedBaseReceptor
+{
+  protected WebBrowser browser;
+
+  public override string Name { get { return &quot;Web Page Viewer&quot;; } }
+  public override bool IsEdgeReceptor { get { return true; } }
+
+  public WebBrowserReceptor(IReceptorSystem rsys)
+    : base(&quot;webPageViewer.xml&quot;, false, rsys)
+  {
+    AddReceiveProtocol(&quot;Url&quot;, (Action&lt;dynamic&gt;)(signal =&gt; ShowPage(signal.Value)));
+  }
+
+  protected void ShowPage(string url)
+  {
+    form.IfNull(() =&gt; ReinitializeUI());
+    browser.Navigate(new Uri(url));
+  }
+
+  protected override void InitializeUI()
+  {
+    base.InitializeUI();
+    browser = (WebBrowser)mycroParser.ObjectCollection[&quot;browser&quot;];
+  }
+}</pre>
+<p>Notice that it listens to &quot;Url&quot; protocols and, on receipt, navigates the 
+browser to that page, creating the form if it doesn't exist.&nbsp; The only 
+&quot;complexity&quot; is the backing XML code for the UI:</p>
+<pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; ?&gt;
+&lt;MycroXaml Name=&quot;Form&quot;
+  xmlns:wf=&quot;System.Windows.Forms, System.Windows.Forms, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089&quot;
+  xmlns:def=&quot;def&quot;
+  xmlns:ref=&quot;ref&quot;&gt;
+  &lt;wf:Form Text=&quot;Web Page Viewer&quot; Size=&quot;400, 300&quot; StartPosition=&quot;CenterScreen&quot; ShowInTaskbar=&quot;false&quot;&gt;
+    &lt;wf:Controls&gt;
+      &lt;wf:WebBrowser def:Name=&quot;browser&quot; Dock=&quot;Fill&quot;/&gt;
+    &lt;/wf:Controls&gt;
+  &lt;/wf:Form&gt;
+&lt;/MycroXaml&gt;</pre>
+<p>Again, nothing complicated.</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+
+</body>
+
+</html>
