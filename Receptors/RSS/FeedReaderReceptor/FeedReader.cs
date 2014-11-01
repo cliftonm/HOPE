@@ -37,7 +37,7 @@ namespace FeedReaderReceptor
 			: base(rsys)
 		{
 			AddReceiveProtocol("RSSFeedUrl", (Action<dynamic>)(s => ProcessUrl(s)));
-			AddReceiveProtocol("RSSFeedRefresh", (Action<dynamic>)(s => Refresh()));
+			AddReceiveProtocol("RSSFeedRefresh", (Action<dynamic>)(s => AcquireFeed(lastFeedUrl)));
 			AddEmitProtocol("RSSFeedItem");
 			AddEmitProtocol("ExceptionMessage");
 			AddEmitProtocol("LoggerMessage");
@@ -75,11 +75,6 @@ namespace FeedReaderReceptor
 		{
 			string feedUrl = signal.Url.Value;
 			AcquireFeed(feedUrl);
-		}
-
-		protected void Refresh()
-		{
-			AcquireFeed(lastFeedUrl);
 		}
 
 		/// <summary>

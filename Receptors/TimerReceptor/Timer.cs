@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;				// So we can get a timer marshalled on the UI thread.
 
 using Clifton.ExtensionMethods;
+using Clifton.MycroParser;
 using Clifton.Receptor.Interfaces;
 using Clifton.SemanticTypeSystem.Interfaces;
 
@@ -36,6 +37,7 @@ namespace ATimerReceptor
 		[UserConfigurableProperty("ProtocolName:")]
 		public string ProtocolName { get; set; }
 
+		protected ComboBox cbProtocols;
 		protected DateTime triggerTime;
 		protected int days = 0;
 		protected int hours = 0;
@@ -67,8 +69,28 @@ namespace ATimerReceptor
 			DisposeOfTimer();
 		}
 
+		public override void PrepopulateConfig(MycroParser mp)
+		{
+			base.PrepopulateConfig(mp);
+			PopulateProtocolComboBox(mp);
+		}
+
+		protected void PopulateProtocolComboBox(MycroParser mycroParser)
+		{
+			cbProtocols = (ComboBox)mycroParser.ObjectCollection["cbProtocols"];
+			List<string> types = rsys.SemanticTypeSystem.SemanticTypes.Keys.ToList();
+			types.Sort();
+			cbProtocols.DataSource = types;
+
+			if (!String.IsNullOrEmpty(ProtocolName))
+			{
+				cbProtocols.SelectedItem = ProtocolName;
+			}
+		}
+
 		public override bool UserConfigurationUpdated()
 		{
+			ProtocolName = cbProtocols.SelectedValue.ToString();
 			bool ret = rsys.SemanticTypeSystem.VerifyProtocolExists(ProtocolName);
 
 			if (ret)

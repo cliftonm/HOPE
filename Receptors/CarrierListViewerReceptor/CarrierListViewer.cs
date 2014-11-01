@@ -168,7 +168,12 @@ namespace CarrierListViewerReceptor
 
 		protected void ConfigureBasedOnSelectedProtocol()
 		{
-			ProtocolName = cbProtocols.SelectedValue.ToString();
+			if (cbProtocols != null)
+			{
+				// Update the protocol name if the combobox exists, either in the main UI or the configuration UI.
+				ProtocolName = cbProtocols.SelectedValue.ToString();
+			}
+
 			CreateViewerTable();
 			ListenForProtocol();
 			UpdateCaption();

@@ -1,5 +1,5 @@
-﻿// #define SQLITE
-#define POSTGRES
+﻿#define SQLITE
+// #define POSTGRES
 
 using System;
 using System.Collections.Generic;
