@@ -1104,12 +1104,45 @@ namespace TypeSystemExplorer.Views
 				Rectangle r = Rectangle.FromLTRB(Math.Min(mouseStart.X, mousePosition.X), Math.Min(mouseStart.Y, mousePosition.Y), Math.Max(mouseStart.X, mousePosition.X), Math.Max(mouseStart.Y, mousePosition.Y));
 				Rectangle testR = new Rectangle(NegativeSurfaceOffsetAdjust(r.Location), r.Size);
 
-				// Get receptors inside the rectangle, ignoring any hidden receptors--a defensive measure if we ever decide to show the system receptor.
-				List<IReceptor> receptors = receptorLocation.Where(kvp => testR.Contains(kvp.Value) && !kvp.Key.Instance.IsHidden).Select(kvp => kvp.Key).ToList();
+				Membrane parentMembrane = FindInnermostSelectedMembrane(testR.Location, Program.Skin, false) ?? Program.Skin;
 
-				// Do we have any?
-				if (receptors.Count() > 0)
+				// Find the immediate receptors of the parent membrane.
+				List<IReceptor> receptors = receptorLocation.Where(kvp => parentMembrane.Receptors.Contains(kvp.Key) && testR.Contains(kvp.Value) && !kvp.Key.Instance.IsHidden).Select(kvp => kvp.Key).ToList();
+
+				// Find the immediate children of the parent membrane that are inside the rectangle region
+				List<IMembrane> membranes = membraneLocation.Where(kvp => (kvp.Key.ParentMembrane == parentMembrane) && testR.Contains(CircleToBoundingRectangle(kvp.Value.Center, kvp.Value.Radius))).Select(kvp => kvp.Key).ToList();
+
+				// Do we have a reason to create a new membrane (must contain receptors or membranes?)
+				if (receptors.Count > 0 || membranes.Count > 0)
 				{
+					Membrane childMembrane = parentMembrane.CreateInnerMembrane();
+
+					// We have receptors that we can add to a new membrane:
+					if (receptors.Count > 0)
+					{
+						// All the receptors in this membrane are going to be wrapped into a child membrane.
+						parentMembrane.MoveReceptorsToMembrane(receptors, childMembrane);
+						CreateReceptorConnections();
+						RecalcMembranes();
+					}
+
+					if (membranes.Count > 0)
+					{
+						parentMembrane.MoveMembranesToMembrane(membranes, childMembrane);
+						CreateReceptorConnections();
+						RecalcMembranes();
+					}
+				}
+
+				// Get receptors inside the rectangle, ignoring any hidden receptors--a defensive measure if we ever decide to show the system receptor.
+				// List<IReceptor> receptors = receptorLocation.Where(kvp => testR.Contains(kvp.Value) && !kvp.Key.Instance.IsHidden).Select(kvp => kvp.Key).ToList();
+
+				//// Do we have any?
+				//if (receptors.Count() > 0)
+				//{
+					// Identify the membrane containing the point:
+					// New Algorithm:
+/*
 					// Verify that they are all currently contained within a single membrane.
 					// The Skin membrane will return all the membranes containing this list of receptors.
 					List<Membrane> membranes = Program.Skin.GetMembranesContaining(receptors);
@@ -1125,11 +1158,9 @@ namespace TypeSystemExplorer.Views
 					else
 					{
 						// We are including receptors contained within other membranes.  
-						// The idea here is to create a membrane containing those membranes as well as any non-contained receptors.
-						// For this, we need to know the outer membrane:
-
 					}
-				}
+ */ 
+//				}
 				// else no receptors selected.
 
 				Invalidate(true);

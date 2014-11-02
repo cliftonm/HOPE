@@ -45,7 +45,7 @@ namespace Clifton.Receptor
 		// Return non-system receptors.
 		public ReadOnlyCollection<IReceptor> Receptors { get { return receptorSystem.Receptors.Where(r => !r.Instance.IsHidden).ToList().AsReadOnly(); } }
 
-		public IMembrane ParentMembrane { get; protected set; }
+		public IMembrane ParentMembrane { get; set; }
 
 		public IReceptor this[string name] { get { return receptorSystem[name]; } }
 
@@ -188,12 +188,39 @@ namespace Clifton.Receptor
 			return ret;
 		}
 
+		public void MoveMembranesToMembrane(List<IMembrane> membranes, IMembrane targetMembrane)
+		{
+			membranes.ForEach(m => MoveMembraneToMembrane(m, targetMembrane));
+		}
+
 		/// <summary>
-		/// Moves receptors in this membrane to the target membrane.
+		/// Move the receptors in this membrane to the target membrane.
+		/// </summary>
+		/// <param name="targetMembrane"></param>
+		public void MoveReceptorsToMembrane(IMembrane targetMembrane)
+		{
+			Receptors.ForEach(r => MoveReceptorToMembrane(r, targetMembrane));
+		}
+
+		/// <summary>
+		/// Moves the specified receptors into the target membrane.
 		/// </summary>
 		public void MoveReceptorsToMembrane(List<IReceptor> receptors, IMembrane targetMembrane)
 		{
 			receptors.ForEach(r=>MoveReceptorToMembrane(r, targetMembrane));
+		}
+
+		public void MoveMembraneToMembrane(IMembrane sourceMembrane, IMembrane targetMembrane)
+		{
+			// Remove the source membrane from its parent container.
+			sourceMembrane.ParentMembrane.Membranes.Remove(sourceMembrane);
+			// Change the parent to the target membrane.
+			sourceMembrane.ParentMembrane = targetMembrane;
+			// Add the source membrane to the target's membrane list.
+			targetMembrane.Membranes.Add(sourceMembrane);
+			sourceMembrane.ParentMembrane.UpdatePermeability();
+			sourceMembrane.UpdatePermeability();
+			((Membrane)targetMembrane).UpdatePermeability();
 		}
 
 		/// <summary>

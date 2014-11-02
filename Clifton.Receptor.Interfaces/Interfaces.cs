@@ -164,8 +164,8 @@ namespace Clifton.Receptor.Interfaces
 		void LoadReceptors(Action<IReceptor> afterRegister = null);
 		void ProcessQueuedCarriers();
 		void UpdatePermeability();
-		
-		IMembrane ParentMembrane { get; }
+
+		IMembrane ParentMembrane { get; set;  }
 		List<string> GetEmittedProtocols();
 		List<string> GetListeningProtocols();
 
