@@ -831,7 +831,7 @@ namespace SemanticDatabaseReceptor
 					ISemanticTypeStruct sharedStruct = sharedStructs[0];
 					string baseType = joinOrder[0].BaseType;
 
-					ISemanticTypeStruct parent0 = stSemanticTypes[baseType].Single(t => t.Item1 == sharedStruct).Item2;
+					ISemanticTypeStruct parent0 = stSemanticTypes[baseType].First(t => t.Item1 == sharedStruct).Item2;
 					bool parent0ElementUnique = parent0.SemanticElements.Any(se => se.Name == sharedStruct.DeclTypeName && se.UniqueField);
 
 					// Build the query pieces for the first type:
@@ -869,7 +869,26 @@ namespace SemanticDatabaseReceptor
 
 						// Find the parent for each root query given the shared structure.
 						// TODO: Will "Single" ever barf?
-						ISemanticTypeStruct parent1 = stSemanticTypes[joinType].Single(t => t.Item1 == sharedStruct).Item2;
+						ISemanticTypeStruct parent1 = stSemanticTypes[joinType].First(t => t.Item1 == sharedStruct).Item2;
+
+						// The shared struct may not be the immediate child of parent0, therefore we need to drill into parent0 to find this child.
+						// A good example is the query: 
+						// top 40 RSSFeedBookmark, RSSFeedItem, UrlVisited, RSSFeedItemDisplayed order by RSSFeedPubDate desc, RSSFeedName
+						// We note that this join:
+						// left join UrlVisited on UrlVisited.FK_UrlID = RSSFeedBookmark.FK_UrlID
+						// is incorrect.  It needs to be:
+						// left join UrlVisited on UrlVisited.FK_UrlID = RSSFeedUrl1.FK_UrlID
+						// as this is the parent of "Url", which is the shared structure in this case.
+						// TODO: Write a unit test for this case.
+
+						ISemanticTypeStruct parentSub0 = parent0;
+
+						// If we're joining on an ID (parent0 == sharedStruct) then ignore this step.
+						if (parent0 != sharedStruct)		
+						{
+							parentSub0 = parent0.SemanticElementContaining(sharedStruct);
+						}
+
 						bool parent1ElementUnique = parent1.SemanticElements.Any(se => se.Name == sharedStruct.DeclTypeName && se.UniqueField);
 
 						// If the shared structure is unique, or the elements referencing the structure are unique in both parents, then we can use the FK ID between the two parent ST's to join the structures.
@@ -892,14 +911,14 @@ namespace SemanticDatabaseReceptor
 							// that we can't join the same type twice.  When will this be an issue?
 
 							// Except for types in the query itself, we need to aliased type.
-							string rightSideTableName = parent0.DeclTypeName;
+							string rightSideTableName = parentSub0.DeclTypeName;
 
-							if (!types.Contains(parent0.DeclTypeName))
+							if (!types.Contains(parentSub0.DeclTypeName))
 							{
-								rightSideTableName = parent0.DeclTypeName + "1";		// TODO: But do we need to know which alias, out of a possibility of aliases, to choose from???
+								rightSideTableName = parentSub0.DeclTypeName + "1";		// TODO: But do we need to know which alias, out of a possibility of aliases, to choose from???
 							}
 
-							if (sharedStruct.DeclTypeName == parent0.DeclTypeName)
+							if (sharedStruct.DeclTypeName == parentSub0.DeclTypeName)
 							{
 								// The right side should, in this case, be the ID, not an FK, as the left side is joining to the actual table rather than both referencing a common shared FK.
 								joins0.Add("left join " + parent1.DeclTypeName + " on " + parent1.DeclTypeName + ".FK_" + sharedStruct.DeclTypeName + "ID = " + rightSideTableName + ".ID");
@@ -1047,7 +1066,7 @@ namespace SemanticDatabaseReceptor
 			if (joinOrder[joinIdx].BaseType != baseType)
 			{
 				baseType = joinOrder[joinIdx].BaseType;
-				parent0 = stSemanticTypes[baseType].Single(t => t.Item1 == sharedStruct).Item2;
+				parent0 = stSemanticTypes[baseType].First(t => t.Item1 == sharedStruct).Item2;
 				parent0ElementUnique = parent0.SemanticElements.Any(se => se.Name == sharedStruct.DeclTypeName && se.UniqueField);
 			}
 		}
@@ -1103,8 +1122,17 @@ namespace SemanticDatabaseReceptor
 						continue;
 					}
 
-					// Returns a list of intersecting ST's between the base ST and another ST.
-					List<ISemanticTypeStruct> sharedStructs = stSemanticTypes[types[baseIdx]].Select(t1 => t1.Item1).Intersect(stSemanticTypes[types[idx]].Select(t2 => t2.Item1)).ToList();
+					// Useful for debugging, we get the semantic struct names as strings that intersect the two types.
+					List<string> sharedStructTypeNames = stSemanticTypes[types[baseIdx]].Select(t1 => t1.Item1.DeclTypeName).Intersect(stSemanticTypes[types[idx]].Select(t2 => t2.Item1.DeclTypeName)).ToList();
+
+					// Returns a list of intersecting ST's between the base ST and another ST where the struct itself has semantic elements, as these can be joined using their FK's.
+					List<ISemanticTypeStruct> sharedStructs = stSemanticTypes[types[baseIdx]].Select(t1 => t1.Item1).Intersect(stSemanticTypes[types[idx]].Select(t2 => t2.Item1)).Where(st => st.SemanticElements.Count > 0).ToList();
+
+					if (sharedStructs.Count == 0)
+					{
+						// Loosen our requirement, as we can include structs with no SE sub-types but whose parent elements are both designated as unique.
+						sharedStructs = stSemanticTypes[types[baseIdx]].Select(t1 => t1.Item1).Intersect(stSemanticTypes[types[idx]].Select(t2 => t2.Item1)).ToList();
+					}
 
 					// If we have shared structure...
 					if (sharedStructs.Count > 0)
@@ -1119,6 +1147,12 @@ namespace SemanticDatabaseReceptor
 						found = true;
 						// Try next type.
 						break;
+					}
+					else
+					{
+						// TODO -- implement finding a shared struct of native types.  This is a looser qualifier (removing the Where clause):
+						// List<ISemanticTypeStruct> sharedStructs = stSemanticTypes[types[baseIdx]].Select(t1 => t1.Item1).Intersect(stSemanticTypes[types[idx]].Select(t2 => t2.Item1)).ToList();
+						// However, currently, we don't implement this behavior -- no unit tests!
 					}
 
 					++idx;
@@ -1216,7 +1250,7 @@ namespace SemanticDatabaseReceptor
 					{
 						// strip off asc/desc
 						string fieldName = orderByField.LeftOf(" asc").LeftOf(" desc");
-						string alias = fqntAliases.Single(fqnt => fqnt.Item1.Contains(fieldName)).Item2;
+						string alias = fqntAliases.First(fqnt => fqnt.Item1.Contains(fieldName)).Item2;
 
 						if (fieldName != orderByField)
 						{

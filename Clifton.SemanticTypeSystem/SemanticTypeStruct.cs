@@ -61,5 +61,33 @@ namespace Clifton.SemanticTypeSystem
 			NativeTypes = new List<INativeType>();
 			SemanticElements = new List<ISemanticElement>();
 		}
+
+		/// <summary>
+		/// Return the SE (possibly "this") that contains the specified SE.
+		/// </summary>
+		public ISemanticTypeStruct SemanticElementContaining(ISemanticTypeStruct stsToFind)
+		{
+			ISemanticTypeStruct sts = null;
+
+			foreach (SemanticElement se in SemanticElements)
+			{
+				if (se.Element.Struct == stsToFind)
+				{
+					sts = se.Element.Struct;
+					break;
+				}
+
+				// Recurse.
+				sts = se.Element.Struct.SemanticElementContaining(stsToFind);
+
+				if (sts != null)
+				{
+					break;
+				}
+			}
+
+			return sts;
+		}
+
 	}
 }

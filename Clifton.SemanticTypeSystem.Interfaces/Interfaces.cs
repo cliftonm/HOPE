@@ -68,6 +68,11 @@ namespace Clifton.SemanticTypeSystem.Interfaces
 		bool HasNativeTypes { get; }
 		bool HasSemanticTypes { get; }
 		bool HasChildTypes { get; }
+
+		/// <summary>
+		/// Return the SE (possibly "this") that contains the specified SE.
+		/// </summary>
+		ISemanticTypeStruct SemanticElementContaining(ISemanticTypeStruct stsToFind);
 	}
 
 	public interface IAttributeValue
