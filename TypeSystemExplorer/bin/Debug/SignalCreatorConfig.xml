@@ -4,15 +4,15 @@
   xmlns:r="Clifton.Receptor, Clifton.Receptor"
   xmlns:def="def"
   xmlns:ref="ref">
-  <wf:Form Text="Signal Creator" Size="480, 160" StartPosition="CenterScreen" ShowInTaskbar="false" MinimizeBox="false" MaximizeBox="false">
+  <wf:Form def:Name="form" Text="Signal Creator" Size="480, 160" StartPosition="CenterScreen" ShowInTaskbar="false" MinimizeBox="false" MaximizeBox="false">
     <wf:Controls>
       <wf:Label Text="Semantic Type:" Location="20, 23" Size="100, 15"/>
-      <wf:TextBox def:Name="tbProtocolName" Location="125, 20" Size="200, 20"/>
+      <wf:TextBox def:Name="tbProtocolName" Location="125, 20" Size="200, 20" Anchor="Left, Top, Right"/>
       <wf:Label Text="Data:" Location="20, 48" Size="100, 15"/>
-      <wf:TextBox def:Name="tbData" Location="125, 45" Size="200, 20"/>
+      <wf:TextBox def:Name="tbData" Location="125, 45" Size="200, 20" Anchor="Left, Top, Right"/>
       <wf:CheckBox def:Name="ckEnabled" Text="Enabled?" Location="20, 80" Size="80, 25"/>
-      <wf:Button Text="Create" Location="360, 10" Size="80, 25" Click="OnReceptorConfigOK"/>
-      <wf:Button Text="Cancel" Location="360, 40" Size="80, 25" Click="OnReceptorConfigCancel"/>
+      <wf:Button def:Name="btnSave" Text="Create" Location="360, 10" Size="80, 25" Click="OnReceptorConfigOK" Anchor="Top, Right"/>
+      <wf:Button def:Name="btnCancel" Text="Cancel" Location="360, 40" Size="80, 25" Click="OnReceptorConfigCancel" Anchor="Top, Right"/>
     </wf:Controls>
     <r:PropertyControlMap def:Name="ControlMap">
       <r:Entries>
@@ -20,6 +20,8 @@
         <r:PropertyControlEntry PropertyName="Data" ControlName="tbData" ControlPropertyName="Text"/>
       </r:Entries>
     </r:PropertyControlMap>
+    <wf:Form ref:Name="form" AcceptButton="{btnSave}"/>
+    <wf:Form ref:Name="form" CancelButton="{btnCancel}"/>
   </wf:Form>
 </MycroXaml>
 

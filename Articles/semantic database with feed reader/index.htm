@@ -9,7 +9,6 @@
 <body>
 
 <p>Semantic Database: Use Case</p>
-<p>Watch the Video!</p>
 <p>Grab the Code!</p>
 <h2>Introduction</h2>
 <p>This is Part II of the article series on semantic database (Part I is 
@@ -21,7 +20,7 @@ earlier wrote</a> about with regards to Natural Language Processing) but this
 time, we'll focus on the persistence and querying of semantic information using 
 the Semantic Database that I wrote about in Part I.</p>
 <p>The format for this article will be basically be a text-based tutorial of 
-the video but with some additional &quot;behind the scenes&quot; code examples.&nbsp; This 
+the video that I haven't made yet, but with some additional &quot;behind the scenes&quot; code examples.&nbsp; This 
 pattern is repeated throughout the article to illustrate what is going on in the 
 receptors for each step.</p>
 <p>It is assumed that you are familiar with the HOPE concept.&nbsp; If not, 
@@ -472,9 +471,120 @@ will be re-acquiring the same feed items much of the time.</p>
 have to code these statements, we didn't have to create a complicated ORM and 
 populate objects, we didn't have to figure out the data model before hand -- the 
 Semantic Database takes care of automating all of these processes.&nbsp; </p>
-<p>Of course, in reality, it's never that easy!</p>
+<p><img border="0" src="sad%20smiley.png" width="32" height="32"> Of course we 
+all know that there are cases when automation doesn't get you to that last 1%, 
+but fortunately we don't encounter any of those issues in this tutorial.</p>
+<p>One last point - we can double-click on a line item in the logger to more 
+easily review the SQL statements:</p>
+<p align="center"><img border="0" src="logger10.png" width="533" height="527"></p>
+<h3>Behind the Scenes</h3>
+<p>We've already seen how selecting an item in a Carrier List Viewer emits a 
+protocol.&nbsp; As the LoggerMessage semantic structure contains a Text semantic 
+structure, the Text Viewer receptor, which listens for this protocol, will 
+respond.&nbsp; It's implementation of its core behavior is quite simple:</p>
+<pre>public ReceptorDefinition(IReceptorSystem rsys) : base(rsys)
+{
+  AddReceiveProtocol(&quot;Text&quot;, (Action&lt;dynamic&gt;)(signal =&gt;
+  {
+    form.IfNull(() =&gt;
+    {
+      InitializeViewer();
+      UpdateFormLocationAndSize();
+    });
+
+    string text = signal.Value;
+
+    if (!String.IsNullOrEmpty(text))
+    {
+      tb.AppendText(text.StripHtml());
+      tb.AppendText(&quot;\r\n&quot;);
+    }
+  }));
+}</pre>
+<h3>Step 7: Querying the Database and Using a Real Feed Reader Control</h3>
+<p>Let's wrap what we've done in an outer membrane to create a &quot;computational 
+island&quot;, as we don't want any interactions with the next step.&nbsp; To do this, 
+we left-click and drag to surround all the receptors and the membrane, resulting 
+in:</p>
+<p align="center"><img border="0" src="query1.png" width="500" height="485"></p>
+<p>We can put this &quot;computational island&quot; aside now and work on displaying feed 
+items with the Feed List Viewer receptor, which is a derivation of the Carrier 
+List Viewer.&nbsp; We'll start by adding several receptors:</p>
+<ul>
+	<li>Feed List Viewer</li>
+	<li>Semantic Database</li>
+	<li>Signal Creator</li>
+	<li>Interval Timer</li>
+	<li>Web Page Launcher</li>
+</ul>
+<p align="center"><img border="0" src="query2.png" width="246" height="338"></p>
+
+<p>Resulting in:</p>
+<p align="center"><img border="0" src="query3.png" width="497" height="376"></p>
+<p>Note the new dialog and the unconfigured receptors.&nbsp; But also note that 
+a few things are already happening, once we separate out the receptors:</p>
+<p align="center"><img border="0" src="query4.png" width="331" height="251"></p>
+<p>We see that the Feed List receptor is issuing a Query to the Semantic 
+Database.&nbsp; It does this immediately, and since it is querying for bookmark 
+categories, a response signal is being returned.&nbsp; We also note that the 
+protocol &quot;Url&quot; is being received by the Web Page Launcher receptor (this is a 
+sub-type of the RSSFeedBookmark protocol, and is therefore being &quot;seen&quot; by the 
+Web Page Launcher receptor.&nbsp; To stop this (otherwise it'll actually launch 
+web pages as a result of returning data from queries containing this sub-type), 
+we right-click on the Semantic Database receptor and disable the &quot;Url&quot; emitted 
+protocol (similar to how we disabled protocols earlier, so I won't show this yet 
+again.)</p>
+<p>Also, we &quot;know&quot; that we want to configure this instance of the semantic 
+database to persist the following semantic structures:</p>
+<ul>
+	<li>UrlVisited</li>
+	<li>RSSFeedItemDisplayed</li>
+	<li>RssFeedBookmark</li>
+</ul>
+<p>as the Feed List Viewer will emit these protocols as we interact with the UI.&nbsp; 
+We double-click on the Semantic Database receptor and add these protocols:</p>
+<p align="center"><img border="0" src="query5.png" width="480" height="330"></p>
+<p>We now see these protocols described in the interaction between the Feed Item 
+List receptor and the Semantic Database Receptor:</p>
+<p align="center"><img border="0" src="query6.png" width="380" height="254"></p>
+<p>Next, let's add an initial query to populate the display.&nbsp; We 
+double-click on the Signal Creator and add the following:</p>
+<p align="center"><img border="0" src="query7.png" width="828" height="160"></p>
+<p>Note the query and how we are &quot;joining&quot; several semantic structures.&nbsp; 
+The Semantic Database infers the joins from the structures themselves.</p>
+<p>Once we've done this, the Feed Item List receptor is populated with data that 
+was acquired while we were fussing with the feed reader persistence:</p>
+<p align="center"><img border="0" src="query8.png" width="715" height="470"></p>
+<p>and we also note that the Query protocol is being sent from the Signal 
+Creator receptor to the Semantic Database receptor:</p>
+<p align="center"><img border="0" src="query9.png" width="314" height="331"></p>
+<p>The last step is to wire up the Interval Timer receptor.&nbsp; The Signal 
+Creator listens to a &quot;Resend&quot; protocol (again with no actual value types).&nbsp; 
+Here we'd like to re-query the database, say, every 10 minutes, so any new items 
+that are acquired every 30 minutes are displayed within 10 minutes more.&nbsp; 
+We double-click on the Interval Timer receptor, and as before, configure it:</p>
+<p align="center"><img border="0" src="query10.png" width="480" height="160"></p>
+<p>Now we have a new computational island (which I've wrapped into a membrane) 
+that updates our feed display.</p>
+<p align="center"><img border="0" src="query11.png" width="415" height="419"></p>
+<p>Our complete Feed Reader Applet now has two &quot;computational islands&quot;, one for 
+displaying feeds and the other for reading and persisting new feed items:</p>
+<p align="center"><img border="0" src="query12.png" width="766" height="490"></p>
+<p>Behaviorally, the UI will show:</p>
+<ul>
+	<li>New feeds with a white background</li>
+	<li>Old feeds with a blue background</li>
+	<li>Visited feeds with a green background</li>
+</ul>
 <p>&nbsp;</p>
-<p>&nbsp;</p>
+<p>(Incidentally, the first two items, while they look identical, are not -- the 
+description has changed, but the URL has not.&nbsp; Because the URL is the same, 
+the viewer shows that both items are visited even though I only visited one of 
+them.)</p>
+<p>You can bookmark feeds and provide a category and a note (the note isn't used 
+in this implementation):</p>
+<p align="center"><img border="0" src="query13.png" width="715" height="470"></p>
+<p>And you can query specifically bookmarked items:</p>
 <p>&nbsp;</p>
 <p>&nbsp;</p>
 <p>&nbsp;</p>
