@@ -765,8 +765,11 @@ namespace SemanticDatabaseReceptor
 				query = query.RightOf(' ').RightOf(' ');		// remove the "top [x] "
 			}
 
-			// Types are to the left of any were and order by's.
+			// Types are to the left of any where and order by's.
 			types = query.LeftOf(" where ").LeftOf(" order by ").Split(',').Select(s => s.Trim()).ToList();
+
+			string whereClause = query.RightOf(" where ").LeftOf(" order by ");
+
 			orderBy = new List<string>();
 			string strOrderBy = query.RightOf(" order by ");
 

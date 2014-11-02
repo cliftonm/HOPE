@@ -4,15 +4,15 @@
       <ixm:Membranes>
         <ixm:MembraneDef Name="Skin">
           <ixm:Receptors>
-            <ixm:ReceptorDef Name="Feed Item List" AssemblyName="FeedItemListReceptor.dll" Enabled="True" Location="-31, 142">
+            <ixm:ReceptorDef Name="Feed Item List" AssemblyName="FeedItemListReceptor.dll" Enabled="True" Location="-27, -132">
               <ixm:ReceiveProtocols>
                 <ixm:ReceiveProtocol Protocol="RSSFeedItem" Enabled="True" />
                 <ixm:ReceiveProtocol Protocol="BookmarkCategory" Enabled="True" />
               </ixm:ReceiveProtocols>
               <ixm:EmitProtocols>
-                <ixm:EmitProtocol Protocol="ExceptionMessage" Enabled="True" />
+                <ixm:EmitProtocol Protocol="ExceptionMessage" Enabled="False" />
                 <ixm:EmitProtocol Protocol="TextMessage" Enabled="True" />
-                <ixm:EmitProtocol Protocol="Text" Enabled="True" />
+                <ixm:EmitProtocol Protocol="Text" Enabled="False" />
                 <ixm:EmitProtocol Protocol="UrlVisited" Enabled="True" />
                 <ixm:EmitProtocol Protocol="Url" Enabled="True" />
                 <ixm:EmitProtocol Protocol="RSSFeedItemDisplayed" Enabled="True" />
@@ -37,14 +37,25 @@
                 <ixm:UserConfig Name="MaxRecords" Value="40" />
                 <ixm:UserConfig Name="ProtocolName" Value="RSSFeedItem" />
                 <ixm:UserConfig Name="ShowProtocolPicker" Value="False" />
-                <ixm:UserConfig Name="WindowX" Value="2241" />
-                <ixm:UserConfig Name="WindowY" Value="348" />
+                <ixm:UserConfig Name="WindowX" Value="827" />
+                <ixm:UserConfig Name="WindowY" Value="184" />
                 <ixm:UserConfig Name="WindowWidth" Value="715" />
                 <ixm:UserConfig Name="WindowHeight" Value="470" />
               </ixm:UserConfigs>
             </ixm:ReceptorDef>
-            <ixm:ReceptorDef Name="Interval Timer" AssemblyName="TimerReceptor.dll" Enabled="True" Location="-42, -3" />
-            <ixm:ReceptorDef Name="Semantic Database" AssemblyName="SemanticDatabaseReceptor.dll" Enabled="True" Location="152, 142">
+            <ixm:ReceptorDef Name="Interval Timer" AssemblyName="TimerReceptor.dll" Enabled="False" Location="86, -227">
+              <ixm:EmitProtocols>
+                <ixm:EmitProtocol Protocol="Resend" Enabled="True" />
+              </ixm:EmitProtocols>
+              <ixm:UserConfigs>
+                <ixm:UserConfig Name="DaySpan" Value="" />
+                <ixm:UserConfig Name="HourSpan" Value="" />
+                <ixm:UserConfig Name="MinuteSpan" Value="10" />
+                <ixm:UserConfig Name="SecondSpan" Value="" />
+                <ixm:UserConfig Name="ProtocolName" Value="Resend" />
+              </ixm:UserConfigs>
+            </ixm:ReceptorDef>
+            <ixm:ReceptorDef Name="Semantic Database" AssemblyName="SemanticDatabaseReceptor.dll" Enabled="True" Location="56, -80">
               <ixm:ReceiveProtocols>
                 <ixm:ReceiveProtocol Protocol="Query" Enabled="True" />
                 <ixm:ReceiveProtocol Protocol="UrlVisited" Enabled="True" />
@@ -54,7 +65,7 @@
               <ixm:EmitProtocols>
                 <ixm:EmitProtocol Protocol="LoggerMessage" Enabled="True" />
                 <ixm:EmitProtocol Protocol="TextMessage" Enabled="True" />
-                <ixm:EmitProtocol Protocol="Text" Enabled="True" />
+                <ixm:EmitProtocol Protocol="Text" Enabled="False" />
                 <ixm:EmitProtocol Protocol="ExceptionMessage" Enabled="True" />
                 <ixm:EmitProtocol Protocol="RSSFeedBookmark" Enabled="True" />
                 <ixm:EmitProtocol Protocol="BookmarkNote" Enabled="True" />
@@ -81,7 +92,7 @@
                 <ixm:UserConfig Name="Protocols" Value="UrlVisited;RSSFeedItemDisplayed;RSSFeedBookmark" />
               </ixm:UserConfigs>
             </ixm:ReceptorDef>
-            <ixm:ReceptorDef Name="Signal Creator" AssemblyName="SignalCreatorReceptor.dll" Enabled="True" Location="153, -7">
+            <ixm:ReceptorDef Name="Signal Creator" AssemblyName="SignalCreatorReceptor.dll" Enabled="True" Location="130, -137">
               <ixm:ReceiveProtocols>
                 <ixm:ReceiveProtocol Protocol="Resend" Enabled="True" />
               </ixm:ReceiveProtocols>
@@ -93,10 +104,59 @@
                 <ixm:UserConfig Name="Data" Value="top 40 RSSFeedItem, UrlVisited, RSSFeedItemDisplayed order by RSSFeedPubDate desc, RSSFeedName" />
               </ixm:UserConfigs>
             </ixm:ReceptorDef>
-            <ixm:ReceptorDef Name="Web Page Launcher" AssemblyName="UrlReceptor.dll" Enabled="True" Location="67, 237">
+            <ixm:ReceptorDef Name="Web Page Launcher" AssemblyName="UrlReceptor.dll" Enabled="True" Location="-1, -226">
               <ixm:ReceiveProtocols>
                 <ixm:ReceiveProtocol Protocol="Url" Enabled="True" />
               </ixm:ReceiveProtocols>
+            </ixm:ReceptorDef>
+            <ixm:ReceptorDef Name="Carrier List Viewer" AssemblyName="CarrierListViewerReceptor.dll" Enabled="True" Location="117, 11">
+              <ixm:ReceiveProtocols>
+                <ixm:ReceiveProtocol Protocol="ExceptionMessage" Enabled="True" />
+              </ixm:ReceiveProtocols>
+              <ixm:EmitProtocols>
+                <ixm:EmitProtocol Protocol="ExceptionMessage" Enabled="True" />
+                <ixm:EmitProtocol Protocol="TextMessage" Enabled="True" />
+                <ixm:EmitProtocol Protocol="Text" Enabled="True" />
+              </ixm:EmitProtocols>
+              <ixm:UserConfigs>
+                <ixm:UserConfig Name="ProtocolName" Value="ExceptionMessage" />
+                <ixm:UserConfig Name="ShowProtocolPicker" Value="False" />
+                <ixm:UserConfig Name="WindowName" Value="Exceptions" />
+                <ixm:UserConfig Name="WindowX" Value="11" />
+                <ixm:UserConfig Name="WindowY" Value="641" />
+                <ixm:UserConfig Name="WindowWidth" Value="827" />
+                <ixm:UserConfig Name="WindowHeight" Value="300" />
+              </ixm:UserConfigs>
+            </ixm:ReceptorDef>
+            <ixm:ReceptorDef Name="Carrier List Viewer" AssemblyName="CarrierListViewerReceptor.dll" Enabled="True" Location="-2, 11">
+              <ixm:ReceiveProtocols>
+                <ixm:ReceiveProtocol Protocol="LoggerMessage" Enabled="True" />
+              </ixm:ReceiveProtocols>
+              <ixm:EmitProtocols>
+                <ixm:EmitProtocol Protocol="ExceptionMessage" Enabled="False" />
+                <ixm:EmitProtocol Protocol="TextMessage" Enabled="True" />
+                <ixm:EmitProtocol Protocol="Text" Enabled="True" />
+              </ixm:EmitProtocols>
+              <ixm:UserConfigs>
+                <ixm:UserConfig Name="ProtocolName" Value="LoggerMessage" />
+                <ixm:UserConfig Name="ShowProtocolPicker" Value="False" />
+                <ixm:UserConfig Name="WindowName" Value="Logger" />
+                <ixm:UserConfig Name="WindowX" Value="847" />
+                <ixm:UserConfig Name="WindowY" Value="651" />
+                <ixm:UserConfig Name="WindowWidth" Value="843" />
+                <ixm:UserConfig Name="WindowHeight" Value="300" />
+              </ixm:UserConfigs>
+            </ixm:ReceptorDef>
+            <ixm:ReceptorDef Name="Text Display" AssemblyName="TextDisplayReceptor.dll" Enabled="True" Location="59, 108">
+              <ixm:ReceiveProtocols>
+                <ixm:ReceiveProtocol Protocol="Text" Enabled="True" />
+              </ixm:ReceiveProtocols>
+              <ixm:UserConfigs>
+                <ixm:UserConfig Name="WindowX" Value="0" />
+                <ixm:UserConfig Name="WindowY" Value="0" />
+                <ixm:UserConfig Name="WindowWidth" Value="0" />
+                <ixm:UserConfig Name="WindowHeight" Value="0" />
+              </ixm:UserConfigs>
             </ixm:ReceptorDef>
           </ixm:Receptors>
           <ixm:Permeabilities>
@@ -114,11 +174,23 @@
             <ixm:PermeabilityDef Protocol="Category" Direction="Out" Permeable="False" />
             <ixm:PermeabilityDef Protocol="Query" Direction="Out" Permeable="False" />
             <ixm:PermeabilityDef Protocol="LoggerMessage" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="RSSFeedItem_UrlVisited_RSSFeedItemDisplayed" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="Resend" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="RSSFeedCategories" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="RSSFeedAuthors" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="RSSFeedPubDate" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="Description" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="RSSFeedDescription" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="Title" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="RSSFeedTitle" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="Name" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="RSSFeedName" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="RSSFeedItem" Direction="Out" Permeable="False" />
           </ixm:Permeabilities>
           <ixm:Membranes>
             <ixm:MembraneDef Name="">
               <ixm:Receptors>
-                <ixm:ReceptorDef Name="Feed Reader" AssemblyName="FeedReaderReceptor.dll" Enabled="True" Location="587, 366">
+                <ixm:ReceptorDef Name="Feed Reader" AssemblyName="FeedReaderReceptor.dll" Enabled="True" Location="459, 248">
                   <ixm:ReceiveProtocols>
                     <ixm:ReceiveProtocol Protocol="RSSFeedUrl" Enabled="True" />
                     <ixm:ReceiveProtocol Protocol="RSSFeedRefresh" Enabled="True" />
@@ -146,7 +218,7 @@
                     <ixm:UserConfig Name="FeedName" Value="Code Project Articles" />
                   </ixm:UserConfigs>
                 </ixm:ReceptorDef>
-                <ixm:ReceptorDef Name="Feed Reader" AssemblyName="FeedReaderReceptor.dll" Enabled="True" Location="487, 348">
+                <ixm:ReceptorDef Name="Feed Reader" AssemblyName="FeedReaderReceptor.dll" Enabled="True" Location="359, 230">
                   <ixm:ReceiveProtocols>
                     <ixm:ReceiveProtocol Protocol="RSSFeedUrl" Enabled="True" />
                     <ixm:ReceiveProtocol Protocol="RSSFeedRefresh" Enabled="True" />
@@ -174,7 +246,7 @@
                     <ixm:UserConfig Name="FeedName" Value="Ars Technica" />
                   </ixm:UserConfigs>
                 </ixm:ReceptorDef>
-                <ixm:ReceptorDef Name="Feed Reader" AssemblyName="FeedReaderReceptor.dll" Enabled="True" Location="690, 350">
+                <ixm:ReceptorDef Name="Feed Reader" AssemblyName="FeedReaderReceptor.dll" Enabled="True" Location="562, 232">
                   <ixm:ReceiveProtocols>
                     <ixm:ReceiveProtocol Protocol="RSSFeedUrl" Enabled="True" />
                     <ixm:ReceiveProtocol Protocol="RSSFeedRefresh" Enabled="True" />
@@ -202,7 +274,7 @@
                     <ixm:UserConfig Name="FeedName" Value="Wired" />
                   </ixm:UserConfigs>
                 </ixm:ReceptorDef>
-                <ixm:ReceptorDef Name="Feed Reader" AssemblyName="FeedReaderReceptor.dll" Enabled="True" Location="768, 303">
+                <ixm:ReceptorDef Name="Feed Reader" AssemblyName="FeedReaderReceptor.dll" Enabled="True" Location="640, 185">
                   <ixm:ReceiveProtocols>
                     <ixm:ReceiveProtocol Protocol="RSSFeedUrl" Enabled="True" />
                     <ixm:ReceiveProtocol Protocol="RSSFeedRefresh" Enabled="True" />
@@ -230,7 +302,7 @@
                     <ixm:UserConfig Name="FeedName" Value="Gigaom" />
                   </ixm:UserConfigs>
                 </ixm:ReceptorDef>
-                <ixm:ReceptorDef Name="Interval Timer" AssemblyName="TimerReceptor.dll" Enabled="True" Location="587, 470">
+                <ixm:ReceptorDef Name="Interval Timer" AssemblyName="TimerReceptor.dll" Enabled="True" Location="459, 352">
                   <ixm:EmitProtocols>
                     <ixm:EmitProtocol Protocol="RSSFeedRefresh" Enabled="True" />
                   </ixm:EmitProtocols>
@@ -242,7 +314,7 @@
                     <ixm:UserConfig Name="ProtocolName" Value="RSSFeedRefresh" />
                   </ixm:UserConfigs>
                 </ixm:ReceptorDef>
-                <ixm:ReceptorDef Name="Feed Reader" AssemblyName="FeedReaderReceptor.dll" Enabled="True" Location="404, 291">
+                <ixm:ReceptorDef Name="Feed Reader" AssemblyName="FeedReaderReceptor.dll" Enabled="True" Location="276, 173">
                   <ixm:ReceiveProtocols>
                     <ixm:ReceiveProtocol Protocol="RSSFeedUrl" Enabled="True" />
                     <ixm:ReceiveProtocol Protocol="RSSFeedRefresh" Enabled="True" />
@@ -316,7 +388,7 @@
               <ixm:Membranes>
                 <ixm:MembraneDef Name="">
                   <ixm:Receptors>
-                    <ixm:ReceptorDef Name="Carrier List Viewer" AssemblyName="CarrierListViewerReceptor.dll" Enabled="True" Location="526, 194">
+                    <ixm:ReceptorDef Name="Carrier List Viewer" AssemblyName="CarrierListViewerReceptor.dll" Enabled="True" Location="398, 76">
                       <ixm:ReceiveProtocols>
                         <ixm:ReceiveProtocol Protocol="LoggerMessage" Enabled="True" />
                       </ixm:ReceiveProtocols>
@@ -335,7 +407,7 @@
                         <ixm:UserConfig Name="WindowHeight" Value="231" />
                       </ixm:UserConfigs>
                     </ixm:ReceptorDef>
-                    <ixm:ReceptorDef Name="Semantic Database" AssemblyName="SemanticDatabaseReceptor.dll" Enabled="True" Location="585, 259">
+                    <ixm:ReceptorDef Name="Semantic Database" AssemblyName="SemanticDatabaseReceptor.dll" Enabled="True" Location="457, 141">
                       <ixm:ReceiveProtocols>
                         <ixm:ReceiveProtocol Protocol="Query" Enabled="True" />
                         <ixm:ReceiveProtocol Protocol="RSSFeedItem" Enabled="True" />
@@ -350,7 +422,7 @@
                         <ixm:UserConfig Name="Protocols" Value="RSSFeedItem" />
                       </ixm:UserConfigs>
                     </ixm:ReceptorDef>
-                    <ixm:ReceptorDef Name="Text Display" AssemblyName="TextDisplayReceptor.dll" Enabled="True" Location="650, 196">
+                    <ixm:ReceptorDef Name="Text Display" AssemblyName="TextDisplayReceptor.dll" Enabled="True" Location="522, 78">
                       <ixm:ReceiveProtocols>
                         <ixm:ReceiveProtocol Protocol="Text" Enabled="True" />
                       </ixm:ReceiveProtocols>

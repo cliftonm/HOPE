@@ -357,6 +357,16 @@
         <SemanticType Name="Query" UniqueField="false">
           <NativeTypes>
             <NativeType Name="QueryText" ImplementingType="string" UniqueField="false" />
+            <NativeType Name="Param0" ImplementingType="Object" UniqueField="false" />
+            <NativeType Name="Param1" ImplementingType="Object" UniqueField="false" />
+            <NativeType Name="Param2" ImplementingType="Object" UniqueField="false" />
+            <NativeType Name="Param3" ImplementingType="Object" UniqueField="false" />
+            <NativeType Name="Param4" ImplementingType="Object" UniqueField="false" />
+            <NativeType Name="Param5" ImplementingType="Object" UniqueField="false" />
+            <NativeType Name="Param6" ImplementingType="Object" UniqueField="false" />
+            <NativeType Name="Param7" ImplementingType="Object" UniqueField="false" />
+            <NativeType Name="Param8" ImplementingType="Object" UniqueField="false" />
+            <NativeType Name="Param9" ImplementingType="Object" UniqueField="false" />
           </NativeTypes>
           <SubTypes />
         </SemanticType>

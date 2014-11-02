@@ -289,6 +289,12 @@ namespace FeedItemListReceptor
 
 		protected void ShowItemInCategory(object sender, EventArgs args)
 		{
+			string categoryName = ((ComboBox)form.Controls.Find("cbCategories", false)[0]).SelectedItem.ToString();
+			CreateCarrierIfReceiver("Query", signal =>
+				{
+					signal.QueryText = "RSSFeedBookmark, RSSFeedItem, UrlVisited, RSSFeedItemDisplayed where BookmarkCategory = $0 order by RSSFeedPubDate desc, RSSFeedName";
+					signal.Param0 = categoryName;
+				});
 		}
 
 		protected void BookmarkItem(object sender, EventArgs args)

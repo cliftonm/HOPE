@@ -42,6 +42,7 @@ namespace SemanticDatabaseTests
 			// We need this ST for query tests.
 			SemanticTypeStruct sts = Helpers.CreateSemanticType("Query", false, decls, structs);
 			Helpers.CreateNativeType(sts, "QueryText", "string", false);
+			Helpers.CreateNativeType(sts, "Param0", "Object", false);
 
 			// Initialize the Semantic Database Receptor
 			sdr = new SemanticDatabase(rsys);
@@ -586,7 +587,80 @@ namespace SemanticDatabaseTests
 		public void AliasQuery()
 		{
 			InitializeSDRTests(() => InitPersonStruct());
+			InitializePersonData();
 
+			// Create the query
+			ICarrier queryCarrier = Helpers.CreateCarrier(rsys, "Query", signal =>
+			{
+				signal.QueryText = "Person";
+			});
+
+			sdr.ProcessCarrier(queryCarrier);
+			List<QueuedCarrierAction> queuedCarriers = rsys.QueuedCarriers;
+			Assert.AreEqual(1, queuedCarriers.Count, "Expected one signal to be returned.");
+			dynamic retSignal = queuedCarriers[0].Carrier.Signal;
+			Assert.AreEqual("Clifton", retSignal.LastName.Text.Value, "Wrong data for LastName.");
+			Assert.AreEqual("Marc", retSignal.FirstName.Text.Value, "Wrong data for FirstName.");
+		}
+
+		/// <summary>
+		/// This test verifies that we can use a structure in a where clause as long as the structure resolves to only one native type.
+		/// </summary>
+		[TestMethod]
+		public void StructureWhereClause()
+		{
+			InitializeSDRTests(() => InitPersonStruct());
+			InitializePersonData();
+
+			// Create the query
+			ICarrier queryCarrier = Helpers.CreateCarrier(rsys, "Query", signal =>
+			{
+				signal.QueryText = "Person where LastName=$0";
+				signal.Param0 = "Clifton";
+			});
+
+			// Finding the record:
+			sdr.ProcessCarrier(queryCarrier);
+			List<QueuedCarrierAction> queuedCarriers = rsys.QueuedCarriers;
+			Assert.AreEqual(1, queuedCarriers.Count, "Expected one signal to be returned.");
+			dynamic retSignal = queuedCarriers[0].Carrier.Signal;
+			Assert.AreEqual("Clifton", retSignal.LastName.Text.Value, "Wrong data for LastName.");
+			Assert.AreEqual("Marc", retSignal.FirstName.Text.Value, "Wrong data for FirstName.");
+
+			// Clear out the queued carrier.
+			rsys.QueuedCarriers.Clear();
+
+			// No records found:
+			// Create the query
+			queryCarrier = Helpers.CreateCarrier(rsys, "Query", signal =>
+			{
+				signal.QueryText = "Person where LastName=$0";
+				signal.Param0 = "NotClifton";
+			});
+
+			sdr.ProcessCarrier(queryCarrier);
+			queuedCarriers = rsys.QueuedCarriers;
+			Assert.AreEqual(0, queuedCarriers.Count, "Expected no signals to be returned.");
+		}
+
+		/// <summary>
+		/// This test verifies that we can query against a qualified structure.nativetype format for structures containing more than one native type.
+		/// </summary>
+		[TestMethod]
+		public void QualifiedNativeTypeWhereClause()
+		{
+		}
+
+		/// <summary>
+		/// This test verifies that we can query using a unique native type name.
+		/// </summary>
+		[TestMethod]
+		public void NativeTypeWhereClause()
+		{
+		}
+
+		protected void InitializePersonData()
+		{
 			// Initialize the Semantic Data Receptor with the signal it should be listening to.
 			DropTable("Person");
 			DropTable("LastName");
@@ -606,19 +680,6 @@ namespace SemanticDatabaseTests
 			});
 
 			sdr.ProcessCarrier(personCarrier);
-
-			// Create the query
-			ICarrier queryCarrier = Helpers.CreateCarrier(rsys, "Query", signal =>
-			{
-				signal.QueryText = "Person";
-			});
-
-			sdr.ProcessCarrier(queryCarrier);
-			List<QueuedCarrierAction> queuedCarriers = rsys.QueuedCarriers;
-			Assert.AreEqual(1, queuedCarriers.Count, "Expected one signal to be returned.");
-			dynamic retSignal = queuedCarriers[0].Carrier.Signal;
-			Assert.AreEqual("Clifton", retSignal.LastName.Text.Value, "Wrong data for LastName.");
-			Assert.AreEqual("Marc", retSignal.FirstName.Text.Value, "Wrong data for FirstName.");
 		}
 
 		/// <summary>
