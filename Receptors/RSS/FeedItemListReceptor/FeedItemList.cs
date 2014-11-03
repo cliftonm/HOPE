@@ -55,7 +55,6 @@ namespace FeedItemListReceptor
 			MaxRecords = "40";			// The default.
 			Categories = new List<string>();
 
-			// The only protocol we receive.
 			AddReceiveProtocol("RSSFeedItem", (Action<dynamic>)(signal => ShowSignal(signal)));
 			
 			// TODO: This update the combobox for each category received -- can we have some way of putting all the records into a collection?
@@ -91,6 +90,24 @@ namespace FeedItemListReceptor
 			// Hook the cell formatting event so we can color the rows on the fly, which
 			// compensates for when the user sorts by a column.
 			dgvSignals.CellFormatting += OnCellFormatting;
+			dgvSignals.RowEnter += OnRowEnter;
+		}
+
+		protected void OnRowEnter(object sender, DataGridViewCellEventArgs e)
+		{
+			string url = dgvSignals.Rows[e.RowIndex].Cells["RSSFeedItem.RSSFeedUrl.Url.Value"].Value.ToString();
+			string note;
+			bool hasNote = urlNote.TryGetValue(url, out note);
+			TextBox tbBookmarkNote = ((TextBox)form.Controls.Find("tbBookmarkNote", false)[0]);
+
+			if (hasNote)
+			{
+				tbBookmarkNote.Text = note;
+			}
+			else
+			{
+				tbBookmarkNote.Text = String.Empty;
+			}
 		}
 
 		protected override string GetDisplayFormName()
@@ -173,6 +190,11 @@ namespace FeedItemListReceptor
 		public override void ProcessCarrier(ICarrier carrier)
 		{
 			base.ProcessCarrier(carrier);
+
+			if (carrier.Protocol.DeclTypeName == "BookmarkCategory" && carrier.ParentCarrier.Protocol.DeclTypeName == "RSSFeedBookmark")
+			{
+				AssociateBookmarkNote(carrier);
+			}
 
 			if (carrier.Protocol.DeclTypeName == "RSSFeedItem")
 			{

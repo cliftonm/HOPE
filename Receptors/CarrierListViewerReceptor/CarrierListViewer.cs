@@ -38,6 +38,7 @@ namespace CarrierListViewerReceptor
 		protected ComboBox cbProtocols;
 
 		protected List<IFullyQualifiedNativeType> uniqueKey;
+		protected Dictionary<string, string> urlNote = new Dictionary<string, string>();
 
 		public CarrierListViewer(IReceptorSystem rsys)
 		  : base("CarrierListViewer.xml", true, rsys)
@@ -296,6 +297,16 @@ namespace CarrierListViewerReceptor
 					EmitException(ex);
 				}
 			}
+		}
+
+		/// <summary>
+		/// Associate the note with a specific URL so that we can display the note when the user clicks on a bookmarked field.
+		/// </summary>
+		protected void AssociateBookmarkNote(ICarrier carrier)
+		{
+			string url = carrier.ParentCarrier.Signal.RSSFeedUrl.Url.Value;
+			string note = carrier.ParentCarrier.Signal.BookmarkNote.Note.Text.Value;
+			urlNote[url] = note ?? "";
 		}
 
 		// TODO: This is horrid: optimize this so we just put the new row values into the existing clause.

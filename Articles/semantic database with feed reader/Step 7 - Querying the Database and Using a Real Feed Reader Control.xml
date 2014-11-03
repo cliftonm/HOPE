@@ -37,13 +37,13 @@
                 <ixm:UserConfig Name="MaxRecords" Value="40" />
                 <ixm:UserConfig Name="ProtocolName" Value="RSSFeedItem" />
                 <ixm:UserConfig Name="ShowProtocolPicker" Value="False" />
-                <ixm:UserConfig Name="WindowX" Value="827" />
-                <ixm:UserConfig Name="WindowY" Value="184" />
+                <ixm:UserConfig Name="WindowX" Value="866" />
+                <ixm:UserConfig Name="WindowY" Value="160" />
                 <ixm:UserConfig Name="WindowWidth" Value="715" />
                 <ixm:UserConfig Name="WindowHeight" Value="470" />
               </ixm:UserConfigs>
             </ixm:ReceptorDef>
-            <ixm:ReceptorDef Name="Interval Timer" AssemblyName="TimerReceptor.dll" Enabled="False" Location="86, -227">
+            <ixm:ReceptorDef Name="Interval Timer" AssemblyName="TimerReceptor.dll" Enabled="True" Location="86, -227">
               <ixm:EmitProtocols>
                 <ixm:EmitProtocol Protocol="Resend" Enabled="True" />
               </ixm:EmitProtocols>
@@ -87,6 +87,7 @@
                 <ixm:EmitProtocol Protocol="RSSFeedCategories" Enabled="True" />
                 <ixm:EmitProtocol Protocol="UrlVisited" Enabled="True" />
                 <ixm:EmitProtocol Protocol="RSSFeedItemDisplayed" Enabled="True" />
+                <ixm:EmitProtocol Protocol="RSSFeedBookmark_RSSFeedItem_UrlVisited_RSSFeedItemDisplayed" Enabled="True" />
               </ixm:EmitProtocols>
               <ixm:UserConfigs>
                 <ixm:UserConfig Name="Protocols" Value="UrlVisited;RSSFeedItemDisplayed;RSSFeedBookmark" />
@@ -141,8 +142,8 @@
                 <ixm:UserConfig Name="ProtocolName" Value="LoggerMessage" />
                 <ixm:UserConfig Name="ShowProtocolPicker" Value="False" />
                 <ixm:UserConfig Name="WindowName" Value="Logger" />
-                <ixm:UserConfig Name="WindowX" Value="847" />
-                <ixm:UserConfig Name="WindowY" Value="651" />
+                <ixm:UserConfig Name="WindowX" Value="848" />
+                <ixm:UserConfig Name="WindowY" Value="640" />
                 <ixm:UserConfig Name="WindowWidth" Value="843" />
                 <ixm:UserConfig Name="WindowHeight" Value="300" />
               </ixm:UserConfigs>

@@ -12,7 +12,7 @@
       <wf:Label Location="160, 8" Size="60, 15" Text="Category:"/>
       <wf:ComboBox Name="cbCategories" Location="220, 5" Size="100, 25"/>
       <wf:Label Location="160, 33" Size="60, 15" Text="Notes:"/>
-      <wf:TextBox def:Name="tbBookmarkNote" Location="220, 30" Size="260, 20"/>
+      <wf:TextBox Name="tbBookmarkNote" Location="220, 30" Size="260, 20"/>
       <wf:Button Location="330, 5" Size="70, 20" Text="Bookmark" Click="{form.BookmarkItem}"/>
       <wf:Button Location="410, 5" Size="70, 20" Text="Show" Click="{form.ShowItemInCategory}"/>
       <wf:DataGridView def:Name="dgvRecords" Anchor="Top, Left, Bottom, Right"

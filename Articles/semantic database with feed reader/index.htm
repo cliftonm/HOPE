@@ -585,12 +585,62 @@ displaying feeds and the other for reading and persisting new feed items:</p>
 description has changed, but the URL has not.&nbsp; Because the URL is the same, 
 the viewer shows that both items are visited even though I only visited one of 
 them.)</p>
-<p>You can bookmark feeds and provide a category and a note (the note isn't used 
-in this implementation):</p>
+<p>You can bookmark feeds and provide a category and add a note (notes are 
+displayed in the note field when viewing bookmarked items):</p>
 <p align="center"><img border="0" src="query13.png" width="715" height="470"></p>
-<p>And you can query specifically bookmarked items:</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
+<p>And you can query specific bookmarked items by selecting the category and 
+clicking on the Show button:</p>
+<p align="center"><img border="0" src="query15.png" width="715" height="188"></p>
+<h3>Behind the Scenes</h3>
+<p>One of the interesting things to look at is what happens when you select a 
+bookmark category and click on Show.&nbsp; Internally, the Feed Item List 
+receptor dispatches a Query protocol:</p>
+<pre>protected void ShowItemInCategory(object sender, EventArgs args)
+{
+  ClearGrid();
+  string categoryName = ((ComboBox)form.Controls.Find(&quot;cbCategories&quot;, false)[0]).SelectedItem.ToString();
+  CreateCarrierIfReceiver(&quot;Query&quot;, signal =&gt;
+  {
+    signal.QueryText = &quot;RSSFeedBookmark, RSSFeedItem, UrlVisited, RSSFeedItemDisplayed where [BookmarkCategory] = @0 order by RSSFeedPubDate desc, RSSFeedName&quot;;
+    signal.Param0 = categoryName;
+  });
+}</pre>
+<p><img border="0" src="database.png" width="32" height="32"> With regards to 
+the Semantic Database, the first semantic structure is considered the &quot;root&quot; 
+structure -- everything else is left-joined to this or other structures.&nbsp; 
+Therefore, to acquire <i>only</i> the RSSFeedItem records that are bookmarked, 
+we start with the RSSFeedBookmark structure as the first semantic type in the 
+query.</p>
+<p>This is the resulting query:</p>
+<p><img border="0" src="query16.png" width="865" height="497"></p>
+<p><img border="0" src="important.png" width="38" height="32"> In the previous 
+article on the Semantic Database, I described how a multi-structure query 
+creates a new semantic type at runtime.&nbsp; The reason the above query is so 
+complicated is because it is returning the entire semantic graph for the 
+structures, which looks like this:</p>
+<p align="center"><img border="0" src="query17.png" width="997" height="439"></p>
+<p>The&nbsp; items in green are the semantic structures that are specifically 
+being queried.</p>
+<p><img border="0" src="important.png" width="38" height="32"> Because the 
+semantic graph above includes RSSFeedItem, this sub-element is emitted due to 
+the Feed Item List receptor listening to this protocol.&nbsp; But this receptor 
+is also listening to the BookmarkCategory protocol, so when this protocol is 
+received, we can do something interesting to associate a bookmark note with a 
+URL:</p>
+<pre>protected void AssociateBookmarkNote(ICarrier carrier)
+{
+  string url = carrier.ParentCarrier.Signal.RSSFeedUrl.Url.Value;
+  string note = carrier.ParentCarrier.Signal.BookmarkNote.Note.Text.Value;
+  urlNote[url] = note ?? &quot;&quot;;
+}</pre>
+<p>Note (haha) how we're navigating up the semantic graph to the RSSFeedBookmark 
+semantic structure and then acquiring both the note and the feed URL.&nbsp; This 
+is particularly interesting because it illustrates how the Semantic Database 
+returns a signal in exactly the same semantic structure as is defined by the 
+semantic schema.&nbsp; We have therefore completely eliminated the &quot;impedence 
+mismatch&quot; between the database model and the code representation, since both are 
+mirroring exactly the same semantic structure.</p>
+<h2>Conclusion</h2>
 <p>&nbsp;</p>
 <p>&nbsp;</p>
 <p>&nbsp;</p>
