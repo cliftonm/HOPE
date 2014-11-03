@@ -133,7 +133,7 @@ namespace SemanticDatabaseReceptor
 			postgresUserId = postgresConfig[0];
 			postgresPassword = postgresConfig[1];
 
-			AddReceiveProtocol("Query", (Action<dynamic>)(signal => QueryDatabase((string)signal.QueryText)));
+			AddReceiveProtocol("Query", (Action<dynamic>)(signal => QueryDatabase(signal, (string)signal.QueryText)));
 
 			// Test is made for the benefit of unit testing, which doesn't necessarily instantiate this message.
 			if (rsys.SemanticTypeSystem.VerifyProtocolExists("LoggerMessage"))
@@ -607,6 +607,14 @@ namespace SemanticDatabaseReceptor
 			return childSignal;
 		}
 
+		protected object GetValue(object signal, string propertyName)
+		{
+			PropertyInfo pi0 = signal.GetType().GetProperty(propertyName);
+			object ret = pi0.GetValue(signal);
+
+			return ret;
+		}
+
 		protected void SetValue(object signal, string propertyName, object val)
 		{
 			PropertyInfo pi0 = signal.GetType().GetProperty(propertyName);
@@ -754,7 +762,7 @@ namespace SemanticDatabaseReceptor
 
 		// ------ Query -------
 
-		protected void Preprocess(string query, out string maxRecords, out List<string> types, out List<string> orderBy)
+		protected void Preprocess(string query, out string maxRecords, out List<string> types, out string whereClause, out List<string> orderBy)
 		{
 			maxRecords = String.Empty;
 
@@ -768,7 +776,7 @@ namespace SemanticDatabaseReceptor
 			// Types are to the left of any where and order by's.
 			types = query.LeftOf(" where ").LeftOf(" order by ").Split(',').Select(s => s.Trim()).ToList();
 
-			string whereClause = query.RightOf(" where ").LeftOf(" order by ");
+			whereClause = query.RightOf(" where ").LeftOf(" order by ");
 
 			orderBy = new List<string>();
 			string strOrderBy = query.RightOf(" order by ");
@@ -797,15 +805,16 @@ namespace SemanticDatabaseReceptor
 		/// The ST's in the where and order by must resolve to single NT elements, otherwise they must be fully qualified ST.NT names.
 		/// </summary>
 		/// <param name="query"></param>
-		protected void QueryDatabase(string query)
+		protected void QueryDatabase(object signal, string query)
 		{
 			try
 			{
 				string maxRecords = null;
 				List<string> types;
 				List<string> orderBy;
+				string whereClause;
 
-				Preprocess(query, out maxRecords, out types, out orderBy);
+				Preprocess(query, out maxRecords, out types, out whereClause, out orderBy);
 
 				// We only have one protocol to query, so we can create the protocol directly since it's already defined.
 				if (types.Count() == 1)
@@ -813,7 +822,7 @@ namespace SemanticDatabaseReceptor
 					string protocol = types[0];
 					AddEmitProtocol(protocol);		// identical protocols are ignored.
 					ISemanticTypeStruct sts = rsys.SemanticTypeSystem.GetSemanticTypeStruct(protocol);
-					List<object> signals = QueryType(protocol, String.Empty, orderBy, maxRecords);
+					List<object> signals = QueryType(signal, protocol, whereClause, orderBy, maxRecords);
 					EmitSignals(signals, sts);
 				}
 				else if (types.Count() > 1)
@@ -941,10 +950,12 @@ namespace SemanticDatabaseReceptor
 					}
 
 					string sqlQuery = "select " + String.Join(", ", fields0) + " \r\nfrom " + sts0.DeclTypeName + " \r\n" + String.Join(" \r\n", joins0);
+					Dictionary<string, object> parameters = new Dictionary<string, object>();
+					sqlQuery = sqlQuery + " " + ParseWhereClause(signal, whereClause, fqntAliases, parameters);
 					sqlQuery = sqlQuery + " " + ParseOrderBy(orderBy, fqntAliases);
 					sqlQuery = dbio.AddLimitClause(sqlQuery, maxRecords);
 
-					ReadResults(sqlQuery, types, joinOrder);
+					ReadResults(sqlQuery, types, joinOrder, parameters);
 				}
 				else
 				{
@@ -958,10 +969,11 @@ namespace SemanticDatabaseReceptor
 			}
 		}
 
-		private void ReadResults(string sqlQuery, List<string> types, List<TypeIntersection> joinOrder)
+		private void ReadResults(string sqlQuery, List<string> types, List<TypeIntersection> joinOrder, Dictionary<string, object> parameters)
 		{
 			IDbCommand cmd = dbio.CreateCommand();
 			cmd.CommandText = sqlQuery;
+			parameters.ForEach(kvp => cmd.Parameters.Add(dbio.CreateParameter(kvp.Key, kvp.Value)));
 			LogSqlStatement(sqlQuery);
 			IDataReader reader = cmd.ExecuteReader();
 
@@ -1179,7 +1191,7 @@ namespace SemanticDatabaseReceptor
 		/// <summary>
 		/// Return a list of objects that represents the semantic element instances (signals) in the resulting query set.
 		/// </summary>
-		protected List<object> QueryType(string protocol, string where, List<string> orderBy, string maxRecords)
+		protected List<object> QueryType(object signal, string protocol, string whereClause, List<string> orderBy, string maxRecords)
 		{
 			// We build the query by recursing through the semantic structure.
 			ISemanticTypeStruct sts = rsys.SemanticTypeSystem.GetSemanticTypeStruct(protocol);
@@ -1188,16 +1200,17 @@ namespace SemanticDatabaseReceptor
 			Dictionary<ISemanticTypeStruct, int> structureUseCounts = new Dictionary<ISemanticTypeStruct, int>();
 			List<Tuple<string, string>> fqntAliases = new List<Tuple<string, string>>();
 			BuildQuery(sts, fields, joins, structureUseCounts, sts.DeclTypeName, fqntAliases);
-			string sqlQuery = CreateSqlStatement(sts, fields, joins, fqntAliases, where, orderBy, maxRecords);
-			List<object> ret = PopulateSignals(sqlQuery, sts);
+			Dictionary<string, object> parameters;
+			string sqlQuery = CreateSqlStatement(signal, sts, fields, joins, fqntAliases, whereClause, orderBy, maxRecords, out parameters);
+			List<object> ret = PopulateSignals(sqlQuery, sts, parameters);
 
 			return ret;
 		}
 
-		protected List<object> PopulateSignals(string sqlQuery, ISemanticTypeStruct sts)
+		protected List<object> PopulateSignals(string sqlQuery, ISemanticTypeStruct sts, Dictionary<string, object> parameters)
 		{
 			List<object> ret = new List<object>();
-			IDataReader reader = AcquireReader(sqlQuery);
+			IDataReader reader = AcquireReader(sqlQuery, parameters);
 
 			while (reader.Read())
 			{
@@ -1216,24 +1229,73 @@ namespace SemanticDatabaseReceptor
 		/// <summary>
 		/// Return a reader for the specified query.
 		/// </summary>
-		protected IDataReader AcquireReader(string sqlQuery)
+		protected IDataReader AcquireReader(string sqlQuery, Dictionary<string, object> parameters)
 		{
 			IDbCommand cmd = dbio.CreateCommand();
 			cmd.CommandText = sqlQuery;
+			parameters.ForEach(kvp => cmd.Parameters.Add(dbio.CreateParameter(kvp.Key, kvp.Value)));
 			LogSqlStatement(sqlQuery);
 			IDataReader reader = cmd.ExecuteReader();
 
 			return reader;
 		}
 
-		protected string CreateSqlStatement(ISemanticTypeStruct sts, List<string> fields, List<string> joins, List<Tuple<string, string>> fqntAliases, string where, List<string> orderBy, string maxRecords)
+		protected string CreateSqlStatement(object signal, ISemanticTypeStruct sts, List<string> fields, List<string> joins, List<Tuple<string, string>> fqntAliases, string where, List<string> orderBy, string maxRecords, out Dictionary<string, object> parameters)
 		{
 			// CRLF for pretty inspection.
 			string sqlQuery = "select " + String.Join(", ", fields) + " \r\nfrom " + sts.DeclTypeName + " \r\n" + String.Join(" \r\n", joins);
+			parameters = new Dictionary<string, object>();
+			sqlQuery = sqlQuery + " " + ParseWhereClause(signal, where, fqntAliases, parameters);
 			sqlQuery = sqlQuery + " " + ParseOrderBy(orderBy, fqntAliases);
 			sqlQuery = dbio.AddLimitClause(sqlQuery, maxRecords);
 
 			return sqlQuery;
+		}
+
+		/// <summary>
+		/// Parse the where clause, replacing semantic names with their aliases, and constructing the parameter list.
+		/// </summary>
+		/// <param name="where"></param>
+		/// <param name="fqntAliases"></param>
+		/// <param name="parameters"></param>
+		/// <returns></returns>
+		protected string ParseWhereClause(object signal, string where, List<Tuple<string, string>> fqntAliases, Dictionary<string, object> parameters)
+		{
+			StringBuilder sb = new StringBuilder();
+			bool clauseExists = false;
+
+			// Yucky way of creating the parameter list.
+			for (int i = 0; i < 10; i++)
+			{
+				if (where.Contains("@" + i))
+				{
+					parameters[i.ToString()] = GetValue(signal, "Param" + i);
+				}
+			}
+
+			// Any ST's to parse?
+			while (where.Contains('['))
+			{
+				// ST names must be in [].  This makes the parsing a whole heck of a lot easier!
+				sb = sb.Append(where.LeftOf('['));
+				string fieldName = where.Between('[', ']');
+
+				// TODO: If there are multiple matches, we should throw an exception that the field name must be further qualified.
+				string alias = fqntAliases.First(fqnt => fqnt.Item1.Contains(fieldName)).Item2;
+				sb.Append(alias);
+
+				// Get remainder.
+				where = where.RightOf(']');
+				clauseExists = true;
+			}
+
+			if (clauseExists)
+			{
+				sb.Insert(0, "\r\nwhere ");
+				sb.Append(where);
+			}
+
+			return sb.ToString();
 		}
 
 		protected string ParseOrderBy(List<string> orderBy, List<Tuple<string, string>> fqntAliases)
@@ -1253,6 +1315,8 @@ namespace SemanticDatabaseReceptor
 					{
 						// strip off asc/desc
 						string fieldName = orderByField.LeftOf(" asc").LeftOf(" desc");
+
+						// TODO: If there are multiple matches, we should throw an exception that the field name must be further qualified.
 						string alias = fqntAliases.First(fqnt => fqnt.Item1.Contains(fieldName)).Item2;
 
 						if (fieldName != orderByField)

@@ -187,7 +187,7 @@ namespace SemanticDatabaseTests
 			{
 				sdr.dbio.DropTable(sdr, tableName);
 			}
-			catch(Exception ex)
+			catch
 			{
 				// Ignore missing table errors.
 			}
@@ -615,7 +615,7 @@ namespace SemanticDatabaseTests
 			// Create the query
 			ICarrier queryCarrier = Helpers.CreateCarrier(rsys, "Query", signal =>
 			{
-				signal.QueryText = "Person where LastName=$0";
+				signal.QueryText = "Person where [LastName]=@0";
 				signal.Param0 = "Clifton";
 			});
 
@@ -634,7 +634,7 @@ namespace SemanticDatabaseTests
 			// Create the query
 			queryCarrier = Helpers.CreateCarrier(rsys, "Query", signal =>
 			{
-				signal.QueryText = "Person where LastName=$0";
+				signal.QueryText = "Person where [LastName]=@0";
 				signal.Param0 = "NotClifton";
 			});
 

@@ -282,17 +282,23 @@ namespace FeedItemListReceptor
 
 		protected void LoadFeedItems(object sender, EventArgs args)
 		{
-			dvSignals.Table.Clear();
+			ClearGrid();
 			string top = (!String.IsNullOrEmpty(MaxRecords) ? "top "+MaxRecords + " " : String.Empty);
 			CreateCarrierIfReceiver("Query", signal => signal.QueryText = top + "RSSFeedItem, UrlVisited, RSSFeedItemDisplayed order by RSSFeedPubDate desc, RSSFeedName");
 		}
 
+		protected void ClearGrid()
+		{
+			dvSignals.Table.Clear();
+		}
+
 		protected void ShowItemInCategory(object sender, EventArgs args)
 		{
+			ClearGrid();
 			string categoryName = ((ComboBox)form.Controls.Find("cbCategories", false)[0]).SelectedItem.ToString();
 			CreateCarrierIfReceiver("Query", signal =>
 				{
-					signal.QueryText = "RSSFeedBookmark, RSSFeedItem, UrlVisited, RSSFeedItemDisplayed where BookmarkCategory = $0 order by RSSFeedPubDate desc, RSSFeedName";
+					signal.QueryText = "RSSFeedBookmark, RSSFeedItem, UrlVisited, RSSFeedItemDisplayed where [BookmarkCategory] = @0 order by RSSFeedPubDate desc, RSSFeedName";
 					signal.Param0 = categoryName;
 				});
 		}
