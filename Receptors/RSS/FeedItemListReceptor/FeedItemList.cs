@@ -272,7 +272,7 @@ namespace FeedItemListReceptor
 						{
 							// This record has not been seen before.
 							// Emit the "ItemDisplayed" ST for this URL but keep our display state as new until the DB is re-queried.
-							CreateCarrierIfReceiver("RSSFeedItemDisplayed", signal => signal.RSSFeedUrl.Url.Value = url, false);
+							// CreateCarrierIfReceiver("RSSFeedItemDisplayed", signal => signal.RSSFeedUrl.Url.Value = url, false);
 							rowStateByUrl[url] = ItemStates.New;
 						}
 					}
@@ -281,7 +281,7 @@ namespace FeedItemListReceptor
 				{
 					// No parent carrier, the feed is possibly coming from the feed reader directly.  Regardless, try marking that the feed has been displayed.
 					// However, keep our display state as "new" until we receive something from the database indicating that we've displayed this feed item before.
-					CreateCarrierIfReceiver("RSSFeedItemDisplayed", signal => signal.RSSFeedUrl.Url.Value = url, false);
+					// CreateCarrierIfReceiver("RSSFeedItemDisplayed", signal => signal.RSSFeedUrl.Url.Value = url, false);
 
 					// Only update if the row state is not currently set, as we don't want to reset displayed or visited to the "new" state.
 					if (!rowStateByUrl.ContainsKey(url))
@@ -323,6 +323,24 @@ namespace FeedItemListReceptor
 					signal.QueryText = "RSSFeedBookmark, RSSFeedItem, UrlVisited, RSSFeedItemDisplayed where [BookmarkCategory] = @0 order by RSSFeedPubDate desc, RSSFeedName";
 					signal.Param0 = categoryName;
 				});
+		}
+
+		/// <summary>
+		/// Mark new items as read.
+		/// </summary>
+		protected void MarkAsRead(object sender, EventArgs args)
+		{
+			foreach (DataGridViewRow row in dgvSignals.Rows)
+			{
+				string url = row.Cells["RSSFeedItem.RSSFeedUrl.Url.Value"].Value.ToString();
+				
+				if (rowStateByUrl[url] == ItemStates.New)
+				{
+					rowStateByUrl[url] = ItemStates.Displayed;
+					CreateCarrierIfReceiver("RSSFeedItemDisplayed", signal => signal.RSSFeedUrl.Url.Value = url, false);
+					row.DefaultCellStyle.BackColor = displayedColor;
+				}
+			}
 		}
 
 		protected void BookmarkItem(object sender, EventArgs args)

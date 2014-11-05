@@ -15,6 +15,7 @@
       <wf:TextBox Name="tbBookmarkNote" Location="220, 30" Size="260, 20"/>
       <wf:Button Location="330, 5" Size="70, 20" Text="Bookmark" Click="{form.BookmarkItem}"/>
       <wf:Button Location="410, 5" Size="70, 20" Text="Show" Click="{form.ShowItemInCategory}"/>
+      <wf:Button Location="490, 5" Size="90, 20" Text="Mark as Read" Click="{form.MarkAsRead}"/>
       <wf:DataGridView def:Name="dgvRecords" Anchor="Top, Left, Bottom, Right"
                         Location="5, 60"
                         Size="475, 197"

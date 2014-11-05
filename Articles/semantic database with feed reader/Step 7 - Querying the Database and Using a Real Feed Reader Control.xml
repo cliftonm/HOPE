@@ -162,6 +162,22 @@
                 </ixm:ReceptorDef>
               </ixm:Receptors>
               <ixm:Permeabilities>
+                <ixm:PermeabilityDef Protocol="RSSFeedItem" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedName" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Name" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Text" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedTitle" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Title" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedUrl" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Url" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedDescription" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Description" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedPubDate" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedAuthors" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedCategories" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="ExceptionMessage" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="TextMessage" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="LoggerMessage" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="ExceptionMessage" Direction="In" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="TextMessage" Direction="In" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="Text" Direction="In" Permeable="False" />
@@ -185,22 +201,6 @@
                 <ixm:PermeabilityDef Protocol="RSSFeedAuthors" Direction="In" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="RSSFeedCategories" Direction="In" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="LoggerMessage" Direction="In" Permeable="False" />
-                <ixm:PermeabilityDef Protocol="RSSFeedItem" Direction="Out" Permeable="False" />
-                <ixm:PermeabilityDef Protocol="RSSFeedName" Direction="Out" Permeable="False" />
-                <ixm:PermeabilityDef Protocol="Name" Direction="Out" Permeable="False" />
-                <ixm:PermeabilityDef Protocol="Text" Direction="Out" Permeable="False" />
-                <ixm:PermeabilityDef Protocol="RSSFeedTitle" Direction="Out" Permeable="False" />
-                <ixm:PermeabilityDef Protocol="Title" Direction="Out" Permeable="False" />
-                <ixm:PermeabilityDef Protocol="RSSFeedUrl" Direction="Out" Permeable="False" />
-                <ixm:PermeabilityDef Protocol="Url" Direction="Out" Permeable="False" />
-                <ixm:PermeabilityDef Protocol="RSSFeedDescription" Direction="Out" Permeable="False" />
-                <ixm:PermeabilityDef Protocol="Description" Direction="Out" Permeable="False" />
-                <ixm:PermeabilityDef Protocol="RSSFeedPubDate" Direction="Out" Permeable="False" />
-                <ixm:PermeabilityDef Protocol="RSSFeedAuthors" Direction="Out" Permeable="False" />
-                <ixm:PermeabilityDef Protocol="RSSFeedCategories" Direction="Out" Permeable="False" />
-                <ixm:PermeabilityDef Protocol="ExceptionMessage" Direction="Out" Permeable="False" />
-                <ixm:PermeabilityDef Protocol="TextMessage" Direction="Out" Permeable="False" />
-                <ixm:PermeabilityDef Protocol="LoggerMessage" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="RSSFeedRefresh" Direction="Out" Permeable="False" />
               </ixm:Permeabilities>
               <ixm:Membranes>
@@ -315,8 +315,8 @@
                     <ixm:UserConfig Name="MaxRecords" Value="40" />
                     <ixm:UserConfig Name="ProtocolName" Value="RSSFeedItem" />
                     <ixm:UserConfig Name="ShowProtocolPicker" Value="False" />
-                    <ixm:UserConfig Name="WindowX" Value="2236" />
-                    <ixm:UserConfig Name="WindowY" Value="192" />
+                    <ixm:UserConfig Name="WindowX" Value="976" />
+                    <ixm:UserConfig Name="WindowY" Value="117" />
                     <ixm:UserConfig Name="WindowWidth" Value="715" />
                     <ixm:UserConfig Name="WindowHeight" Value="470" />
                   </ixm:UserConfigs>
@@ -328,8 +328,8 @@
                   <ixm:UserConfigs>
                     <ixm:UserConfig Name="DaySpan" Value="" />
                     <ixm:UserConfig Name="HourSpan" Value="" />
-                    <ixm:UserConfig Name="MinuteSpan" Value="10" />
-                    <ixm:UserConfig Name="SecondSpan" Value="" />
+                    <ixm:UserConfig Name="MinuteSpan" Value="8" />
+                    <ixm:UserConfig Name="SecondSpan" Value="13" />
                     <ixm:UserConfig Name="ProtocolName" Value="Resend" />
                   </ixm:UserConfigs>
                 </ixm:ReceptorDef>
@@ -438,7 +438,6 @@
                 </ixm:ReceptorDef>
               </ixm:Receptors>
               <ixm:Permeabilities>
-                <ixm:PermeabilityDef Protocol="LoggerMessage" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="ExceptionMessage" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="TextMessage" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="Text" Direction="Out" Permeable="False" />
@@ -452,6 +451,7 @@
                 <ixm:PermeabilityDef Protocol="BookmarkCategory" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="Category" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="Query" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="LoggerMessage" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="RSSFeedName" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="Name" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="RSSFeedTitle" Direction="Out" Permeable="False" />
