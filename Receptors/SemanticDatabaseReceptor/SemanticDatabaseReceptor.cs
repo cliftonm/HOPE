@@ -129,9 +129,11 @@ namespace SemanticDatabaseReceptor
 		{
 			DatabaseName = "hope_semantic_database";
 
+#if POSTGRES
 			string[] postgresConfig = File.ReadAllLines("postgres.config");
 			postgresUserId = postgresConfig[0];
 			postgresPassword = postgresConfig[1];
+#endif
 
 			AddReceiveProtocol("Query", (Action<dynamic>)(signal => QueryDatabase(signal, (string)signal.QueryText)));
 
