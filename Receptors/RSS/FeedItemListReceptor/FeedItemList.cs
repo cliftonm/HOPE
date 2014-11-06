@@ -32,6 +32,9 @@ namespace FeedItemListReceptor
 			Visited = 0x04
 		}
 
+		private const string pubDateColumnName = "RSSFeedItem.RSSFeedPubDate.Value";
+		private const string urlColumnName = "RSSFeedItem.RSSFeedUrl.Url.Value";
+
 		protected Color visitedColor = Color.FromArgb(0x98, 0xFB, 0x98);		// Pale Green for visited.
 		protected Color displayedColor = Color.FromArgb(0x87, 0xCE, 0xFA);		// Light Sky Blue for "old feed".
 
@@ -94,9 +97,9 @@ namespace FeedItemListReceptor
 			dgvSignals.RowEnter += OnRowEnter;
 
 			// Pub date column
-			dgvSignals.Columns[1].SortMode = DataGridViewColumnSortMode.Programmatic;
-			dgvSignals.Columns[1].HeaderCell.SortGlyphDirection = SortOrder.Descending;
-			dgvSignals.Sort(dgvSignals.Columns[1], System.ComponentModel.ListSortDirection.Descending);
+			dgvSignals.Columns[pubDateColumnName].SortMode = DataGridViewColumnSortMode.Programmatic;
+			dgvSignals.Columns[pubDateColumnName].HeaderCell.SortGlyphDirection = SortOrder.Descending;
+			dgvSignals.Sort(dgvSignals.Columns[pubDateColumnName], System.ComponentModel.ListSortDirection.Descending);
 		}
 
 		protected void OnRowEnter(object sender, DataGridViewCellEventArgs e)
@@ -207,9 +210,9 @@ namespace FeedItemListReceptor
 				// Seems it actually is best to do this for every new row added.
 				// Certainly, the sort glyph does not appear until we do this, after data has been received.
 				// TODO: The problem with this is that it will override the user's selection.
-				dgvSignals.Columns[1].SortMode = DataGridViewColumnSortMode.Programmatic;
-				dgvSignals.Columns[1].HeaderCell.SortGlyphDirection = SortOrder.Descending;
-				dgvSignals.Sort(dgvSignals.Columns[1], System.ComponentModel.ListSortDirection.Descending);
+				dgvSignals.Columns[pubDateColumnName].SortMode = DataGridViewColumnSortMode.Programmatic;
+				dgvSignals.Columns[pubDateColumnName].HeaderCell.SortGlyphDirection = SortOrder.Descending;
+				dgvSignals.Sort(dgvSignals.Columns[pubDateColumnName], System.ComponentModel.ListSortDirection.Descending);
 
 				// ShowSignal(carrier.Signal);
 
@@ -257,7 +260,7 @@ namespace FeedItemListReceptor
 					{
 						foreach (DataGridViewRow row in dgvSignals.Rows)
 						{
-							if (row.Cells["RSSFeedItem.RSSFeedUrl.Url.Value"].Value.ToString() == url)
+							if (row.Cells[urlColumnName].Value.ToString() == url)
 							{
 								row.DefaultCellStyle.BackColor = visitedColor;
 								rowStateByUrl[url] = ItemStates.Visited;
@@ -273,7 +276,7 @@ namespace FeedItemListReceptor
 							// Find the row and set the background color to a light blue to indicate "old feed item"
 							foreach (DataGridViewRow row in dgvSignals.Rows)
 							{
-								if (row.Cells["RSSFeedItem.RSSFeedUrl.Url.Value"].Value.ToString() == url)
+								if (row.Cells[urlColumnName].Value.ToString() == url)
 								{
 									row.DefaultCellStyle.BackColor = displayedColor;
 									rowStateByUrl[url] = ItemStates.Displayed;
@@ -310,7 +313,7 @@ namespace FeedItemListReceptor
 		{
 			base.OnCellContentDoubleClick(sender, e);
 			dgvSignals.Rows[e.RowIndex].DefaultCellStyle.BackColor = visitedColor;
-			string url = dgvSignals.Rows[e.RowIndex].Cells["RSSFeedItem.RSSFeedUrl.Url.Value"].Value.ToString();
+			string url = dgvSignals.Rows[e.RowIndex].Cells[urlColumnName].Value.ToString();
 			rowStateByUrl[url] = ItemStates.Visited;
 			CreateCarrierIfReceiver("UrlVisited", signal => signal.Url.Value = url, false);
 		}
@@ -345,7 +348,7 @@ namespace FeedItemListReceptor
 		{
 			foreach (DataGridViewRow row in dgvSignals.Rows)
 			{
-				string url = row.Cells["RSSFeedItem.RSSFeedUrl.Url.Value"].Value.ToString();
+				string url = row.Cells[urlColumnName].Value.ToString();
 				
 				if (rowStateByUrl[url] == ItemStates.New)
 				{
@@ -371,7 +374,7 @@ namespace FeedItemListReceptor
 								signal.BookmarkNote.Note.Text.Value = BookmarkNote;
 							}
 
-							signal.RSSFeedUrl.Url.Value = row.Cells["RSSFeedItem.RSSFeedUrl.Url.Value"].Value.ToString();
+							signal.RSSFeedUrl.Url.Value = row.Cells[urlColumnName].Value.ToString();
 						}, false);
 				}
 
