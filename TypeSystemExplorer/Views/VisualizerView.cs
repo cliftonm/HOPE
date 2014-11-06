@@ -358,6 +358,11 @@ namespace TypeSystemExplorer.Views
 			set { dropPoint = value; }
 		}
 
+		public Point SurfaceOffset { 
+			get { return surfaceOffset; }
+			set { surfaceOffset = value; }
+		}
+
 		// TODO: Maybe clean this up at some point.
 		/// <summary>
 		/// Use ShowProtocols for the setter.

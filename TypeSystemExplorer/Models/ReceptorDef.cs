@@ -14,6 +14,7 @@ namespace TypeSystemExplorer.Models
 	{
 		public MembranesDef membranesDef;
 		public CarriersDef carriersDef;
+		public Point SurfaceOffset { get; set; }
 
 		public MembranesDef MembranesDef
 		{

@@ -730,6 +730,7 @@ namespace TypeSystemExplorer.Controllers
 			AddAttribute(mycroXaml, "Name", "Form");
 			
 			XmlNode appletNode = xdoc.CreateElement("ixm", "Applet", "TypeSystemExplorer.Models, TypeSystemExplorer");
+			AddAttribute(appletNode, "SurfaceOffset", visualizerController.View.SurfaceOffset.X + "," + visualizerController.View.SurfaceOffset.Y);
 			mycroXaml.AppendChild(appletNode);
 			
 			XmlNode membranesDefNode = xdoc.CreateElement("ixm", "MembranesDef", "TypeSystemExplorer.Models, TypeSystemExplorer");
@@ -966,6 +967,7 @@ namespace TypeSystemExplorer.Controllers
 
 			// When we're all done, recreate the connections because the membrane permeability might have changed.
 			// TODO: Should this be an event the visualizer picks up on?
+			VisualizerController.View.SurfaceOffset = applet.SurfaceOffset;
 			VisualizerController.View.UpdateConnections();
 
 			// Inform all receptors that the system is fully initialized.
