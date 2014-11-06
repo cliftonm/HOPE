@@ -83,6 +83,7 @@ namespace FeedItemListReceptor
 		protected override void InitializeUI()
 		{
 			base.InitializeUI();
+			CreateViewerTable();
 
 			// Override the carrier list viewer's setting
 			dgvSignals.AlternatingRowsDefaultCellStyle.BackColor = Color.Empty;
@@ -91,6 +92,11 @@ namespace FeedItemListReceptor
 			// compensates for when the user sorts by a column.
 			dgvSignals.CellFormatting += OnCellFormatting;
 			dgvSignals.RowEnter += OnRowEnter;
+
+			// Pub date column
+			dgvSignals.Columns[1].SortMode = DataGridViewColumnSortMode.Programmatic;
+			dgvSignals.Columns[1].HeaderCell.SortGlyphDirection = SortOrder.Descending;
+			dgvSignals.Sort(dgvSignals.Columns[1], System.ComponentModel.ListSortDirection.Descending);
 		}
 
 		protected void OnRowEnter(object sender, DataGridViewCellEventArgs e)
@@ -198,6 +204,13 @@ namespace FeedItemListReceptor
 
 			if (carrier.Protocol.DeclTypeName == "RSSFeedItem")
 			{
+				// Seems it actually is best to do this for every new row added.
+				// Certainly, the sort glyph does not appear until we do this, after data has been received.
+				// TODO: The problem with this is that it will override the user's selection.
+				dgvSignals.Columns[1].SortMode = DataGridViewColumnSortMode.Programmatic;
+				dgvSignals.Columns[1].HeaderCell.SortGlyphDirection = SortOrder.Descending;
+				dgvSignals.Sort(dgvSignals.Columns[1], System.ComponentModel.ListSortDirection.Descending);
+
 				// ShowSignal(carrier.Signal);
 
 				// We are interested in the existence of the root and whether an UrlVisited ST exists on it.
