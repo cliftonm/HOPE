@@ -154,6 +154,9 @@ namespace SemanticDatabaseReceptor
 			return "alter table " + st + " add foreign key (" + stField + ") references " + childTable + "(" + childField + ")";
 		}
 
+		/// <summary>
+		/// Add Postgres limit clause to the sql string.
+		/// </summary>
 		public string AddLimitClause(string sql, string maxRecords)
 		{
 			string ret = sql;
