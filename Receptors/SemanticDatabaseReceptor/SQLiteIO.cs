@@ -149,13 +149,16 @@ namespace SemanticDatabaseReceptor
 			return null;
 		}
 
+		/// <summary>
+		/// Add SQLite limit clause to the sql string.
+		/// </summary>
 		public string AddLimitClause(string sql, string maxRecords)
 		{
 			string ret = sql;
 
 			if (!String.IsNullOrEmpty(maxRecords))
 			{
-				sql = sql + " limit " + maxRecords;	
+				ret = sql + " limit " + maxRecords;	
 			}
 
 			return ret;
