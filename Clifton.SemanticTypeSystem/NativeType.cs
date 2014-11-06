@@ -24,6 +24,11 @@ namespace Clifton.SemanticTypeSystem
 		public string Alias { get; set; }
 
 		/// <summary>
+		/// The ordering of elements in a semantic type.  Used for display purposes, like a grid view.
+		/// </summary>
+		public int Ordinality { get; set; }
+
+		/// <summary>
 		/// Used by the semantic database to determine how this semantic type behaves with regards to duplicate data.
 		/// </summary>
 		public bool UniqueField { get; set; }

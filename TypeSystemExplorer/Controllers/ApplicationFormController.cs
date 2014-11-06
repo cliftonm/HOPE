@@ -592,7 +592,7 @@ namespace TypeSystemExplorer.Controllers
 
 						foreach (Models.NativeType nt in st.NativeTypes)
 						{
-							sts.NativeTypes.Add(new Clifton.SemanticTypeSystem.NativeType() { Name = nt.Name, ImplementingType = nt.ImplementingType, Alias = nt.Alias, UniqueField = nt.UniqueField });
+							sts.NativeTypes.Add(new Clifton.SemanticTypeSystem.NativeType() { Name = nt.Name, ImplementingType = nt.ImplementingType, Alias = nt.Alias, Ordinality = nt.Ordinality, UniqueField = nt.UniqueField });
 						}
 
 						foreach (Models.SubType subt in st.SubTypes)

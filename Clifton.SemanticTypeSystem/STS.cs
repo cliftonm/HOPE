@@ -186,7 +186,6 @@ namespace Clifton.SemanticTypeSystem
 			sts.SemanticElements.ForEach(child => GetAllSemanticTypes(child.Element.Struct, sts, structList));
 		}
 
-		// TODO: Ordinality (which still needs to be implemented as a property of NT's and SE's) needs to be preserved.
 		/// <summary>
 		/// Returns a list of fully qualified (full path) type names for the final implementing native types.
 		/// This function recurses into all child ST to derive all NT's in the ST tree.
@@ -203,7 +202,6 @@ namespace Clifton.SemanticTypeSystem
 			return ret;
 		}
 
-		// TODO: Ordinality (which still needs to be implemented as a property of NT's and SE's) needs to be preserved.
 		/// <summary>
 		/// Returns a list of fully qualified (full path) type names for the final implementing native types and their values, given the provided source signal.
 		/// This function recurses into all child ST to derive all NT's in the ST tree.
@@ -310,7 +308,7 @@ namespace Clifton.SemanticTypeSystem
 					NativeType = nativeType, 
 					Alias = ntalias,
 					UniqueField = nativeType.UniqueField || isUnique,
-					Ordinality = ordinality
+					Ordinality = nativeType.Ordinality + ordinality
 				});
 			}
 

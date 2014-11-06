@@ -88,6 +88,11 @@ namespace Clifton.SemanticTypeSystem.Interfaces
 		bool UniqueField { get; }
 		string ImplementingType { get; }
 
+		/// <summary>
+		/// The ordering of elements in a semantic type.  Used for display purposes, like a grid view.
+		/// </summary>
+		int Ordinality { get; }
+
 		// sts parameter is not used for the native type setter/getter, but provides compatability with ISemanticElement.SetValue so we can have a common interface.
 
 		/// <summary>

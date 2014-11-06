@@ -19,13 +19,13 @@
         </SemanticType>
         <SemanticType Name="Path" UniqueField="false">
           <NativeTypes>
-            <NativeType Name="Value" ImplementingType="string" UniqueField="false" />
+            <NativeType Name="Value" ImplementingType="string" Ordinality="0" UniqueField="false" />
           </NativeTypes>
           <SubTypes />
         </SemanticType>
         <SemanticType Name="FileExtension" UniqueField="false">
           <NativeTypes>
-            <NativeType Name="Value" ImplementingType="string" UniqueField="false" />
+            <NativeType Name="Value" ImplementingType="string" Ordinality="0" UniqueField="false" />
           </NativeTypes>
           <SubTypes />
         </SemanticType>
@@ -37,7 +37,7 @@
         </SemanticType>
         <SemanticType Name="Text" Alias="Text" UniqueField="false">
           <NativeTypes>
-            <NativeType Name="Value" ImplementingType="string" UniqueField="false" />
+            <NativeType Name="Value" ImplementingType="string" Ordinality="0" UniqueField="false" />
           </NativeTypes>
           <SubTypes />
         </SemanticType>
@@ -71,37 +71,37 @@
       <SemanticTypes>
         <SemanticType Name="DebugMessage" Alias="Date/Time" UniqueField="false">
           <NativeTypes>
-            <NativeType Name="MessageTime" ImplementingType="DateTime" UniqueField="false" />
+            <NativeType Name="MessageTime" ImplementingType="DateTime" Ordinality="0" UniqueField="false" />
           </NativeTypes>
           <SubTypes>
-            <SubType Name="TextMessage" UniqueField="false" Ordinality="0" />
+            <SubType Name="TextMessage" UniqueField="false" Ordinality="1" />
           </SubTypes>
         </SemanticType>
         <SemanticType Name="LoggerMessage" UniqueField="false">
           <NativeTypes>
-            <NativeType Name="MessageTime" Alias="Date/Time" ImplementingType="DateTime" UniqueField="false" />
+            <NativeType Name="MessageTime" Alias="Date/Time" ImplementingType="DateTime" Ordinality="0" UniqueField="false" />
           </NativeTypes>
           <SubTypes>
-            <SubType Name="TextMessage" Alias="Message" UniqueField="false" Ordinality="0" />
+            <SubType Name="TextMessage" Alias="Message" UniqueField="false" Ordinality="1" />
           </SubTypes>
         </SemanticType>
         <SemanticType Name="ErrorMessage" UniqueField="false">
           <NativeTypes>
-            <NativeType Name="MessageTime" Alias="Date/Time" ImplementingType="DateTime" UniqueField="false" />
+            <NativeType Name="MessageTime" Alias="Date/Time" ImplementingType="DateTime" Ordinality="0" UniqueField="false" />
           </NativeTypes>
           <SubTypes>
-            <SubType Name="TextMessage" Alias="Text" UniqueField="false" Ordinality="0" />
+            <SubType Name="TextMessage" Alias="Text" UniqueField="false" Ordinality="1" />
           </SubTypes>
         </SemanticType>
         <SemanticType Name="ExceptionMessage" UniqueField="false">
           <NativeTypes>
-            <NativeType Name="MessageTime" Alias="Date/Time" ImplementingType="DateTime" UniqueField="false" />
-            <NativeType Name="ReceptorName" Alias="Receptor" ImplementingType="string" UniqueField="false" />
-            <NativeType Name="ProtocolName" Alias="Protocol" ImplementingType="string" UniqueField="false" />
-            <NativeType Name="StackTrace" ImplementingType="string" UniqueField="false" />
+            <NativeType Name="MessageTime" Alias="Date/Time" ImplementingType="DateTime" Ordinality="0" UniqueField="false" />
+            <NativeType Name="ReceptorName" Alias="Receptor" ImplementingType="string" Ordinality="1" UniqueField="false" />
+            <NativeType Name="ProtocolName" Alias="Protocol" ImplementingType="string" Ordinality="2" UniqueField="false" />
+            <NativeType Name="StackTrace" ImplementingType="string" Ordinality="4" UniqueField="false" />
           </NativeTypes>
           <SubTypes>
-            <SubType Name="TextMessage" Alias="Exception" UniqueField="false" Ordinality="0" />
+            <SubType Name="TextMessage" Alias="Exception" UniqueField="false" Ordinality="3" />
           </SubTypes>
         </SemanticType>
       </SemanticTypes>
@@ -110,10 +110,10 @@
       <SemanticTypes>
         <SemanticType Name="CarrierAnimation" UniqueField="false">
           <NativeTypes>
-            <NativeType Name="Process" ImplementingType="Action" UniqueField="false" />
-            <NativeType Name="From" ImplementingType="IReceptorInstance" UniqueField="false" />
-            <NativeType Name="To" ImplementingType="IReceptorInstance" UniqueField="false" />
-            <NativeType Name="Carrier" ImplementingType="ICarrier" UniqueField="false" />
+            <NativeType Name="Process" ImplementingType="Action" Ordinality="0" UniqueField="false" />
+            <NativeType Name="From" ImplementingType="IReceptorInstance" Ordinality="0" UniqueField="false" />
+            <NativeType Name="To" ImplementingType="IReceptorInstance" Ordinality="0" UniqueField="false" />
+            <NativeType Name="Carrier" ImplementingType="ICarrier" Ordinality="0" UniqueField="false" />
           </NativeTypes>
           <SubTypes />
         </SemanticType>
@@ -136,7 +136,7 @@
         </SemanticType>
         <SemanticType Name="Image" UniqueField="false">
           <NativeTypes>
-            <NativeType Name="Value" ImplementingType="Bitmap" UniqueField="false" />
+            <NativeType Name="Value" ImplementingType="Bitmap" Ordinality="0" UniqueField="false" />
           </NativeTypes>
           <SubTypes />
         </SemanticType>
@@ -152,15 +152,15 @@
       <SemanticTypes>
         <SemanticType Name="SystemMessage" UniqueField="false">
           <NativeTypes>
-            <NativeType Name="Action" ImplementingType="string" UniqueField="false" />
-            <NativeType Name="Data" ImplementingType="Object" UniqueField="false" />
-            <NativeType Name="Source" ImplementingType="Object" UniqueField="false" />
+            <NativeType Name="Action" ImplementingType="string" Ordinality="0" UniqueField="false" />
+            <NativeType Name="Data" ImplementingType="Object" Ordinality="0" UniqueField="false" />
+            <NativeType Name="Source" ImplementingType="Object" Ordinality="0" UniqueField="false" />
           </NativeTypes>
           <SubTypes />
         </SemanticType>
         <SemanticType Name="SystemShowImage" UniqueField="false">
           <NativeTypes>
-            <NativeType Name="From" ImplementingType="IReceptorInstance" UniqueField="false" />
+            <NativeType Name="From" ImplementingType="IReceptorInstance" Ordinality="0" UniqueField="false" />
           </NativeTypes>
           <SubTypes>
             <SubType Name="Image" UniqueField="false" Ordinality="0" />
@@ -180,13 +180,13 @@
         </SemanticType>
         <SemanticType Name="Zip5" UniqueField="false">
           <NativeTypes>
-            <NativeType Name="Value" ImplementingType="string" UniqueField="false" />
+            <NativeType Name="Value" ImplementingType="string" Ordinality="0" UniqueField="false" />
           </NativeTypes>
           <SubTypes />
         </SemanticType>
         <SemanticType Name="Zip4" UniqueField="false">
           <NativeTypes>
-            <NativeType Name="Value" ImplementingType="string" UniqueField="false" />
+            <NativeType Name="Value" ImplementingType="string" Ordinality="0" UniqueField="false" />
           </NativeTypes>
           <SubTypes />
         </SemanticType>
@@ -202,26 +202,26 @@
         </SemanticType>
         <SemanticType Name="City" UniqueField="false">
           <NativeTypes>
-            <NativeType Name="Value" ImplementingType="string" UniqueField="false" />
+            <NativeType Name="Value" ImplementingType="string" Ordinality="0" UniqueField="false" />
           </NativeTypes>
           <SubTypes />
         </SemanticType>
         <SemanticType Name="USState" UniqueField="false">
           <NativeTypes>
-            <NativeType Name="Value" ImplementingType="string" UniqueField="false" />
+            <NativeType Name="Value" ImplementingType="string" Ordinality="0" UniqueField="false" />
           </NativeTypes>
           <SubTypes />
         </SemanticType>
         <SemanticType Name="USStateAbbreviation" UniqueField="false">
           <NativeTypes>
-            <NativeType Name="Value" ImplementingType="string" UniqueField="false" />
+            <NativeType Name="Value" ImplementingType="string" Ordinality="0" UniqueField="false" />
           </NativeTypes>
           <SubTypes />
         </SemanticType>
         <SemanticType Name="latlon" UniqueField="false">
           <NativeTypes>
-            <NativeType Name="lat" ImplementingType="float" UniqueField="false" />
-            <NativeType Name="lon" ImplementingType="float" UniqueField="false" />
+            <NativeType Name="lat" ImplementingType="float" Ordinality="0" UniqueField="false" />
+            <NativeType Name="lon" ImplementingType="float" Ordinality="0" UniqueField="false" />
           </NativeTypes>
           <SubTypes />
         </SemanticType>
@@ -231,11 +231,11 @@
       <SemanticTypes>
         <SemanticType Name="WeatherInfo" UniqueField="false">
           <NativeTypes>
-            <NativeType Name="Summary" ImplementingType="string" UniqueField="false" />
-            <NativeType Name="High" ImplementingType="string" UniqueField="false" />
-            <NativeType Name="Low" ImplementingType="string" UniqueField="false" />
-            <NativeType Name="Conditions" ImplementingType="List&lt;dynamic&gt;" UniqueField="false" />
-            <NativeType Name="Hazards" ImplementingType="List&lt;dynamic&gt;" UniqueField="false" />
+            <NativeType Name="Summary" ImplementingType="string" Ordinality="0" UniqueField="false" />
+            <NativeType Name="High" ImplementingType="string" Ordinality="0" UniqueField="false" />
+            <NativeType Name="Low" ImplementingType="string" Ordinality="0" UniqueField="false" />
+            <NativeType Name="Conditions" ImplementingType="List&lt;dynamic&gt;" Ordinality="0" UniqueField="false" />
+            <NativeType Name="Hazards" ImplementingType="List&lt;dynamic&gt;" Ordinality="0" UniqueField="false" />
           </NativeTypes>
           <SubTypes>
             <SubType Name="Zip5" UniqueField="false" Ordinality="0" />
@@ -243,18 +243,18 @@
         </SemanticType>
         <SemanticType Name="WeatherCondition" UniqueField="false">
           <NativeTypes>
-            <NativeType Name="Additive" ImplementingType="string" UniqueField="false" />
-            <NativeType Name="Coverage" ImplementingType="string" UniqueField="false" />
-            <NativeType Name="Intensity" ImplementingType="string" UniqueField="false" />
-            <NativeType Name="WeatherType" ImplementingType="string" UniqueField="false" />
-            <NativeType Name="Qualifier" ImplementingType="string" UniqueField="false" />
+            <NativeType Name="Additive" ImplementingType="string" Ordinality="0" UniqueField="false" />
+            <NativeType Name="Coverage" ImplementingType="string" Ordinality="0" UniqueField="false" />
+            <NativeType Name="Intensity" ImplementingType="string" Ordinality="0" UniqueField="false" />
+            <NativeType Name="WeatherType" ImplementingType="string" Ordinality="0" UniqueField="false" />
+            <NativeType Name="Qualifier" ImplementingType="string" Ordinality="0" UniqueField="false" />
           </NativeTypes>
           <SubTypes />
         </SemanticType>
         <SemanticType Name="WeatherHazard" UniqueField="false">
           <NativeTypes>
-            <NativeType Name="Phenomena" ImplementingType="string" UniqueField="false" />
-            <NativeType Name="Significance" ImplementingType="string" UniqueField="false" />
+            <NativeType Name="Phenomena" ImplementingType="string" Ordinality="0" UniqueField="false" />
+            <NativeType Name="Significance" ImplementingType="string" Ordinality="0" UniqueField="false" />
           </NativeTypes>
           <SubTypes />
         </SemanticType>
@@ -294,7 +294,7 @@
         </SemanticType>
         <SemanticType Name="RSSFeedPubDate" Alias="PubDate" UniqueField="false">
           <NativeTypes>
-            <NativeType Name="Value" ImplementingType="DateTime" UniqueField="false" />
+            <NativeType Name="Value" ImplementingType="DateTime" Ordinality="0" UniqueField="false" />
           </NativeTypes>
           <SubTypes />
         </SemanticType>
@@ -340,7 +340,7 @@
       <SemanticTypes>
         <SemanticType Name="Url" UniqueField="true">
           <NativeTypes>
-            <NativeType Name="Value" ImplementingType="string" UniqueField="false" />
+            <NativeType Name="Value" ImplementingType="string" Ordinality="0" UniqueField="false" />
           </NativeTypes>
           <SubTypes />
         </SemanticType>
@@ -356,23 +356,23 @@
       <SemanticTypes>
         <SemanticType Name="Query" UniqueField="false">
           <NativeTypes>
-            <NativeType Name="QueryText" ImplementingType="string" UniqueField="false" />
-            <NativeType Name="Param0" ImplementingType="Object" UniqueField="false" />
-            <NativeType Name="Param1" ImplementingType="Object" UniqueField="false" />
-            <NativeType Name="Param2" ImplementingType="Object" UniqueField="false" />
-            <NativeType Name="Param3" ImplementingType="Object" UniqueField="false" />
-            <NativeType Name="Param4" ImplementingType="Object" UniqueField="false" />
-            <NativeType Name="Param5" ImplementingType="Object" UniqueField="false" />
-            <NativeType Name="Param6" ImplementingType="Object" UniqueField="false" />
-            <NativeType Name="Param7" ImplementingType="Object" UniqueField="false" />
-            <NativeType Name="Param8" ImplementingType="Object" UniqueField="false" />
-            <NativeType Name="Param9" ImplementingType="Object" UniqueField="false" />
+            <NativeType Name="QueryText" ImplementingType="string" Ordinality="0" UniqueField="false" />
+            <NativeType Name="Param0" ImplementingType="Object" Ordinality="0" UniqueField="false" />
+            <NativeType Name="Param1" ImplementingType="Object" Ordinality="0" UniqueField="false" />
+            <NativeType Name="Param2" ImplementingType="Object" Ordinality="0" UniqueField="false" />
+            <NativeType Name="Param3" ImplementingType="Object" Ordinality="0" UniqueField="false" />
+            <NativeType Name="Param4" ImplementingType="Object" Ordinality="0" UniqueField="false" />
+            <NativeType Name="Param5" ImplementingType="Object" Ordinality="0" UniqueField="false" />
+            <NativeType Name="Param6" ImplementingType="Object" Ordinality="0" UniqueField="false" />
+            <NativeType Name="Param7" ImplementingType="Object" Ordinality="0" UniqueField="false" />
+            <NativeType Name="Param8" ImplementingType="Object" Ordinality="0" UniqueField="false" />
+            <NativeType Name="Param9" ImplementingType="Object" Ordinality="0" UniqueField="false" />
           </NativeTypes>
           <SubTypes />
         </SemanticType>
         <SemanticType Name="Delete" UniqueField="false">
           <NativeTypes>
-            <NativeType Name="SemanticType" ImplementingType="string" UniqueField="false" />
+            <NativeType Name="SemanticType" ImplementingType="string" Ordinality="0" UniqueField="false" />
           </NativeTypes>
           <SubTypes />
         </SemanticType>

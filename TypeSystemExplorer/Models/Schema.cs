@@ -62,6 +62,11 @@ namespace TypeSystemExplorer.Models
 		[TypeConverter(typeof(ImplementingTypeNameConverter))]
 		public string ImplementingType { get; set; }
 
+		[Category("UI")]
+		[XmlAttribute()]
+		[Description("Indicates the ordering of fields for display purposes.  This is additive to the semantic element's ordinality, so that a semantic element with multiple native types can order the native types within the semantic element.")]
+		public int Ordinality { get; set; }
+
 		[Category("Database")]
 		[XmlAttribute()]
 		[Description("Indicate whether this field is part of a unique composite key for the parent semantic element.")]
