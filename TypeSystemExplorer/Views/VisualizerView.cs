@@ -1493,7 +1493,22 @@ namespace TypeSystemExplorer.Views
 							Form form = mp.Load<Form>(receptor.Instance.ConfigurationUI, this);
 							form.Tag = new ConfigurationInfo() { Receptor = receptor, Parser = mp };
 							PopulateControls(receptor, mp);
-							form.ShowDialog();
+
+							bool modeless = false;
+							
+							if (receptor.Instance is ReceptorUiHelpers.ISupportModelessConfiguration)
+							{
+								modeless = ((ReceptorUiHelpers.ISupportModelessConfiguration)receptor.Instance).Modeless;
+							}
+
+							if (modeless)
+							{
+								form.Show();
+							}
+							else
+							{
+								form.ShowDialog();
+							}
 						}
 						else
 						{
@@ -1739,7 +1754,14 @@ namespace TypeSystemExplorer.Views
 			}
 			else
 			{
-				MessageBox.Show(ci.Receptor.Instance.ConfigurationError, "Please correct...", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				// If ConfigurationError is not null, then we should display a popup error dialog.
+				// If ConfigurationError is null or an empty string, then we should simply keep the dialog open.
+				// This is used in the signal creator (as of 11/14/2014) to keep the dialog open so it's easier for
+				// the user to create more than one signal quickly.
+				if (!String.IsNullOrEmpty(ci.Receptor.Instance.ConfigurationError))
+				{
+					MessageBox.Show(ci.Receptor.Instance.ConfigurationError, "Please correct...", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				}
 			}
 		}
 

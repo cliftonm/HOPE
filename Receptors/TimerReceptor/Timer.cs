@@ -72,20 +72,8 @@ namespace ATimerReceptor
 		public override void PrepopulateConfig(MycroParser mp)
 		{
 			base.PrepopulateConfig(mp);
-			PopulateProtocolComboBox(mp);
-		}
-
-		protected void PopulateProtocolComboBox(MycroParser mycroParser)
-		{
-			cbProtocols = (ComboBox)mycroParser.ObjectCollection["cbProtocols"];
-			List<string> types = rsys.SemanticTypeSystem.SemanticTypes.Keys.ToList();
-			types.Sort();
-			cbProtocols.DataSource = types;
-
-			if (!String.IsNullOrEmpty(ProtocolName))
-			{
-				cbProtocols.SelectedItem = ProtocolName;
-			}
+			cbProtocols = (ComboBox)mp.ObjectCollection["cbProtocols"];
+			ReceptorUiHelpers.Helper.PopulateProtocolComboBox(cbProtocols, rsys, ProtocolName);
 		}
 
 		public override bool UserConfigurationUpdated()

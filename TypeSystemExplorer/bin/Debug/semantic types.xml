@@ -69,9 +69,9 @@
     </SemanticTypesContainer>
     <SemanticTypesContainer Name="Messages">
       <SemanticTypes>
-        <SemanticType Name="DebugMessage" Alias="Date/Time" UniqueField="false">
+        <SemanticType Name="DebugMessage" Alias="" UniqueField="false">
           <NativeTypes>
-            <NativeType Name="MessageTime" ImplementingType="DateTime" Ordinality="0" UniqueField="false" />
+            <NativeType Name="MessageTime" Alias="Date/Time" ImplementingType="DateTime" Ordinality="0" UniqueField="false" />
           </NativeTypes>
           <SubTypes>
             <SubType Name="TextMessage" UniqueField="false" Ordinality="1" />

@@ -76,6 +76,8 @@ namespace Clifton.SemanticTypeSystem
 					return typeof(sbyte);
 				case "char":
 					return typeof(char);
+				case "object":
+					return typeof(object);
 				default:
 					// throw new ApplicationException("Unknown implementing type: " + ImplementingType);
 					return null;

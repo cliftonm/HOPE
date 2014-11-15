@@ -56,6 +56,10 @@
       <Project>{d1627a50-1c2b-4e28-ac6c-ab437b0138b4}</Project>
       <Name>lib</Name>
     </ProjectReference>
+    <ProjectReference Include="..\UiHelpers\UiHelpers.csproj">
+      <Project>{2184b37e-3cf1-4e3b-b42b-71a3eb0497a8}</Project>
+      <Name>UiHelpers</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

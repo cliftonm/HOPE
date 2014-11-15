@@ -66,7 +66,8 @@ namespace CarrierListViewerReceptor
 		public override void PrepopulateConfig(MycroParser mp)
 		{
 			base.PrepopulateConfig(mp);
-			PopulateProtocolComboBox(mp);
+			cbProtocols = (ComboBox)mp.ObjectCollection["cbProtocols"];
+			ReceptorUiHelpers.Helper.PopulateProtocolComboBox(cbProtocols, rsys, ProtocolName);
 		}
 
 		/// <summary>
@@ -141,21 +142,9 @@ namespace CarrierListViewerReceptor
 
 			if (ShowProtocolPicker)
 			{
-				PopulateProtocolComboBox(mycroParser);
+				cbProtocols = (ComboBox)mycroParser.ObjectCollection["cbProtocols"];
+				ReceptorUiHelpers.Helper.PopulateProtocolComboBox(cbProtocols, rsys, ProtocolName);
 				cbProtocols.SelectedValueChanged += cbProtocols_SelectedValueChanged;
-			}
-		}
-
-		protected void PopulateProtocolComboBox(MycroParser mycroParser)
-		{
-			cbProtocols = (ComboBox)mycroParser.ObjectCollection["cbProtocols"];
-			List<string> types = rsys.SemanticTypeSystem.SemanticTypes.Keys.ToList();
-			types.Sort();
-			cbProtocols.DataSource = types;
-
-			if (!String.IsNullOrEmpty(ProtocolName))
-			{
-				cbProtocols.SelectedItem = ProtocolName;
 			}
 		}
 
@@ -195,7 +184,8 @@ namespace CarrierListViewerReceptor
 					{
 						try
 						{
-							DataColumn dc = new DataColumn(col.FullyQualifiedName, col.NativeType.GetImplementingType(rsys.SemanticTypeSystem));
+							Type type = col.NativeType.GetImplementingType(rsys.SemanticTypeSystem);
+							DataColumn dc = new DataColumn(col.FullyQualifiedName, type);
 
 							// If no alias, then use the FQN, skipping the root protocol name.
 							String.IsNullOrEmpty(col.Alias).Then(() => dc.Caption = col.FullyQualifiedName.RightOf('.')).Else(() => dc.Caption = col.Alias);
@@ -207,7 +197,6 @@ namespace CarrierListViewerReceptor
 							// If the implementing type is not known by the native type system (for example, List<dynamic> used in the WeatherInfo protocol, we ignore it.
 							// TODO: We need a way to support implementing lists and displaying them in the viewer as a sub-collection.
 							// WeatherInfo protocol is a good example.
-
 						}
 					});
 
