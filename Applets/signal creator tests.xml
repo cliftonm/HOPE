@@ -1,0 +1,52 @@
+<MycroXaml xmlns:ixm="TypeSystemExplorer.Models, TypeSystemExplorer" xmlns:def="def" xmlns:ref="ref" Name="Form">
+  <ixm:Applet SurfaceOffset="0,0">
+    <ixm:MembranesDef>
+      <ixm:Membranes>
+        <ixm:MembraneDef Name="Skin">
+          <ixm:Receptors>
+            <ixm:ReceptorDef Name="Signal Creator" AssemblyName="SignalCreatorReceptor.dll" Enabled="True" Location="156, 139">
+              <ixm:ReceiveProtocols>
+                <ixm:ReceiveProtocol Protocol="Resend" Enabled="True" />
+              </ixm:ReceiveProtocols>
+              <ixm:EmitProtocols>
+                <ixm:EmitProtocol Protocol="Query" Enabled="True" />
+              </ixm:EmitProtocols>
+              <ixm:UserConfigs>
+                <ixm:UserConfig Name="ProtocolName" Value="Query" />
+                <ixm:UserConfig Name="ProtocolData" Value="&lt;Signal&gt;&#xD;&#xA;  &lt;NativeType Name=&quot;QueryText&quot; Data=&quot;q&quot; /&gt;&#xD;&#xA;  &lt;NativeType Name=&quot;Param0&quot; Data=&quot;p0&quot; /&gt;&#xD;&#xA;  &lt;NativeType Name=&quot;Param1&quot; Data=&quot;p1&quot; /&gt;&#xD;&#xA;  &lt;NativeType Name=&quot;Param2&quot; Data=&quot;&quot; /&gt;&#xD;&#xA;  &lt;NativeType Name=&quot;Param3&quot; Data=&quot;&quot; /&gt;&#xD;&#xA;  &lt;NativeType Name=&quot;Param4&quot; Data=&quot;&quot; /&gt;&#xD;&#xA;  &lt;NativeType Name=&quot;Param5&quot; Data=&quot;&quot; /&gt;&#xD;&#xA;  &lt;NativeType Name=&quot;Param6&quot; Data=&quot;&quot; /&gt;&#xD;&#xA;  &lt;NativeType Name=&quot;Param7&quot; Data=&quot;&quot; /&gt;&#xD;&#xA;  &lt;NativeType Name=&quot;Param8&quot; Data=&quot;&quot; /&gt;&#xD;&#xA;  &lt;NativeType Name=&quot;Param9&quot; Data=&quot;&quot; /&gt;&#xD;&#xA;&lt;/Signal&gt;" />
+              </ixm:UserConfigs>
+            </ixm:ReceptorDef>
+            <ixm:ReceptorDef Name="Carrier List Viewer" AssemblyName="CarrierListViewerReceptor.dll" Enabled="True" Location="328, 138">
+              <ixm:ReceiveProtocols>
+                <ixm:ReceiveProtocol Protocol="Query" Enabled="True" />
+              </ixm:ReceiveProtocols>
+              <ixm:EmitProtocols>
+                <ixm:EmitProtocol Protocol="ExceptionMessage" Enabled="True" />
+                <ixm:EmitProtocol Protocol="TextMessage" Enabled="True" />
+                <ixm:EmitProtocol Protocol="Text" Enabled="True" />
+              </ixm:EmitProtocols>
+              <ixm:UserConfigs>
+                <ixm:UserConfig Name="ProtocolName" Value="Query" />
+                <ixm:UserConfig Name="ShowProtocolPicker" Value="False" />
+                <ixm:UserConfig Name="WindowName" Value="" />
+                <ixm:UserConfig Name="WindowX" Value="811" />
+                <ixm:UserConfig Name="WindowY" Value="365" />
+                <ixm:UserConfig Name="WindowWidth" Value="0" />
+                <ixm:UserConfig Name="WindowHeight" Value="0" />
+              </ixm:UserConfigs>
+            </ixm:ReceptorDef>
+          </ixm:Receptors>
+          <ixm:Permeabilities>
+            <ixm:PermeabilityDef Protocol="Query" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="ExceptionMessage" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="TextMessage" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="Text" Direction="Out" Permeable="False" />
+          </ixm:Permeabilities>
+        </ixm:MembraneDef>
+      </ixm:Membranes>
+    </ixm:MembranesDef>
+    <ixm:CarriersDef>
+      <ixm:Carriers />
+    </ixm:CarriersDef>
+  </ixm:Applet>
+</MycroXaml>
