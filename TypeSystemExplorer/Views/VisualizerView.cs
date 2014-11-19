@@ -1501,14 +1501,7 @@ namespace TypeSystemExplorer.Views
 								modeless = ((ReceptorUiHelpers.ISupportModelessConfiguration)receptor.Instance).Modeless;
 							}
 
-							if (modeless)
-							{
-								form.Show();
-							}
-							else
-							{
-								form.ShowDialog();
-							}
+							modeless.Then(()=>form.Show()).Else(()=>form.ShowDialog());
 						}
 						else
 						{

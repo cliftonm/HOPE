@@ -68,6 +68,7 @@ namespace FeedItemListReceptor
 			AddEmitProtocol("RSSFeedItemDisplayed");
 			AddEmitProtocol("RSSFeedBookmark");
 			AddEmitProtocol("Query");
+			AddEmitProtocol("Announce");
 
 			rowStateByUrl = new Dictionary<string, ItemStates>();
 		}
@@ -290,6 +291,7 @@ namespace FeedItemListReceptor
 							// Emit the "ItemDisplayed" ST for this URL but keep our display state as new until the DB is re-queried.
 							// CreateCarrierIfReceiver("RSSFeedItemDisplayed", signal => signal.RSSFeedUrl.Url.Value = url, false);
 							rowStateByUrl[url] = ItemStates.New;
+							AnnounceNewItem(carrier.Signal.RSSFeedTitle.Title.Text.Value);
 						}
 					}
 				}
@@ -303,9 +305,19 @@ namespace FeedItemListReceptor
 					if (!rowStateByUrl.ContainsKey(url))
 					{
 						rowStateByUrl[url] = ItemStates.New;
+						AnnounceNewItem(carrier.Signal.RSSFeedTitle.Title.Text.Value);
 					}
 				}
 			}
+		}
+
+		/// <summary>
+		/// "Announce" the new feed item.
+		/// </summary>
+		/// <param name="title"></param>
+		protected void AnnounceNewItem(string title)
+		{
+			CreateCarrierIfReceiver("Announce", signal => signal.Text.Value = "New Item: " + title);
 		}
 
 		// When the user double-clicks on a value, we post the RSSFeedVisted carrier with the URL.

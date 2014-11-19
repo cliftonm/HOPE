@@ -1,5 +1,5 @@
 <MycroXaml xmlns:ixm="TypeSystemExplorer.Models, TypeSystemExplorer" xmlns:def="def" xmlns:ref="ref" Name="Form">
-  <ixm:Applet SurfaceOffset="151,310">
+  <ixm:Applet SurfaceOffset="127,258">
     <ixm:MembranesDef>
       <ixm:Membranes>
         <ixm:MembraneDef Name="Skin">
@@ -379,7 +379,7 @@
                   </ixm:EmitProtocols>
                   <ixm:UserConfigs>
                     <ixm:UserConfig Name="ProtocolName" Value="Query" />
-                    <ixm:UserConfig Name="Data" Value="top 40 RSSFeedItem, UrlVisited, RSSFeedItemDisplayed order by RSSFeedPubDate desc, RSSFeedName" />
+                    <ixm:UserConfig Name="ProtocolData" Value="&lt;Signal&gt;&#xD;&#xA;  &lt;NativeType Name=&quot;QueryText&quot; Data=&quot;top 40 RSSFeedItem, UrlVisited, RSSFeedItemDisplayed order by RSSFeedPubDate desc, RSSFeedName&quot; /&gt;&#xD;&#xA;  &lt;NativeType Name=&quot;Param0&quot; Data=&quot;&quot; /&gt;&#xD;&#xA;  &lt;NativeType Name=&quot;Param1&quot; Data=&quot;&quot; /&gt;&#xD;&#xA;  &lt;NativeType Name=&quot;Param2&quot; Data=&quot;&quot; /&gt;&#xD;&#xA;  &lt;NativeType Name=&quot;Param3&quot; Data=&quot;&quot; /&gt;&#xD;&#xA;  &lt;NativeType Name=&quot;Param4&quot; Data=&quot;&quot; /&gt;&#xD;&#xA;  &lt;NativeType Name=&quot;Param5&quot; Data=&quot;&quot; /&gt;&#xD;&#xA;  &lt;NativeType Name=&quot;Param6&quot; Data=&quot;&quot; /&gt;&#xD;&#xA;  &lt;NativeType Name=&quot;Param7&quot; Data=&quot;&quot; /&gt;&#xD;&#xA;  &lt;NativeType Name=&quot;Param8&quot; Data=&quot;&quot; /&gt;&#xD;&#xA;  &lt;NativeType Name=&quot;Param9&quot; Data=&quot;&quot; /&gt;&#xD;&#xA;&lt;/Signal&gt;" />
                   </ixm:UserConfigs>
                 </ixm:ReceptorDef>
                 <ixm:ReceptorDef Name="Web Page Launcher" AssemblyName="UrlReceptor.dll" Enabled="True" Location="51, -107">
@@ -435,6 +435,12 @@
                     <ixm:UserConfig Name="WindowWidth" Value="0" />
                     <ixm:UserConfig Name="WindowHeight" Value="0" />
                   </ixm:UserConfigs>
+                </ixm:ReceptorDef>
+                <ixm:ReceptorDef Name="Text To Speech" AssemblyName="TextToSpeechReceptor.dll" Enabled="True" Location="-72, -12">
+                  <ixm:ReceiveProtocols>
+                    <ixm:ReceiveProtocol Protocol="Text" Enabled="False" />
+                    <ixm:ReceiveProtocol Protocol="Announce" Enabled="True" />
+                  </ixm:ReceiveProtocols>
                 </ixm:ReceptorDef>
               </ixm:Receptors>
               <ixm:Permeabilities>

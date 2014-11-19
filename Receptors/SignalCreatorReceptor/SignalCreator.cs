@@ -228,10 +228,13 @@ namespace SignalCreatorReceptor
 
 		protected void CreateCarrier()
 		{
-			ISemanticTypeStruct outprotocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct(ProtocolName);
-			dynamic outsignal = rsys.SemanticTypeSystem.Create(ProtocolName);
-			PopulateSignalNativeTypeValues(outsignal);
-			rsys.CreateCarrier(this, outprotocol, outsignal);
+			if (xdoc != null)
+			{
+				ISemanticTypeStruct outprotocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct(ProtocolName);
+				dynamic outsignal = rsys.SemanticTypeSystem.Create(ProtocolName);
+				PopulateSignalNativeTypeValues(outsignal);
+				rsys.CreateCarrier(this, outprotocol, outsignal);
+			}
 		}
 
 		protected void PopulateSignalNativeTypeValues(object signal)

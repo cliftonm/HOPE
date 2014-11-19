@@ -104,6 +104,12 @@
             <SubType Name="TextMessage" Alias="Exception" UniqueField="false" Ordinality="3" />
           </SubTypes>
         </SemanticType>
+        <SemanticType Name="Announce" UniqueField="false">
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="Text" UniqueField="false" Ordinality="0" />
+          </SubTypes>
+        </SemanticType>
       </SemanticTypes>
     </SemanticTypesContainer>
     <SemanticTypesContainer Name="Visualizer">
