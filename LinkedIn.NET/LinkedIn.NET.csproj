@@ -1,0 +1,174 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{C12B4091-06E9-4C73-A2C3-D7755AD4D516}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>LinkedIn.NET</RootNamespace>
+    <AssemblyName>LinkedIn.NET</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\LinkedIn.NET.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\LinkedIn.NET.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BitField.cs" />
+    <Compile Include="Groups\LinkedInBits.cs" />
+    <Compile Include="Groups\LinkedInGroup.cs" />
+    <Compile Include="Groups\LinkedInGroupCategoryCount.cs" />
+    <Compile Include="Groups\LinkedInGroupComment.cs" />
+    <Compile Include="Groups\LinkedInGroupPost.cs" />
+    <Compile Include="Groups\LinkedInGroupPostAttachment.cs" />
+    <Compile Include="Groups\LinkedInGroupSettings.cs" />
+    <Compile Include="Json.cs" />
+    <Compile Include="LinkedInApiStandardProfileRequest.cs" />
+    <Compile Include="LinkedInAuthor.cs" />
+    <Compile Include="LinkedInCertification.cs" />
+    <Compile Include="LinkedInComment.cs" />
+    <Compile Include="LinkedInCompany.cs" />
+    <Compile Include="LinkedInCompanyBase.cs" />
+    <Compile Include="LinkedInInventor.cs" />
+    <Compile Include="LinkedInMemberGroup.cs" />
+    <Compile Include="LinkedInActivity.cs" />
+    <Compile Include="LinkedInOauth.cs" />
+    <Compile Include="LinkedInPatentOffice.cs" />
+    <Compile Include="LinkedInPatentStatus.cs" />
+    <Compile Include="LinkedInResponse.cs" />
+    <Compile Include="Members\LinkedInBasicProfile.cs" />
+    <Compile Include="Members\LinkedInEmailProfile.cs" />
+    <Compile Include="Members\LinkedInFullProfile.cs" />
+    <Compile Include="Options\LinkedInAuthorizationOptions.cs" />
+    <Compile Include="Options\LinkedInGetGroupOptions.cs" />
+    <Compile Include="Options\LinkedInGetGroupPostCommentsOptions.cs" />
+    <Compile Include="Options\LinkedInGetGroupPostsOptions.cs" />
+    <Compile Include="Options\LinkedInGetListGroupsOptions.cs" />
+    <Compile Include="Options\LinkedInGetMultipleGroupOptions.cs" />
+    <Compile Include="Options\LinkedInGetSingleGroupOptions.cs" />
+    <Compile Include="Options\LinkedInGroupPostOptions.cs" />
+    <Compile Include="Options\LinkedInInvitationOptions.cs" />
+    <Compile Include="Options\LinkedInMessageOptions.cs" />
+    <Compile Include="RequestFields.cs" />
+    <Compile Include="RequestRunner.cs" />
+    <Compile Include="Search\LinkedInBucket.cs" />
+    <Compile Include="Search\LinkedInFacet.cs" />
+    <Compile Include="Search\LinkedInSearchResult.cs" />
+    <Compile Include="LinkedInPositionBase.cs" />
+    <Compile Include="LinkedInRecommendation.cs" />
+    <Compile Include="LinkedInCourse.cs" />
+    <Compile Include="LinkedInDate.cs" />
+    <Compile Include="LinkedInEducation.cs" />
+    <Compile Include="LinkedInFollowing.cs" />
+    <Compile Include="LinkedInHttpHeader.cs" />
+    <Compile Include="LinkedInIndustry.cs" />
+    <Compile Include="LinkedInJob.cs" />
+    <Compile Include="LinkedInJobBookmark.cs" />
+    <Compile Include="LinkedInLanguage.cs" />
+    <Compile Include="LinkedInLanguageProficiency.cs" />
+    <Compile Include="LinkedInLike.cs" />
+    <Compile Include="LinkedInLocation.cs" />
+    <Compile Include="LinkedInMemberUrl.cs" />
+    <Compile Include="LinkedInNewsSource.cs" />
+    <Compile Include="LinkedInOrganization.cs" />
+    <Compile Include="LinkedInPatent.cs" />
+    <Compile Include="LinkedInPosition.cs" />
+    <Compile Include="LinkedInEnumerations.cs" />
+    <Compile Include="LinkedInExceptions.cs" />
+    <Compile Include="Options\LinkedInGetMultipleMembersOptions.cs" />
+    <Compile Include="Options\LinkedInGetMemberParameters.cs" />
+    <Compile Include="Options\LinkedInGetUpdatesOptions.cs" />
+    <Compile Include="LinkedInClient.cs" />
+    <Compile Include="Members\LinkedInMember.cs" />
+    <Compile Include="Options\LinkedInGetMemberOptions.cs" />
+    <Compile Include="LinkedInPublication.cs" />
+    <Compile Include="LinkedInRelationToViewer.cs" />
+    <Compile Include="LinkedInShare.cs" />
+    <Compile Include="LinkedInShareContent.cs" />
+    <Compile Include="Options\LinkedInShareOptions.cs" />
+    <Compile Include="LinkedInShareResult.cs" />
+    <Compile Include="LinkedInSkill.cs" />
+    <Compile Include="LinkedInSpecialEdition.cs" />
+    <Compile Include="LinkedInSuggestions.cs" />
+    <Compile Include="LinkedInToFollow.cs" />
+    <Compile Include="Options\LinkedInSearchOptions.cs" />
+    <Compile Include="Singleton.cs" />
+    <Compile Include="Updates\LinkedInPersonExtendedProfile.cs" />
+    <Compile Include="Updates\LinkedInPersonPosition.cs" />
+    <Compile Include="Updates\LinkedInPersonRecommendation.cs" />
+    <Compile Include="Updates\LinkedInApplicationUpdate.cs" />
+    <Compile Include="Updates\LinkedInCompanyBaseUpdate.cs" />
+    <Compile Include="Updates\LinkedInCompanyJobUpdate.cs" />
+    <Compile Include="Updates\LinkedInCompanyPersonUpdate.cs" />
+    <Compile Include="Updates\LinkedInCompanyProfileUpdate.cs" />
+    <Compile Include="Updates\LinkedInCompanyStatusUpdate.cs" />
+    <Compile Include="Updates\LinkedInConnectionUpdate.cs" />
+    <Compile Include="Updates\LinkedInConnectionMemberUpdate.cs" />
+    <Compile Include="Updates\LinkedInUpdate.cs" />
+    <Compile Include="Updates\LinkedInExtendedProfileUpdate.cs" />
+    <Compile Include="Updates\LinkedInGroupUpdate.cs" />
+    <Compile Include="Updates\LinkedInPersonApplication.cs" />
+    <Compile Include="Updates\LinkedInPersonConnection.cs" />
+    <Compile Include="Updates\LinkedInJobPostingUpdate.cs" />
+    <Compile Include="Updates\LinkedInActionUpdate.cs" />
+    <Compile Include="LinkedInVolunteerExperience.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Members\LinkedInPerson.cs" />
+    <Compile Include="Updates\LinkedInPersonGroup.cs" />
+    <Compile Include="Updates\LinkedInPersonShare.cs" />
+    <Compile Include="Updates\LinkedInPersonStatus.cs" />
+    <Compile Include="Updates\LinkedInPictureUpdate.cs" />
+    <Compile Include="Updates\LinkedInPositionUpdate.cs" />
+    <Compile Include="Updates\LinkedInRecommendationUpdate.cs" />
+    <Compile Include="Updates\LinkedInShareUpdate.cs" />
+    <Compile Include="Updates\LinkedInStartFollowCompanyUpdate.cs" />
+    <Compile Include="Updates\LinkedInStatusUpdate.cs" />
+    <Compile Include="Updates\LinkedInViralUpdate.cs" />
+    <Compile Include="Utils.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
