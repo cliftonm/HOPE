@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<MycroXaml Name="Form"
+  xmlns:wf="System.Windows.Forms, System.Windows.Forms, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"
+  xmlns:def="def"
+  xmlns:ref="ref">
+  <wf:Form def:Name="form" Text="Linked In" Size="600, 400" StartPosition="CenterScreen" ShowInTaskbar="false" MinimizeBox="false" MaximizeBox="false">
+    <wf:Controls>
+      <wf:TreeView def:Name="tvGroups" Dock="Left" Width="200"/>
+      <wf:TextBox def:Name="tbText" Location="200, 0" Size="400, 300" Anchor="Top, Right, Bottom" Width="400" Multiline="true" WordWrap="true" ReadOnly="true" ScrollBars="Vertical"/>
+      <wf:Button def:Name="btnComment" Location="200, 300" Size="120, 25" Text="Add Comment"/>
+    </wf:Controls>
+  </wf:Form>
+</MycroXaml>
+
