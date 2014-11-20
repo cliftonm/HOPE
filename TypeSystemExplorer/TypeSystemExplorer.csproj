@@ -214,6 +214,7 @@
     <Content Include="bin\Debug\alchemyKeywordsTestResponse.xml">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="bin\Debug\appletUIContainer.xml" />
     <Content Include="bin\Debug\appState.xml">
       <SubType>Designer</SubType>
     </Content>

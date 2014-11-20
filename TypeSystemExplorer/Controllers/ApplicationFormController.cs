@@ -102,6 +102,14 @@ namespace TypeSystemExplorer.Controllers
 			Program.Skin.RegisterReceptor("System", this);
 			Program.Skin.RegisterReceptor("DropReceptor", Program.DropReceptor);
 			Program.Skin.NewMembrane += OnNewMembrane;
+			InitializeAppletUI();
+		}
+
+		protected void InitializeAppletUI()
+		{
+			Clifton.MycroParser.MycroParser mycroParser = new Clifton.MycroParser.MycroParser();
+			Form form = mycroParser.Load<Form>("appletUIContainer.xml", this);
+			form.Show();
 		}
 
 		/// <summary>
