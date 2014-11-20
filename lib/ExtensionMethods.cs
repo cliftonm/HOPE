@@ -394,7 +394,14 @@ namespace Clifton.ExtensionMethods
 
 		public static void BeginInvoke(this Control control, Action action)
 		{
-			control.BeginInvoke((Delegate)action);
+			if (control.InvokeRequired)
+			{
+				control.BeginInvoke((Delegate)action);
+			}
+			else
+			{
+				action();
+			}
 		}
 
 		public static void UncheckAllItems(this CheckedListBox clb)

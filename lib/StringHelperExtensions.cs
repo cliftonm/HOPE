@@ -316,5 +316,17 @@ namespace Clifton.Tools.Strings.Extensions
 
 			return s;
 		}
+
+		public static string LimitLength(this string s, int len)
+		{
+			string ret = s;
+
+			if (s.Length > len)
+			{
+				ret = s.Substring(0, len - 3) + "...";
+			}
+
+			return ret;
+		}
 	}
 }

@@ -163,7 +163,7 @@ namespace Clifton.Receptor
 				Name = Instance.Name;
 				Instance.Enabled = Enabled;
 			}
-			catch
+			catch(Exception ex)	// Need to be able to see originating exception.
 			{
 				throw new ApplicationException("Unable to instantiate the receptor " + Name);
 			}
