@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<MycroXaml Name="Form"
+  xmlns:wf="System.Windows.Forms, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"
+  xmlns:wfui="WeifenLuo.WinFormsUI.Docking, WeifenLuo.WinFormsUI.Docking"
+  xmlns:def="def"
+  xmlns:ref="ref">
+  <wf:Form def:Name="appletUIContainer" Text="Applet UI" Size="800, 600" IsMdiContainer="true">
+    <wf:Controls>
+      <wfui:DockPanel
+        def:Name="dockPanel"
+        Dock="Fill"/>
+      <wf:StatusBar ShowPanels="true">
+        <Panels>
+          <wf:StatusBarPanel def:Name="sbBrowserStatus" BorderStyle="Sunken" AutoSize="Spring"/>
+        </Panels>
+      </wf:StatusBar>
+    </wf:Controls>
+  </wf:Form>
+</MycroXaml>
