@@ -36,9 +36,11 @@ using TypeSystemExplorer.Actions;
 using TypeSystemExplorer.Models;
 using TypeSystemExplorer.Views;
 
+using Hope.Interfaces;
+
 namespace TypeSystemExplorer.Controllers
 {
-	public class ApplicationFormController : ViewController<ApplicationFormView>, IReceptorInstance
+	public class ApplicationFormController : ViewController<ApplicationFormView>, IReceptorInstance, IApplicationController
 	{
 		public IMruMenu MruMenu { get; protected set; }
 
@@ -91,6 +93,8 @@ namespace TypeSystemExplorer.Controllers
 
 		public string SchemaFilename { get; set; }
 
+		public AppletUIContainerView AppletUiContainerView { get; set; }
+
 		protected string xmlSchema;
 		protected Applet applet;
 
@@ -101,6 +105,7 @@ namespace TypeSystemExplorer.Controllers
 			RegisterUserStateOperations();
 			Program.Skin.RegisterReceptor("System", this);
 			Program.Skin.RegisterReceptor("DropReceptor", Program.DropReceptor);
+			Program.Skin.ApplicationController = this;
 			Program.Skin.NewMembrane += OnNewMembrane;
 			InitializeAppletUI();
 		}
@@ -108,6 +113,7 @@ namespace TypeSystemExplorer.Controllers
 		protected void InitializeAppletUI()
 		{
 			Clifton.MycroParser.MycroParser mycroParser = new Clifton.MycroParser.MycroParser();
+			mycroParser.ObjectCollection["controller"] = this;
 			Form form = mycroParser.Load<Form>("appletUIContainer.xml", this);
 			form.Show();
 		}
@@ -448,6 +454,11 @@ namespace TypeSystemExplorer.Controllers
 		public bool CheckDirtyModel()
 		{
 			return true;
+		}
+
+		public void AddAppletUI(IGenericDocument doc)
+		{
+			((GenericDocument)doc).Show(AppletUiContainerView.DockPanel);
 		}
 
 		protected void NewDocument(string filename)

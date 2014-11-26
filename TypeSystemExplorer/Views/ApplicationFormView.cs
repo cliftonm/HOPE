@@ -25,6 +25,9 @@ namespace TypeSystemExplorer.Views
 
 	public class ApplicationFormView : Form, IMycroParserInstantiatedObject
 	{
+		/// <summary>
+		/// Assigned by the mainform.xml instantiation: DockPanel="{dockPanel}"
+		/// </summary>
 		public DockPanel DockPanel { get; protected set; }
 		public ApplicationFormController ApplicationController { get; protected set; }
 		// Cannot be named ApplicationModel because this otherwise becomes a property of the view 

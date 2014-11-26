@@ -101,11 +101,14 @@ namespace Clifton.Receptor
 
 		public IReceptor this[string name] { get { return receptors.Single(r => r.Name == name); } }
 
+		public IMembrane Membrane { get; set; }
+
 		/// <summary>
 		/// Constructor, initializes internal collections.
 		/// </summary>
-		public ReceptorsContainer(ISemanticTypeSystem sts)
+		public ReceptorsContainer(ISemanticTypeSystem sts, IMembrane membrane = null)
 		{
+			Membrane = membrane;
 			SemanticTypeSystem = sts;
 			Initialize();
 		}

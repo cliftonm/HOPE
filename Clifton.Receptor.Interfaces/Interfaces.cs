@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using Clifton.MycroParser;
 using Clifton.SemanticTypeSystem.Interfaces;
 
+using Hope.Interfaces;
+
 namespace Clifton.Receptor.Interfaces
 {
 	/// <summary>
@@ -24,6 +26,15 @@ namespace Clifton.Receptor.Interfaces
 		{
 			this.prompt = prompt;
 		}
+	}
+
+	/// <summary>
+	/// We use this interface to get access to the application controller so that receptors can interact with the application's UI,
+	/// for example, by adding their specific "UI" to the applet dock container.
+	/// </summary>
+	public interface IApplicationController
+	{
+		void AddAppletUI(IGenericDocument doc);
 	}
 
 	/// <summary>
@@ -97,6 +108,7 @@ namespace Clifton.Receptor.Interfaces
 		void Remove(IReceptorInstance receptorInstance);
 		List<string> GetProtocolsEndingWith(string match);
 		void EndSystemInit();
+		IMembrane Membrane { get; }
 	}
 
 	public interface ICarrier
@@ -146,6 +158,8 @@ namespace Clifton.Receptor.Interfaces
 		event EventHandler<ReceptorEventArgs> NewReceptor;
 		event EventHandler<NewCarrierEventArgs> NewCarrier;
 		event EventHandler<ReceptorEventArgs> ReceptorRemoved;
+
+		IApplicationController ApplicationController { get; set; }
 
 		string Name { get; set; }
 		ISemanticTypeSystem SemanticTypeSystem { get; }

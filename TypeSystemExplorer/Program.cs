@@ -84,7 +84,7 @@ namespace TypeSystemExplorer
 			try
 			{
 				SemanticTypeSystem = new STS();
-				Skin = new Membrane(SemanticTypeSystem);
+				Skin = new Membrane(SemanticTypeSystem, null);
 				Skin.Name = "Skin";
 				// Receptors = new ReceptorsContainer();
 				// Receptors.SemanticTypeSystem = SemanticTypeSystem;
@@ -103,6 +103,7 @@ namespace TypeSystemExplorer
 			}
 			catch (Exception ex)
 			{
+				System.Diagnostics.Debug.WriteLine(ex.Message);
 				System.Diagnostics.Debugger.Break();
 			}
 		}

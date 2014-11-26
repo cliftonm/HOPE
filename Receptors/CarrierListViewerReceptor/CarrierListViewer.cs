@@ -1,4 +1,6 @@
-﻿using System;
+﻿#define DockingForm
+
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
@@ -41,7 +43,7 @@ namespace CarrierListViewerReceptor
 		protected Dictionary<string, string> urlNote = new Dictionary<string, string>();
 
 		public CarrierListViewer(IReceptorSystem rsys)
-		  : base("CarrierListViewer.xml", true, rsys)
+		  : base("DockableCarrierListViewer.xml", true, rsys)
 		{
 			AddEmitProtocol("ExceptionMessage");
 			uniqueKey = new List<IFullyQualifiedNativeType>();
@@ -108,7 +110,11 @@ namespace CarrierListViewerReceptor
 		/// </summary>
 		protected virtual string GetDisplayFormName()
 		{
+#if DockingForm
+			return (ShowProtocolPicker ? "CarrierListViewerWithProtocolPicker.xml" : displayFormFilename); // "CarrierListViewer.xml");
+#else
 			return (ShowProtocolPicker ? "CarrierListViewerWithProtocolPicker.xml" : "CarrierListViewer.xml");
+#endif
 		}
 
 		protected override void UpdateCaption()
@@ -201,11 +207,15 @@ namespace CarrierListViewerReceptor
 					});
 
 				dvSignals = new DataView(dt);
+				dgvSignals.AutoGenerateColumns = false;
 				dgvSignals.DataSource = dvSignals;
+				
+				// dgvSignals.AutoGenerateColumns = true;
 
 				foreach(DataColumn dc in dt.Columns)
 				{
-					dgvSignals.Columns[dc.ColumnName].HeaderText = dc.Caption;
+					dgvSignals.Columns.Add(dc.ColumnName, dc.Caption);
+					// dgvSignals.Columns[dc.ColumnName].HeaderText = dc.Caption;
 				}
 			}
 		}

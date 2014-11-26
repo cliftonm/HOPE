@@ -170,7 +170,7 @@ namespace LinkedInReceptor
 			}
 			catch (Exception ex)
 			{
-				EmitException("LinkedIn.config file is missing or corrupt.");
+				EmitException("LinkedIn.config file is missing or corrupt." + "\r\n" + ex.Message);
 			}
 		}
 

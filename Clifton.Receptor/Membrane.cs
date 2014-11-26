@@ -51,13 +51,16 @@ namespace Clifton.Receptor
 
 		public IReceptorSystem ReceptorSystem { get { return receptorSystem; } }
 
+		public IApplicationController ApplicationController {get; set;}
+
 		protected ReceptorsContainer receptorSystem;
 		protected ISemanticTypeSystem semanticTypeSystem;
 
-		public Membrane(ISemanticTypeSystem sts)
+		public Membrane(ISemanticTypeSystem sts, IApplicationController appController)
 		{
-			receptorSystem = new ReceptorsContainer(sts);
+			receptorSystem = new ReceptorsContainer(sts, this);
 			SemanticTypeSystem = sts;
+			ApplicationController = appController;
 
 			receptorSystem.NewReceptor += OnNewReceptor;
 			receptorSystem.NewCarrier += OnNewCarrier;
@@ -235,7 +238,7 @@ namespace Clifton.Receptor
 
 		public Membrane CreateInnerMembrane()
 		{
-			Membrane inner = new Membrane(SemanticTypeSystem);
+			Membrane inner = new Membrane(SemanticTypeSystem, ApplicationController);
 			Membranes.Add(inner);
 			inner.ParentMembrane = this;
 			NewMembrane.Fire(this, new MembraneEventArgs(inner));

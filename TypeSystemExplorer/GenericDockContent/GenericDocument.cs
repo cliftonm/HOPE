@@ -5,9 +5,11 @@ using System.Text;
 
 using WeifenLuo.WinFormsUI.Docking;
 
+using Hope.Interfaces;
+
 namespace TypeSystemExplorer
 {
-	public class GenericDocument : DockContent, IGenericDock
+	public class GenericDocument : DockContent, IGenericDock, IGenericDocument
 	{
 		public string ContentMetadata { get; set; }
 

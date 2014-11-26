@@ -898,7 +898,7 @@ namespace TypeSystemExplorer.Views
 					}
 					catch (Exception ex)
 					{
-						throw new ApplicationException("Receptor " + e.From.Name + " should exist but it does not.");
+						throw new ApplicationException("Receptor " + e.From.Name + " should exist but it does not." + "\r\n" + ex.Message);
 					}
 
 					p.Offset((int)(ReceptorSize.Width * Math.Cos(Math.PI * 2.0 * orbitCount / OrbitCountMax)) - 3, (int)(ReceptorSize.Height * Math.Sin(Math.PI * 2.0 * orbitCount / OrbitCountMax)) - 3);
@@ -2759,6 +2759,7 @@ namespace TypeSystemExplorer.Views
 			}
 			catch (Exception ex)
 			{
+				System.Diagnostics.Debug.WriteLine(ex.Message);
 				System.Diagnostics.Debugger.Break();
 			}
 		}

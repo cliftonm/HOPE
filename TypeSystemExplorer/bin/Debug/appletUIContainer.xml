@@ -2,18 +2,23 @@
 <MycroXaml Name="Form"
   xmlns:wf="System.Windows.Forms, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"
   xmlns:wfui="WeifenLuo.WinFormsUI.Docking, WeifenLuo.WinFormsUI.Docking"
+  xmlns:ixc="TypeSystemExplorer.Controllers, TypeSystemExplorer"
+  xmlns:ixv="TypeSystemExplorer.Views, TypeSystemExplorer"
   xmlns:def="def"
   xmlns:ref="ref">
-  <wf:Form def:Name="appletUIContainer" Text="Applet UI" Size="800, 600" IsMdiContainer="true">
+  <ixv:AppletUIContainerView def:Name="appletUIContainerView" Text="Applet UI" Size="800, 600" IsMdiContainer="true">
     <wf:Controls>
       <wfui:DockPanel
-        def:Name="dockPanel"
+        def:Name="appletDockPanel"
         Dock="Fill"/>
       <wf:StatusBar ShowPanels="true">
         <Panels>
-          <wf:StatusBarPanel def:Name="sbBrowserStatus" BorderStyle="Sunken" AutoSize="Spring"/>
+          <wf:StatusBarPanel def:Name="sbAppletStatus" BorderStyle="Sunken" AutoSize="Spring"/>
         </Panels>
       </wf:StatusBar>
     </wf:Controls>
-  </wf:Form>
+    <ixv:AppletUIContainerView ref:Name="appletUIContainerView"
+                               DockPanel="{appletDockPanel}"/>
+    <ixc:ApplicationFormController ref:Name="controller" AppletUiContainerView="{appletUIContainerView}"/>
+  </ixv:AppletUIContainerView>
 </MycroXaml>

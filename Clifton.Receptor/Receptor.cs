@@ -165,7 +165,7 @@ namespace Clifton.Receptor
 			}
 			catch(Exception ex)	// Need to be able to see originating exception.
 			{
-				throw new ApplicationException("Unable to instantiate the receptor " + Name);
+				throw new ApplicationException("Unable to instantiate the receptor " + Name + "\r\n" + ex.Message);
 			}
 
 			Instantiated = true;

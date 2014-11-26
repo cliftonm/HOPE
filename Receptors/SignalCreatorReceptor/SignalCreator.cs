@@ -112,6 +112,7 @@ namespace SignalCreatorReceptor
 					// If the implementing type is not known by the native type system (for example, List<dynamic> used in the WeatherInfo protocol, we ignore it.
 					// TODO: We need a way to support implementing lists and displaying them in the viewer as a sub-collection.
 					// WeatherInfo protocol is a good example.
+					System.Diagnostics.Debug.WriteLine(ex.Message);
 				}
 			}
 

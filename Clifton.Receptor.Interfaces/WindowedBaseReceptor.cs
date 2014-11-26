@@ -1,4 +1,6 @@
-﻿using System;
+﻿#define DockingForm
+
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -7,6 +9,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using Clifton.MycroParser;
+
+using Hope.Interfaces;
 
 namespace Clifton.Receptor.Interfaces
 {
@@ -75,6 +79,14 @@ namespace Clifton.Receptor.Interfaces
 		{
 			mycroParser = new Clifton.MycroParser.MycroParser();
 			mycroParser.AddInstance("form", this);
+#if DockingForm
+			// Docking form:
+			IGenericDocument doc = mycroParser.Load<IGenericDocument>(displayFormFilename, this);
+			rsys.Membrane.ApplicationController.AddAppletUI(doc);
+
+			return;
+#else
+			// Non-docking form:
 			form = mycroParser.Load<Form>(displayFormFilename, this);
 			form.Show();
 
@@ -85,6 +97,7 @@ namespace Clifton.Receptor.Interfaces
 			form.LocationChanged += OnLocationChanged;
 			form.SizeChanged += OnSizeChanged;
 			form.FormClosing += OnFormClosing;
+#endif
 		}
 
 		protected void OnLocationChanged(object sender, EventArgs e)

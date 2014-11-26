@@ -146,7 +146,7 @@ namespace APODScraperReceptor
 			}
 			catch (Exception ex)
 			{
-				errors.Add("Problem with title");
+				errors.Add("Problem with title" + "\r\n" + ex.Message);
 			}
 
 			try
@@ -161,7 +161,7 @@ namespace APODScraperReceptor
 			}
 			catch (Exception ex)
 			{
-				errors.Add("Problem with explanation");
+				errors.Add("Problem with explanation" + "\r\n" + ex.Message);
 			}
 
 			if (!String.IsNullOrEmpty(imageURL))
@@ -196,7 +196,7 @@ namespace APODScraperReceptor
 				}
 				catch(Exception ex)
 				{
-					errors.Add("Problem loading image from site.");
+					errors.Add("Problem loading image from site." + "\r\n" + ex.Message);
 				}
 			}
 		}

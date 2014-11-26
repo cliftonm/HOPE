@@ -112,6 +112,9 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Models\Schema.cs" />
+    <Compile Include="Views\AppletUIContainerView.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Views\ApplicationFormView.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -242,6 +245,7 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="bin\Debug\DayGreeterConfig.xml" />
+    <Content Include="bin\Debug\DockableCarrierListViewer.xml" />
     <Content Include="bin\Debug\event_seed.xml" />
     <Content Include="bin\Debug\FeedItemList.xml" />
     <Content Include="bin\Debug\FeedReaderConfig.xml">
@@ -334,6 +338,10 @@
     <ProjectReference Include="..\Clifton.Windows.Forms\Clifton.Windows.Forms.csproj">
       <Project>{cbfb7124-eb66-4a40-8d87-d8aeb13b4128}</Project>
       <Name>Clifton.Windows.Forms</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Hope.Interfaces\Hope.Interfaces.csproj">
+      <Project>{72fd9cf2-5352-4926-90f3-a955f8e18c42}</Project>
+      <Name>Hope.Interfaces</Name>
     </ProjectReference>
     <ProjectReference Include="..\lib\lib.csproj">
       <Project>{d1627a50-1c2b-4e28-ac6c-ab437b0138b4}</Project>
