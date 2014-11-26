@@ -456,9 +456,21 @@ namespace TypeSystemExplorer.Controllers
 			return true;
 		}
 
-		public void AddAppletUI(IGenericDocument doc)
+		public void AddAppletUI(object doc)
 		{
-			((GenericDocument)doc).Show(AppletUiContainerView.DockPanel);
+			if (doc is Form)
+			{
+				Form form = (Form)doc;
+				GenericDocument gd = new GenericDocument();
+				gd.Text = form.Text;
+
+				foreach (Control ctrl in form.Controls)
+				{
+					gd.Controls.Add(ctrl);
+				}
+				
+				gd.Show(AppletUiContainerView.DockPanel);
+			}
 		}
 
 		protected void NewDocument(string filename)

@@ -1,4 +1,4 @@
-﻿#define DockingForm
+﻿// #define DockingForm
 
 using System;
 using System.Collections.Generic;
@@ -33,6 +33,7 @@ namespace Clifton.Receptor.Interfaces
 
 		protected Clifton.MycroParser.MycroParser mycroParser;
 		protected Form form;
+		protected IGenericDocument doc;
 		protected string displayFormFilename;
 		protected bool showOnStartup;
 
@@ -79,16 +80,14 @@ namespace Clifton.Receptor.Interfaces
 		{
 			mycroParser = new Clifton.MycroParser.MycroParser();
 			mycroParser.AddInstance("form", this);
-#if DockingForm
-			// Docking form:
-			IGenericDocument doc = mycroParser.Load<IGenericDocument>(displayFormFilename, this);
-			rsys.Membrane.ApplicationController.AddAppletUI(doc);
 
-			return;
-#else
-			// Non-docking form:
 			form = mycroParser.Load<Form>(displayFormFilename, this);
+
+#if DockingForm
+			rsys.Membrane.ApplicationController.AddAppletUI(form);
+#else
 			form.Show();
+#endif
 
 			// Wire up the location changed event after the form has initialized,
 			// so we don't generate this event during form creation.  That way,
@@ -97,7 +96,6 @@ namespace Clifton.Receptor.Interfaces
 			form.LocationChanged += OnLocationChanged;
 			form.SizeChanged += OnSizeChanged;
 			form.FormClosing += OnFormClosing;
-#endif
 		}
 
 		protected void OnLocationChanged(object sender, EventArgs e)
