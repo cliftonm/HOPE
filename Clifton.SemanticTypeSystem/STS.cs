@@ -7,6 +7,7 @@ using System.Text;
 using Clifton.Assertions;
 using Clifton.ExtensionMethods;
 using Clifton.SemanticTypeSystem.Interfaces;
+using Clifton.Tools.Data;
 using Clifton.Tools.Strings.Extensions;
 
 namespace Clifton.SemanticTypeSystem
@@ -237,7 +238,9 @@ namespace Clifton.SemanticTypeSystem
 			else
 			{
 				PropertyInfo pi = signal.GetType().GetProperty(fqn);
-				pi.SetValue(signal, val);
+				// Convert to the target type.  For example, in the signal creator, we need to convert a LoggerMessage's date/time from a string to DateTime.
+				object convertedVal = Converter.Convert(val, pi.PropertyType);
+				pi.SetValue(signal, convertedVal);
 			}
 		}
 
