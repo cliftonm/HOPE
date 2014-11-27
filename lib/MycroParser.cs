@@ -58,6 +58,16 @@ namespace Clifton.MycroParser
 		Dictionary<string, object> ObjectCollection { get; set; }
 	}
 
+	public class MycroParserInitializeAttribute : Attribute
+	{
+		public string Name { get; set; }
+
+		public MycroParserInitializeAttribute(string declarativeName)
+		{
+			Name = declarativeName;
+		}
+	}
+
 	public class HandledEventArgs : EventArgs
 	{
 		protected bool handled;
@@ -427,6 +437,9 @@ namespace Clifton.MycroParser
 			return obj;
 		}
 
+		/// <summary>
+		/// Instantiate the object graph and initialize any properties in the eventSink object having the MycroParserInitialize attribute.
+		/// </summary>
 		public T Load<T>(string filename, object eventSink)
 		{
 			XmlDocument doc = new XmlDocument();
@@ -439,6 +452,9 @@ namespace Clifton.MycroParser
 			{
 				((IMycroParserInstantiatedObject)obj).ObjectCollection = ObjectCollection;
 			}
+
+			AssignProperties(eventSink);
+			AssignFields(eventSink);
 
 			return obj;
 		}
@@ -501,6 +517,58 @@ namespace Clifton.MycroParser
 		{
 			// We don't care if we overwrite an existing object.
 			objectCollection[name] = obj;
+		}
+
+		/// <summary>
+		/// Search for properties with the attribute MycroParserInitializeAttribute and assign the property the matching
+		/// def Name tag used in the declarative markup.
+		/// </summary>
+		protected void AssignProperties(object target)
+		{
+			// Get public and non-public properties of the target.
+			target.GetType().GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy | BindingFlags.Instance).ForEach(pi =>
+				{
+					// If a property is decorated with the MycroParserInitialize attribute...
+					pi.GetCustomAttribute(typeof(MycroParserInitializeAttribute)).IfNotNull(attr =>
+						{
+							// Get the name...
+							string defName = ((MycroParserInitializeAttribute)attr).Name;
+							object obj;
+
+							// If it's in the object collection...
+							if (objectCollection.TryGetValue(defName, out obj))
+							{
+								// Assign the instance to the property of the target.
+								pi.SetValue(target, obj);
+							}
+						});
+				});
+		}
+
+		/// <summary>
+		/// Search for fields with the attribute MycroParserInitializeAttribute and assign the property the matching
+		/// def Name tag used in the declarative markup.
+		/// </summary>
+		protected void AssignFields(object target)
+		{
+			// Get public and non-public properties of the target.
+			target.GetType().GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy | BindingFlags.Instance).ForEach(field =>
+			{
+				// If a property is decorated with the MycroParserInitialize attribute...
+				field.GetCustomAttribute(typeof(MycroParserInitializeAttribute)).IfNotNull(attr =>
+				{
+					// Get the name...
+					string defName = ((MycroParserInitializeAttribute)attr).Name;
+					object obj;
+
+					// If it's in the object collection...
+					if (objectCollection.TryGetValue(defName, out obj))
+					{
+						// Assign the instance to the property of the target.
+						field.SetValue(target, obj);
+					}
+				});
+			});
 		}
 
 		protected void DoEndInit()

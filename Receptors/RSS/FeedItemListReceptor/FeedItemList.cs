@@ -52,6 +52,13 @@ namespace FeedItemListReceptor
 
 		protected Dictionary<string, ItemStates> rowStateByUrl;
 
+		[MycroParserInitialize("tbBookmarkNote")]
+		protected TextBox tbBookmarkNote = null;
+
+		[MycroParserInitialize("cbCategories")]
+		protected ComboBox cbCategories = null;
+
+
 		public FeedItemList(IReceptorSystem rsys)
 			: base(rsys, "feedItemList.xml")
 		{
@@ -108,8 +115,7 @@ namespace FeedItemListReceptor
 			string url = dgvSignals.Rows[e.RowIndex].Cells["RSSFeedItem.RSSFeedUrl.Url.Value"].Value.ToString();
 			string note;
 			bool hasNote = urlNote.TryGetValue(url, out note);
-			TextBox tbBookmarkNote = ((TextBox)form.Controls.Find("tbBookmarkNote", false)[0]);
-
+			
 			if (hasNote)
 			{
 				tbBookmarkNote.Text = note;
@@ -159,7 +165,6 @@ namespace FeedItemListReceptor
 		{
 			if (Categories.AddIfUnique((string)signal.Category.Text.Value))
 			{
-				ComboBox cbCategories = ((ComboBox)form.Controls.Find("cbCategories", false)[0]);
 				cbCategories.DataSource = null;			// reset
 				cbCategories.DataSource = Categories;
 			}
@@ -345,7 +350,7 @@ namespace FeedItemListReceptor
 		protected void ShowItemInCategory(object sender, EventArgs args)
 		{
 			ClearGrid();
-			string categoryName = ((ComboBox)form.Controls.Find("cbCategories", false)[0]).SelectedItem.ToString();
+			string categoryName = cbCategories.SelectedItem.ToString();
 			CreateCarrierIfReceiver("Query", signal =>
 				{
 					signal.QueryText = "RSSFeedBookmark, RSSFeedItem, UrlVisited, RSSFeedItemDisplayed where [BookmarkCategory] = @0 order by RSSFeedPubDate desc, RSSFeedName";
@@ -391,16 +396,11 @@ namespace FeedItemListReceptor
 				}
 
 				// Update to combobox last.
-				((ComboBox)form.Controls.Find("cbCategories", false)[0]).DataSource = null;
+				cbCategories.DataSource = null;
 				string txt = CategoryText;
 				Categories.AddIfUnique(txt);
 				Categories.Sort();
 				
-				// If we were to use a binding source:
-				// ((BindingSource)((ComboBox)form.Controls.Find("cbCategories", false)[0]).DataSource).Add(CategoryText);
-
-				ComboBox cbCategories = ((ComboBox)form.Controls.Find("cbCategories", false)[0]);
-
 				cbCategories.DataSource = Categories;
 				cbCategories.SelectedItem = txt;
 			}

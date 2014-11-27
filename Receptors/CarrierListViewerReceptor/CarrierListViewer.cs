@@ -34,7 +34,11 @@ namespace CarrierListViewerReceptor
 		protected string oldProtocol;
 		protected bool oldShowProtocolPicker;
 		protected DataView dvSignals;
+
+		[MycroParserInitialize("dgvRecords")]
 		protected DataGridView dgvSignals;
+
+		[MycroParserInitialize("cbProtocols")]
 		protected ComboBox cbProtocols;
 
 		protected List<IFullyQualifiedNativeType> uniqueKey;
@@ -66,7 +70,6 @@ namespace CarrierListViewerReceptor
 		public override void PrepopulateConfig(MycroParser mp)
 		{
 			base.PrepopulateConfig(mp);
-			cbProtocols = (ComboBox)mp.ObjectCollection["cbProtocols"];
 			ReceptorUiHelpers.Helper.PopulateProtocolComboBox(cbProtocols, rsys, ProtocolName);
 		}
 
@@ -137,12 +140,10 @@ namespace CarrierListViewerReceptor
 			base.InitializeUI();
 
 			oldShowProtocolPicker = ShowProtocolPicker;
-			dgvSignals = (DataGridView)mycroParser.ObjectCollection["dgvRecords"];
 			dgvSignals.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(0xF0, 0xFF, 0xF0);
 
 			if (ShowProtocolPicker)
 			{
-				cbProtocols = (ComboBox)mycroParser.ObjectCollection["cbProtocols"];
 				ReceptorUiHelpers.Helper.PopulateProtocolComboBox(cbProtocols, rsys, ProtocolName);
 				cbProtocols.SelectedValueChanged += cbProtocols_SelectedValueChanged;
 			}
