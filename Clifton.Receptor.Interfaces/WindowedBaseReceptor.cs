@@ -87,8 +87,6 @@ namespace Clifton.Receptor.Interfaces
 			rsys.Membrane.ApplicationController.AddAppletUI(form);
 #else
 			form.Show();
-#endif
-
 			// Wire up the location changed event after the form has initialized,
 			// so we don't generate this event during form creation.  That way,
 			// the user's config will be preserved and used when the system
@@ -96,6 +94,7 @@ namespace Clifton.Receptor.Interfaces
 			form.LocationChanged += OnLocationChanged;
 			form.SizeChanged += OnSizeChanged;
 			form.FormClosing += OnFormClosing;
+#endif
 		}
 
 		protected void OnLocationChanged(object sender, EventArgs e)
