@@ -1,4 +1,4 @@
-﻿// #define DockingForm
+﻿#define DockingForm
 
 using System;
 using System.Collections.Generic;

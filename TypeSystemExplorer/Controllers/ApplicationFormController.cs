@@ -464,9 +464,9 @@ namespace TypeSystemExplorer.Controllers
 				GenericDocument gd = new GenericDocument();
 				gd.Text = form.Text;
 
-				foreach (Control ctrl in form.Controls)
+				while(form.Controls.Count > 0)
 				{
-					gd.Controls.Add(ctrl);
+					gd.Controls.Add(form.Controls[0]);
 				}
 				
 				gd.Show(AppletUiContainerView.DockPanel);
