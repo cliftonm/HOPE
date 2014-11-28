@@ -443,7 +443,7 @@
                     <ixm:UserConfig Name="LayoutId" Value="03fa5c59-d71e-4244-bf7e-99664c16ab61" />
                   </ixm:UserConfigs>
                 </ixm:ReceptorDef>
-                <ixm:ReceptorDef Name="Text To Speech" AssemblyName="TextToSpeechReceptor.dll" Enabled="True" Location="-72, -12">
+                <ixm:ReceptorDef Name="Text To Speech" AssemblyName="TextToSpeechReceptor.dll" Enabled="False" Location="-72, -12">
                   <ixm:ReceiveProtocols>
                     <ixm:ReceiveProtocol Protocol="Text" Enabled="False" />
                     <ixm:ReceiveProtocol Protocol="Announce" Enabled="True" />
