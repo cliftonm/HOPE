@@ -493,25 +493,47 @@ namespace TypeSystemExplorer.Controllers
 			{
 				string strLayoutId = layoutId.ToString();
 				Form form = (Form)doc;
-				GenericDocument gd = AppletUiContainerView.DockPanel.Documents.Cast<GenericDocument>().SingleOrDefault(d => d.ContentMetadata == strLayoutId);
+				GenericDocument gd = null;
 
-				if (gd == null)
+				foreach (DockPane p in AppletUiContainerView.DockPanel.Panes)
+				{
+					foreach (IDockContent d in p.Contents)
+					{
+						if (d is GenericDocument)
+						{
+							if (((GenericDocument)d).ContentMetadata == strLayoutId)
+							{
+								gd = (GenericDocument)d;
+								break;
+							}
+						}
+					}
+
+					if (gd != null) break;
+				}
+
+//				GenericDocument gd = AppletUiContainerView.DockPanel.Documents.Cast<GenericDocument>().SingleOrDefault(d => d.ContentMetadata == strLayoutId);
+//				GenericPane gp = null;
+				// GenericPane gp = AppletUiContainerView.DockPanel.Panes.Cast<GenericPane>().SingleOrDefault(p => p.ContentMetadata == strLayoutId);
+
+				// Not a document or pane, so create it as a document.
+				if (gd == null) //  && gp == null)
 				{
 					gd = new GenericDocument(strLayoutId);
 				}
-				else
+
+				if (gd != null)
 				{
 					gd.Controls.Clear();
-				}
+					gd.Text = form.Text;
 
-				gd.Text = form.Text;
+					while (form.Controls.Count > 0)
+					{
+						gd.Controls.Add(form.Controls[0]);
+					}
 
-				while(form.Controls.Count > 0)
-				{
-					gd.Controls.Add(form.Controls[0]);
+					gd.Show(AppletUiContainerView.DockPanel);
 				}
-				
-				gd.Show(AppletUiContainerView.DockPanel);
 			}
 		}
 
