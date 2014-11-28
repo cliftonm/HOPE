@@ -529,7 +529,19 @@ namespace TypeSystemExplorer.Controllers
 
 					while (form.Controls.Count > 0)
 					{
-						gd.Controls.Add(form.Controls[0]);
+						Control ctrl = form.Controls[0];
+						gd.Controls.Add(ctrl);
+
+						// Adjust the width of the control to match the document width.
+						if ((ctrl.Anchor & (AnchorStyles.Left | AnchorStyles.Right)) == (AnchorStyles.Left | AnchorStyles.Right))
+						{
+							ctrl.Width = gd.Width - (form.Width - ctrl.Width);
+						}				 
+
+						if ((ctrl.Anchor & (AnchorStyles.Top | AnchorStyles.Bottom)) == (AnchorStyles.Top | AnchorStyles.Bottom))
+						{
+							ctrl.Height = gd.Height - (form.Height - ctrl.Height);
+						}
 					}
 
 					gd.Show(AppletUiContainerView.DockPanel);

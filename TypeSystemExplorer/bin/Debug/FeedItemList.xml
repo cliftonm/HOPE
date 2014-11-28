@@ -18,7 +18,7 @@
       <wf:Button Location="490, 5" Size="90, 20" Text="Mark as Read" Click="{form.MarkAsRead}"/>
       <wf:DataGridView def:Name="dgvRecords" Anchor="Top, Left, Bottom, Right"
                         Location="5, 60"
-                        Size="475, 197"
+                        Size="485, 225"
                         AllowUserToAddRows="false"
                         AllowUserToDeleteRows="false"
                         ReadOnly="true"
