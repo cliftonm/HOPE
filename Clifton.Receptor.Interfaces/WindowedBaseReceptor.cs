@@ -31,6 +31,12 @@ namespace Clifton.Receptor.Interfaces
 		[UserConfigurableProperty("H")]
 		public int WindowHeight { get; set; }
 
+		/// <summary>
+		/// Used to sync the receptor's UI to the dockable applet UI document.
+		/// </summary>
+		[UserConfigurableProperty("LayoutId")]
+		public Guid LayoutId { get; set; }
+
 		protected Clifton.MycroParser.MycroParser mycroParser;
 		protected Form form;
 		protected IGenericDocument doc;
@@ -42,6 +48,7 @@ namespace Clifton.Receptor.Interfaces
 		{
 			this.displayFormFilename = displayFormFilename;
 			this.showOnStartup = showOnStartup;
+			LayoutId = Guid.NewGuid();			// will be overridden by the persisted LayoutId when the receptor system is loaded.
 		}
 
 		public override void Initialize()
@@ -84,7 +91,7 @@ namespace Clifton.Receptor.Interfaces
 			form = mycroParser.Load<Form>(displayFormFilename, this);
 
 #if DockingForm
-			rsys.Membrane.ApplicationController.AddAppletUI(form);
+			rsys.Membrane.ApplicationController.AddAppletUI(form, LayoutId);
 #else
 			form.Show();
 			// Wire up the location changed event after the form has initialized,

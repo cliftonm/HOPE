@@ -223,6 +223,7 @@
                         <ixm:UserConfig Name="WindowY" Value="684" />
                         <ixm:UserConfig Name="WindowWidth" Value="532" />
                         <ixm:UserConfig Name="WindowHeight" Value="231" />
+                        <ixm:UserConfig Name="LayoutId" Value="7f78352e-2963-4021-a99d-c4838e3b5bbb" />
                       </ixm:UserConfigs>
                     </ixm:ReceptorDef>
                     <ixm:ReceptorDef Name="Semantic Database" AssemblyName="SemanticDatabaseReceptor.dll" Enabled="True" Location="626, -7">
@@ -249,6 +250,7 @@
                         <ixm:UserConfig Name="WindowY" Value="403" />
                         <ixm:UserConfig Name="WindowWidth" Value="0" />
                         <ixm:UserConfig Name="WindowHeight" Value="0" />
+                        <ixm:UserConfig Name="LayoutId" Value="972a7b34-5897-4f23-af6a-2475f8c0591b" />
                       </ixm:UserConfigs>
                     </ixm:ReceptorDef>
                   </ixm:Receptors>
@@ -301,6 +303,7 @@
                     <ixm:EmitProtocol Protocol="BookmarkCategory" Enabled="True" />
                     <ixm:EmitProtocol Protocol="Category" Enabled="True" />
                     <ixm:EmitProtocol Protocol="Query" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="Announce" Enabled="True" />
                     <ixm:EmitProtocol Protocol="RSSFeedName" Enabled="True" />
                     <ixm:EmitProtocol Protocol="Name" Enabled="True" />
                     <ixm:EmitProtocol Protocol="RSSFeedTitle" Enabled="True" />
@@ -319,6 +322,7 @@
                     <ixm:UserConfig Name="WindowY" Value="117" />
                     <ixm:UserConfig Name="WindowWidth" Value="715" />
                     <ixm:UserConfig Name="WindowHeight" Value="470" />
+                    <ixm:UserConfig Name="LayoutId" Value="a3b93ed8-6e6a-4530-a713-ec547c4ddc04" />
                   </ixm:UserConfigs>
                 </ixm:ReceptorDef>
                 <ixm:ReceptorDef Name="Interval Timer" AssemblyName="TimerReceptor.dll" Enabled="True" Location="138, -108">
@@ -404,6 +408,7 @@
                     <ixm:UserConfig Name="WindowY" Value="641" />
                     <ixm:UserConfig Name="WindowWidth" Value="827" />
                     <ixm:UserConfig Name="WindowHeight" Value="300" />
+                    <ixm:UserConfig Name="LayoutId" Value="7afeb6c0-0be6-42f6-bf73-da43646ac392" />
                   </ixm:UserConfigs>
                 </ixm:ReceptorDef>
                 <ixm:ReceptorDef Name="Carrier List Viewer" AssemblyName="CarrierListViewerReceptor.dll" Enabled="True" Location="50, 130">
@@ -423,6 +428,7 @@
                     <ixm:UserConfig Name="WindowY" Value="640" />
                     <ixm:UserConfig Name="WindowWidth" Value="843" />
                     <ixm:UserConfig Name="WindowHeight" Value="300" />
+                    <ixm:UserConfig Name="LayoutId" Value="2bf36eec-41d5-4436-b62c-8e72c4e6337c" />
                   </ixm:UserConfigs>
                 </ixm:ReceptorDef>
                 <ixm:ReceptorDef Name="Text Display" AssemblyName="TextDisplayReceptor.dll" Enabled="True" Location="111, 227">
@@ -434,6 +440,7 @@
                     <ixm:UserConfig Name="WindowY" Value="0" />
                     <ixm:UserConfig Name="WindowWidth" Value="0" />
                     <ixm:UserConfig Name="WindowHeight" Value="0" />
+                    <ixm:UserConfig Name="LayoutId" Value="03fa5c59-d71e-4244-bf7e-99664c16ab61" />
                   </ixm:UserConfigs>
                 </ixm:ReceptorDef>
                 <ixm:ReceptorDef Name="Text To Speech" AssemblyName="TextToSpeechReceptor.dll" Enabled="True" Location="-72, -12">
@@ -457,6 +464,7 @@
                 <ixm:PermeabilityDef Protocol="BookmarkCategory" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="Category" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="Query" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Announce" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="LoggerMessage" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="RSSFeedName" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="Name" Direction="Out" Permeable="False" />

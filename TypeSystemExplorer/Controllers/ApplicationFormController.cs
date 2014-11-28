@@ -93,6 +93,7 @@ namespace TypeSystemExplorer.Controllers
 
 		public string SchemaFilename { get; set; }
 
+		public Form appletUiContainerForm;
 		public AppletUIContainerView AppletUiContainerView { get; set; }
 
 		protected string xmlSchema;
@@ -114,8 +115,8 @@ namespace TypeSystemExplorer.Controllers
 		{
 			Clifton.MycroParser.MycroParser mycroParser = new Clifton.MycroParser.MycroParser();
 			mycroParser.ObjectCollection["controller"] = this;
-			Form form = mycroParser.Load<Form>("appletUIContainer.xml", this);
-			form.Show();
+			appletUiContainerForm = mycroParser.Load<Form>("appletUIContainer.xml", this);
+			appletUiContainerForm.Show();
 		}
 
 		/// <summary>
@@ -266,6 +267,13 @@ namespace TypeSystemExplorer.Controllers
 			Program.SemanticTypeSystem.Reset();
 			Program.Skin.Reset();
 			VisualizerController.View.Reset();
+
+			// Re-intialize a blank applet UI form.
+			if (appletUiContainerForm != null)
+			{
+				appletUiContainerForm.Close();
+				InitializeAppletUI();
+			}
 		}
 
 		protected void About(object sender, EventArgs args)
@@ -390,6 +398,23 @@ namespace TypeSystemExplorer.Controllers
 			}));
 		}
 
+		protected void LoadAppletUiLayout(string filename)
+		{
+			string layoutfn = filename.LeftOf('.') + "-layout.xml";
+
+			if ( (File.Exists(layoutfn)) && (AppletUiContainerView != null) )
+			{
+				AppletUiContainerView.DockPanel.LoadFromXml(layoutfn, ((string persistString) =>
+				{
+					string typeName = persistString.LeftOf(',').Trim();
+					string contentMetadata = persistString.RightOf(',').Trim();
+					IDockContent container = InstantiateContainer(typeName, contentMetadata);
+
+					return container;
+				}));
+			}
+		}
+
 		protected void LoadLayout(object sender, EventArgs args)
 		{
 			if (File.Exists("layout.xml"))
@@ -456,12 +481,29 @@ namespace TypeSystemExplorer.Controllers
 			return true;
 		}
 
-		public void AddAppletUI(object doc)
+		/// <summary>
+		/// Add a receptor's UI to the docking applet UI.
+		/// If a document container already exists, we replace it's contents with the receptor's UI,
+		/// otherwise we create a document container and associate the layout ID, which will be specific
+		/// to the receptor instance, to that container.
+		/// </summary>
+		public void AddAppletUI(object doc, Guid layoutId)
 		{
 			if (doc is Form)
 			{
+				string strLayoutId = layoutId.ToString();
 				Form form = (Form)doc;
-				GenericDocument gd = new GenericDocument();
+				GenericDocument gd = AppletUiContainerView.DockPanel.Documents.Cast<GenericDocument>().SingleOrDefault(d => d.ContentMetadata == strLayoutId);
+
+				if (gd == null)
+				{
+					gd = new GenericDocument(strLayoutId);
+				}
+				else
+				{
+					gd.Controls.Clear();
+				}
+
 				gd.Text = form.Text;
 
 				while(form.Controls.Count > 0)
@@ -686,17 +728,6 @@ namespace TypeSystemExplorer.Controllers
 			{
 				LogException(ex);
 			}
-			/*
-						dynamic t = Program.SemanticTypeSystem.Create("myShortLine");
-						t.Line.PointA.Point.X.Integer.Value = 1;
-						t.Line.PointA.Point.Y.Integer.Value = 2;
-						t.Line.PointB.Point.X.Integer.Value = 12;
-						t.Line.PointB.Point.Y.Integer.Value = 13;
-						SymbolTableController.View.UpdateSymbolTable(Program.SemanticTypeSystem.SymbolTable);
-			*/
-			// heehee.  It works!
-			// dynamic t = Program.SemanticTypeSystem.Create("Point");
-			// t.X.Integer.Value = 5;
 		}
 
 		public void New(object sender, EventArgs args)
@@ -745,6 +776,9 @@ namespace TypeSystemExplorer.Controllers
 
 		public void SaveReceptorsInternal(string filename)
 		{
+			// Save the layout of the applet UI for this applet.
+			AppletUiContainerView.IfNotNull(ui => ui.DockPanel.SaveAsXml(filename.LeftOf('.')+"-layout.xml"));
+
 			CurrentFilename = filename;
 			SetCaption(filename);
 
@@ -941,6 +975,14 @@ namespace TypeSystemExplorer.Controllers
 		public void LoadApplet(string filename)
 		{
 			Reset(null, EventArgs.Empty);
+			// The dockable applet UI must be loaded first!
+			// This sets up the layout ID's that we'll need to know when the receptors create their UI's.
+			LoadAppletUiLayout(filename);
+			LoadAppletInternal(filename);
+		}
+
+		protected void LoadAppletInternal(string filename)
+		{
 			CurrentFilename = filename;
 			SetCaption(filename);
 			applet = MycroParser.InstantiateFromFile<Applet>(filename, null);

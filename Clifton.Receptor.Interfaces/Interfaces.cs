@@ -34,7 +34,7 @@ namespace Clifton.Receptor.Interfaces
 	/// </summary>
 	public interface IApplicationController
 	{
-		void AddAppletUI(object doc);
+		void AddAppletUI(object doc, Guid layoutId);
 	}
 
 	/// <summary>
