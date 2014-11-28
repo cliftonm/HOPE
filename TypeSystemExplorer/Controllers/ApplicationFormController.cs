@@ -160,6 +160,11 @@ namespace TypeSystemExplorer.Controllers
 							new State("H", View.Size.Height),
 							new State("WindowState", View.WindowState.ToString()),
 							new State("ShowSemantics", VisualizerController.View.ShowSemantics.ToString()),
+							new State("UIX", appletUiContainerForm.Location.X),
+							new State("UIY", appletUiContainerForm.Location.Y),
+							new State("UIW", appletUiContainerForm.Size.Width),
+							new State("UIH", appletUiContainerForm.Size.Height),
+							new State("UIWindowState", appletUiContainerForm.WindowState.ToString()),
 							// new State("Last Opened", CurrentFilename),
 						};
 
@@ -172,6 +177,9 @@ namespace TypeSystemExplorer.Controllers
 					Assert.SilentTry(() => View.Size = new Size(state.Single(t => t.Key == "W").Value.to_i(), state.Single(t => t.Key == "H").Value.to_i()));
 					Assert.SilentTry(() => View.WindowState = state.Single(t => t.Key == "WindowState").Value.ToEnum<FormWindowState>());
 					Assert.SilentTry(() => View.ShowProtocols = Convert.ToBoolean(state.Single(t => t.Key == "ShowSemantics").Value));
+					Assert.SilentTry(() => appletUiContainerForm.Location=new Point(state.Single(t=>t.Key=="UIX").Value.to_i(), state.Single(t=>t.Key=="UIY").Value.to_i()));
+					Assert.SilentTry(() => appletUiContainerForm.Size = new Size(state.Single(t => t.Key == "UIW").Value.to_i(), state.Single(t => t.Key == "UIH").Value.to_i()));
+					Assert.SilentTry(() => appletUiContainerForm.WindowState = state.Single(t => t.Key == "UIWindowState").Value.ToEnum<FormWindowState>());
 					// Assert.SilentTry(() => CurrentFilename = state.Single(t => t.Key == "Last Opened").Value);
 				});
 		}
@@ -179,6 +187,23 @@ namespace TypeSystemExplorer.Controllers
 		public override void EndInit()
 		{
 			Assert.SilentTry(() => Program.AppState.RestoreState("Form"));
+
+			// Make sure the applet UI form fits in the screen area of this system.
+			if (appletUiContainerForm != null)
+			{
+				if (!SystemInformation.VirtualScreen.Contains(appletUiContainerForm.Location))
+				{
+					appletUiContainerForm.Location = new Point(0, 0);
+				}
+
+				Size diff = SystemInformation.VirtualScreen.Size - appletUiContainerForm.Size;
+
+				if ((diff.Width < 0) || (diff.Height < 0))
+				{
+					Size sz = new Size(SystemInformation.VirtualScreen.Width / 4, SystemInformation.VirtualScreen.Height / 4);
+					appletUiContainerForm.Size = sz;
+				}
+			}
 		}
 
 		// Do this once the visualizer controller has been initialized.  TODO: This is a really poor workaround for dealing with the system initialization sequence.
@@ -271,8 +296,19 @@ namespace TypeSystemExplorer.Controllers
 			// Re-intialize a blank applet UI form.
 			if (appletUiContainerForm != null)
 			{
+				FormWindowState windowState = appletUiContainerForm.WindowState;
+				Point location = appletUiContainerForm.Location;
+				Size size = appletUiContainerForm.Size;
 				appletUiContainerForm.Close();
 				InitializeAppletUI();
+
+				if (windowState == FormWindowState.Normal)
+				{
+					appletUiContainerForm.Location = location;
+					appletUiContainerForm.Size = size;
+				}
+
+				appletUiContainerForm.WindowState = windowState;
 			}
 		}
 
