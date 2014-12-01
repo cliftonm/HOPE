@@ -70,6 +70,8 @@ namespace CarrierListViewerReceptor
 		public override void PrepopulateConfig(MycroParser mp)
 		{
 			base.PrepopulateConfig(mp);
+			// This combobox is in the config UI.
+			cbProtocols = (ComboBox)mp.ObjectCollection["cbProtocols"];
 			ReceptorUiHelpers.Helper.PopulateProtocolComboBox(cbProtocols, rsys, ProtocolName);
 		}
 

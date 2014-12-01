@@ -295,6 +295,8 @@
     </Content>
     <Content Include="bin\Debug\symbolTable.xml" />
     <Content Include="bin\Debug\test types with line.xml" />
+    <Content Include="bin\Debug\TextDisplayFilterConfig.xml" />
+    <Content Include="bin\Debug\TextToSpeechFilterConfig.xml" />
     <Content Include="bin\Debug\TextViewer.xml" />
     <Content Include="bin\Debug\ThumbnailConverterConfig.xml" />
     <Content Include="bin\Debug\TimerConfig.xml" />

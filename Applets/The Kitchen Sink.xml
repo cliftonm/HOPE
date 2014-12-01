@@ -1,10 +1,24 @@
 <MycroXaml xmlns:ixm="TypeSystemExplorer.Models, TypeSystemExplorer" xmlns:def="def" xmlns:ref="ref" Name="Form">
-  <ixm:Applet SurfaceOffset="129,120">
+  <ixm:Applet SurfaceOffset="123,225">
     <ixm:MembranesDef>
       <ixm:Membranes>
         <ixm:MembraneDef Name="Skin">
-          <ixm:Receptors />
-          <ixm:Permeabilities />
+          <ixm:Receptors>
+            <ixm:ReceptorDef Name="Text To Speech" AssemblyName="TextToSpeechReceptor.dll" Enabled="True" Location="296, 178">
+              <ixm:ReceiveProtocols>
+                <ixm:ReceiveProtocol Protocol="Text" Enabled="True" />
+                <ixm:ReceiveProtocol Protocol="Announce" Enabled="True" />
+              </ixm:ReceiveProtocols>
+              <ixm:UserConfigs>
+                <ixm:UserConfig Name="ProtocolFilter" Value="RSSFeedDescription" />
+                <ixm:UserConfig Name="ShowAll" Value="False" />
+              </ixm:UserConfigs>
+            </ixm:ReceptorDef>
+          </ixm:Receptors>
+          <ixm:Permeabilities>
+            <ixm:PermeabilityDef Protocol="Text" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="Announce" Direction="Out" Permeable="False" />
+          </ixm:Permeabilities>
           <ixm:Membranes>
             <ixm:MembraneDef Name="">
               <ixm:Receptors>
@@ -164,7 +178,6 @@
                   <ixm:ReceiveProtocols>
                     <ixm:ReceiveProtocol Protocol="Query" Enabled="True" />
                     <ixm:ReceiveProtocol Protocol="RSSFeedItem" Enabled="True" />
-                    <ixm:ReceiveProtocol Protocol="RSSFeedItem" Enabled="True" />
                   </ixm:ReceiveProtocols>
                   <ixm:EmitProtocols>
                     <ixm:EmitProtocol Protocol="LoggerMessage" Enabled="True" />
@@ -194,6 +207,22 @@
                 <ixm:PermeabilityDef Protocol="ExceptionMessage" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="TextMessage" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="LoggerMessage" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedItem" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedName" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Name" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Text" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedTitle" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Title" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedUrl" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Url" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedDescription" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Description" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedPubDate" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedAuthors" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedCategories" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="ExceptionMessage" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="TextMessage" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="LoggerMessage" Direction="In" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="RSSFeedRefresh" Direction="Out" Permeable="False" />
               </ixm:Permeabilities>
             </ixm:MembraneDef>
@@ -260,9 +289,6 @@
                     <ixm:ReceiveProtocol Protocol="UrlVisited" Enabled="True" />
                     <ixm:ReceiveProtocol Protocol="RSSFeedItemDisplayed" Enabled="True" />
                     <ixm:ReceiveProtocol Protocol="RSSFeedBookmark" Enabled="True" />
-                    <ixm:ReceiveProtocol Protocol="UrlVisited" Enabled="True" />
-                    <ixm:ReceiveProtocol Protocol="RSSFeedItemDisplayed" Enabled="True" />
-                    <ixm:ReceiveProtocol Protocol="RSSFeedBookmark" Enabled="True" />
                   </ixm:ReceiveProtocols>
                   <ixm:EmitProtocols>
                     <ixm:EmitProtocol Protocol="LoggerMessage" Enabled="True" />
@@ -311,12 +337,6 @@
                     <ixm:ReceiveProtocol Protocol="Url" Enabled="True" />
                   </ixm:ReceiveProtocols>
                 </ixm:ReceptorDef>
-                <ixm:ReceptorDef Name="Text To Speech" AssemblyName="TextToSpeechReceptor.dll" Enabled="False" Location="-72, -12">
-                  <ixm:ReceiveProtocols>
-                    <ixm:ReceiveProtocol Protocol="Text" Enabled="False" />
-                    <ixm:ReceiveProtocol Protocol="Announce" Enabled="True" />
-                  </ixm:ReceiveProtocols>
-                </ixm:ReceptorDef>
               </ixm:Receptors>
               <ixm:Permeabilities>
                 <ixm:PermeabilityDef Protocol="ExceptionMessage" Direction="Out" Permeable="False" />
@@ -332,8 +352,24 @@
                 <ixm:PermeabilityDef Protocol="BookmarkCategory" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="Category" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="Query" Direction="Out" Permeable="False" />
-                <ixm:PermeabilityDef Protocol="Announce" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Announce" Direction="Out" Permeable="True" />
                 <ixm:PermeabilityDef Protocol="LoggerMessage" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedItem" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedName" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Name" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Text" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedTitle" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Title" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedUrl" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Url" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedDescription" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Description" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedPubDate" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedAuthors" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedCategories" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="ExceptionMessage" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="TextMessage" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="LoggerMessage" Direction="In" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="RSSFeedName" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="Name" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="RSSFeedTitle" Direction="Out" Permeable="False" />
@@ -346,20 +382,18 @@
                 <ixm:PermeabilityDef Protocol="Resend" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="RSSFeedItem_UrlVisited_RSSFeedItemDisplayed" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="RSSFeedItem" Direction="Out" Permeable="False" />
-                <ixm:PermeabilityDef Protocol="ExceptionMessage" Direction="In" Permeable="False" />
-                <ixm:PermeabilityDef Protocol="TextMessage" Direction="In" Permeable="False" />
-                <ixm:PermeabilityDef Protocol="Text" Direction="In" Permeable="False" />
               </ixm:Permeabilities>
             </ixm:MembraneDef>
           </ixm:Membranes>
           <ixm:Membranes>
             <ixm:MembraneDef Name="">
               <ixm:Receptors>
-                <ixm:ReceptorDef Name="Text Display" AssemblyName="TextDisplayReceptor.dll" Enabled="True" Location="525, 451">
+                <ixm:ReceptorDef Name="Text Display" AssemblyName="TextDisplayReceptor.dll" Enabled="True" Location="802, 401">
                   <ixm:ReceiveProtocols>
                     <ixm:ReceiveProtocol Protocol="Text" Enabled="True" />
                   </ixm:ReceiveProtocols>
                   <ixm:UserConfigs>
+                    <ixm:UserConfig Name="ShowAll" Value="True" />
                     <ixm:UserConfig Name="WindowX" Value="760" />
                     <ixm:UserConfig Name="WindowY" Value="434" />
                     <ixm:UserConfig Name="WindowWidth" Value="284" />
@@ -367,24 +401,19 @@
                     <ixm:UserConfig Name="LayoutId" Value="9d3be908-6525-4045-9390-6658ec0183b2" />
                   </ixm:UserConfigs>
                 </ixm:ReceptorDef>
-                <ixm:ReceptorDef Name="Text To Speech" AssemblyName="TextToSpeechReceptor.dll" Enabled="True" Location="333, 452">
-                  <ixm:ReceiveProtocols>
-                    <ixm:ReceiveProtocol Protocol="Text" Enabled="True" />
-                    <ixm:ReceiveProtocol Protocol="Announce" Enabled="True" />
-                  </ixm:ReceiveProtocols>
-                </ixm:ReceptorDef>
-                <ixm:ReceptorDef Name="Weather Info" AssemblyName="WeatherInfoReceptor.dll" Enabled="True" Location="424, 451">
+                <ixm:ReceptorDef Name="Weather Info" AssemblyName="WeatherInfoReceptor.dll" Enabled="True" Location="708, 402">
                   <ixm:ReceiveProtocols>
                     <ixm:ReceiveProtocol Protocol="WeatherInfo" Enabled="True" />
                     <ixm:ReceiveProtocol Protocol="USLocation" Enabled="True" />
                   </ixm:ReceiveProtocols>
                   <ixm:EmitProtocols>
+                    <ixm:EmitProtocol Protocol="Announce" Enabled="True" />
                     <ixm:EmitProtocol Protocol="Text" Enabled="True" />
                     <ixm:EmitProtocol Protocol="ExceptionMessage" Enabled="True" />
                     <ixm:EmitProtocol Protocol="TextMessage" Enabled="True" />
                   </ixm:EmitProtocols>
                 </ixm:ReceptorDef>
-                <ixm:ReceptorDef Name="Weather Service" AssemblyName="WeatherServiceReceptor.dll" Enabled="True" Location="507, 305">
+                <ixm:ReceptorDef Name="Weather Service" AssemblyName="WeatherServiceReceptor.dll" Enabled="True" Location="784, 255">
                   <ixm:ReceiveProtocols>
                     <ixm:ReceiveProtocol Protocol="Zip5" Enabled="True" />
                   </ixm:ReceiveProtocols>
@@ -399,7 +428,7 @@
                     <ixm:UserConfig Name="Zipcode" Value="12565" />
                   </ixm:UserConfigs>
                 </ixm:ReceptorDef>
-                <ixm:ReceptorDef Name="Carrier List Viewer" AssemblyName="CarrierListViewerReceptor.dll" Enabled="True" Location="427, 362">
+                <ixm:ReceptorDef Name="Carrier List Viewer" AssemblyName="CarrierListViewerReceptor.dll" Enabled="True" Location="704, 312">
                   <ixm:ReceiveProtocols>
                     <ixm:ReceiveProtocol Protocol="ExceptionMessage" Enabled="True" />
                   </ixm:ReceiveProtocols>
@@ -419,7 +448,7 @@
                     <ixm:UserConfig Name="LayoutId" Value="5ff76fc3-aedd-4c34-ad87-73f5dfc62f08" />
                   </ixm:UserConfigs>
                 </ixm:ReceptorDef>
-                <ixm:ReceptorDef Name="Zip Code Service" AssemblyName="ZipCodeReceptor.dll" Enabled="True" Location="351, 304">
+                <ixm:ReceptorDef Name="Zip Code Service" AssemblyName="ZipCodeReceptor.dll" Enabled="True" Location="628, 254">
                   <ixm:ReceiveProtocols>
                     <ixm:ReceiveProtocol Protocol="Zip5" Enabled="True" />
                   </ixm:ReceiveProtocols>
@@ -437,16 +466,156 @@
                 </ixm:ReceptorDef>
               </ixm:Receptors>
               <ixm:Permeabilities>
-                <ixm:PermeabilityDef Protocol="USLocation" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Announce" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Announce" Direction="Out" Permeable="True" />
                 <ixm:PermeabilityDef Protocol="Text" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="ExceptionMessage" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="TextMessage" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="Zip5" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="WeatherInfo" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="USLocation" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="Zip4" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="City" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="USState" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="USStateAbbreviation" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Text" Direction="In" Permeable="False" />
+              </ixm:Permeabilities>
+            </ixm:MembraneDef>
+          </ixm:Membranes>
+          <ixm:Membranes>
+            <ixm:MembraneDef Name="">
+              <ixm:Receptors>
+                <ixm:ReceptorDef Name="Feed Reader" AssemblyName="FeedReaderReceptor.dll" Enabled="True" Location="47, 395">
+                  <ixm:ReceiveProtocols>
+                    <ixm:ReceiveProtocol Protocol="RSSFeedUrl" Enabled="True" />
+                    <ixm:ReceiveProtocol Protocol="RSSFeedRefresh" Enabled="True" />
+                  </ixm:ReceiveProtocols>
+                  <ixm:EmitProtocols>
+                    <ixm:EmitProtocol Protocol="RSSFeedItem" Enabled="False" />
+                    <ixm:EmitProtocol Protocol="RSSFeedName" Enabled="False" />
+                    <ixm:EmitProtocol Protocol="Name" Enabled="False" />
+                    <ixm:EmitProtocol Protocol="Text" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedTitle" Enabled="False" />
+                    <ixm:EmitProtocol Protocol="Title" Enabled="False" />
+                    <ixm:EmitProtocol Protocol="RSSFeedUrl" Enabled="False" />
+                    <ixm:EmitProtocol Protocol="Url" Enabled="False" />
+                    <ixm:EmitProtocol Protocol="RSSFeedDescription" Enabled="False" />
+                    <ixm:EmitProtocol Protocol="Description" Enabled="False" />
+                    <ixm:EmitProtocol Protocol="RSSFeedPubDate" Enabled="False" />
+                    <ixm:EmitProtocol Protocol="RSSFeedAuthors" Enabled="False" />
+                    <ixm:EmitProtocol Protocol="RSSFeedCategories" Enabled="False" />
+                    <ixm:EmitProtocol Protocol="ExceptionMessage" Enabled="False" />
+                    <ixm:EmitProtocol Protocol="TextMessage" Enabled="False" />
+                    <ixm:EmitProtocol Protocol="LoggerMessage" Enabled="False" />
+                  </ixm:EmitProtocols>
+                  <ixm:UserConfigs>
+                    <ixm:UserConfig Name="FeedUrl" Value="http://www.findyourfate.com/rss/dailyhoroscope-feed.asp?sign=Leo" />
+                    <ixm:UserConfig Name="FeedName" Value="Leo" />
+                  </ixm:UserConfigs>
+                </ixm:ReceptorDef>
+                <ixm:ReceptorDef Name="Text Display" AssemblyName="TextDisplayReceptor.dll" Enabled="True" Location="-38, 394">
+                  <ixm:ReceiveProtocols>
+                    <ixm:ReceiveProtocol Protocol="Text" Enabled="True" />
+                  </ixm:ReceiveProtocols>
+                  <ixm:UserConfigs>
+                    <ixm:UserConfig Name="ProtocolFilter" Value="RSSFeedDescription" />
+                    <ixm:UserConfig Name="ShowAll" Value="False" />
+                    <ixm:UserConfig Name="WindowName" Value="Leo" />
+                    <ixm:UserConfig Name="WindowX" Value="0" />
+                    <ixm:UserConfig Name="WindowY" Value="0" />
+                    <ixm:UserConfig Name="WindowWidth" Value="0" />
+                    <ixm:UserConfig Name="WindowHeight" Value="0" />
+                    <ixm:UserConfig Name="LayoutId" Value="51fce6b9-189e-43f1-be2e-4a4676b238e2" />
+                  </ixm:UserConfigs>
+                </ixm:ReceptorDef>
+              </ixm:Receptors>
+              <ixm:Permeabilities>
+                <ixm:PermeabilityDef Protocol="Announce" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedItem" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedName" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Name" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Text" Direction="Out" Permeable="True" />
+                <ixm:PermeabilityDef Protocol="RSSFeedTitle" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Title" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedUrl" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Url" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedDescription" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Description" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedPubDate" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedAuthors" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedCategories" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="ExceptionMessage" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="TextMessage" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="LoggerMessage" Direction="Out" Permeable="False" />
+              </ixm:Permeabilities>
+            </ixm:MembraneDef>
+          </ixm:Membranes>
+          <ixm:Membranes>
+            <ixm:MembraneDef Name="">
+              <ixm:Receptors>
+                <ixm:ReceptorDef Name="Feed Reader" AssemblyName="FeedReaderReceptor.dll" Enabled="True" Location="301, 394">
+                  <ixm:ReceiveProtocols>
+                    <ixm:ReceiveProtocol Protocol="RSSFeedUrl" Enabled="True" />
+                    <ixm:ReceiveProtocol Protocol="RSSFeedRefresh" Enabled="True" />
+                  </ixm:ReceiveProtocols>
+                  <ixm:EmitProtocols>
+                    <ixm:EmitProtocol Protocol="RSSFeedItem" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedName" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="Name" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="Text" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedTitle" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="Title" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedUrl" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="Url" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedDescription" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="Description" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedPubDate" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedAuthors" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="RSSFeedCategories" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="ExceptionMessage" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="TextMessage" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="LoggerMessage" Enabled="True" />
+                  </ixm:EmitProtocols>
+                  <ixm:UserConfigs>
+                    <ixm:UserConfig Name="FeedUrl" Value="http://www.findyourfate.com/rss/dailyhoroscope-feed.asp?sign=Sagittarius" />
+                    <ixm:UserConfig Name="FeedName" Value="Sagittarius" />
+                  </ixm:UserConfigs>
+                </ixm:ReceptorDef>
+                <ixm:ReceptorDef Name="Text Display" AssemblyName="TextDisplayReceptor.dll" Enabled="True" Location="198, 394">
+                  <ixm:ReceiveProtocols>
+                    <ixm:ReceiveProtocol Protocol="Text" Enabled="True" />
+                  </ixm:ReceiveProtocols>
+                  <ixm:UserConfigs>
+                    <ixm:UserConfig Name="ProtocolFilter" Value="RSSFeedDescription" />
+                    <ixm:UserConfig Name="ShowAll" Value="False" />
+                    <ixm:UserConfig Name="WindowName" Value="Sagittarius" />
+                    <ixm:UserConfig Name="WindowX" Value="0" />
+                    <ixm:UserConfig Name="WindowY" Value="0" />
+                    <ixm:UserConfig Name="WindowWidth" Value="0" />
+                    <ixm:UserConfig Name="WindowHeight" Value="0" />
+                    <ixm:UserConfig Name="LayoutId" Value="f4629417-541e-4c74-b1c0-3afce1094d09" />
+                  </ixm:UserConfigs>
+                </ixm:ReceptorDef>
+              </ixm:Receptors>
+              <ixm:Permeabilities>
+                <ixm:PermeabilityDef Protocol="Announce" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Text" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedItem" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedName" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Name" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Text" Direction="Out" Permeable="True" />
+                <ixm:PermeabilityDef Protocol="RSSFeedTitle" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Title" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedUrl" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Url" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedDescription" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Description" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedPubDate" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedAuthors" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="RSSFeedCategories" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="ExceptionMessage" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="TextMessage" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="LoggerMessage" Direction="Out" Permeable="False" />
               </ixm:Permeabilities>
             </ixm:MembraneDef>
           </ixm:Membranes>

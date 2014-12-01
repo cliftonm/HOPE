@@ -92,6 +92,7 @@ namespace Clifton.Receptor.Interfaces
 			mycroParser.AddInstance("form", this);
 
 			form = mycroParser.Load<Form>(displayFormFilename, this);
+			UpdateCaption();
 
 #if DockingForm
 			rsys.Membrane.ApplicationController.AddAppletUI(form, LayoutId);

@@ -29,6 +29,7 @@ namespace WeatherInfoReceptor
 			zipcodeInfoMap = new Dictionary<string, FullInfo>();
 			AddReceiveProtocol("WeatherInfo");
 			AddReceiveProtocol("USLocation");
+			AddEmitProtocol("Announce");
 			AddEmitProtocol("Text");
 			AddEmitProtocol("ExceptionMessage");
 		}
@@ -159,10 +160,8 @@ namespace WeatherInfoReceptor
 		// TODO: Duplicate code.
 		protected void Say(string msg)
 		{
-			ISemanticTypeStruct protocol = rsys.SemanticTypeSystem.GetSemanticTypeStruct("Text");
-			dynamic signal = rsys.SemanticTypeSystem.Create("Text");
-			signal.Value = msg;
-			rsys.CreateCarrier(this, protocol, signal);
+			CreateCarrierIfReceiver("Text", signal => signal.Value = msg);
+			CreateCarrierIfReceiver("Announce", signal => signal.Text.Value = msg);
 		}
 	}
 }
