@@ -35,6 +35,7 @@ namespace Clifton.Receptor.Interfaces
 	public interface IApplicationController
 	{
 		void AddAppletUI(object doc, Guid layoutId);
+		void RemoveAppletUI(Guid layoutId);
 	}
 
 	/// <summary>

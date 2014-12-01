@@ -78,6 +78,9 @@ namespace Clifton.Receptor.Interfaces
 
 			if (form != null)
 			{
+#if DockingForm
+				rsys.Membrane.ApplicationController.RemoveAppletUI(LayoutId);
+#endif
 				form.Close();
 				form = null;
 			}

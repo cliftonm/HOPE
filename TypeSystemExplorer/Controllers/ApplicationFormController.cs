@@ -517,6 +517,30 @@ namespace TypeSystemExplorer.Controllers
 			return true;
 		}
 
+		protected GenericDocument FindGenericDocument(string strLayoutId)
+		{
+			GenericDocument gd = null;
+
+			foreach (DockPane p in AppletUiContainerView.DockPanel.Panes)
+			{
+				foreach (IDockContent d in p.Contents)
+				{
+					if (d is GenericDocument)
+					{
+						if (((GenericDocument)d).ContentMetadata == strLayoutId)
+						{
+							gd = (GenericDocument)d;
+							break;
+						}
+					}
+				}
+
+				if (gd != null) break;
+			}
+
+			return gd;
+		}
+
 		/// <summary>
 		/// Add a receptor's UI to the docking applet UI.
 		/// If a document container already exists, we replace it's contents with the receptor's UI,
@@ -529,24 +553,7 @@ namespace TypeSystemExplorer.Controllers
 			{
 				string strLayoutId = layoutId.ToString();
 				Form form = (Form)doc;
-				GenericDocument gd = null;
-
-				foreach (DockPane p in AppletUiContainerView.DockPanel.Panes)
-				{
-					foreach (IDockContent d in p.Contents)
-					{
-						if (d is GenericDocument)
-						{
-							if (((GenericDocument)d).ContentMetadata == strLayoutId)
-							{
-								gd = (GenericDocument)d;
-								break;
-							}
-						}
-					}
-
-					if (gd != null) break;
-				}
+				GenericDocument gd = FindGenericDocument(strLayoutId);
 
 //				GenericDocument gd = AppletUiContainerView.DockPanel.Documents.Cast<GenericDocument>().SingleOrDefault(d => d.ContentMetadata == strLayoutId);
 //				GenericPane gp = null;
@@ -582,6 +589,19 @@ namespace TypeSystemExplorer.Controllers
 
 					gd.Show(AppletUiContainerView.DockPanel);
 				}
+			}
+		}
+
+		/// <summary>
+		/// Remove the docking container.
+		/// </summary>
+		public void RemoveAppletUI(Guid layoutId)
+		{
+			GenericDocument gd = FindGenericDocument(layoutId.ToString());
+
+			if (gd != null)
+			{
+				gd.Close();
 			}
 		}
 
@@ -805,7 +825,7 @@ namespace TypeSystemExplorer.Controllers
 			Reset(sender, args);
 		}
 
-		public void LoadReceptors(object sender, EventArgs args)
+		public void LoadAppletDlg(object sender, EventArgs args)
 		{
 			OpenFileDialog ofd = new OpenFileDialog();
 			ofd.Filter = "xml files (*.xml)|*.xml|All files (*.*)|*.*";
@@ -818,7 +838,20 @@ namespace TypeSystemExplorer.Controllers
 			}
 		}
 
-		public void SaveReceptors(object sender, EventArgs args)
+		public void ImportAppletDlg(object sender, EventArgs args)
+		{
+			OpenFileDialog ofd = new OpenFileDialog();
+			ofd.Filter = "xml files (*.xml)|*.xml|All files (*.*)|*.*";
+			DialogResult ret = ofd.ShowDialog();
+
+			if (ret == DialogResult.OK)
+			{
+				ImportApplet(ofd.FileName);
+				MruMenu.AddFile(ofd.FileName);
+			}
+		}
+
+		public void SaveApplet(object sender, EventArgs args)
 		{
 			if (!String.IsNullOrEmpty(CurrentFilename))
 			{
@@ -826,11 +859,11 @@ namespace TypeSystemExplorer.Controllers
 			}
 			else
 			{
-				SaveReceptorsAs(sender, args);
+				SaveAppletAs(sender, args);
 			}
 		}
 
-		public void SaveReceptorsAs(object sender, EventArgs args)
+		public void SaveAppletAs(object sender, EventArgs args)
 		{
 			SaveFileDialog sfd = new SaveFileDialog();
 			sfd.Filter = "xml files (*.xml)|*.xml|All files (*.*)|*.*";
@@ -1047,6 +1080,12 @@ namespace TypeSystemExplorer.Controllers
 			Reset(null, EventArgs.Empty);
 			// The dockable applet UI must be loaded first!
 			// This sets up the layout ID's that we'll need to know when the receptors create their UI's.
+			LoadAppletUiLayout(filename);
+			LoadAppletInternal(filename);
+		}
+
+		public void ImportApplet(string filename)
+		{
 			LoadAppletUiLayout(filename);
 			LoadAppletInternal(filename);
 		}

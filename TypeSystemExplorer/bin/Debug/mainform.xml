@@ -33,9 +33,11 @@
             <!--  <wf:ToolStripMenuItem Text="&amp;Import Population" Click="{controller.Import}"/>  -->
               <wf:ToolStripMenuItem Text="&amp;New" Click="{controller.New}"/>
               <wf:ToolStripSeparator/>
-              <wf:ToolStripMenuItem Text="&amp;Load Applet" Click="{controller.LoadReceptors}"/>
-              <wf:ToolStripMenuItem Text="Sa&amp;ve Applet" Click="{controller.SaveReceptors}"/>
-              <wf:ToolStripMenuItem Text="Save A&amp;pplet As" Click="{controller.SaveReceptorsAs}"/>
+              <wf:ToolStripMenuItem Text="&amp;Load Applet" Click="{controller.LoadAppletDlg}"/>
+              <wf:ToolStripMenuItem Text="&amp;Import Applet" Click="{controller.ImportAppletDlg}"/>
+              <wf:ToolStripSeparator/>
+              <wf:ToolStripMenuItem Text="Sa&amp;ve Applet" Click="{controller.SaveApplet}"/>
+              <wf:ToolStripMenuItem Text="Save A&amp;pplet As" Click="{controller.SaveAppletAs}"/>
               <wf:ToolStripSeparator/>
               <wf:ToolStripMenuItem def:Name="mnuRecentFiles" Text="(Recent Files)"/>
               <wf:ToolStripSeparator/>
