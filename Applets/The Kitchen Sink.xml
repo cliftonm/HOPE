@@ -230,7 +230,7 @@
           <ixm:Membranes>
             <ixm:MembraneDef Name="">
               <ixm:Receptors>
-                <ixm:ReceptorDef Name="Feed Item List" AssemblyName="FeedItemListReceptor.dll" Enabled="True" Location="25, -13">
+                <ixm:ReceptorDef Name="Feed Item List" AssemblyName="FeedItemListReceptor.dll" Enabled="True" Location="41, 17">
                   <ixm:ReceiveProtocols>
                     <ixm:ReceiveProtocol Protocol="RSSFeedItem" Enabled="True" />
                     <ixm:ReceiveProtocol Protocol="BookmarkCategory" Enabled="True" />
@@ -283,7 +283,7 @@
                     <ixm:UserConfig Name="ProtocolName" Value="Resend" />
                   </ixm:UserConfigs>
                 </ixm:ReceptorDef>
-                <ixm:ReceptorDef Name="Semantic Database" AssemblyName="SemanticDatabaseReceptor.dll" Enabled="True" Location="111, 58">
+                <ixm:ReceptorDef Name="Semantic Database" AssemblyName="SemanticDatabaseReceptor.dll" Enabled="True" Location="101, -24">
                   <ixm:ReceiveProtocols>
                     <ixm:ReceiveProtocol Protocol="Query" Enabled="True" />
                     <ixm:ReceiveProtocol Protocol="UrlVisited" Enabled="True" />
@@ -320,7 +320,7 @@
                     <ixm:UserConfig Name="Protocols" Value="UrlVisited;RSSFeedItemDisplayed;RSSFeedBookmark" />
                   </ixm:UserConfigs>
                 </ixm:ReceptorDef>
-                <ixm:ReceptorDef Name="Signal Creator" AssemblyName="SignalCreatorReceptor.dll" Enabled="True" Location="182, -18">
+                <ixm:ReceptorDef Name="Signal Creator" AssemblyName="SignalCreatorReceptor.dll" Enabled="True" Location="167, 24">
                   <ixm:ReceiveProtocols>
                     <ixm:ReceiveProtocol Protocol="Resend" Enabled="True" />
                   </ixm:ReceiveProtocols>
@@ -388,12 +388,14 @@
           <ixm:Membranes>
             <ixm:MembraneDef Name="">
               <ixm:Receptors>
-                <ixm:ReceptorDef Name="Text Display" AssemblyName="TextDisplayReceptor.dll" Enabled="True" Location="802, 401">
+                <ixm:ReceptorDef Name="Text Display" AssemblyName="TextDisplayReceptor.dll" Enabled="True" Location="802, 400">
                   <ixm:ReceiveProtocols>
                     <ixm:ReceiveProtocol Protocol="Text" Enabled="True" />
                   </ixm:ReceiveProtocols>
                   <ixm:UserConfigs>
-                    <ixm:UserConfig Name="ShowAll" Value="True" />
+                    <ixm:UserConfig Name="ProtocolFilter" Value="Announce" />
+                    <ixm:UserConfig Name="ShowAll" Value="False" />
+                    <ixm:UserConfig Name="WindowName" Value="Philmont Weather" />
                     <ixm:UserConfig Name="WindowX" Value="760" />
                     <ixm:UserConfig Name="WindowY" Value="434" />
                     <ixm:UserConfig Name="WindowWidth" Value="284" />
