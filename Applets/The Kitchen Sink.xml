@@ -1,5 +1,5 @@
 <MycroXaml xmlns:ixm="TypeSystemExplorer.Models, TypeSystemExplorer" xmlns:def="def" xmlns:ref="ref" Name="Form">
-  <ixm:Applet SurfaceOffset="123,225">
+  <ixm:Applet SurfaceOffset="189,196">
     <ixm:MembranesDef>
       <ixm:Membranes>
         <ixm:MembraneDef Name="Skin">
@@ -134,7 +134,7 @@
                     <ixm:UserConfig Name="FeedName" Value="Gigaom" />
                   </ixm:UserConfigs>
                 </ixm:ReceptorDef>
-                <ixm:ReceptorDef Name="Interval Timer" AssemblyName="TimerReceptor.dll" Enabled="True" Location="587, 90">
+                <ixm:ReceptorDef Name="Interval Timer" AssemblyName="TimerReceptor.dll" Enabled="True" Location="587, 87">
                   <ixm:EmitProtocols>
                     <ixm:EmitProtocol Protocol="RSSFeedRefresh" Enabled="True" />
                   </ixm:EmitProtocols>
@@ -230,7 +230,7 @@
           <ixm:Membranes>
             <ixm:MembraneDef Name="">
               <ixm:Receptors>
-                <ixm:ReceptorDef Name="Feed Item List" AssemblyName="FeedItemListReceptor.dll" Enabled="True" Location="41, 17">
+                <ixm:ReceptorDef Name="Feed Item List" AssemblyName="FeedItemListReceptor.dll" Enabled="True" Location="452, 489">
                   <ixm:ReceiveProtocols>
                     <ixm:ReceiveProtocol Protocol="RSSFeedItem" Enabled="True" />
                     <ixm:ReceiveProtocol Protocol="BookmarkCategory" Enabled="True" />
@@ -271,7 +271,7 @@
                     <ixm:UserConfig Name="LayoutId" Value="a3b93ed8-6e6a-4530-a713-ec547c4ddc04" />
                   </ixm:UserConfigs>
                 </ixm:ReceptorDef>
-                <ixm:ReceptorDef Name="Interval Timer" AssemblyName="TimerReceptor.dll" Enabled="True" Location="138, -108">
+                <ixm:ReceptorDef Name="Interval Timer" AssemblyName="TimerReceptor.dll" Enabled="True" Location="527, 585">
                   <ixm:EmitProtocols>
                     <ixm:EmitProtocol Protocol="Resend" Enabled="True" />
                   </ixm:EmitProtocols>
@@ -283,7 +283,7 @@
                     <ixm:UserConfig Name="ProtocolName" Value="Resend" />
                   </ixm:UserConfigs>
                 </ixm:ReceptorDef>
-                <ixm:ReceptorDef Name="Semantic Database" AssemblyName="SemanticDatabaseReceptor.dll" Enabled="True" Location="101, -24">
+                <ixm:ReceptorDef Name="Semantic Database" AssemblyName="SemanticDatabaseReceptor.dll" Enabled="True" Location="501, 531">
                   <ixm:ReceiveProtocols>
                     <ixm:ReceiveProtocol Protocol="Query" Enabled="True" />
                     <ixm:ReceiveProtocol Protocol="UrlVisited" Enabled="True" />
@@ -320,7 +320,7 @@
                     <ixm:UserConfig Name="Protocols" Value="UrlVisited;RSSFeedItemDisplayed;RSSFeedBookmark" />
                   </ixm:UserConfigs>
                 </ixm:ReceptorDef>
-                <ixm:ReceptorDef Name="Signal Creator" AssemblyName="SignalCreatorReceptor.dll" Enabled="True" Location="167, 24">
+                <ixm:ReceptorDef Name="Signal Creator" AssemblyName="SignalCreatorReceptor.dll" Enabled="True" Location="544, 490">
                   <ixm:ReceiveProtocols>
                     <ixm:ReceiveProtocol Protocol="Resend" Enabled="True" />
                   </ixm:ReceiveProtocols>
@@ -332,7 +332,7 @@
                     <ixm:UserConfig Name="ProtocolData" Value="&lt;Signal&gt;&#xD;&#xA;  &lt;NativeType Name=&quot;QueryText&quot; Data=&quot;top 40 RSSFeedItem, UrlVisited, RSSFeedItemDisplayed order by RSSFeedPubDate desc, RSSFeedName&quot; /&gt;&#xD;&#xA;  &lt;NativeType Name=&quot;Param0&quot; Data=&quot;&quot; /&gt;&#xD;&#xA;  &lt;NativeType Name=&quot;Param1&quot; Data=&quot;&quot; /&gt;&#xD;&#xA;  &lt;NativeType Name=&quot;Param2&quot; Data=&quot;&quot; /&gt;&#xD;&#xA;  &lt;NativeType Name=&quot;Param3&quot; Data=&quot;&quot; /&gt;&#xD;&#xA;  &lt;NativeType Name=&quot;Param4&quot; Data=&quot;&quot; /&gt;&#xD;&#xA;  &lt;NativeType Name=&quot;Param5&quot; Data=&quot;&quot; /&gt;&#xD;&#xA;  &lt;NativeType Name=&quot;Param6&quot; Data=&quot;&quot; /&gt;&#xD;&#xA;  &lt;NativeType Name=&quot;Param7&quot; Data=&quot;&quot; /&gt;&#xD;&#xA;  &lt;NativeType Name=&quot;Param8&quot; Data=&quot;&quot; /&gt;&#xD;&#xA;  &lt;NativeType Name=&quot;Param9&quot; Data=&quot;&quot; /&gt;&#xD;&#xA;&lt;/Signal&gt;" />
                   </ixm:UserConfigs>
                 </ixm:ReceptorDef>
-                <ixm:ReceptorDef Name="Web Page Launcher" AssemblyName="UrlReceptor.dll" Enabled="True" Location="51, -107">
+                <ixm:ReceptorDef Name="Web Page Launcher" AssemblyName="UrlReceptor.dll" Enabled="True" Location="473, 586">
                   <ixm:ReceiveProtocols>
                     <ixm:ReceiveProtocol Protocol="Url" Enabled="True" />
                   </ixm:ReceiveProtocols>
@@ -618,6 +618,57 @@
                 <ixm:PermeabilityDef Protocol="ExceptionMessage" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="TextMessage" Direction="Out" Permeable="False" />
                 <ixm:PermeabilityDef Protocol="LoggerMessage" Direction="Out" Permeable="False" />
+              </ixm:Permeabilities>
+            </ixm:MembraneDef>
+          </ixm:Membranes>
+          <ixm:Membranes>
+            <ixm:MembraneDef Name="">
+              <ixm:Receptors>
+                <ixm:ReceptorDef Name="APOD" AssemblyName="APODScraperReceptor.dll" Enabled="True" Location="151, 173">
+                  <ixm:ReceiveProtocols>
+                    <ixm:ReceiveProtocol Protocol="WebPageHtml" Enabled="True" />
+                  </ixm:ReceiveProtocols>
+                  <ixm:EmitProtocols>
+                    <ixm:EmitProtocol Protocol="Image" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="Url" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="ExceptionMessage" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="TextMessage" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="Text" Enabled="True" />
+                  </ixm:EmitProtocols>
+                </ixm:ReceptorDef>
+                <ixm:ReceptorDef Name="Image Viewer" AssemblyName="ImageViewerReceptor.dll" Enabled="True" Location="119, 89">
+                  <ixm:ReceiveProtocols>
+                    <ixm:ReceiveProtocol Protocol="Image" Enabled="True" />
+                  </ixm:ReceiveProtocols>
+                  <ixm:UserConfigs>
+                    <ixm:UserConfig Name="WindowX" Value="0" />
+                    <ixm:UserConfig Name="WindowY" Value="0" />
+                    <ixm:UserConfig Name="WindowWidth" Value="0" />
+                    <ixm:UserConfig Name="WindowHeight" Value="0" />
+                    <ixm:UserConfig Name="LayoutId" Value="8a70c923-d1ec-4da9-96da-48cad0c52fd1" />
+                  </ixm:UserConfigs>
+                </ixm:ReceptorDef>
+                <ixm:ReceptorDef Name="Webpage Scraper" AssemblyName="WebPageScraperReceptor.dll" Enabled="True" Location="70, 151">
+                  <ixm:ReceiveProtocols>
+                    <ixm:ReceiveProtocol Protocol="Url" Enabled="True" />
+                  </ixm:ReceiveProtocols>
+                  <ixm:EmitProtocols>
+                    <ixm:EmitProtocol Protocol="WebPageHtml" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="Url" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="Html" Enabled="True" />
+                  </ixm:EmitProtocols>
+                </ixm:ReceptorDef>
+              </ixm:Receptors>
+              <ixm:Permeabilities>
+                <ixm:PermeabilityDef Protocol="Announce" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Text" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Image" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Url" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="ExceptionMessage" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="TextMessage" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Text" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="WebPageHtml" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Html" Direction="Out" Permeable="False" />
               </ixm:Permeabilities>
             </ixm:MembraneDef>
           </ixm:Membranes>

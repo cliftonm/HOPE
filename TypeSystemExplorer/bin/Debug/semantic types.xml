@@ -142,7 +142,7 @@
         </SemanticType>
         <SemanticType Name="Image" UniqueField="false">
           <NativeTypes>
-            <NativeType Name="Value" ImplementingType="Bitmap" Ordinality="0" UniqueField="false" />
+            <NativeType Name="Value" ImplementingType="System.Drawing.Image" Ordinality="0" UniqueField="false" />
           </NativeTypes>
           <SubTypes />
         </SemanticType>
@@ -354,6 +354,19 @@
           <NativeTypes />
           <SubTypes>
             <SubType Name="Url" UniqueField="false" Ordinality="0" />
+          </SubTypes>
+        </SemanticType>
+        <SemanticType Name="Html" UniqueField="false">
+          <NativeTypes>
+            <NativeType Name="Value" ImplementingType="string" Ordinality="0" UniqueField="false" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
+        <SemanticType Name="WebPageHtml" UniqueField="false">
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="Url" UniqueField="false" Ordinality="0" />
+            <SubType Name="Html" UniqueField="false" Ordinality="0" />
           </SubTypes>
         </SemanticType>
       </SemanticTypes>

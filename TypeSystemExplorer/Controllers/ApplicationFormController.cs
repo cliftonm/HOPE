@@ -1086,7 +1086,7 @@ namespace TypeSystemExplorer.Controllers
 
 		public void ImportApplet(string filename)
 		{
-			LoadAppletUiLayout(filename);
+			// LoadAppletUiLayout(filename);
 			LoadAppletInternal(filename);
 		}
 
