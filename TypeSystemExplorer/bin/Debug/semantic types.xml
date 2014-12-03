@@ -264,6 +264,10 @@
           </NativeTypes>
           <SubTypes />
         </SemanticType>
+        <SemanticType Name="UpdateRadar" UniqueField="false">
+          <NativeTypes />
+          <SubTypes />
+        </SemanticType>
       </SemanticTypes>
     </SemanticTypesContainer>
     <SemanticTypesContainer Name="RSS">

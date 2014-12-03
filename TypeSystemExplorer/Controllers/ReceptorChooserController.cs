@@ -95,6 +95,7 @@ namespace TypeSystemExplorer.Controllers
 			receptors.Add(new ReceptorEntry() { Name = "Zipcode Service", Filename = "ZipCodeReceptor.dll" });
 			receptors.Add(new ReceptorEntry() { Name = "Weather Service", Filename = "WeatherServiceReceptor.dll" });
 			receptors.Add(new ReceptorEntry() { Name = "Weather Info", Filename = "WeatherInfoReceptor.dll" });
+			receptors.Add(new ReceptorEntry() { Name = "Weather Radar", Filename = "WeatherRadarScraperReceptor.dll" });
 			receptors.Add(new ReceptorEntry() { Name = "Feed Reader", Filename = "FeedReaderReceptor.dll" });
 			receptors.Add(new ReceptorEntry() { Name = "Web Page Launcher", Filename = "UrlReceptor.dll" });
 			receptors.Add(new ReceptorEntry() { Name = "Web Page Viewer", Filename = "WebBrowserReceptor.dll" });

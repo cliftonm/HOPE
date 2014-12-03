@@ -1,5 +1,5 @@
 <MycroXaml xmlns:ixm="TypeSystemExplorer.Models, TypeSystemExplorer" xmlns:def="def" xmlns:ref="ref" Name="Form">
-  <ixm:Applet SurfaceOffset="189,196">
+  <ixm:Applet SurfaceOffset="-25,440">
     <ixm:MembranesDef>
       <ixm:Membranes>
         <ixm:MembraneDef Name="Skin">
@@ -624,7 +624,7 @@
           <ixm:Membranes>
             <ixm:MembraneDef Name="">
               <ixm:Receptors>
-                <ixm:ReceptorDef Name="APOD" AssemblyName="APODScraperReceptor.dll" Enabled="True" Location="151, 173">
+                <ixm:ReceptorDef Name="APOD" AssemblyName="APODScraperReceptor.dll" Enabled="True" Location="265, -17">
                   <ixm:ReceiveProtocols>
                     <ixm:ReceiveProtocol Protocol="WebPageHtml" Enabled="True" />
                   </ixm:ReceiveProtocols>
@@ -636,7 +636,7 @@
                     <ixm:EmitProtocol Protocol="Text" Enabled="True" />
                   </ixm:EmitProtocols>
                 </ixm:ReceptorDef>
-                <ixm:ReceptorDef Name="Image Viewer" AssemblyName="ImageViewerReceptor.dll" Enabled="True" Location="119, 89">
+                <ixm:ReceptorDef Name="Image Viewer" AssemblyName="ImageViewerReceptor.dll" Enabled="True" Location="233, -101">
                   <ixm:ReceiveProtocols>
                     <ixm:ReceiveProtocol Protocol="Image" Enabled="True" />
                   </ixm:ReceiveProtocols>
@@ -648,7 +648,7 @@
                     <ixm:UserConfig Name="LayoutId" Value="8a70c923-d1ec-4da9-96da-48cad0c52fd1" />
                   </ixm:UserConfigs>
                 </ixm:ReceptorDef>
-                <ixm:ReceptorDef Name="Webpage Scraper" AssemblyName="WebPageScraperReceptor.dll" Enabled="True" Location="70, 151">
+                <ixm:ReceptorDef Name="Webpage Scraper" AssemblyName="WebPageScraperReceptor.dll" Enabled="True" Location="184, -39">
                   <ixm:ReceiveProtocols>
                     <ixm:ReceiveProtocol Protocol="Url" Enabled="True" />
                   </ixm:ReceiveProtocols>
@@ -657,6 +657,70 @@
                     <ixm:EmitProtocol Protocol="Url" Enabled="True" />
                     <ixm:EmitProtocol Protocol="Html" Enabled="True" />
                   </ixm:EmitProtocols>
+                </ixm:ReceptorDef>
+              </ixm:Receptors>
+              <ixm:Permeabilities>
+                <ixm:PermeabilityDef Protocol="Announce" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Text" Direction="In" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Image" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Url" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="ExceptionMessage" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="TextMessage" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Text" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="WebPageHtml" Direction="Out" Permeable="False" />
+                <ixm:PermeabilityDef Protocol="Html" Direction="Out" Permeable="False" />
+              </ixm:Permeabilities>
+            </ixm:MembraneDef>
+          </ixm:Membranes>
+          <ixm:Membranes>
+            <ixm:MembraneDef Name="">
+              <ixm:Receptors>
+                <ixm:ReceptorDef Name="Image Viewer" AssemblyName="ImageViewerReceptor.dll" Enabled="True" Location="167, -305">
+                  <ixm:ReceiveProtocols>
+                    <ixm:ReceiveProtocol Protocol="Image" Enabled="True" />
+                  </ixm:ReceiveProtocols>
+                  <ixm:UserConfigs>
+                    <ixm:UserConfig Name="WindowX" Value="0" />
+                    <ixm:UserConfig Name="WindowY" Value="0" />
+                    <ixm:UserConfig Name="WindowWidth" Value="0" />
+                    <ixm:UserConfig Name="WindowHeight" Value="0" />
+                    <ixm:UserConfig Name="LayoutId" Value="298b5a8d-dbfe-4531-97c5-af10069f8caf" />
+                  </ixm:UserConfigs>
+                </ixm:ReceptorDef>
+                <ixm:ReceptorDef Name="Radar" AssemblyName="WeatherRadarScraperReceptor.dll" Enabled="True" Location="219, -243">
+                  <ixm:ReceiveProtocols>
+                    <ixm:ReceiveProtocol Protocol="WebPageHtml" Enabled="True" />
+                    <ixm:ReceiveProtocol Protocol="UpdateRadar" Enabled="True" />
+                  </ixm:ReceiveProtocols>
+                  <ixm:EmitProtocols>
+                    <ixm:EmitProtocol Protocol="Image" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="Url" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="ExceptionMessage" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="TextMessage" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="Text" Enabled="True" />
+                  </ixm:EmitProtocols>
+                </ixm:ReceptorDef>
+                <ixm:ReceptorDef Name="Webpage Scraper" AssemblyName="WebPageScraperReceptor.dll" Enabled="True" Location="269, -305">
+                  <ixm:ReceiveProtocols>
+                    <ixm:ReceiveProtocol Protocol="Url" Enabled="True" />
+                  </ixm:ReceiveProtocols>
+                  <ixm:EmitProtocols>
+                    <ixm:EmitProtocol Protocol="WebPageHtml" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="Url" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="Html" Enabled="True" />
+                  </ixm:EmitProtocols>
+                </ixm:ReceptorDef>
+                <ixm:ReceptorDef Name="Interval Timer" AssemblyName="TimerReceptor.dll" Enabled="True" Location="216, -347">
+                  <ixm:EmitProtocols>
+                    <ixm:EmitProtocol Protocol="UpdateRadar" Enabled="True" />
+                  </ixm:EmitProtocols>
+                  <ixm:UserConfigs>
+                    <ixm:UserConfig Name="DaySpan" Value="" />
+                    <ixm:UserConfig Name="HourSpan" Value="" />
+                    <ixm:UserConfig Name="MinuteSpan" Value="5" />
+                    <ixm:UserConfig Name="SecondSpan" Value="" />
+                    <ixm:UserConfig Name="ProtocolName" Value="UpdateRadar" />
+                  </ixm:UserConfigs>
                 </ixm:ReceptorDef>
               </ixm:Receptors>
               <ixm:Permeabilities>
