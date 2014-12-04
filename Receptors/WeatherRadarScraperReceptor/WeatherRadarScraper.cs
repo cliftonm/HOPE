@@ -28,7 +28,7 @@ namespace WeatherRadarScraperReceptor
 			AddEmitProtocol("Url");
 			AddEmitProtocol("ExceptionMessage");
 			AddReceiveProtocol("WebPageHtml", (Action<dynamic>)(signal => ProcessPage(signal.Url.Value, signal.Html.Value)));
-			AddReceiveProtocol("UpdateRadar", (Action<dynamic>)(signal => GetRadarImage()));
+			AddReceiveProtocol("Resend", (Action<dynamic>)(signal => GetRadarImage()));
 		}
 
 		public override void Initialize()

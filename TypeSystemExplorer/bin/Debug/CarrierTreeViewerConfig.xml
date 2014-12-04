@@ -4,15 +4,22 @@
   xmlns:r="Clifton.Receptor, Clifton.Receptor"
   xmlns:def="def"
   xmlns:ref="ref">
-  <wf:Form def:Name="form" Text="Carrier Tree Viewer Configuration" Size="480, 160" StartPosition="CenterScreen" ShowInTaskbar="false" MinimizeBox="false" MaximizeBox="false">
+  <wf:Form def:Name="form" Text="Carrier Tree Viewer Configuration" Size="480, 330" StartPosition="CenterScreen" ShowInTaskbar="false" MinimizeBox="false" MaximizeBox="false">
     <wf:Controls>
       <wf:Label Text="Window Name:" Location="20, 23" Size="100, 15"/>
       <wf:TextBox def:Name="tbWindowName" Location="125, 20" Size="200, 20"/>
-      <wf:Label Text="Semantic Type:" Location="20, 48" Size="100, 15"/>
-      <wf:ComboBox def:Name="cbProtocols" Location="125, 45" Size="200, 25" Anchor="Top, Left, Right" AutoCompleteMode="SuggestAppend" AutoCompleteSource="ListItems"/>
-      <wf:CheckBox def:Name="ckEnabled" Text="Enabled?" Location="20, 95" Size="80, 25"/>
-      <wf:Button def:Name="btnSave" Text="Save" Location="360, 10" Size="80, 25" Click="OnReceptorConfigOK"/>
-      <wf:Button def:Name="btnCancel" Text="Cancel" Location="360, 40" Size="80, 25" Click="OnReceptorConfigCancel"/>
+      <wf:Label Text="Semantic Hierarchy:" Location="20, 48" Size="100, 15"/>
+      <wf:DataGridView def:Name="dgvTypes"
+                        AllowUserToAddRows="true"
+                        AllowUserToDeleteRows="true"
+                        ReadOnly="false"
+                        RowHeadersVisible="true"
+                        AutoSizeColumnsMode="Fill"
+                        Anchor="Top, Left, Bottom, Right"
+                        Location="20, 65" Size="320, 170"/>
+      <wf:CheckBox def:Name="ckEnabled" Text="Enabled?" Location="20, 250" Size="80, 25" Anchor="Bottom, Left"/>
+      <wf:Button def:Name="btnSave" Text="Save" Location="360, 10" Size="80, 25" Click="OnReceptorConfigOK" Anchor="Top, Right"/>
+      <wf:Button def:Name="btnCancel" Text="Cancel" Location="360, 40" Size="80, 25" Click="OnReceptorConfigCancel" Anchor="Top, Right"/>
     </wf:Controls>
     <r:PropertyControlMap def:Name="ControlMap">
       <r:Entries>

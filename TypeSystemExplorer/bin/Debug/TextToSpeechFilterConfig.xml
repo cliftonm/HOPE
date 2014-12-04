@@ -4,7 +4,7 @@
   xmlns:r="Clifton.Receptor, Clifton.Receptor"
   xmlns:def="def"
   xmlns:ref="ref">
-  <wf:Form def:Name="form" Text="Text Display Filter Configuration" Size="480, 160" StartPosition="CenterScreen" ShowInTaskbar="false" MinimizeBox="false" MaximizeBox="false">
+  <wf:Form def:Name="form" Text="Text 2 Speech Filter Configuration" Size="480, 160" StartPosition="CenterScreen" ShowInTaskbar="false" MinimizeBox="false" MaximizeBox="false">
     <wf:Controls>
       <wf:Label Text="Filter Type:" Location="20, 23" Size="100, 15"/>
       <wf:ComboBox def:Name="cbProtocols" Location="125, 20" Size="200, 25" Anchor="Top, Left, Right" AutoCompleteMode="SuggestAppend" AutoCompleteSource="ListItems"/>

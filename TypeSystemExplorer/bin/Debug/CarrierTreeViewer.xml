@@ -3,7 +3,7 @@
   xmlns:wf="System.Windows.Forms, System.Windows.Forms, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"
   xmlns:def="def"
   xmlns:ref="ref">
-  <wf:Form Text="List Viewer" Size="500, 300" StartPosition="CenterScreen" ShowInTaskbar="false" MinimizeBox="false" MaximizeBox="false">
+  <wf:Form Text="Tree Viewer" Size="500, 300" StartPosition="CenterScreen" ShowInTaskbar="false" MinimizeBox="false" MaximizeBox="false">
     <wf:Controls>
       <wf:TreeView def:Name="tv" Dock="Fill"/>
     </wf:Controls>

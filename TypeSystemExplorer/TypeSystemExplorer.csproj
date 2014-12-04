@@ -244,6 +244,8 @@
     <Content Include="bin\Debug\CarrierTabbedListViewerConfig.xml">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="bin\Debug\CarrierTreeViewer.xml" />
+    <Content Include="bin\Debug\CarrierTreeViewerConfig.xml" />
     <Content Include="bin\Debug\DayGreeterConfig.xml" />
     <Content Include="bin\Debug\DockableCarrierListViewer.xml" />
     <Content Include="bin\Debug\event_seed.xml" />

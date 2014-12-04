@@ -65,6 +65,18 @@
             <SubType Name="Text" UniqueField="false" Ordinality="0" />
           </SubTypes>
         </SemanticType>
+        <SemanticType Name="PersonName" UniqueField="false">
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="Name" UniqueField="false" Ordinality="0" />
+          </SubTypes>
+        </SemanticType>
+        <SemanticType Name="Summary" UniqueField="false">
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="Text" UniqueField="false" Ordinality="0" />
+          </SubTypes>
+        </SemanticType>
       </SemanticTypes>
     </SemanticTypesContainer>
     <SemanticTypesContainer Name="Messages">
@@ -264,10 +276,6 @@
           </NativeTypes>
           <SubTypes />
         </SemanticType>
-        <SemanticType Name="UpdateRadar" UniqueField="false">
-          <NativeTypes />
-          <SubTypes />
-        </SemanticType>
       </SemanticTypes>
     </SemanticTypesContainer>
     <SemanticTypesContainer Name="RSS">
@@ -415,6 +423,70 @@
             <SubType Name="Note" UniqueField="false" Ordinality="0" />
           </SubTypes>
         </SemanticType>
+      </SemanticTypes>
+    </SemanticTypesContainer>
+    <SemanticTypesContainer Name="Linked In">
+      <SemanticTypes>
+        <SemanticType Name="LinkedInComment" UniqueField="false">
+          <NativeTypes>
+            <NativeType Name="CreationTime" Alias="CommentCreationTime" ImplementingType="DateTime" Ordinality="2" UniqueField="false" />
+            <NativeType Name="Comment" ImplementingType="string" Ordinality="0" UniqueField="false" />
+            <NativeType Name="Id" ImplementingType="string" Ordinality="5" UniqueField="false" />
+          </NativeTypes>
+          <SubTypes>
+            <SubType Name="LinkedInGroup" UniqueField="false" Ordinality="3" />
+            <SubType Name="LinkedInPost" UniqueField="false" Ordinality="4" />
+            <SubType Name="LinkedInCommentCreator" UniqueField="false" Ordinality="1" />
+          </SubTypes>
+        </SemanticType>
+        <SemanticType Name="LinkedInGroup" UniqueField="false">
+          <NativeTypes>
+            <NativeType Name="Id" ImplementingType="string" Ordinality="2" UniqueField="false" />
+          </NativeTypes>
+          <SubTypes>
+            <SubType Name="Name" UniqueField="false" Ordinality="1" />
+          </SubTypes>
+        </SemanticType>
+        <SemanticType Name="LinkedInPost" UniqueField="false">
+          <NativeTypes>
+            <NativeType Name="CreationTime" Alias="PostCreationTime" ImplementingType="DateTime" Ordinality="1" UniqueField="false" />
+            <NativeType Name="Id" ImplementingType="string" Ordinality="4" UniqueField="false" />
+          </NativeTypes>
+          <SubTypes>
+            <SubType Name="Title" UniqueField="false" Ordinality="0" />
+            <SubType Name="LinkedInPostCreator" UniqueField="false" Ordinality="2" />
+            <SubType Name="LinkedInGroup" UniqueField="false" Ordinality="0" />
+            <SubType Name="Summary" UniqueField="false" Ordinality="3" />
+          </SubTypes>
+        </SemanticType>
+        <SemanticType Name="LinkedInPostCreator" UniqueField="false">
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="PersonName" UniqueField="false" Ordinality="0" />
+          </SubTypes>
+        </SemanticType>
+        <SemanticType Name="LinkedInCommentCreator" UniqueField="false">
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="PersonName" UniqueField="false" Ordinality="0" />
+          </SubTypes>
+        </SemanticType>
+        <SemanticType Name="QueryPosts" UniqueField="false">
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="LinkedInGroup" UniqueField="false" Ordinality="0" />
+          </SubTypes>
+        </SemanticType>
+        <SemanticType Name="QueryComments" UniqueField="false">
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="LinkedInPost" UniqueField="false" Ordinality="0" />
+          </SubTypes>
+        </SemanticType>
+      </SemanticTypes>
+    </SemanticTypesContainer>
+    <SemanticTypesContainer Name="Commands">
+      <SemanticTypes>
         <SemanticType Name="Resend" UniqueField="false">
           <NativeTypes />
           <SubTypes />

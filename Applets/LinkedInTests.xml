@@ -4,18 +4,124 @@
       <ixm:Membranes>
         <ixm:MembraneDef Name="Skin">
           <ixm:Receptors>
-            <ixm:ReceptorDef Name="Linked In" AssemblyName="LinkedInReceptor.dll" Enabled="True" Location="100, 100">
+            <ixm:ReceptorDef Name="Carrier Tree Viewer" AssemblyName="CarrierTreeViewerReceptor.dll" Enabled="True" Location="266, 213">
+              <ixm:ReceiveProtocols>
+                <ixm:ReceiveProtocol Protocol="LinkedInGroup" Enabled="True" />
+                <ixm:ReceiveProtocol Protocol="LinkedInPost" Enabled="True" />
+                <ixm:ReceiveProtocol Protocol="LinkedInComment" Enabled="True" />
+              </ixm:ReceiveProtocols>
+              <ixm:EmitProtocols>
+                <ixm:EmitProtocol Protocol="QueryPosts" Enabled="True" />
+                <ixm:EmitProtocol Protocol="LinkedInGroup" Enabled="True" />
+                <ixm:EmitProtocol Protocol="Name" Enabled="True" />
+                <ixm:EmitProtocol Protocol="Text" Enabled="True" />
+                <ixm:EmitProtocol Protocol="QueryComments" Enabled="True" />
+                <ixm:EmitProtocol Protocol="LinkedInPost" Enabled="True" />
+                <ixm:EmitProtocol Protocol="Title" Enabled="True" />
+                <ixm:EmitProtocol Protocol="LinkedInPostCreator" Enabled="True" />
+                <ixm:EmitProtocol Protocol="PersonName" Enabled="True" />
+                <ixm:EmitProtocol Protocol="Summary" Enabled="True" />
+                <ixm:EmitProtocol Protocol="ExceptionMessage" Enabled="True" />
+                <ixm:EmitProtocol Protocol="TextMessage" Enabled="True" />
+              </ixm:EmitProtocols>
               <ixm:UserConfigs>
-                <ixm:UserConfig Name="WindowX" Value="610" />
-                <ixm:UserConfig Name="WindowY" Value="274" />
+                <ixm:UserConfig Name="ProtocolHierarchy" Value="LinkedInGroup,QueryPosts;LinkedInPost,QueryComments;LinkedInComment," />
+                <ixm:UserConfig Name="WindowName" Value="" />
+                <ixm:UserConfig Name="WindowX" Value="0" />
+                <ixm:UserConfig Name="WindowY" Value="0" />
                 <ixm:UserConfig Name="WindowWidth" Value="0" />
                 <ixm:UserConfig Name="WindowHeight" Value="0" />
+                <ixm:UserConfig Name="LayoutId" Value="8534d012-e2ee-4c45-93a1-8d6f6455d398" />
+              </ixm:UserConfigs>
+            </ixm:ReceptorDef>
+            <ixm:ReceptorDef Name="Linked In" AssemblyName="LinkedInReceptor.dll" Enabled="True" Location="130, 131">
+              <ixm:ReceiveProtocols>
+                <ixm:ReceiveProtocol Protocol="QueryPosts" Enabled="True" />
+                <ixm:ReceiveProtocol Protocol="QueryComments" Enabled="True" />
+              </ixm:ReceiveProtocols>
+              <ixm:EmitProtocols>
+                <ixm:EmitProtocol Protocol="ExceptionMessage" Enabled="True" />
+                <ixm:EmitProtocol Protocol="TextMessage" Enabled="True" />
+                <ixm:EmitProtocol Protocol="Text" Enabled="True" />
+                <ixm:EmitProtocol Protocol="LinkedInGroup" Enabled="True" />
+                <ixm:EmitProtocol Protocol="Name" Enabled="True" />
+                <ixm:EmitProtocol Protocol="LinkedInPost" Enabled="True" />
+                <ixm:EmitProtocol Protocol="Title" Enabled="True" />
+                <ixm:EmitProtocol Protocol="LinkedInPostCreator" Enabled="True" />
+                <ixm:EmitProtocol Protocol="PersonName" Enabled="True" />
+                <ixm:EmitProtocol Protocol="Summary" Enabled="True" />
+                <ixm:EmitProtocol Protocol="LinkedInComment" Enabled="True" />
+                <ixm:EmitProtocol Protocol="LinkedInCommentCreator" Enabled="True" />
+              </ixm:EmitProtocols>
+            </ixm:ReceptorDef>
+            <ixm:ReceptorDef Name="Carrier List Viewer" AssemblyName="CarrierListViewerReceptor.dll" Enabled="True" Location="131, 320">
+              <ixm:ReceiveProtocols>
+                <ixm:ReceiveProtocol Protocol="ExceptionMessage" Enabled="True" />
+              </ixm:ReceiveProtocols>
+              <ixm:EmitProtocols>
+                <ixm:EmitProtocol Protocol="ExceptionMessage" Enabled="True" />
+                <ixm:EmitProtocol Protocol="TextMessage" Enabled="True" />
+                <ixm:EmitProtocol Protocol="Text" Enabled="True" />
+              </ixm:EmitProtocols>
+              <ixm:UserConfigs>
+                <ixm:UserConfig Name="ProtocolName" Value="ExceptionMessage" />
+                <ixm:UserConfig Name="ShowProtocolPicker" Value="False" />
+                <ixm:UserConfig Name="WindowName" Value="" />
+                <ixm:UserConfig Name="WindowX" Value="0" />
+                <ixm:UserConfig Name="WindowY" Value="0" />
+                <ixm:UserConfig Name="WindowWidth" Value="0" />
+                <ixm:UserConfig Name="WindowHeight" Value="0" />
+                <ixm:UserConfig Name="LayoutId" Value="d760a747-1482-4812-b331-dabaa5958b85" />
+              </ixm:UserConfigs>
+            </ixm:ReceptorDef>
+            <ixm:ReceptorDef Name="Carrier List Viewer" AssemblyName="CarrierListViewerReceptor.dll" Enabled="True" Location="284, 89">
+              <ixm:ReceiveProtocols>
+                <ixm:ReceiveProtocol Protocol="LinkedInPost" Enabled="True" />
+              </ixm:ReceiveProtocols>
+              <ixm:EmitProtocols>
+                <ixm:EmitProtocol Protocol="ExceptionMessage" Enabled="True" />
+                <ixm:EmitProtocol Protocol="TextMessage" Enabled="True" />
+                <ixm:EmitProtocol Protocol="Text" Enabled="True" />
+                <ixm:EmitProtocol Protocol="Title" Enabled="True" />
+                <ixm:EmitProtocol Protocol="LinkedInPostCreator" Enabled="True" />
+                <ixm:EmitProtocol Protocol="PersonName" Enabled="True" />
+                <ixm:EmitProtocol Protocol="Name" Enabled="True" />
+                <ixm:EmitProtocol Protocol="LinkedInGroup" Enabled="True" />
+                <ixm:EmitProtocol Protocol="Summary" Enabled="True" />
+              </ixm:EmitProtocols>
+              <ixm:UserConfigs>
+                <ixm:UserConfig Name="ProtocolName" Value="LinkedInPost" />
+                <ixm:UserConfig Name="ShowProtocolPicker" Value="False" />
+                <ixm:UserConfig Name="WindowName" Value="" />
+                <ixm:UserConfig Name="WindowX" Value="0" />
+                <ixm:UserConfig Name="WindowY" Value="0" />
+                <ixm:UserConfig Name="WindowWidth" Value="0" />
+                <ixm:UserConfig Name="WindowHeight" Value="0" />
+                <ixm:UserConfig Name="LayoutId" Value="21050125-5330-436b-8e47-60ed69c6441c" />
               </ixm:UserConfigs>
             </ixm:ReceptorDef>
           </ixm:Receptors>
-          <ixm:Permeabilities />
+          <ixm:Permeabilities>
+            <ixm:PermeabilityDef Protocol="ExceptionMessage" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="TextMessage" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="Text" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="LinkedInGroup" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="Name" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="LinkedInPost" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="Title" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="LinkedInPostCreator" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="PersonName" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="Summary" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="LinkedInComment" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="LinkedInCommentCreator" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="QueryPosts" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="QueryComments" Direction="Out" Permeable="False" />
+          </ixm:Permeabilities>
         </ixm:MembraneDef>
       </ixm:Membranes>
     </ixm:MembranesDef>
+    <ixm:CarriersDef>
+      <ixm:Carriers />
+    </ixm:CarriersDef>
   </ixm:Applet>
 </MycroXaml>

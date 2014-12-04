@@ -18,8 +18,8 @@ using LinkedIn.NET.Groups;
 
 namespace LinkedInReceptor
 {
-	public class LinkedInInterface : WindowedBaseReceptor
-    {
+	public class LinkedInInterface : BaseReceptor
+	{
 		public override string Name { get { return "Linked In"; } }
 		public override bool IsEdgeReceptor { get { return true; } }
 
@@ -29,19 +29,27 @@ namespace LinkedInReceptor
 		protected string accessToken;
 		protected bool haveAccessToken;
 		protected LinkedInGroupPost selectedPost;
-
-		protected TreeView tvGroups;
-		protected TextBox tbText;
-		protected Button btnComment;
+		protected Dictionary<string, LinkedInGroup> groups;
+		protected Dictionary<string, LinkedInGroup> postGroup;
+		protected Dictionary<string, LinkedInGroupPost> posts;
 
 		public LinkedInInterface(IReceptorSystem rsys)
-			: base("LinkedIn.xml", true, rsys)
+			: base(rsys)
 		{
+			groups = new Dictionary<string, LinkedInGroup>();
+			posts = new Dictionary<string, LinkedInGroupPost>();
+			postGroup = new Dictionary<string, LinkedInGroup>();
 			LoadConfiguration();
 			InitializeClient();
+			AddEmitProtocol("ExceptionMessage");
+			AddEmitProtocol("LinkedInGroup");
+			AddEmitProtocol("LinkedInPost");
+			AddEmitProtocol("LinkedInComment");
+			AddReceiveProtocol("QueryPosts", (Action<dynamic>)(signal => GetPosts(signal.LinkedInGroup.Id)));
+			AddReceiveProtocol("QueryComments", (Action<dynamic>)(signal => GetComments(signal.LinkedInPost.Id)));			 
 		}
 
-		public override void EndSystemInit()
+		public override async void EndSystemInit()
 		{
 			base.EndSystemInit();
 
@@ -51,107 +59,24 @@ namespace LinkedInReceptor
 			}
 			else
 			{
-				LoadGroups();
+				try
+				{
+					await Task.Run(() => LoadAllGroups());
+
+					foreach (LinkedInGroup group in groups.Values)
+					{
+						CreateCarrier("LinkedInGroup", signal =>
+							{
+								signal.Id = group.Id;
+								signal.Name.Text.Value = group.Name;
+							});
+					}
+				}
+				catch (Exception ex)
+				{
+					EmitException(ex);
+				}
 			}
-		}
-
-		protected override void InitializeUI()
-		{
-			base.InitializeUI();
-
-			tvGroups = (TreeView)mycroParser.ObjectCollection["tvGroups"];
-			tbText = (TextBox)mycroParser.ObjectCollection["tbText"];
-			btnComment = (Button)mycroParser.ObjectCollection["btnComment"];
-			tvGroups.NodeMouseClick += OnNodeMouseClick;
-			tvGroups.NodeMouseDoubleClick += OnNodeMouseDoubleClick;
-		}
-
-		// Kludgy!!!
-		protected TextBox tbCommentText;
-
-		protected void AddNewComment(object sender, EventArgs args)
-		{
-			Clifton.MycroParser.MycroParser mycroParser = new Clifton.MycroParser.MycroParser();
-			mycroParser.ObjectCollection["form"] = this;
-			Form form = mycroParser.Load<Form>("LinkedInComment.xml", this);
-			tbCommentText = (TextBox)mycroParser.ObjectCollection["tbCommentText"];
-			form.ShowDialog();
-		}
-
-		protected void MakeComment(object sender, EventArgs args)
-		{
-			AddComment(selectedPost, tbCommentText.Text);
-			((Form)((Control)sender).Parent).Close();
-		}
-
-		protected void OnNodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
-		{
-			const string CRLF="\r\n";
-			StringBuilder sb = new StringBuilder();
-
-			if (e.Node.Tag is LinkedInGroup)
-			{
-				LinkedInGroup group = (LinkedInGroup)e.Node.Tag;
-				sb.Append("Group: "+group.Name);
-				sb.Append(CRLF);
-				sb.Append(CRLF);
-				sb.Append("Category: " + group.Category);
-				sb.Append(CRLF);
-				sb.Append(CRLF);
-				sb.Append("Description: " + group.ShortDescription);
-				btnComment.Enabled = false;
-			}
-			else if (e.Node.Tag is LinkedInGroupPost)
-			{
-				LinkedInGroupPost post = (LinkedInGroupPost)e.Node.Tag;
-				sb.Append("Title: " + post.Title);
-				sb.Append(CRLF);
-				sb.Append(CRLF);
-				sb.Append("By: " + post.Creator.FirstName + " " + post.Creator.LastName);
-				sb.Append(CRLF);
-				sb.Append(CRLF);
-				sb.Append("On: "+post.CreationTime.ToString());
-				sb.Append(CRLF);
-				sb.Append(CRLF);
-				sb.Append("Summary: " + post.Summary);
-				btnComment.Enabled = true;
-				selectedPost = post;
-			}
-			else if (e.Node.Tag is LinkedInGroupComment)
-			{
-				LinkedInGroupComment comment = (LinkedInGroupComment)e.Node.Tag;
-				sb.Append("By: " + comment.Creator.FirstName + " " + comment.Creator.LastName);
-				sb.Append(CRLF);
-				sb.Append(CRLF);
-				sb.Append("On: " + comment.CreationTime.ToString());
-				sb.Append(CRLF);
-				sb.Append(CRLF);
-				sb.Append(comment.Text);
-				btnComment.Enabled = true;
-			}
-
-			tbText.Text = sb.ToString();
-		}
-
-		protected void OnNodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
-		{
-			if (e.Node.Tag is LinkedInGroup)
-			{
-				LinkedInGroup group = (LinkedInGroup)e.Node.Tag;
-				LoadPostsForGroup(e.Node, group);
-			}
-			else if (e.Node.Tag is LinkedInGroupPost)
-			{
-				LinkedInGroupPost post = (LinkedInGroupPost)e.Node.Tag;
-				LoadCommentsForPost(e.Node, post);
-			}
-		}
-
-		protected void OnBeforeExpand(object sender, TreeViewCancelEventArgs e)
-		{
-//			LinkedInGroup group = (LinkedInGroup)e.Node.Tag;
-//			LoadPostsForGroup(e.Node, group);
-			e.Cancel = false;
 		}
 
 		protected void LoadConfiguration()
@@ -191,115 +116,100 @@ namespace LinkedInReceptor
 		{
 		}
 
-		protected void LoadGroups()
+		/// <summary>
+		/// Load synchronously.  Call with a await Task.Run(()=>LoadAllGroups()); to run async. 
+		/// </summary>
+		protected void LoadAllGroups()
 		{
 			if (haveAccessToken)
 			{
-				tvGroups.Nodes.Clear();
-				tvGroups.Nodes.Add("Loading...");
 				LinkedInGetGroupOptions options = new LinkedInGetGroupOptions();
 				options.GroupOptions.SelectAll();
-				linkedInClient.GetMemberGroups(options, ShowMemberGroups);
+				LinkedInResponse<IEnumerable<LinkedInGroup>> groupResult = linkedInClient.GetMemberGroups(options);
+				groupResult.Result.ForEach(g => groups[g.Id] = g);
 			}
 		}
 
-		protected async void LoadPostsForGroup(TreeNode node, LinkedInGroup group)
+		protected async void GetPosts(string groupId)
 		{
-			LinkedInGetGroupPostsOptions options = new LinkedInGetGroupPostsOptions();
-			options.PostOptions.SelectAll();
-			options.GroupId = group.Id;
-			ShowLoading(node);
-
-			await Task.Run(() =>
-				{
-					group.LoadPosts(options);
-				});
-
-			// Async operation might complete after form has been closed by user!
-			if (form != null)
-			{
-				ShowGroupPosts(node, group);
-				node.ExpandAll();
-			}
-		}
-
-		protected async void LoadCommentsForPost(TreeNode node, LinkedInGroupPost post)
-		{
-			LinkedInGetGroupPostCommentsOptions options = new LinkedInGetGroupPostCommentsOptions();
-			options.CommentOptions.SelectAll();
-			options.PostId = post.Id;
-			ShowLoading(node);
-
-			await Task.Run(() =>
-				{
-					post.LoadComments(options);
-				});
-
-			// Async operation might complete after form has been closed by user!
-			if (form != null)
-			{
-				ShowGroupPostComments(node, post);
-				node.ExpandAll();
-			}
-		}
-
-		protected void ShowMemberGroups(LinkedInResponse<IEnumerable<LinkedInGroup>> result)
-		{
-			if (result.Result != null && result.Status == LinkedInResponseStatus.OK)
-			{
-				// Async operation might complete after form has been closed by user!
-				if (form != null)
-				{
-					form.BeginInvoke(() =>
-						{
-							tvGroups.Nodes.Clear();
-
-							foreach (LinkedInGroup group in result.Result)
-							{
-								TreeNode node = tvGroups.Nodes.Add(group.Name);
-								node.Tag = group;
-							}
-						});
-				}
-			}
-			else
-			{
-				ReRun(result.Status, result.Message);
-			}
-		}
-
-		protected void ShowGroupPosts(TreeNode node, LinkedInGroup group)
-		{
-			node.Nodes.Clear();
+			LinkedInGroup group = groups[groupId];
+			LinkedInGetGroupPostsOptions postOptions = new LinkedInGetGroupPostsOptions();
+			postOptions.PostOptions.SelectAll();
+			postOptions.GroupId = group.Id;
+			await Task.Run(()=>group.LoadPosts(postOptions));
 
 			foreach (LinkedInGroupPost post in group.Posts)
 			{
-				TreeNode childNode = node.Nodes.Add(post.Title);
-				childNode.Tag = post;
+				if (!posts.ContainsKey(post.Id))
+				{
+					posts[post.Id] = post;
+					postGroup[post.Id] = group;
+				}
+
+				CreateCarrier("LinkedInPost", signal=>
+					{
+						signal.LinkedInGroup.Name.Text.Value = group.Name;
+						signal.LinkedInGroup.Id = group.Id;
+						signal.Id = post.Id;
+						signal.CreationTime = post.CreationTime;
+						signal.Summary.Text.Value = post.Summary;
+						signal.Title.Text.Value = post.Title;
+						signal.LinkedInPostCreator.PersonName.Name.Text.Value = post.Creator.FirstName +" " + post.Creator.LastName;
+					});
 			}
 		}
 
-		protected void ShowGroupPostComments(TreeNode node, LinkedInGroupPost post)
+		protected async void GetComments(string postId)
 		{
-			node.Nodes.Clear();
+			LinkedInGroupPost post = posts[postId];
+			LinkedInGroup group = postGroup[post.Id];
+			LinkedInGetGroupPostCommentsOptions commentOptions = new LinkedInGetGroupPostCommentsOptions();
+			commentOptions.CommentOptions.SelectAll();
+			commentOptions.PostId = post.Id;
+			await Task.Run(() => post.LoadComments(commentOptions));
 
 			foreach (LinkedInGroupComment comment in post.Comments)
 			{
-				TreeNode childNode = node.Nodes.Add(comment.Text.LimitLength(64));
-				childNode.Tag = comment;
+				CreateCarrier("LinkedInComment", signal =>
+					{
+						signal.LinkedInGroup.Name.Text.Value = group.Name;
+						signal.LinkedInGroup.Id = group.Id;
+						signal.LinkedInPost.Title.Text.Value = post.Title;
+						signal.LinkedInPost.Id = post.Id;
+						signal.CreationTime = comment.CreationTime;
+						signal.Comment = comment.Text;
+						signal.LinkedInCommentCreator.PersonName.Name.Text.Value = comment.Creator.FirstName + " " + comment.Creator.LastName;
+					});
 			}
 		}
+/*
+				foreach (LinkedInGroup group in groups.Result)
+				{
+					LinkedInGetGroupPostsOptions postOptions = new LinkedInGetGroupPostsOptions();
+					postOptions.PostOptions.SelectAll();
+					postOptions.GroupId = group.Id;
+					group.LoadPosts(postOptions);
+
+					foreach (LinkedInGroupPost post in group.Posts)
+					{
+						LinkedInGetGroupPostCommentsOptions commentOptions = new LinkedInGetGroupPostCommentsOptions();
+						commentOptions.CommentOptions.SelectAll();
+						commentOptions.PostId = post.Id;
+						post.LoadComments(commentOptions);
+
+						foreach (LinkedInGroupComment comment in post.Comments)
+						{
+							GroupPostComment c = new GroupPostComment() { Group = group, Post = post, Comment = comment };
+							comments.Add(c);
+						}
+					}
+				}
+			}
+ */ 
 
 		protected void AddComment(LinkedInGroupPost post, string comment)
 		{
 			post.Comment(comment);
-		}
-
-		protected void ShowLoading(TreeNode node)
-		{
-			node.Nodes.Clear();
-			node.Nodes.Add("Loading...");
-			node.ExpandAll();
 		}
 
 		protected void ReRun(LinkedInResponseStatus status, string message)
@@ -309,7 +219,7 @@ namespace LinkedInReceptor
 				case LinkedInResponseStatus.ExpiredToken:
 				case LinkedInResponseStatus.InvalidAccessToken:
 				case LinkedInResponseStatus.UnauthorizedAction:
-					form.BeginInvoke(() => Authenticate());
+					Authenticate();
 					break;
 
 				default:
@@ -317,5 +227,5 @@ namespace LinkedInReceptor
 					break;
 			}
 		}
-    }
+	}
 }

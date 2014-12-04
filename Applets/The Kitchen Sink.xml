@@ -1,10 +1,10 @@
 <MycroXaml xmlns:ixm="TypeSystemExplorer.Models, TypeSystemExplorer" xmlns:def="def" xmlns:ref="ref" Name="Form">
-  <ixm:Applet SurfaceOffset="-25,440">
+  <ixm:Applet SurfaceOffset="38,273">
     <ixm:MembranesDef>
       <ixm:Membranes>
         <ixm:MembraneDef Name="Skin">
           <ixm:Receptors>
-            <ixm:ReceptorDef Name="Text To Speech" AssemblyName="TextToSpeechReceptor.dll" Enabled="True" Location="296, 178">
+            <ixm:ReceptorDef Name="Text To Speech" AssemblyName="TextToSpeechReceptor.dll" Enabled="False" Location="296, 177">
               <ixm:ReceiveProtocols>
                 <ixm:ReceiveProtocol Protocol="Text" Enabled="True" />
                 <ixm:ReceiveProtocol Protocol="Announce" Enabled="True" />
@@ -320,7 +320,7 @@
                     <ixm:UserConfig Name="Protocols" Value="UrlVisited;RSSFeedItemDisplayed;RSSFeedBookmark" />
                   </ixm:UserConfigs>
                 </ixm:ReceptorDef>
-                <ixm:ReceptorDef Name="Signal Creator" AssemblyName="SignalCreatorReceptor.dll" Enabled="True" Location="544, 490">
+                <ixm:ReceptorDef Name="Signal Creator" AssemblyName="SignalCreatorReceptor.dll" Enabled="True" Location="544, 489">
                   <ixm:ReceiveProtocols>
                     <ixm:ReceiveProtocol Protocol="Resend" Enabled="True" />
                   </ixm:ReceiveProtocols>
@@ -690,7 +690,7 @@
                 <ixm:ReceptorDef Name="Radar" AssemblyName="WeatherRadarScraperReceptor.dll" Enabled="True" Location="219, -243">
                   <ixm:ReceiveProtocols>
                     <ixm:ReceiveProtocol Protocol="WebPageHtml" Enabled="True" />
-                    <ixm:ReceiveProtocol Protocol="UpdateRadar" Enabled="True" />
+                    <ixm:ReceiveProtocol Protocol="Resend" Enabled="True" />
                   </ixm:ReceiveProtocols>
                   <ixm:EmitProtocols>
                     <ixm:EmitProtocol Protocol="Image" Enabled="True" />
@@ -712,14 +712,14 @@
                 </ixm:ReceptorDef>
                 <ixm:ReceptorDef Name="Interval Timer" AssemblyName="TimerReceptor.dll" Enabled="True" Location="216, -347">
                   <ixm:EmitProtocols>
-                    <ixm:EmitProtocol Protocol="UpdateRadar" Enabled="True" />
+                    <ixm:EmitProtocol Protocol="Resend" Enabled="True" />
                   </ixm:EmitProtocols>
                   <ixm:UserConfigs>
                     <ixm:UserConfig Name="DaySpan" Value="" />
                     <ixm:UserConfig Name="HourSpan" Value="" />
                     <ixm:UserConfig Name="MinuteSpan" Value="5" />
                     <ixm:UserConfig Name="SecondSpan" Value="" />
-                    <ixm:UserConfig Name="ProtocolName" Value="UpdateRadar" />
+                    <ixm:UserConfig Name="ProtocolName" Value="Resend" />
                   </ixm:UserConfigs>
                 </ixm:ReceptorDef>
               </ixm:Receptors>

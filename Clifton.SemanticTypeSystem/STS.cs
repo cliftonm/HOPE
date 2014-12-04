@@ -352,7 +352,7 @@ namespace Clifton.SemanticTypeSystem
 					NativeType = nativeType,
 					Value = val,
 					UniqueField = nativeType.UniqueField || isUnique,
-					Ordinality = ordinality
+					Ordinality = nativeType.Ordinality + ordinality
 				});
 			}
 
@@ -367,7 +367,7 @@ namespace Clifton.SemanticTypeSystem
 					stack = stack + "." + childElem.Name;			// push
 					ISemanticTypeStruct stChild = GetSemanticTypeStruct(childElem.Name);
 					string newAlias = (!String.IsNullOrEmpty(alias) ? alias : stChild.Alias);
-					int newOrdinality = ((ordinality != 0) ? ordinality : stChild.Ordinality);
+					int newOrdinality = ((ordinality != 0) ? ordinality : childElem.Ordinality);
 					RecurseGetFullyQualifiedNativeTypeValues(childSignal, stChild, stack, newAlias, isUnique || stChild.Unique, newOrdinality, recurse, fqntList);
 					stack = stack.LeftOfRightmostOf('.');			// pop
 				}
