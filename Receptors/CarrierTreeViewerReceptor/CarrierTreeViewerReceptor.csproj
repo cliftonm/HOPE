@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{D3995898-6EB0-4521-A08B-6CE53AFFFD80}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>CarrierTreeViewerReceptor</RootNamespace>
+    <AssemblyName>CarrierTreeViewerReceptor</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CarrierTreeViewer.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Clifton.Receptor.Interfaces\Clifton.Receptor.Interfaces.csproj">
+      <Project>{6873fe54-25ca-4c2f-bf91-fc10993f8f50}</Project>
+      <Name>Clifton.Receptor.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Clifton.SemanticTypeSystem.Interfaces\Clifton.SemanticTypeSystem.Interfaces.csproj">
+      <Project>{1fb6a5d3-6cda-4262-a40c-d4724ba5e2e1}</Project>
+      <Name>Clifton.SemanticTypeSystem.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Hope.Interfaces\Hope.Interfaces.csproj">
+      <Project>{72fd9cf2-5352-4926-90f3-a955f8e18c42}</Project>
+      <Name>Hope.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\lib\lib.csproj">
+      <Project>{d1627a50-1c2b-4e28-ac6c-ab437b0138b4}</Project>
+      <Name>lib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\UiHelpers\UiHelpers.csproj">
+      <Project>{2184b37e-3cf1-4e3b-b42b-71a3eb0497a8}</Project>
+      <Name>UiHelpers</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy CarrierTreeViewerReceptor.dll ..\..\..\..\TypeSystemExplorer\bin\Debug</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
