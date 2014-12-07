@@ -1,0 +1,67 @@
+<MycroXaml xmlns:ixm="TypeSystemExplorer.Models, TypeSystemExplorer" xmlns:def="def" xmlns:ref="ref" Name="Form">
+  <ixm:Applet SurfaceOffset="0,0">
+    <ixm:MembranesDef>
+      <ixm:Membranes>
+        <ixm:MembraneDef Name="Skin">
+          <ixm:Receptors>
+            <ixm:ReceptorDef Name="APOD" AssemblyName="APODScraperReceptor.dll" Enabled="True" Location="351, 238">
+              <ixm:ReceiveProtocols>
+                <ixm:ReceiveProtocol Protocol="WebPageHtml" Enabled="True" />
+              </ixm:ReceiveProtocols>
+              <ixm:EmitProtocols>
+                <ixm:EmitProtocol Protocol="Image" Enabled="True" />
+                <ixm:EmitProtocol Protocol="Url" Enabled="True" />
+                <ixm:EmitProtocol Protocol="ExceptionMessage" Enabled="True" />
+                <ixm:EmitProtocol Protocol="TextMessage" Enabled="True" />
+                <ixm:EmitProtocol Protocol="Text" Enabled="True" />
+              </ixm:EmitProtocols>
+            </ixm:ReceptorDef>
+            <ixm:ReceptorDef Name="Image Viewer" AssemblyName="ImageViewerReceptor.dll" Enabled="True" Location="191, 238">
+              <ixm:ReceiveProtocols>
+                <ixm:ReceiveProtocol Protocol="Image" Enabled="True" />
+              </ixm:ReceiveProtocols>
+              <ixm:UserConfigs>
+                <ixm:UserConfig Name="WindowX" Value="0" />
+                <ixm:UserConfig Name="WindowY" Value="0" />
+                <ixm:UserConfig Name="WindowWidth" Value="0" />
+                <ixm:UserConfig Name="WindowHeight" Value="0" />
+                <ixm:UserConfig Name="LayoutId" Value="bfb39746-0ad4-44c9-8a07-8fe2754a9150" />
+              </ixm:UserConfigs>
+            </ixm:ReceptorDef>
+            <ixm:ReceptorDef Name="Web Page Viewer" AssemblyName="WebBrowserReceptor.dll" Enabled="True" Location="260, 100">
+              <ixm:ReceiveProtocols>
+                <ixm:ReceiveProtocol Protocol="Url" Enabled="True" />
+              </ixm:ReceiveProtocols>
+              <ixm:UserConfigs>
+                <ixm:UserConfig Name="WindowX" Value="0" />
+                <ixm:UserConfig Name="WindowY" Value="0" />
+                <ixm:UserConfig Name="WindowWidth" Value="0" />
+                <ixm:UserConfig Name="WindowHeight" Value="0" />
+                <ixm:UserConfig Name="LayoutId" Value="cf02a86d-1b29-4f94-a14c-60022bb8c751" />
+              </ixm:UserConfigs>
+            </ixm:ReceptorDef>
+            <ixm:ReceptorDef Name="Webpage Scraper" AssemblyName="WebPageScraperReceptor.dll" Enabled="True" Location="100, 100">
+              <ixm:ReceiveProtocols>
+                <ixm:ReceiveProtocol Protocol="Url" Enabled="True" />
+              </ixm:ReceiveProtocols>
+              <ixm:EmitProtocols>
+                <ixm:EmitProtocol Protocol="WebPageHtml" Enabled="True" />
+                <ixm:EmitProtocol Protocol="Url" Enabled="True" />
+                <ixm:EmitProtocol Protocol="Html" Enabled="True" />
+              </ixm:EmitProtocols>
+            </ixm:ReceptorDef>
+          </ixm:Receptors>
+          <ixm:Permeabilities>
+            <ixm:PermeabilityDef Protocol="Image" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="Url" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="ExceptionMessage" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="TextMessage" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="Text" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="WebPageHtml" Direction="Out" Permeable="False" />
+            <ixm:PermeabilityDef Protocol="Html" Direction="Out" Permeable="False" />
+          </ixm:Permeabilities>
+        </ixm:MembraneDef>
+      </ixm:Membranes>
+    </ixm:MembranesDef>
+  </ixm:Applet>
+</MycroXaml>
