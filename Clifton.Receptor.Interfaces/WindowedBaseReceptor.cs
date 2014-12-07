@@ -162,13 +162,17 @@ namespace Clifton.Receptor.Interfaces
 
 		protected virtual void UpdateCaption()
 		{
-			if (form != null)
+			if (!String.IsNullOrEmpty(WindowName) && (form != null))
 			{
-				if (!String.IsNullOrEmpty(WindowName) && (form != null))
-				{
-					form.Text = WindowName;
-				}
+				form.Text = WindowName;
 			}
+
+#if DockingForm
+			if (!String.IsNullOrEmpty(WindowName))
+			{
+				rsys.Membrane.ApplicationController.UpdateAppletCaption(WindowName, LayoutId);
+			}
+#endif
 		}
 
 		protected virtual void ReinitializeUI()

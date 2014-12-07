@@ -57,6 +57,7 @@ namespace TypeSystemExplorer.Models
 		public string Protocol { get; set; }
 		public PermeabilityDirection Direction { get; set; }
 		public bool Permeable { get; set; }
+		public bool RootOnly { get; set; }
 	}
 
 	public class MembraneDef

@@ -1794,6 +1794,7 @@ namespace TypeSystemExplorer.Views
 				dt.Columns.Add(new DataColumn("Protocol", typeof(string)));	
 				dt.Columns.Add(new DataColumn("Direction", typeof(string)));
 				dt.Columns.Add(new DataColumn("Permeable", typeof(bool)));
+				dt.Columns.Add(new DataColumn("RootOnly", typeof(bool)));
 				membrane.UpdatePermeability();			// Get the current permeability, based on active child "outs" and active parent "ins".
 				membrane.ProtocolPermeability.ForEach(kvp =>
 					{
@@ -1801,6 +1802,7 @@ namespace TypeSystemExplorer.Views
 						row[0] = kvp.Key.Protocol;
 						row[1] = kvp.Key.Direction;
 						row[2] = kvp.Value.Permeable;
+						row[3] = kvp.Value.RootOnly;
 						dt.Rows.Add(row);
 					});
 
@@ -1832,7 +1834,9 @@ namespace TypeSystemExplorer.Views
 					PermeabilityDirection pd = ((string)row[1]).ToEnum<PermeabilityDirection>();
 					PermeabilityKey pk = new PermeabilityKey() { Protocol = protocol, Direction = pd };
 					bool permeable = (bool)row[2];
+					bool rootOnly = (bool)row[3];
 					membraneBeingConfigured.ProtocolPermeability[pk].Permeable = permeable;
+					membraneBeingConfigured.ProtocolPermeability[pk].RootOnly = rootOnly;
 				});
 
 			CreateReceptorConnections();
@@ -1909,7 +1913,7 @@ namespace TypeSystemExplorer.Views
 			Program.Skin.UpdateMasterConnectionList(Program.MasterReceptorConnectionList);
 		}
 
-		protected void FindConnectionsWith(IReceptor r, IMembrane m1, string prot1, Point rPoint, IMembrane source = null)
+		protected void FindConnectionsWith(IReceptor r, IMembrane m1, string prot1, Point rPoint, IMembrane source = null, bool rootOnly = false)
 		{
 			// Iterate through receptors with a second search.
 			receptorLocation.ForEach(kvp2 =>
@@ -1935,13 +1939,13 @@ namespace TypeSystemExplorer.Views
 							// TODO: THIS SHOULD NOT BE COMPUTED IN THE VISUALIZER!!!!
 							if (!Program.MasterReceptorConnectionList.ContainsKey(r))
 							{
-								Program.MasterReceptorConnectionList[r] = new List<IReceptor>();
+								Program.MasterReceptorConnectionList[r] = new List<IReceptorConnection>();
 							}
 
 							// TODO: Yuck - there must be a better way of dealing with duplicates.
 							// if (!Program.MasterReceptorConnectionList[r].Contains(kvp2.Key))
 							{
-								Program.MasterReceptorConnectionList[r].Add(kvp2.Key);
+								Program.MasterReceptorConnectionList[r].Add(new ReceptorConnection(kvp2.Key, rootOnly));
 							}
 						}
 					}
@@ -1957,10 +1961,13 @@ namespace TypeSystemExplorer.Views
 			{
 				// Yes it does, check this membrane's receptors 
 				// It must be an OUT direction, and it must be enabled.
-				if (m1.ProtocolPermeability[pk].Permeable)
+				PermeabilityConfiguration pconfig2 = m1.ProtocolPermeability[pk];
+
+				if (pconfig2.Permeable)
 				{
 					// Check outer mebranes, passing ourselves as the "inner source" (m1)
-					FindConnectionsWith(r, m1.ParentMembrane, prot1, rPoint, m1);
+					// The "root only" flag, once set, applies to all membranes as we move out.
+					FindConnectionsWith(r, m1.ParentMembrane, prot1, rPoint, m1, rootOnly || pconfig2.RootOnly);
 				}
 			}
 
@@ -1968,16 +1975,18 @@ namespace TypeSystemExplorer.Views
 			m1.Membranes.Where(m => m != source).ForEach(m =>
 				{
 					PermeabilityKey pk2 = new PermeabilityKey() { Protocol = prot1, Direction = PermeabilityDirection.In };
+					PermeabilityConfiguration pconfig2;
 
 					// Does the inner membrane allow IN permeability?
-					if (m.ProtocolPermeability.ContainsKey(pk2))
+					if (m.ProtocolPermeability.TryGetValue(pk2, out pconfig2))
 					{
 						// Yes it does, check this membrane's receptors 
 						// It must be an OUT direction, and it must be enabled.
-						if (m.ProtocolPermeability[pk2].Permeable)
+						if (pconfig2.Permeable)
 						{
 							// Check the inner membrane.
-							FindConnectionsWith(r, m, prot1, rPoint, m1);
+							// The "root only" flag, once set, applies to all membranes as we move in.
+							FindConnectionsWith(r, m, prot1, rPoint, m1, rootOnly || pconfig2.RootOnly);
 						}
 					}
 				});

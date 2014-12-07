@@ -74,7 +74,7 @@ namespace TypeSystemExplorer
 		public static DropReceptor DropReceptor;
 
 		// TODO: Eventually put this somewhere.
-		public static Dictionary<IReceptor, List<IReceptor>> MasterReceptorConnectionList = new Dictionary<IReceptor, List<IReceptor>>();
+		public static Dictionary<IReceptor, List<IReceptorConnection>> MasterReceptorConnectionList = new Dictionary<IReceptor, List<IReceptorConnection>>();
 
 		[STAThread]
 		static void Main()

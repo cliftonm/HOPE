@@ -605,6 +605,11 @@ namespace TypeSystemExplorer.Controllers
 			}
 		}
 
+		public void UpdateAppletCaption(string caption, Guid layoutId)
+		{
+			FindGenericDocument(layoutId.ToString()).Text = caption;
+		}
+
 		protected void NewDocument(string filename)
 		{
 			GenericDocument doc = new GenericDocument(filename);
@@ -995,6 +1000,7 @@ namespace TypeSystemExplorer.Controllers
 					AddAttribute(permeable, "Protocol", kvp.Key.Protocol);
 					AddAttribute(permeable, "Direction", kvp.Key.Direction.ToString());
 					AddAttribute(permeable, "Permeable", kvp.Value.Permeable.ToString());
+					AddAttribute(permeable, "RootOnly", kvp.Value.RootOnly.ToString());
 					permeabilities.AppendChild(permeable);
 				});
 
@@ -1252,7 +1258,7 @@ namespace TypeSystemExplorer.Controllers
 			// this way the permeability has been initialized via the NewReceptor event hook.
 			membraneDef.Permeabilities.ForEach(p =>
 				{
-					membrane.ProtocolPermeability[new PermeabilityKey() { Protocol = p.Protocol, Direction = p.Direction }] = new PermeabilityConfiguration() { Permeable = p.Permeable };
+					membrane.ProtocolPermeability[new PermeabilityKey() { Protocol = p.Protocol, Direction = p.Direction }] = new PermeabilityConfiguration() { Permeable = p.Permeable, RootOnly = p.RootOnly };
 				});
 
 			// Next, load the inner membrane and receptors.

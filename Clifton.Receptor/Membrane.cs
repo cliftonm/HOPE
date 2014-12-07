@@ -91,7 +91,7 @@ namespace Clifton.Receptor
 		}
 
 		// TODO: The receptors container should acquire this list, rather than it being set.
-		public void UpdateMasterConnectionList(Dictionary<IReceptor, List<IReceptor>> masterList)
+		public void UpdateMasterConnectionList(Dictionary<IReceptor, List<IReceptorConnection>> masterList)
 		{
 			receptorSystem.MasterReceptorConnectionList = masterList;
 		}

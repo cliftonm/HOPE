@@ -36,6 +36,7 @@ namespace Clifton.Receptor.Interfaces
 	{
 		void AddAppletUI(object doc, Guid layoutId);
 		void RemoveAppletUI(Guid layoutId);
+		void UpdateAppletCaption(string title, Guid layoutId);
 	}
 
 	/// <summary>
@@ -130,6 +131,12 @@ namespace Clifton.Receptor.Interfaces
 		bool Enabled { get; set; }
 	}
 
+	public interface IReceptorConnection
+	{
+		IReceptor Receptor { get; set; }
+		bool RootOnly { get; set; }
+	}
+
 	/// <summary>
 	/// A membrane has permeability to protocols.
 	/// </summary>
@@ -145,6 +152,11 @@ namespace Clifton.Receptor.Interfaces
 	public class PermeabilityConfiguration
 	{
 		public bool Permeable { get; set; }
+
+		/// <summary>
+		/// If true, only allows protocols whose root is of the "key" type (see PermeabilityKey below).
+		/// </summary>
+		public bool RootOnly { get; set; }
 	}
 
 	public struct PermeabilityKey
@@ -184,6 +196,6 @@ namespace Clifton.Receptor.Interfaces
 		List<string> GetEmittedProtocols();
 		List<string> GetListeningProtocols();
 
-		void UpdateMasterConnectionList(Dictionary<IReceptor, List<IReceptor>> masterList);
+		void UpdateMasterConnectionList(Dictionary<IReceptor, List<IReceptorConnection>> masterList);
 	}
 }

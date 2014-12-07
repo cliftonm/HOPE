@@ -62,7 +62,7 @@ namespace Clifton.Receptor
 		/// allowing the "system" to drop carriers into a particular membrane and have that
 		/// carrier be processed by a receive-only receptor in the membrane.
 		/// </summary>
-		protected Dictionary<string, List<IReceptor>> protocolReceptorMap;
+		protected Dictionary<string, List<IReceptorConnection>> protocolReceptorMap;
 
 		/// <summary>
 		/// A map of registered receptors.  These are receptors that are instantiated
@@ -97,7 +97,7 @@ namespace Clifton.Receptor
 		/// The master list of receptor connections, which oddly at this point is being computed
 		/// by the visualizer.
 		/// </summary>
-		public Dictionary<IReceptor, List<IReceptor>> MasterReceptorConnectionList { get; set; }
+		public Dictionary<IReceptor, List<IReceptorConnection>> MasterReceptorConnectionList { get; set; }
 
 		public IReceptor this[string name] { get { return receptors.Single(r => r.Name == name); } }
 
@@ -266,7 +266,7 @@ namespace Clifton.Receptor
 		{
 			if (from.GetEnabledEmittedProtocols().Any(p => p.Protocol == protocol.DeclTypeName))
 			{
-				if (TargetReceptorExistsFor(ReceptorFromInstance(from), protocol))
+				if (TargetReceptorExistsFor(ReceptorFromInstance(from), protocol, protocol.DeclTypeName == protocolPath))
 				{
 					// This call will recurse for us.
 					// CreateCarrier(IReceptorInstance from, ISemanticTypeStruct protocol, string protocolPath, dynamic signal, bool stopRecursion, bool isSystemMessage = false, ICarrier parentCarrier = null)
@@ -305,7 +305,7 @@ namespace Clifton.Receptor
 			// TODO: If our collections were IReceptor, then we wouldn't need the "as".
 			receptors.Remove(receptor as Receptor);
 			registeredReceptorMap.Remove(receptor);
-			protocolReceptorMap.ForEach(kvp => kvp.Value.Remove(receptor as Receptor));
+			protocolReceptorMap.ForEach(kvp => kvp.Value.Remove(kvp.Value.Single(rc => rc.Receptor == receptor)));
 			ReceptorRemoved.Fire(this, new ReceptorEventArgs(receptor));
 
 			// TODO: Refactor out of this code.
@@ -366,7 +366,7 @@ namespace Clifton.Receptor
 		{
 			receptors.Remove(receptor as Receptor);
 			registeredReceptorMap.Remove(receptor);
-			protocolReceptorMap.ForEach(kvp => kvp.Value.Remove(receptor as Receptor));
+			protocolReceptorMap.ForEach(kvp => kvp.Value.Remove(kvp.Value.Single(rc => rc.Receptor == receptor)));
 		}
 
 		/// <summary>
@@ -390,11 +390,11 @@ namespace Clifton.Receptor
 		protected void Initialize()
 		{
 			receptors = new List<Receptor>();
-			protocolReceptorMap = new Dictionary<string, List<IReceptor>>();
+			protocolReceptorMap = new Dictionary<string, List<IReceptorConnection>>();
 			queuedCarriers = new List<QueuedCarrierAction>();
 			globalReceptors = new List<IReceptor>();
 			registeredReceptorMap = new Dictionary<IReceptor, bool>();
-			MasterReceptorConnectionList = new Dictionary<IReceptor, List<IReceptor>>();
+			MasterReceptorConnectionList = new Dictionary<IReceptor, List<IReceptorConnection>>();
 		}
 
 		/// <summary>
@@ -410,24 +410,24 @@ namespace Clifton.Receptor
 					if (rq.Protocol == "*")
 					{
 						// This is a global receiver.  Attach it to all current carrier receptors, but don't create an instance in the CarrierReceptorMap.
-						protocolReceptorMap.ForEach(kvp => kvp.Value.Add(r));
+						protocolReceptorMap.ForEach(kvp => kvp.Value.Add(new ReceptorConnection(r)));
 						globalReceptors.Add(r);
 					}
 					else
 					{
 						// Get the list of receiving receptors for the protocol, or, if it doesn't exist, create it.
-						List<IReceptor> receivingReceptors;
+						List<IReceptorConnection> receivingReceptors;
 
 						if (!protocolReceptorMap.TryGetValue(rq.Protocol, out receivingReceptors))
 						{
-							receivingReceptors = new List<IReceptor>();
+							receivingReceptors = new List<IReceptorConnection>();
 							protocolReceptorMap[rq.Protocol] = receivingReceptors;
 							// Append all current global receptors to this protocol - receptor map.
-							globalReceptors.ForEach(gr => receivingReceptors.Add(gr));
+							globalReceptors.ForEach(gr => receivingReceptors.Add(new ReceptorConnection(gr)));
 						}
 
 						// Associate the receptor with the protocol it receives.
-						protocolReceptorMap[rq.Protocol].Add(r);
+						protocolReceptorMap[rq.Protocol].Add(new ReceptorConnection(r));
 					}
 				});
 		}
@@ -483,14 +483,14 @@ namespace Clifton.Receptor
 		/// <summary>
 		/// Returns true if there is an enabled target from the specified receptor with the specified protocol.
 		/// </summary>
-		protected bool TargetReceptorExistsFor(IReceptor from, ISemanticTypeStruct protocol)
+		protected bool TargetReceptorExistsFor(IReceptor from, ISemanticTypeStruct protocol, bool isRoot)
 		{
 			bool ret = false;
 
 			// Some bullet proofing that was revealed in unit testing.
 			if (from != null)
 			{
-				List<IReceptor> targets = new List<IReceptor>();
+				List<IReceptorConnection> targets = new List<IReceptorConnection>();
 				if (MasterReceptorConnectionList.TryGetValue(from, out targets))
 				{
 					// This annoying piece of code assumes that a receptor will have only one connection between "from" to "to".
@@ -498,14 +498,20 @@ namespace Clifton.Receptor
 					// In other words, the returned list consists of [n] identical instances, where [n] is the number of different protocols from "from" to the target receptor.
 					// To fix this problem, we get only the distinct instances.
 					targets = targets.Distinct().ToList();
-					// We're only interested in enabled receptors.
-					ret = targets.Any(r => r != from && r.Instance.Enabled && r.Instance.GetEnabledReceiveProtocols().Select(rp => rp.Protocol).Contains(protocol.DeclTypeName));
+					// We're only interested in enabled receptors, and we ignore ourselves.
+					ret = targets.Any(r => r.Receptor != from && 
+						r.Receptor.Instance.Enabled && 
+						(!r.RootOnly || isRoot) &&			// root protocol or we don't care if it's not the root.
+						r.Receptor.Instance.GetEnabledReceiveProtocols().Select(rp => rp.Protocol).Contains(protocol.DeclTypeName));
 				}
 
 				if (!ret)
 				{
-					// check protocol map for receivers that are not the issuing receptor:
-					ret = protocolReceptorMap.Any(kvp => (kvp.Key == protocol.DeclTypeName) && kvp.Value.Any(r => (r != from) && (r.Instance.Enabled))); // .ContainsKey(protocol.DeclTypeName);
+					// check protocol map for receivers that are not the issuing receptor, ignoring ourselves.
+					ret = protocolReceptorMap.Any(kvp => (kvp.Key == protocol.DeclTypeName) && 
+						kvp.Value.Any(r => (r.Receptor != from) &&
+							(!r.RootOnly || isRoot) &&			// root protocol or we don't care if it's not the root.
+							(r.Receptor.Instance.Enabled))); // .ContainsKey(protocol.DeclTypeName);
 				}
 			}
 
@@ -516,16 +522,16 @@ namespace Clifton.Receptor
 		/// <summary>
 		/// Returns the target receptors that will receive the carrier protocol, qualified by the receptor's optional condition on the signal.
 		/// </summary>
-		protected List<IReceptor> GetTargetReceptorsFor(IReceptor from, ICarrier carrier)
+		protected List<IReceptorConnection> GetTargetReceptorsFor(IReceptor from, ICarrier carrier)
 		{
 			// Lastly, filter the list by qualified receptors that are not the source of the carrier.
-			List<IReceptor> newTargets = new List<IReceptor>();
+			List<IReceptorConnection> newTargets = new List<IReceptorConnection>();
 
 			// From can be null if we're changing the layout during the time when carriers are being processed,
 			// specifically, when a receptor is moved into or out of a membrane or the receptor is taken off the surface.
 			if (from != null)
 			{
-				List<IReceptor> targets;
+				List<IReceptorConnection> targets;
 				ISemanticTypeStruct protocol = carrier.Protocol;
 
 				// This annoying piece of code assumes that a receptor will have only one connection between "from" to "to".
@@ -534,14 +540,14 @@ namespace Clifton.Receptor
 				if (!MasterReceptorConnectionList.TryGetValue(from, out targets))
 				{
 					// When the try fails, it sets targets to null.
-					targets = new List<IReceptor>();
+					targets = new List<IReceptorConnection>();
 				}
 
 				// To fix the aformentioned problem, we get only the distinct instances.
 				targets = targets.Distinct().ToList();
 
-				// Only enabled receptors and receptors that are not the source of the carrier.
-				List<IReceptor> filteredTargets = targets.Where(r => r != from && r.Instance.Enabled && r.Instance.GetEnabledReceiveProtocols().Select(rq => rq.Protocol).Contains(protocol.DeclTypeName)).ToList();
+				// Only enabled receptors and receptors that are not the source of the carrier and our not ourselves.
+				List<IReceptorConnection> filteredTargets = targets.Where(r => r.Receptor != from && r.Receptor.Instance.Enabled && r.Receptor.Instance.GetEnabledReceiveProtocols().Select(rq => rq.Protocol).Contains(protocol.DeclTypeName)).ToList();
 
 				// Will have a count of 0 if the receptor is the system receptor, ie, carrier animations or other protocols.
 				// TODO: This seems kludgy, is there a better way of working with this?
@@ -553,16 +559,16 @@ namespace Clifton.Receptor
 					// When the try fails, it sets targets to null.
 					if (protocolReceptorMap.TryGetValue(protocol.DeclTypeName, out targets))
 					{
-						filteredTargets = targets.Where(r => r.Instance.Enabled && (r != from) && true).ToList();
+						filteredTargets = targets.Where(r => r.Receptor.Instance.Enabled && (r.Receptor != from) && true).ToList();
 						// Remove disabled receive protocols.
-						filteredTargets = filteredTargets.Where(r => r.Instance.GetReceiveProtocols().Exists(p => p.Protocol == protocol.DeclTypeName && p.Enabled)).ToList();
+						filteredTargets = filteredTargets.Where(r => r.Receptor.Instance.GetReceiveProtocols().Exists(p => p.Protocol == protocol.DeclTypeName && p.Enabled)).ToList();
 					}
 				}
 
-				filteredTargets.Where(r => r != from && r.Instance.Enabled).ForEach(t =>
+				filteredTargets.Where(r => r.Receptor != from && r.Receptor.Instance.Enabled).ForEach(t =>
 					{
 						// Get the list of receive actions and filters for the specific protocol.
-						var receiveList = t.Instance.GetEnabledReceiveProtocols().Where(rp => rp.Protocol == protocol.DeclTypeName);
+						var receiveList = t.Receptor.Instance.GetEnabledReceiveProtocols().Where(rp => rp.Protocol == protocol.DeclTypeName);
 						receiveList.ForEach(r =>
 							{
 								// If qualified, add to the final target list.
@@ -599,7 +605,7 @@ namespace Clifton.Receptor
 			// Some bullet proofing that was revealed in unit testing.
 			if (receptor != null)
 			{
-				List<IReceptor> receptors = GetTargetReceptorsFor(ReceptorFromInstance(from), carrier);
+				List<IReceptorConnection> receptors = GetTargetReceptorsFor(ReceptorFromInstance(from), carrier);
 
 				// If we have any enabled receptor for this carrier (a mapping of carrier to receptor list exists and receptors actually exist in that map)...
 				if (receptors.Count > 0)
@@ -632,7 +638,7 @@ namespace Clifton.Receptor
 			// collection with an indexer rather than a foreach.
 			queuedCarriers.IndexerForEach(action =>
 			{
-				List<IReceptor> receptors = GetTargetReceptorsFor(action.From, action.Carrier);
+				List<IReceptorConnection> receptors = GetTargetReceptorsFor(action.From, action.Carrier);
 
 				// If we have any enabled receptor for this carrier (a mapping of carrier to receptor list exists and receptors actually exist in that map)...
 				if (receptors.Count > 0)
@@ -656,7 +662,7 @@ namespace Clifton.Receptor
 			Action action = new Action(() =>
 				{
 					// Get the receptors receiving the protocol.
-					List<IReceptor> receptors = GetTargetReceptorsFor(ReceptorFromInstance(from), carrier);
+					List<IReceptorConnection> receptors = GetTargetReceptorsFor(ReceptorFromInstance(from), carrier);
 
 					// For each receptor that is enabled...
 					receptors.ForEach(receptor =>
@@ -665,10 +671,10 @@ namespace Clifton.Receptor
 						// TODO: *** Pass in the carrier, not the carrier's fields!!! ***
 						// ************* A: MOVED HERE ************
 						NewCarrier.Fire(this, new NewCarrierEventArgs(from, carrier));
-						Action process = new Action(() => receptor.Instance.ProcessCarrier(carrier));
+						Action process = new Action(() => receptor.Receptor.Instance.ProcessCarrier(carrier));
 
 						// TODO: This flag is tied in with the visualizer, we should extricate this flag and logic.
-						if (receptor.Instance.IsHidden)
+						if (receptor.Receptor.Instance.IsHidden)
 						{
 							// Don't visualize carriers to hidden receptors.
 							process();
@@ -681,11 +687,11 @@ namespace Clifton.Receptor
 							dynamic signal = SemanticTypeSystem.Create("CarrierAnimation");
 							signal.Process = process;
 							signal.From = from;
-							signal.To = receptor.Instance;
+							signal.To = receptor.Receptor.Instance;
 							signal.Carrier = carrier;
 							// Simulate coming from the system, as it IS a system message.
 							// Also note that the "stop recursion" flag is set to true on a receptor defining "receives everything" ("*").
-							CreateCarrier(from, protocol, protocol.DeclTypeName, signal, receptor.Instance.GetEnabledReceiveProtocols().Select(rp=>rp.Protocol).Contains("*"), true);
+							CreateCarrier(from, protocol, protocol.DeclTypeName, signal, receptor.Receptor.Instance.GetEnabledReceiveProtocols().Select(rp=>rp.Protocol).Contains("*"), true);
 						}
 					});
 				});

@@ -20,6 +20,7 @@ namespace ImageViewerReceptor
 
 		[MycroParserInitialize("pb")]
 		protected PictureBox pb;
+		protected string url = null;
 
 		public ImageViewer(IReceptorSystem rsys) : base("ImageViewer.xml", true, rsys)
 		{
@@ -41,8 +42,35 @@ namespace ImageViewerReceptor
 							form.FormClosing += WhenFormClosing;
 							form.SizeChanged += ProportionalResize;
 						});
+					
 					pb.Image = signal.Value;
+
+					string title = signal.Title.Text.Value;
+					url = signal.Url.Value;
+
+					if (!String.IsNullOrEmpty(title))
+					{
+						WindowName = title;
+						UpdateCaption();
+					}
+
+					if (!String.IsNullOrEmpty(url))
+					{
+						AddEmitProtocol("Url");
+					}
+					else
+					{
+						RemoveEmitProtocol("Url");
+					}
+
 				}));
+		}
+
+		// Wire up the double-click handler.
+		protected override void InitializeUI()
+		{
+			base.InitializeUI();
+			pb.DoubleClick += OnDoubleClick;
 		}
 
 		public override void Terminate()
@@ -74,6 +102,14 @@ namespace ImageViewerReceptor
 		{
 			// Give the form's current width, what does the height need to be to maintain aspect ratio?
 			form.ClientSize = new Size(form.ClientSize.Width, (int)(form.ClientSize.Width * (double)img.Height / (double)img.Width));
+		}
+
+		protected void OnDoubleClick(object sender, EventArgs e)
+		{
+			if (!String.IsNullOrEmpty(url))
+			{
+				CreateCarrier("Url", signal => signal.Value = url);
+			}
 		}
 	}
 }

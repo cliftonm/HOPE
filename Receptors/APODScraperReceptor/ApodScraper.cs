@@ -24,7 +24,7 @@ namespace APODScraperReceptor
 		public ApodScraper(IReceptorSystem rsys) : base(rsys)
 		{
 			// AddEmitProtocol("ImageFilename");
-			AddEmitProtocol("Image");
+			AddEmitProtocol("Image", false);
 			AddEmitProtocol("Url");
 			AddEmitProtocol("ExceptionMessage");
 			AddReceiveProtocol("WebPageHtml", (Action<dynamic>)(signal => ProcessPage(signal.Url.Value, signal.Html.Value)));
@@ -185,7 +185,7 @@ namespace APODScraperReceptor
 
 						// Put it out there into the wild.
 						// EmitImageFile(fn);
-						EmitImage(img);
+						EmitImage(img, title, url);
 
 						// LogImage(url, fn, keywords, title, explanation, errors);
 
@@ -199,9 +199,14 @@ namespace APODScraperReceptor
 			}
 		}
 
-		protected void EmitImage(Image image)
+		protected void EmitImage(Image image, string title, string url)
 		{
-			CreateCarrier("Image", signal => signal.Value = image);
+			CreateCarrier("Image", signal =>
+				{
+					signal.Value = image;
+					signal.Title.Text.Value = title;
+					signal.Url.Value = url;
+				});
 		}
 
 		protected void EmitUrl(string url)

@@ -328,7 +328,7 @@ namespace Clifton.Receptor.Interfaces
 		}
 
 		/// <summary>
-		/// Add protocol that this receptor emits.
+		/// Add the protocol that this receptor emits.  Duplicates are ignored.
 		/// </summary>
 		protected virtual void AddEmitProtocol(string protocolName, bool processInternalSemanticElements = true)
 		{
@@ -353,12 +353,15 @@ namespace Clifton.Receptor.Interfaces
 		}
 
 		/// <summary>
-		/// Remove a specific emit protocol.
+		/// Remove a specific emit protocol.  Non-existent emitted protocols are ignored.
 		/// </summary>
 		protected virtual void RemoveEmitProtocol(string protocolName)
 		{
-			emitProtocols.Remove(emitProtocols.Single(p => p.Protocol == protocolName));
-			EmitProtocolsChanged.Fire(this, EventArgs.Empty);
+			if (emitProtocols.Exists(p => p.Protocol == protocolName))
+			{
+				emitProtocols.Remove(emitProtocols.Single(p => p.Protocol == protocolName));
+				EmitProtocolsChanged.Fire(this, EventArgs.Empty);
+			}
 		}
 
 		/// <summary>

@@ -156,7 +156,10 @@
           <NativeTypes>
             <NativeType Name="Value" ImplementingType="System.Drawing.Image" Ordinality="0" UniqueField="false" />
           </NativeTypes>
-          <SubTypes />
+          <SubTypes>
+            <SubType Name="Title" UniqueField="false" Ordinality="1" />
+            <SubType Name="Url" UniqueField="false" Ordinality="2" />
+          </SubTypes>
         </SemanticType>
         <SemanticType Name="SourceImageFilename" UniqueField="false">
           <NativeTypes />

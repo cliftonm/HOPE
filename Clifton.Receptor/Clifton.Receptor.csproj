@@ -46,6 +46,7 @@
     <Compile Include="Membrane.cs" />
     <Compile Include="PropertyControlMap.cs" />
     <Compile Include="Receptor.cs" />
+    <Compile Include="ReceptorConnection.cs" />
     <Compile Include="Receptors.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
