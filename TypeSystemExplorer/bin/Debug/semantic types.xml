@@ -158,7 +158,6 @@
           </NativeTypes>
           <SubTypes>
             <SubType Name="Title" UniqueField="false" Ordinality="1" />
-            <SubType Name="Url" UniqueField="false" Ordinality="2" />
           </SubTypes>
         </SemanticType>
         <SemanticType Name="SourceImageFilename" UniqueField="false">
@@ -382,6 +381,13 @@
           <SubTypes>
             <SubType Name="Url" UniqueField="false" Ordinality="0" />
             <SubType Name="Html" UniqueField="false" Ordinality="0" />
+          </SubTypes>
+        </SemanticType>
+        <SemanticType Name="WebImage" UniqueField="false">
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="Image" UniqueField="false" Ordinality="0" />
+            <SubType Name="Url" UniqueField="false" Ordinality="0" />
           </SubTypes>
         </SemanticType>
       </SemanticTypes>
