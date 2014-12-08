@@ -82,8 +82,16 @@ namespace Clifton.Tools.Data
 						}
 						else
 						{
-							// If no conversion exists, throw an exception.
-							throw new ConverterException("Can't convert from " + src.GetType().FullName + " to " + destType.FullName);
+							// If the target type is a base class of the source type, then we don't need to do any conversion.
+							if (destType.IsAssignableFrom(srcType))
+							{
+								ret = src;
+							}
+							else
+							{
+								// If no conversion exists, throw an exception.
+								throw new ConverterException("Can't convert from " + src.GetType().FullName + " to " + destType.FullName);
+							}
 						}
 					}
 				}
