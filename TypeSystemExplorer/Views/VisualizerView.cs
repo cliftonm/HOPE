@@ -1913,6 +1913,9 @@ namespace TypeSystemExplorer.Views
 			Program.Skin.UpdateMasterConnectionList(Program.MasterReceptorConnectionList);
 		}
 
+		/// <summary>
+		/// Recursive scanning of receptors, into inner membranes and out to outer membranes to determine protocol connectivity.
+		/// </summary>
 		protected void FindConnectionsWith(IReceptor r, IMembrane m1, string prot1, Point rPoint, IMembrane source = null, bool rootOnly = false)
 		{
 			// Iterate through receptors with a second search.

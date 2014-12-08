@@ -40,6 +40,10 @@ namespace APODScraperReceptor
 		{
 			// Get today's image.
 			string url = "http://apod.nasa.gov/apod/ap" + DateTime.Now.ToString("yyMMdd") + ".html";
+
+			// Use this URL as an example.
+			// string url = "http://apod.nasa.gov/apod/ap141207.html";
+
 			EmitUrl(url);
 		}
 /*
@@ -201,10 +205,10 @@ namespace APODScraperReceptor
 
 		protected void EmitImage(Image image, string title, string url)
 		{
-			CreateCarrier("Image", signal =>
+			CreateCarrier("WebImage", signal =>
 				{
-					signal.Value = image;
-					signal.Title.Text.Value = title;
+					signal.Image.Value = image as Image;
+					signal.Image.Title.Text.Value = title;
 					signal.Url.Value = url;
 				});
 		}

@@ -306,7 +306,13 @@ namespace Clifton.Receptor
 			// TODO: If our collections were IReceptor, then we wouldn't need the "as".
 			receptors.Remove(receptor as Receptor);
 			registeredReceptorMap.Remove(receptor);
-			protocolReceptorMap.ForEach(kvp => kvp.Value.Remove(kvp.Value.Single(rc => rc.Receptor == receptor)));
+
+			protocolReceptorMap.ForEach(kvp =>
+			{
+				IReceptorConnection conn = kvp.Value.SingleOrDefault(rc => rc.Receptor == receptor);
+				conn.IfNotNull(c => kvp.Value.Remove(c));
+			});
+
 			ReceptorRemoved.Fire(this, new ReceptorEventArgs(receptor));
 
 			// TODO: Refactor out of this code.
@@ -367,6 +373,7 @@ namespace Clifton.Receptor
 		{
 			receptors.Remove(receptor as Receptor);
 			registeredReceptorMap.Remove(receptor);
+
 			protocolReceptorMap.ForEach(kvp =>
 				{
 					IReceptorConnection conn = kvp.Value.SingleOrDefault(rc => rc.Receptor == receptor);

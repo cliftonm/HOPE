@@ -46,13 +46,25 @@ namespace ImageViewerReceptor
 					pb.Image = signal.Value;
 
 					string title = signal.Title.Text.Value;
-					url = signal.Url.Value;
 
 					if (!String.IsNullOrEmpty(title))
 					{
 						WindowName = title;
 						UpdateCaption();
 					}
+				}));
+		}
+
+		public override void ProcessCarrier(ICarrier carrier)
+		{
+			base.ProcessCarrier(carrier);
+
+			if (carrier.ParentCarrier != null)
+			{
+				// Additional behavior if this is a web image -- double 
+				if (carrier.ParentCarrier.Protocol.DeclTypeName == "WebImage")
+				{
+					url = carrier.ParentCarrier.Signal.Url.Value;
 
 					if (!String.IsNullOrEmpty(url))
 					{
@@ -62,8 +74,8 @@ namespace ImageViewerReceptor
 					{
 						RemoveEmitProtocol("Url");
 					}
-
-				}));
+				}
+			}
 		}
 
 		// Wire up the double-click handler.
