@@ -278,7 +278,7 @@ namespace Clifton.Receptor
 					{
 						// Recurse into SE's of the protocol and emit carriers for those as well, if a receiver exists.
 						// We do this even if there isn't a target for the top-level receptor.
-						// However, we do create a Carrier instance as the parent so the child cah reference it if necessary.
+						// However, we do create a Carrier instance as the parent so the child can reference it if necessary.
 						Carrier carrier = new Carrier(protocol, protocolPath, signal, parentCarrier);
 						CreateCarriersForSemanticElements(from, protocol, protocolPath, signal, false, carrier);
 					}
@@ -288,6 +288,7 @@ namespace Clifton.Receptor
 			{
 				if (emitSubElements)
 				{
+					// Create a Carrier instance as the parent so the child can reference it if necessary.
 					Carrier carrier = new Carrier(protocol, protocolPath, signal, parentCarrier);
 					CreateCarriersForSemanticElements(from, protocol, protocolPath, signal, false, carrier);
 				}
@@ -366,7 +367,11 @@ namespace Clifton.Receptor
 		{
 			receptors.Remove(receptor as Receptor);
 			registeredReceptorMap.Remove(receptor);
-			protocolReceptorMap.ForEach(kvp => kvp.Value.Remove(kvp.Value.Single(rc => rc.Receptor == receptor)));
+			protocolReceptorMap.ForEach(kvp =>
+				{
+					IReceptorConnection conn = kvp.Value.SingleOrDefault(rc => rc.Receptor == receptor);
+					conn.IfNotNull(c=>kvp.Value.Remove(c));
+				});
 		}
 
 		/// <summary>
@@ -455,6 +460,12 @@ namespace Clifton.Receptor
 			// Recurse into SE's of the protocol and emit carriers for those as well, if a receiver exists.
 			if (!isSystemMessage && emitSubElements)
 			{
+				// The carrier might be null if there's no receiver for the parent carrier.  In this case, we need to create a dummy carrier so we have a parent.
+				if (carrier == null)
+				{
+					carrier = new Carrier(protocol, protocolPath, signal, parentCarrier);
+				}
+
 				CreateCarriersForSemanticElements(from, protocol, protocol.DeclTypeName, signal, stopRecursion, carrier);
 			}
 
