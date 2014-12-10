@@ -19,16 +19,21 @@ namespace WeatherRadarScraperReceptor
     public class WeatherRadarScraper : BaseReceptor
 	{
 		public override string Name { get { return "Radar"; } }
+		public override string ConfigurationUI { get { return "WeatherRadarConfig.xml"; } }
+
+		[UserConfigurableProperty("Radar Url:")]
+		public string RadarUrl { get; set; }
+
 		protected int totalErrors = 0;
 
 		public WeatherRadarScraper(IReceptorSystem rsys) : base(rsys)
 		{
 			// AddEmitProtocol("ImageFilename");
-			AddEmitProtocol("Image");
+			AddEmitProtocol("WebImage");
 			AddEmitProtocol("Url");
 			AddEmitProtocol("ExceptionMessage");
 			AddReceiveProtocol("WebPageHtml", (Action<dynamic>)(signal => ProcessPage(signal.Url.Value, signal.Html.Value)));
-			AddReceiveProtocol("Resend", (Action<dynamic>)(signal => GetRadarImage()));
+			AddReceiveProtocol("Refresh", (Action<dynamic>)(signal => GetRadarImage()));
 		}
 
 		public override void Initialize()
@@ -41,10 +46,22 @@ namespace WeatherRadarScraperReceptor
 			GetRadarImage();
 		}
 
+		public override bool UserConfigurationUpdated()
+		{
+			base.UserConfigurationUpdated();
+			GetRadarImage();
+
+			return true;
+		}
+
 		protected void GetRadarImage()
 		{
-			string url = "http://radar.weather.gov/radar.php?rid=enx&product=N0R";
-			EmitUrl(url);
+			// string url = "http://radar.weather.gov/radar.php?rid=enx&product=N0R";
+
+			if (!String.IsNullOrEmpty(RadarUrl))
+			{
+				EmitUrl(RadarUrl);
+			}
 		}
 
 		protected async void ProcessPage(string url, string html)
@@ -126,7 +143,11 @@ namespace WeatherRadarScraperReceptor
 
 		protected void EmitImage(Image image)
 		{
-			CreateCarrier("Image", signal => signal.Value = image);
+			CreateCarrier("WebImage", signal =>
+				{
+					signal.Image.Value = image;
+					signal.Url.Value = RadarUrl;
+				});
 		}
 
 		protected void EmitUrl(string url)

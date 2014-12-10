@@ -500,6 +500,10 @@
           <NativeTypes />
           <SubTypes />
         </SemanticType>
+        <SemanticType Name="Refresh" UniqueField="false">
+          <NativeTypes />
+          <SubTypes />
+        </SemanticType>
       </SemanticTypes>
     </SemanticTypesContainer>
   </SemanticTypesContainer>
