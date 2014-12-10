@@ -60,8 +60,15 @@ namespace WeatherRadarScraperReceptor
 
 			if (!String.IsNullOrEmpty(RadarUrl))
 			{
+				UpdateSubName();
 				EmitUrl(RadarUrl);
 			}
+		}
+
+		protected void UpdateSubName()
+		{
+			string rid = RadarUrl.Between("rid=", "&").ToUpper();
+			Subname = rid;
 		}
 
 		protected async void ProcessPage(string url, string html)
@@ -146,6 +153,7 @@ namespace WeatherRadarScraperReceptor
 			CreateCarrier("WebImage", signal =>
 				{
 					signal.Image.Value = image;
+					signal.Image.Title.Text.Value = Subname;
 					signal.Url.Value = RadarUrl;
 				});
 		}
