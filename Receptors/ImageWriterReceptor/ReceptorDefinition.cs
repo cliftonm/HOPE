@@ -20,13 +20,14 @@ namespace ImageWriterReceptor
 		public ReceptorDefinition(IReceptorSystem rsys) : base(rsys)
 		{
 			// Other protocols might be added in the future.
-			AddReceiveProtocol("ThumbnailImage", (Action<dynamic>)(signal => SaveImage(signal.Image.Value, signal.SourceImageFilename.Filename)));
+			AddReceiveProtocol("ThumbnailImage", (Action<dynamic>)(signal => SaveImage(signal.Image.Value, signal.ImageFilename.Filename)));
+			AddEmitProtocol("ExceptionMessage");
 		}
 
 		protected void SaveImage(Bitmap image, dynamic filename)
 		{
 			// TODO: The addition "-thumbnail" extension should be configurable.
-			string fn = Path.Combine(filename.Path.Value, filename.Name.Value + "-thumbnail" + filename.FileExtension.Value);
+			string fn = Path.Combine(filename.Path.Text.Value, filename.Name.Text.Value + "-thumbnail" + filename.FileExtension.Text.Value);
 
 			if (!File.Exists(fn))
 			{
