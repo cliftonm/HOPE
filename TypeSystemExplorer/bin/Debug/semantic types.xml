@@ -18,16 +18,16 @@
           </SubTypes>
         </SemanticType>
         <SemanticType Name="Path" UniqueField="false">
-          <NativeTypes>
-            <NativeType Name="Value" ImplementingType="string" Ordinality="0" UniqueField="false" />
-          </NativeTypes>
-          <SubTypes />
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="Text" UniqueField="false" Ordinality="0" />
+          </SubTypes>
         </SemanticType>
         <SemanticType Name="FileExtension" UniqueField="false">
-          <NativeTypes>
-            <NativeType Name="Value" ImplementingType="string" Ordinality="0" UniqueField="false" />
-          </NativeTypes>
-          <SubTypes />
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="Text" UniqueField="false" Ordinality="0" />
+          </SubTypes>
         </SemanticType>
         <SemanticType Name="TextMessage" Alias="Message" UniqueField="false">
           <NativeTypes />
@@ -142,7 +142,7 @@
         <SemanticType Name="ThumbnailImage" UniqueField="false">
           <NativeTypes />
           <SubTypes>
-            <SubType Name="SourceImageFilename" UniqueField="false" Ordinality="0" />
+            <SubType Name="ImageFilename" UniqueField="false" Ordinality="0" />
             <SubType Name="Image" UniqueField="false" Ordinality="0" />
           </SubTypes>
         </SemanticType>
@@ -158,12 +158,6 @@
           </NativeTypes>
           <SubTypes>
             <SubType Name="Title" UniqueField="false" Ordinality="1" />
-          </SubTypes>
-        </SemanticType>
-        <SemanticType Name="SourceImageFilename" UniqueField="false">
-          <NativeTypes />
-          <SubTypes>
-            <SubType Name="Filename" UniqueField="false" Ordinality="0" />
           </SubTypes>
         </SemanticType>
       </SemanticTypes>
