@@ -30,25 +30,27 @@ namespace ThumbnailCreatorReceptor
 			this.rsys = rsys;
 			AddReceiveProtocol("ImageFilename", (Action<dynamic>)(signal => ProcessImage(signal.Filename)));
 			AddReceiveProtocol("Image", (Action<dynamic>)(signal => ProcessInMemoryImage(signal.Value)));
-			AddEmitProtocol("ThumbnailImage", false);
+			AddEmitProtocol("ThumbnailImage");
+			AddEmitProtocol("ExceptionMessage");
 			MaxSize = 320;
 		}
 
 		protected void ProcessImage(dynamic filename)
 		{
-			string fn = Path.Combine(filename.Path.Value, filename.Name.Value + filename.FileExtension.Value);
+			string fn = Path.Combine(filename.Path.Text.Value, filename.Name.Text.Value + filename.FileExtension.Text.Value);
 			Bitmap bitmap = new Bitmap(fn);
 			// Resize image to the specified max width, proportionally scaling the image.
 			Bitmap image = new Bitmap(bitmap, MaxSize, MaxSize * bitmap.Height / bitmap.Width);
 			image.Tag = fn;
 			bitmap.Dispose();
-			OutputImage(filename, image);
+			OutputImage(fn, image);
 		}
 
-		protected void ProcessInMemoryImage(Bitmap bitmap)
+		protected void ProcessInMemoryImage(Image bitmap)
 		{
 			Bitmap thumbnailImage = new Bitmap(bitmap, MaxSize, MaxSize * bitmap.Height / bitmap.Width);
-			OutputImage(String.Empty, thumbnailImage);
+			// TODO: These are not necessarily PNG's!
+			OutputImage(Path.GetRandomFileName().LeftOf('.') + ".jpg", thumbnailImage);
 		}
 /*
 		public override async void ProcessCarrier(ICarrier carrier)
@@ -120,11 +122,13 @@ namespace ThumbnailCreatorReceptor
 			rsys.CreateCarrier(this, protocol, signal);
 		}
 */
-		protected void OutputImage(dynamic inputFilename, Bitmap image)
+		protected void OutputImage(string fn, Bitmap image)
 		{
 			CreateCarrier("ThumbnailImage", signal =>
 				{
-					signal.SourceImageFilename.Filename = inputFilename;
+					signal.ImageFilename.Filename.Path.Text.Value = Path.GetDirectoryName(fn);
+					signal.ImageFilename.Filename.Name.Text.Value = Path.GetFileNameWithoutExtension(fn);
+					signal.ImageFilename.Filename.FileExtension.Text.Value = Path.GetExtension(fn);
 					signal.Image.Value = image;
 				});
 		}
