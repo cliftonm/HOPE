@@ -88,9 +88,9 @@ namespace TypeSystemExplorer.Controllers
 						dynamic signal = Program.SemanticTypeSystem.Create("ImageFilename");
 						// TODO: We need to figure out how to do computed types, so that I can assign a fully qualified name and set the discrete sub-types Path, Name, and FileExtension.
 						// The reverse would also be nice, a "getter" on "FullyQualifiedName" would combine the Path, Name, and FileExtension.
-						signal.Filename.Path.Value = Path.GetDirectoryName(fn);
-						signal.Filename.Name.Value = Path.GetFileNameWithoutExtension(fn);
-						signal.Filename.FileExtension.Value = Path.GetExtension(fn);
+						signal.Filename.Path.Text.Value = Path.GetDirectoryName(fn);
+						signal.Filename.Name.Text.Value = Path.GetFileNameWithoutExtension(fn);
+						signal.Filename.FileExtension.Text.Value = Path.GetExtension(fn);
 						dropInto.CreateCarrier(Program.Skin["DropReceptor"].Instance, protocol, signal);
 					}
 					else if (fn.ToLower().EndsWith(".xml"))
