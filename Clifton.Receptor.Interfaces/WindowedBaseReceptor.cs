@@ -92,6 +92,7 @@ namespace Clifton.Receptor.Interfaces
 			mycroParser.AddInstance("form", this);
 
 			form = mycroParser.Load<Form>(displayFormFilename, this);
+			PostFormCreate();
 
 #if DockingForm
 			rsys.Membrane.ApplicationController.AddAppletUI(form, LayoutId);
@@ -106,6 +107,10 @@ namespace Clifton.Receptor.Interfaces
 			form.FormClosing += OnFormClosing;
 #endif
 			UpdateCaption();
+		}
+
+		protected virtual void PostFormCreate()
+		{
 		}
 
 		protected void OnLocationChanged(object sender, EventArgs e)

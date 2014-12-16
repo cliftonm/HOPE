@@ -7,6 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using CefSharp;
+using CefSharp.WinForms;
+
 using Clifton.ExtensionMethods;
 using Clifton.MycroParser;
 using Clifton.Receptor.Interfaces;
@@ -17,7 +20,8 @@ namespace WebBrowserReceptor
 {
     public class WebBrowserReceptor : WindowedBaseReceptor
     {
-		protected WebBrowser browser;
+		// protected WebBrowser browser;
+		protected IWinFormsWebBrowser browser;
 
 		public override string Name { get { return "Web Page Viewer"; } }
 		public override bool IsEdgeReceptor { get { return true; } }
@@ -32,6 +36,7 @@ namespace WebBrowserReceptor
 		public WebBrowserReceptor(IReceptorSystem rsys)
 			: base("webPageViewer.xml", false, rsys)
 		{
+			Cef.Initialize();
 			AddReceiveProtocol("Url", (Action<dynamic>)(signal => ShowPage(signal.Value)));
 		}
 
@@ -63,18 +68,25 @@ namespace WebBrowserReceptor
 
 			Subname = WindowName;
 			
-			if (!url.BeginsWith("http"))
-			{
-				url = "http://" + url;
-			}
+			//if (!url.BeginsWith("http"))
+			//{
+			//	url = "http://" + url;
+			//}
 
-			browser.Navigate(new Uri(url));
+			// browser.Navigate(new Uri(url));
+
+			browser.Load(url);
 		}
 
-		protected override void InitializeUI()
+		protected override void PostFormCreate()
 		{
-			base.InitializeUI();
-			browser = (WebBrowser)mycroParser.ObjectCollection["browser"];
+ 			base.PostFormCreate();
+
+			string url = (String.IsNullOrEmpty(UserUrl) ? "www.google.com" : UserUrl);
+			browser = new ChromiumWebBrowser(url);
+			((Control)browser).Dock = DockStyle.Fill;
+			form.Controls.Add((Control)browser);
+			// browser = (WebBrowser)mycroParser.ObjectCollection["browser"];
 		}
     }
 }

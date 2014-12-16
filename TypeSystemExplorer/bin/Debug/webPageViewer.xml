@@ -5,7 +5,7 @@
   xmlns:ref="ref">
   <wf:Form Text="Web Page Viewer" Size="400, 300" StartPosition="CenterScreen" ShowInTaskbar="false">
     <wf:Controls>
-      <wf:WebBrowser def:Name="browser" Dock="Fill"/>
+<!--      <wf:WebBrowser def:Name="browser" Dock="Fill"/>  -->
     </wf:Controls>
   </wf:Form>
 </MycroXaml>
