@@ -311,6 +311,7 @@
     </Content>
     <Content Include="bin\Debug\WeatherRadarConfig.xml" />
     <Content Include="bin\Debug\webPageViewer.xml" />
+    <Content Include="bin\Debug\WebPageViewerConfig.xml" />
     <Content Include="bin\Debug\xmlEditor.xml">
       <SubType>Designer</SubType>
     </Content>

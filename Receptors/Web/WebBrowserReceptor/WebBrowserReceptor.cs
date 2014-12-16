@@ -21,6 +21,13 @@ namespace WebBrowserReceptor
 
 		public override string Name { get { return "Web Page Viewer"; } }
 		public override bool IsEdgeReceptor { get { return true; } }
+		public override string ConfigurationUI { get { return "WebPageViewerConfig.xml"; } }
+
+		/// <summary>
+		/// The URL that the user entered in the config screen to navigate to when this receptor loads.
+		/// </summary>
+		[UserConfigurableProperty("User URL:")]
+		public string UserUrl { get; set; }
 
 		public WebBrowserReceptor(IReceptorSystem rsys)
 			: base("webPageViewer.xml", false, rsys)
@@ -28,9 +35,39 @@ namespace WebBrowserReceptor
 			AddReceiveProtocol("Url", (Action<dynamic>)(signal => ShowPage(signal.Value)));
 		}
 
+		public override bool UserConfigurationUpdated()
+		{
+			base.UserConfigurationUpdated();
+
+			if (!String.IsNullOrEmpty(UserUrl))
+			{
+				ShowPage(UserUrl);
+			}
+
+			return true;
+		}
+
+		public override void EndSystemInit()
+		{
+			base.EndSystemInit();
+
+			if (!String.IsNullOrEmpty(UserUrl))
+			{
+				ShowPage(UserUrl);
+			}
+		}
+
 		protected void ShowPage(string url)
 		{
 			form.IfNull(() => ReinitializeUI());
+
+			Subname = WindowName;
+			
+			if (!url.BeginsWith("http"))
+			{
+				url = "http://" + url;
+			}
+
 			browser.Navigate(new Uri(url));
 		}
 

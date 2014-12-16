@@ -92,7 +92,6 @@ namespace Clifton.Receptor.Interfaces
 			mycroParser.AddInstance("form", this);
 
 			form = mycroParser.Load<Form>(displayFormFilename, this);
-			UpdateCaption();
 
 #if DockingForm
 			rsys.Membrane.ApplicationController.AddAppletUI(form, LayoutId);
@@ -106,6 +105,7 @@ namespace Clifton.Receptor.Interfaces
 			form.SizeChanged += OnSizeChanged;
 			form.FormClosing += OnFormClosing;
 #endif
+			UpdateCaption();
 		}
 
 		protected void OnLocationChanged(object sender, EventArgs e)
