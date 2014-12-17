@@ -61,7 +61,7 @@ namespace ImageViewerReceptor
 
 			if (carrier.ParentCarrier != null)
 			{
-				// Additional behavior if this is a web image -- double 
+				// Additional behavior if this is a web image
 				if (carrier.ParentCarrier.Protocol.DeclTypeName == "WebImage")
 				{
 					url = carrier.ParentCarrier.Signal.Url.Value;
