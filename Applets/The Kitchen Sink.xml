@@ -1,5 +1,5 @@
 <MycroXaml xmlns:ixm="TypeSystemExplorer.Models, TypeSystemExplorer" xmlns:def="def" xmlns:ref="ref" Name="Form">
-  <ixm:Applet SurfaceOffset="161,427">
+  <ixm:Applet SurfaceOffset="14,45">
     <ixm:MembranesDef>
       <ixm:Membranes>
         <ixm:MembraneDef Name="Skin">
@@ -19,7 +19,7 @@
                 <ixm:ReceiveProtocol Protocol="Url" Enabled="True" />
               </ixm:ReceiveProtocols>
               <ixm:UserConfigs>
-                <ixm:UserConfig Name="UserUrl" Value="https://www.windyty.com/?975h,wind,now,40.988,-73.026,6" />
+                <ixm:UserConfig Name="UserUrl" Value="https://www.windyty.com/?975h,wind,now,42.472,-77.673,5" />
                 <ixm:UserConfig Name="WindowName" Value="Windy" />
                 <ixm:UserConfig Name="WindowX" Value="0" />
                 <ixm:UserConfig Name="WindowY" Value="0" />
@@ -346,10 +346,17 @@
                     <ixm:UserConfig Name="ProtocolData" Value="&lt;Signal&gt;&#xD;&#xA;  &lt;NativeType Name=&quot;QueryText&quot; Data=&quot;top 40 RSSFeedItem, UrlVisited, RSSFeedItemDisplayed order by RSSFeedPubDate desc, RSSFeedName&quot; /&gt;&#xD;&#xA;  &lt;NativeType Name=&quot;Param0&quot; Data=&quot;&quot; /&gt;&#xD;&#xA;  &lt;NativeType Name=&quot;Param1&quot; Data=&quot;&quot; /&gt;&#xD;&#xA;  &lt;NativeType Name=&quot;Param2&quot; Data=&quot;&quot; /&gt;&#xD;&#xA;  &lt;NativeType Name=&quot;Param3&quot; Data=&quot;&quot; /&gt;&#xD;&#xA;  &lt;NativeType Name=&quot;Param4&quot; Data=&quot;&quot; /&gt;&#xD;&#xA;  &lt;NativeType Name=&quot;Param5&quot; Data=&quot;&quot; /&gt;&#xD;&#xA;  &lt;NativeType Name=&quot;Param6&quot; Data=&quot;&quot; /&gt;&#xD;&#xA;  &lt;NativeType Name=&quot;Param7&quot; Data=&quot;&quot; /&gt;&#xD;&#xA;  &lt;NativeType Name=&quot;Param8&quot; Data=&quot;&quot; /&gt;&#xD;&#xA;  &lt;NativeType Name=&quot;Param9&quot; Data=&quot;&quot; /&gt;&#xD;&#xA;&lt;/Signal&gt;" />
                   </ixm:UserConfigs>
                 </ixm:ReceptorDef>
-                <ixm:ReceptorDef Name="Web Page Launcher" AssemblyName="UrlReceptor.dll" Enabled="True" Location="473, 586">
+                <ixm:ReceptorDef Name="Web Page Viewer" AssemblyName="WebBrowserReceptor.dll" Enabled="True" Location="457, 578">
                   <ixm:ReceiveProtocols>
                     <ixm:ReceiveProtocol Protocol="Url" Enabled="True" />
                   </ixm:ReceiveProtocols>
+                  <ixm:UserConfigs>
+                    <ixm:UserConfig Name="WindowX" Value="0" />
+                    <ixm:UserConfig Name="WindowY" Value="0" />
+                    <ixm:UserConfig Name="WindowWidth" Value="0" />
+                    <ixm:UserConfig Name="WindowHeight" Value="0" />
+                    <ixm:UserConfig Name="LayoutId" Value="5c481059-ae4d-4cc4-a494-d2624cf61ce0" />
+                  </ixm:UserConfigs>
                 </ixm:ReceptorDef>
               </ixm:Receptors>
               <ixm:Permeabilities>
@@ -368,22 +375,7 @@
                 <ixm:PermeabilityDef Protocol="Query" Direction="Out" Permeable="False" RootOnly="False" />
                 <ixm:PermeabilityDef Protocol="Announce" Direction="Out" Permeable="True" RootOnly="False" />
                 <ixm:PermeabilityDef Protocol="LoggerMessage" Direction="Out" Permeable="False" RootOnly="False" />
-                <ixm:PermeabilityDef Protocol="RSSFeedItem" Direction="In" Permeable="False" RootOnly="False" />
-                <ixm:PermeabilityDef Protocol="RSSFeedName" Direction="In" Permeable="False" RootOnly="False" />
-                <ixm:PermeabilityDef Protocol="Name" Direction="In" Permeable="False" RootOnly="False" />
                 <ixm:PermeabilityDef Protocol="Text" Direction="In" Permeable="False" RootOnly="False" />
-                <ixm:PermeabilityDef Protocol="RSSFeedTitle" Direction="In" Permeable="False" RootOnly="False" />
-                <ixm:PermeabilityDef Protocol="Title" Direction="In" Permeable="False" RootOnly="False" />
-                <ixm:PermeabilityDef Protocol="RSSFeedUrl" Direction="In" Permeable="False" RootOnly="False" />
-                <ixm:PermeabilityDef Protocol="Url" Direction="In" Permeable="False" RootOnly="False" />
-                <ixm:PermeabilityDef Protocol="RSSFeedDescription" Direction="In" Permeable="False" RootOnly="False" />
-                <ixm:PermeabilityDef Protocol="Description" Direction="In" Permeable="False" RootOnly="False" />
-                <ixm:PermeabilityDef Protocol="RSSFeedPubDate" Direction="In" Permeable="False" RootOnly="False" />
-                <ixm:PermeabilityDef Protocol="RSSFeedAuthors" Direction="In" Permeable="False" RootOnly="False" />
-                <ixm:PermeabilityDef Protocol="RSSFeedCategories" Direction="In" Permeable="False" RootOnly="False" />
-                <ixm:PermeabilityDef Protocol="ExceptionMessage" Direction="In" Permeable="False" RootOnly="False" />
-                <ixm:PermeabilityDef Protocol="TextMessage" Direction="In" Permeable="False" RootOnly="False" />
-                <ixm:PermeabilityDef Protocol="LoggerMessage" Direction="In" Permeable="False" RootOnly="False" />
                 <ixm:PermeabilityDef Protocol="RSSFeedName" Direction="Out" Permeable="False" RootOnly="False" />
                 <ixm:PermeabilityDef Protocol="Name" Direction="Out" Permeable="False" RootOnly="False" />
                 <ixm:PermeabilityDef Protocol="RSSFeedTitle" Direction="Out" Permeable="False" RootOnly="False" />
@@ -396,6 +388,7 @@
                 <ixm:PermeabilityDef Protocol="Resend" Direction="Out" Permeable="False" RootOnly="False" />
                 <ixm:PermeabilityDef Protocol="RSSFeedItem_UrlVisited_RSSFeedItemDisplayed" Direction="Out" Permeable="False" RootOnly="False" />
                 <ixm:PermeabilityDef Protocol="RSSFeedItem" Direction="Out" Permeable="False" RootOnly="False" />
+                <ixm:PermeabilityDef Protocol="Announce" Direction="In" Permeable="False" RootOnly="False" />
               </ixm:Permeabilities>
             </ixm:MembraneDef>
           </ixm:Membranes>
@@ -638,7 +631,7 @@
           <ixm:Membranes>
             <ixm:MembraneDef Name="">
               <ixm:Receptors>
-                <ixm:ReceptorDef Name="APOD" AssemblyName="APODScraperReceptor.dll" Enabled="True" Location="265, -17">
+                <ixm:ReceptorDef Name="APOD" AssemblyName="APODScraperReceptor.dll" Enabled="True" Location="258, 12">
                   <ixm:ReceiveProtocols>
                     <ixm:ReceiveProtocol Protocol="WebPageHtml" Enabled="True" />
                   </ixm:ReceiveProtocols>
@@ -671,12 +664,24 @@
                         <ixm:EmitProtocol Protocol="Url" Enabled="True" />
                       </ixm:EmitProtocols>
                       <ixm:UserConfigs>
-                        <ixm:UserConfig Name="WindowName" Value="W5: Pillars of Star Formation" />
+                        <ixm:UserConfig Name="WindowName" Value="Geminid Fireball over Mount Balang" />
                         <ixm:UserConfig Name="WindowX" Value="0" />
                         <ixm:UserConfig Name="WindowY" Value="0" />
                         <ixm:UserConfig Name="WindowWidth" Value="0" />
                         <ixm:UserConfig Name="WindowHeight" Value="0" />
                         <ixm:UserConfig Name="LayoutId" Value="8a70c923-d1ec-4da9-96da-48cad0c52fd1" />
+                      </ixm:UserConfigs>
+                    </ixm:ReceptorDef>
+                    <ixm:ReceptorDef Name="Web Page Viewer" AssemblyName="WebBrowserReceptor.dll" Enabled="True" Location="286, -118">
+                      <ixm:ReceiveProtocols>
+                        <ixm:ReceiveProtocol Protocol="Url" Enabled="True" />
+                      </ixm:ReceiveProtocols>
+                      <ixm:UserConfigs>
+                        <ixm:UserConfig Name="WindowX" Value="0" />
+                        <ixm:UserConfig Name="WindowY" Value="0" />
+                        <ixm:UserConfig Name="WindowWidth" Value="0" />
+                        <ixm:UserConfig Name="WindowHeight" Value="0" />
+                        <ixm:UserConfig Name="LayoutId" Value="2d1e5d13-30dd-4604-ad32-2bcf72062217" />
                       </ixm:UserConfigs>
                     </ixm:ReceptorDef>
                   </ixm:Receptors>
@@ -688,7 +693,6 @@
                     <ixm:PermeabilityDef Protocol="Text" Direction="In" Permeable="False" RootOnly="False" />
                     <ixm:PermeabilityDef Protocol="WebPageHtml" Direction="In" Permeable="False" RootOnly="False" />
                     <ixm:PermeabilityDef Protocol="Url" Direction="Out" Permeable="False" RootOnly="False" />
-                    <ixm:PermeabilityDef Protocol="Html" Direction="In" Permeable="False" RootOnly="False" />
                   </ixm:Permeabilities>
                 </ixm:MembraneDef>
               </ixm:Membranes>
@@ -723,7 +727,7 @@
           <ixm:Membranes>
             <ixm:MembraneDef Name="">
               <ixm:Receptors>
-                <ixm:ReceptorDef Name="Radar" AssemblyName="WeatherRadarScraperReceptor.dll" Enabled="True" Location="219, -243">
+                <ixm:ReceptorDef Name="Radar" AssemblyName="WeatherRadarScraperReceptor.dll" Enabled="True" Location="346, -264">
                   <ixm:ReceiveProtocols>
                     <ixm:ReceiveProtocol Protocol="WebPageHtml" Enabled="True" />
                     <ixm:ReceiveProtocol Protocol="Refresh" Enabled="True" />
@@ -741,7 +745,7 @@
                     <ixm:UserConfig Name="RadarUrl" Value="http://radar.weather.gov/ridge/radar.php?rid=enx&amp;product=N0R&amp;overlay=11101111&amp;loop=no" />
                   </ixm:UserConfigs>
                 </ixm:ReceptorDef>
-                <ixm:ReceptorDef Name="Interval Timer" AssemblyName="TimerReceptor.dll" Enabled="True" Location="241, -379">
+                <ixm:ReceptorDef Name="Interval Timer" AssemblyName="TimerReceptor.dll" Enabled="True" Location="368, -400">
                   <ixm:EmitProtocols>
                     <ixm:EmitProtocol Protocol="Refresh" Enabled="True" />
                   </ixm:EmitProtocols>
@@ -770,7 +774,7 @@
               <ixm:Membranes>
                 <ixm:MembraneDef Name="">
                   <ixm:Receptors>
-                    <ixm:ReceptorDef Name="Webpage Scraper" AssemblyName="WebPageScraperReceptor.dll" Enabled="True" Location="301, -300">
+                    <ixm:ReceptorDef Name="Webpage Scraper" AssemblyName="WebPageScraperReceptor.dll" Enabled="True" Location="428, -321">
                       <ixm:ReceiveProtocols>
                         <ixm:ReceiveProtocol Protocol="Url" Enabled="True" />
                       </ixm:ReceiveProtocols>
@@ -782,24 +786,24 @@
                     </ixm:ReceptorDef>
                   </ixm:Receptors>
                   <ixm:Permeabilities>
-                    <ixm:PermeabilityDef Protocol="Url" Direction="In" Permeable="True" RootOnly="True" />
                     <ixm:PermeabilityDef Protocol="WebImage" Direction="In" Permeable="False" RootOnly="False" />
                     <ixm:PermeabilityDef Protocol="Image" Direction="In" Permeable="False" RootOnly="False" />
                     <ixm:PermeabilityDef Protocol="Title" Direction="In" Permeable="False" RootOnly="False" />
                     <ixm:PermeabilityDef Protocol="Text" Direction="In" Permeable="False" RootOnly="False" />
+                    <ixm:PermeabilityDef Protocol="Url" Direction="In" Permeable="True" RootOnly="True" />
                     <ixm:PermeabilityDef Protocol="ExceptionMessage" Direction="In" Permeable="False" RootOnly="False" />
                     <ixm:PermeabilityDef Protocol="TextMessage" Direction="In" Permeable="False" RootOnly="False" />
-                    <ixm:PermeabilityDef Protocol="Refresh" Direction="In" Permeable="False" RootOnly="False" />
                     <ixm:PermeabilityDef Protocol="WebPageHtml" Direction="Out" Permeable="True" RootOnly="False" />
                     <ixm:PermeabilityDef Protocol="Url" Direction="Out" Permeable="False" RootOnly="False" />
                     <ixm:PermeabilityDef Protocol="Html" Direction="Out" Permeable="False" RootOnly="False" />
+                    <ixm:PermeabilityDef Protocol="Refresh" Direction="In" Permeable="False" RootOnly="False" />
                   </ixm:Permeabilities>
                 </ixm:MembraneDef>
               </ixm:Membranes>
               <ixm:Membranes>
                 <ixm:MembraneDef Name="">
                   <ixm:Receptors>
-                    <ixm:ReceptorDef Name="Image Viewer" AssemblyName="ImageViewerReceptor.dll" Enabled="True" Location="167, -305">
+                    <ixm:ReceptorDef Name="Image Viewer" AssemblyName="ImageViewerReceptor.dll" Enabled="True" Location="294, -326">
                       <ixm:ReceiveProtocols>
                         <ixm:ReceiveProtocol Protocol="Image" Enabled="True" />
                       </ixm:ReceiveProtocols>
@@ -817,15 +821,15 @@
                     </ixm:ReceptorDef>
                   </ixm:Receptors>
                   <ixm:Permeabilities>
-                    <ixm:PermeabilityDef Protocol="Url" Direction="In" Permeable="False" RootOnly="False" />
                     <ixm:PermeabilityDef Protocol="WebImage" Direction="In" Permeable="False" RootOnly="False" />
                     <ixm:PermeabilityDef Protocol="Image" Direction="In" Permeable="True" RootOnly="False" />
                     <ixm:PermeabilityDef Protocol="Title" Direction="In" Permeable="False" RootOnly="False" />
                     <ixm:PermeabilityDef Protocol="Text" Direction="In" Permeable="False" RootOnly="False" />
+                    <ixm:PermeabilityDef Protocol="Url" Direction="In" Permeable="False" RootOnly="False" />
                     <ixm:PermeabilityDef Protocol="ExceptionMessage" Direction="In" Permeable="False" RootOnly="False" />
                     <ixm:PermeabilityDef Protocol="TextMessage" Direction="In" Permeable="False" RootOnly="False" />
-                    <ixm:PermeabilityDef Protocol="Refresh" Direction="In" Permeable="False" RootOnly="False" />
                     <ixm:PermeabilityDef Protocol="WebPageHtml" Direction="In" Permeable="False" RootOnly="False" />
+                    <ixm:PermeabilityDef Protocol="Refresh" Direction="In" Permeable="False" RootOnly="False" />
                     <ixm:PermeabilityDef Protocol="Url" Direction="Out" Permeable="False" RootOnly="False" />
                   </ixm:Permeabilities>
                 </ixm:MembraneDef>
