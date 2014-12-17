@@ -35,7 +35,7 @@
                     <ixm:EmitProtocol Protocol="Url" Enabled="True" />
                   </ixm:EmitProtocols>
                   <ixm:UserConfigs>
-                    <ixm:UserConfig Name="WindowName" Value="Aurora Shimmer, Meteor Flash" />
+                    <ixm:UserConfig Name="WindowName" Value="Molecular Cloud Barnard 68" />
                     <ixm:UserConfig Name="WindowX" Value="0" />
                     <ixm:UserConfig Name="WindowY" Value="0" />
                     <ixm:UserConfig Name="WindowWidth" Value="0" />

@@ -57,9 +57,6 @@
     <Reference Include="CefSharp.Core">
       <HintPath>..\..\..\TypeSystemExplorer\bin\Debug\CefSharp.Core.dll</HintPath>
     </Reference>
-    <Reference Include="CefSharp.WinForms">
-      <HintPath>..\..\..\TypeSystemExplorer\bin\Debug\CefSharp.WinForms.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -71,6 +68,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ChromiumWebBrowser.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DefaultFocusHandler.cs" />
+    <Compile Include="User32.cs" />
     <Compile Include="WebBrowserReceptor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
