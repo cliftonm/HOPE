@@ -93,7 +93,7 @@ Workshops will be schelued and specific training tools will available after the 
 License
 ----
 
-MIT
+GNU GPL V2
 
 [Introduction]:http://youtu.be/O1V4XSYYNxs
 [An APOD Website Scraper]:http://youtu.be/NdapAL2tt7w
