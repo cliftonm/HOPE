@@ -523,7 +523,7 @@ namespace Clifton.MycroParser
 		/// Search for properties with the attribute MycroParserInitializeAttribute and assign the property the matching
 		/// def Name tag used in the declarative markup.
 		/// </summary>
-		protected void AssignProperties(object target)
+		public void AssignProperties(object target)
 		{
 			// Get public and non-public properties of the target.
 			target.GetType().GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy | BindingFlags.Instance).ForEach(pi =>
@@ -549,7 +549,7 @@ namespace Clifton.MycroParser
 		/// Search for fields with the attribute MycroParserInitializeAttribute and assign the property the matching
 		/// def Name tag used in the declarative markup.
 		/// </summary>
-		protected void AssignFields(object target)
+		public void AssignFields(object target)
 		{
 			// Get public and non-public properties of the target.
 			target.GetType().GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy | BindingFlags.Instance).ForEach(field =>

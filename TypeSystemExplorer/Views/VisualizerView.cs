@@ -1511,6 +1511,8 @@ namespace TypeSystemExplorer.Views
 							MycroParser mp = new MycroParser();
 							mp.ObjectCollection["receptor"] = receptor.Instance;
 							Form form = mp.Load<Form>(receptor.Instance.ConfigurationUI, this);
+							mp.AssignProperties(receptor.Instance);
+							mp.AssignFields(receptor.Instance);
 							form.Tag = new ConfigurationInfo() { Receptor = receptor, Parser = mp };
 							PopulateControls(receptor, mp);
 
