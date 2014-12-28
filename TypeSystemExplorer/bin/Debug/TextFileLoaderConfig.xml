@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<MycroXaml Name="Form"
+  xmlns:wf="System.Windows.Forms, System.Windows.Forms, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"
+  xmlns:r="Clifton.Receptor, Clifton.Receptor"
+  xmlns:def="def"
+  xmlns:ref="ref">
+  <wf:Form def:Name="form" Text="Text File Loader Configuration" Size="480, 160" StartPosition="CenterScreen" ShowInTaskbar="false" MinimizeBox="false" MaximizeBox="false">
+    <wf:Controls>
+      <wf:Label Text="File Name:" Location="20, 20" Size="100, 15"/>
+      <wf:TextBox def:Name="tbFileName" Location="20, 35" Size="200, 20"/>
+      <wf:Button def:Name="btnFileChooser" Text="Browse..." Location="230, 32" Size="80, 25" Click="{receptor.ShowFileChooser}"/>
+      <wf:CheckBox def:Name="ckEnabled" Text="Enabled?" Location="20, 95" Size="80, 25"/>
+      <wf:Button def:Name="btnSave" Text="Save" Location="360, 10" Size="80, 25" Click="OnReceptorConfigOK"/>
+      <wf:Button def:Name="btnCancel" Text="Cancel" Location="360, 40" Size="80, 25" Click="OnReceptorConfigCancel"/>
+    </wf:Controls>
+    <r:PropertyControlMap def:Name="ControlMap">
+      <r:Entries>
+        <r:PropertyControlEntry PropertyName="FileName" ControlName="tbFileName" ControlPropertyName="Text"/>
+      </r:Entries>
+    </r:PropertyControlMap>
+    <wf:Form ref:Name="form" AcceptButton="{btnSave}"/>
+    <wf:Form ref:Name="form" CancelButton="{btnCancel}"/>
+  </wf:Form>
+</MycroXaml>
+
+
