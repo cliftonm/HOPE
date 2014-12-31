@@ -196,7 +196,7 @@ namespace TypeSystemExplorer.Controllers
 					Assert.SilentTry(() => View.Size = new Size(state.Single(t => t.Key == "W").Value.to_i(), state.Single(t => t.Key == "H").Value.to_i()));
 					Assert.SilentTry(() => View.WindowState = state.Single(t => t.Key == "WindowState").Value.ToEnum<FormWindowState>());
 					Assert.SilentTry(() => View.ShowProtocols = Convert.ToBoolean(state.Single(t => t.Key == "ShowSemantics").Value));
-					Assert.SilentTry(() => appletUiContainerForm.Location=new Point(state.Single(t=>t.Key=="UIX").Value.to_i(), state.Single(t=>t.Key=="UIY").Value.to_i()));
+					Assert.SilentTry(() => appletUiContainerForm.Location = new Point(state.Single(t => t.Key == "UIX").Value.to_i(), state.Single(t => t.Key == "UIY").Value.to_i()));
 					Assert.SilentTry(() => appletUiContainerForm.Size = new Size(state.Single(t => t.Key == "UIW").Value.to_i(), state.Single(t => t.Key == "UIH").Value.to_i()));
 					Assert.SilentTry(() => appletUiContainerForm.WindowState = state.Single(t => t.Key == "UIWindowState").Value.ToEnum<FormWindowState>());
 					// Assert.SilentTry(() => CurrentFilename = state.Single(t => t.Key == "Last Opened").Value);
@@ -207,20 +207,26 @@ namespace TypeSystemExplorer.Controllers
 		{
 			Assert.SilentTry(() => Program.AppState.RestoreState("Form"));
 
-			// Make sure the applet UI form fits in the screen area of this system.
-			if (appletUiContainerForm != null)
+			// Make sure the designer and applet UI fits in the screen area of this system.
+			FitToScreen(View);
+			FitToScreen(appletUiContainerForm);
+		}
+
+		protected void FitToScreen(Form form)
+		{
+			if (form != null)
 			{
-				if (!SystemInformation.VirtualScreen.Contains(appletUiContainerForm.Location))
+				if (!SystemInformation.VirtualScreen.Contains(form.Location))
 				{
-					appletUiContainerForm.Location = new Point(0, 0);
+					form.Location = new Point(0, 0);
 				}
 
-				Size diff = SystemInformation.VirtualScreen.Size - appletUiContainerForm.Size;
+				Size diff = SystemInformation.VirtualScreen.Size - form.Size;
 
 				if ((diff.Width < 0) || (diff.Height < 0))
 				{
 					Size sz = new Size(SystemInformation.VirtualScreen.Width / 4, SystemInformation.VirtualScreen.Height / 4);
-					appletUiContainerForm.Size = sz;
+					form.Size = sz;
 				}
 			}
 		}
