@@ -77,6 +77,14 @@
             <SubType Name="Text" UniqueField="false" Ordinality="0" />
           </SubTypes>
         </SemanticType>
+        <SemanticType Name="Date" UniqueField="false">
+          <NativeTypes>
+            <NativeType Name="Year" ImplementingType="int" Ordinality="0" UniqueField="false" />
+            <NativeType Name="Month" ImplementingType="int" Ordinality="1" UniqueField="false" />
+            <NativeType Name="Day" ImplementingType="int" Ordinality="2" UniqueField="false" />
+          </NativeTypes>
+          <SubTypes />
+        </SemanticType>
       </SemanticTypes>
     </SemanticTypesContainer>
     <SemanticTypesContainer Name="Messages">
@@ -158,6 +166,7 @@
           </NativeTypes>
           <SubTypes>
             <SubType Name="Title" UniqueField="false" Ordinality="1" />
+            <SubType Name="Description" UniqueField="false" Ordinality="2" />
           </SubTypes>
         </SemanticType>
       </SemanticTypes>

@@ -66,6 +66,13 @@ namespace TextDisplayReceptor
 
 					if (!String.IsNullOrEmpty(text))
 					{
+						// TODO: This is a real kludge for indicating that we want to clear the text in the textbox!
+						if (text.StartsWith("!"))
+						{
+							tb.Clear();
+							text = text.Substring(1);
+						}
+
 						tb.AppendText(text.StripHtml());
 						tb.AppendText("\r\n");
 					}

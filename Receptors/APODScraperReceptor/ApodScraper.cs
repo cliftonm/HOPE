@@ -43,9 +43,10 @@ namespace APODScraperReceptor
 		public ApodScraper(IReceptorSystem rsys) : base(rsys)
 		{
 			// AddEmitProtocol("ImageFilename");
-			AddEmitProtocol("Image", false);
+			AddEmitProtocol("WebImage");
 			AddEmitProtocol("Url");
 			AddEmitProtocol("ExceptionMessage");
+			AddReceiveProtocol("Date", (Action<dynamic>)(signal => GetImageForDate(new DateTime(signal.Year, signal.Month, signal.Day))));
 			AddReceiveProtocol("WebPageHtml", (Action<dynamic>)(signal => ProcessPage(signal.Url.Value, signal.Html.Value)));
 
 			// (new string[] { "RequireTable", "ScrapeWebpage", "ImageFilename", "DatabaseRecord", "DebugMessage", "APOD", "HaveImageMetadata" }).ForEach(p => AddEmitProtocol(p));
@@ -57,8 +58,13 @@ namespace APODScraperReceptor
 
 		public override void EndSystemInit()
 		{
+			GetImageForDate(DateTime.Now);
+		}
+
+		protected void GetImageForDate(DateTime date)
+		{
 			// Get today's image.
-			string url = "http://apod.nasa.gov/apod/ap" + DateTime.Now.ToString("yyMMdd") + ".html";
+			string url = "http://apod.nasa.gov/apod/ap" + date.ToString("yyMMdd") + ".html";
 
 			// Use this URL as an example.
 			// string url = "http://apod.nasa.gov/apod/ap141207.html";
@@ -208,7 +214,7 @@ namespace APODScraperReceptor
 
 						// Put it out there into the wild.
 						// EmitImageFile(fn);
-						EmitImage(img, title, url);
+						EmitImage(img, title, explanation, url);
 
 						// LogImage(url, fn, keywords, title, explanation, errors);
 
@@ -222,12 +228,14 @@ namespace APODScraperReceptor
 			}
 		}
 
-		protected void EmitImage(Image image, string title, string url)
+		protected void EmitImage(Image image, string title, string explanation, string url)
 		{
 			CreateCarrier("WebImage", signal =>
 				{
 					signal.Image.Value = image as Image;
 					signal.Image.Title.Text.Value = title;
+					// TODO: The ! is a real kludge to indicate clearing the text display.
+					signal.Image.Description.Text.Value = "!" + explanation;
 					signal.Url.Value = url;
 				});
 		}
