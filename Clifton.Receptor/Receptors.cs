@@ -226,7 +226,7 @@ namespace Clifton.Receptor
 			newReceptors.Where(r=>r.Enabled).ForEach(r => r.Instance.Initialize());
 
 			// Any queued carriers are now checked to determine whether receptors now exist to process their protocols.
-			ProcessQueuedCarriers();
+			ProcessQueuedCarriers(true);
 
 			// If we've loaded only one receptor...
 			// TODO: Refactor this out of here.
@@ -289,7 +289,7 @@ namespace Clifton.Receptor
 				{
 					// This call will recurse for us.
 					// CreateCarrier(IReceptorInstance from, ISemanticTypeStruct protocol, string protocolPath, dynamic signal, bool stopRecursion, bool isSystemMessage = false, ICarrier parentCarrier = null)
-					CreateCarrier(from, protocol, protocolPath, signal, false, false, parentCarrier, emitSubElements);
+					CreateCarrier(from, protocol, protocolPath, signal, false, false, parentCarrier, emitSubElements, protocol.DeclTypeName == protocolPath);
 				}
 				else
 				{
@@ -412,7 +412,7 @@ namespace Clifton.Receptor
 			receptor.Instance.ReceptorSystem = this;
 			// Process any queued carriers that may now become active.
 			ReloadProtocolReceptorMap();
-			ProcessQueuedCarriers();
+			ProcessQueuedCarriers(true);
 		}
 
 		/// <summary>
@@ -466,7 +466,7 @@ namespace Clifton.Receptor
 		/// <summary>
 		/// Internal carrier creation.  This includes the "stopRecursion" flag to prevent wildcard receptors from receiving ad-infinitum their own emissions.
 		/// </summary>
-		protected ICarrier CreateCarrier(IReceptorInstance from, ISemanticTypeStruct protocol, string protocolPath, dynamic signal, bool stopRecursion, bool isSystemMessage = false, ICarrier parentCarrier = null, bool emitSubElements = true)
+		protected ICarrier CreateCarrier(IReceptorInstance from, ISemanticTypeStruct protocol, string protocolPath, dynamic signal, bool stopRecursion, bool isSystemMessage = false, ICarrier parentCarrier = null, bool emitSubElements = true, bool isRoot = true)
 		{
 			Carrier carrier = null;
 
@@ -480,7 +480,7 @@ namespace Clifton.Receptor
 
 				// We pass along the stopRecursion flag to prevent wild-card carrier receptor from receiving their own emissions, which would result in a new carrier,
 				// ad-infinitum.
-				ProcessReceptors(from, carrier, stopRecursion);
+				ProcessReceptors(from, carrier, stopRecursion, isRoot);
 			}
 
 			// Recurse into SE's of the protocol and emit carriers for those as well, if a receiver exists.
@@ -559,7 +559,7 @@ namespace Clifton.Receptor
 		/// <summary>
 		/// Returns the target receptors that will receive the carrier protocol, qualified by the receptor's optional condition on the signal.
 		/// </summary>
-		protected List<IReceptorConnection> GetTargetReceptorsFor(IReceptor from, ICarrier carrier)
+		protected List<IReceptorConnection> GetTargetReceptorsFor(IReceptor from, ICarrier carrier, bool isRoot)
 		{
 			// Lastly, filter the list by qualified receptors that are not the source of the carrier.
 			List<IReceptorConnection> newTargets = new List<IReceptorConnection>();
@@ -584,7 +584,7 @@ namespace Clifton.Receptor
 				targets = targets.Distinct().ToList();
 
 				// Only enabled receptors and receptors that are not the source of the carrier and our not ourselves.
-				List<IReceptorConnection> filteredTargets = targets.Where(r => r.Receptor != from && r.Receptor.Instance.Enabled && r.Receptor.Instance.GetEnabledReceiveProtocols().Select(rq => rq.Protocol).Contains(protocol.DeclTypeName)).ToList();
+				List<IReceptorConnection> filteredTargets = targets.Where(r => (!r.RootOnly || isRoot) && r.Receptor != from && r.Receptor.Instance.Enabled && r.Receptor.Instance.GetEnabledReceiveProtocols().Select(rq => rq.Protocol).Contains(protocol.DeclTypeName)).ToList();
 
 				// Will have a count of 0 if the receptor is the system receptor, ie, carrier animations or other protocols.
 				// TODO: This seems kludgy, is there a better way of working with this?
@@ -633,16 +633,16 @@ namespace Clifton.Receptor
 		/// Given a carrier, if there are receptors for the carrier's protocol, act upon the carrier immediately.
 		/// If there are no receptors for the protocol, queue the carrier.
 		/// </summary>
-		protected void ProcessReceptors(IReceptorInstance from, Carrier carrier, bool stopRecursion)
+		protected void ProcessReceptors(IReceptorInstance from, Carrier carrier, bool stopRecursion, bool isRoot)
 		{
 			// Get the action that we are supposed to perform on the carrier.
-			Action action = GetProcessAction(from, carrier, stopRecursion);
+			Action action = GetProcessAction(from, carrier, stopRecursion, isRoot);
 			IReceptor receptor = ReceptorFromInstance(from);
 
 			// Some bullet proofing that was revealed in unit testing.
 			if (receptor != null)
 			{
-				List<IReceptorConnection> receptors = GetTargetReceptorsFor(ReceptorFromInstance(from), carrier);
+				List<IReceptorConnection> receptors = GetTargetReceptorsFor(ReceptorFromInstance(from), carrier, isRoot);
 
 				// If we have any enabled receptor for this carrier (a mapping of carrier to receptor list exists and receptors actually exist in that map)...
 				if (receptors.Count > 0)
@@ -667,7 +667,7 @@ namespace Clifton.Receptor
 		/// <summary>
 		/// If a queued carrier has a receptor to receive the protocol, execute the action and remove it from the queue.
 		/// </summary>
-		public void ProcessQueuedCarriers()
+		public void ProcessQueuedCarriers(bool isRoot)
 		{
 			List<QueuedCarrierAction> removeActions = new List<QueuedCarrierAction>();
 
@@ -675,7 +675,7 @@ namespace Clifton.Receptor
 			// collection with an indexer rather than a foreach.
 			queuedCarriers.IndexerForEach(action =>
 			{
-				List<IReceptorConnection> receptors = GetTargetReceptorsFor(action.From, action.Carrier);
+				List<IReceptorConnection> receptors = GetTargetReceptorsFor(action.From, action.Carrier, isRoot);
 
 				// If we have any enabled receptor for this carrier (a mapping of carrier to receptor list exists and receptors actually exist in that map)...
 				if (receptors.Count > 0)
@@ -693,13 +693,13 @@ namespace Clifton.Receptor
 		/// <summary>
 		/// Return an action representing what to do for a new carrier/protocol.
 		/// </summary>
-		protected Action GetProcessAction(IReceptorInstance from, Carrier carrier, bool stopRecursion)
+		protected Action GetProcessAction(IReceptorInstance from, Carrier carrier, bool stopRecursion, bool isRoot)
 		{
 			// Construct an action...
 			Action action = new Action(() =>
 				{
 					// Get the receptors receiving the protocol.
-					List<IReceptorConnection> receptors = GetTargetReceptorsFor(ReceptorFromInstance(from), carrier);
+					List<IReceptorConnection> receptors = GetTargetReceptorsFor(ReceptorFromInstance(from), carrier, isRoot);
 
 					// For each receptor that is enabled...
 					receptors.ForEach(receptor =>
@@ -760,7 +760,7 @@ namespace Clifton.Receptor
 		protected void WhenEnabledStateChanged(object sender, ReceptorEnabledEventArgs e)
 		{
 			// Any queued carriers are now checked to determine whether receptors are now enabled to process their protocols.
-			ProcessQueuedCarriers();
+			ProcessQueuedCarriers(true);
 		}
 
 		protected IReceptor ReceptorFromInstance(IReceptorInstance inst)

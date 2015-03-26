@@ -524,8 +524,8 @@ namespace TypeSystemExplorer.Views
 		{
 			CreateReceptorConnections();
 			RecalcMembranes();
-			membraneLocation.Keys.ForEach(m => m.ProcessQueuedCarriers());
-			Program.Skin.ProcessQueuedCarriers();
+			membraneLocation.Keys.ForEach(m => m.ProcessQueuedCarriers(true));
+			Program.Skin.ProcessQueuedCarriers(true);
 			Invalidate(true);
 		}
 
@@ -885,7 +885,7 @@ namespace TypeSystemExplorer.Views
 		protected void ProtocolsChanged(object sender, EventArgs e)
 		{
 			CreateReceptorConnections();
-			Program.Skin.ProcessQueuedCarriers();
+			Program.Skin.ProcessQueuedCarriers(true);
 			Invalidate(true);
 		}
 
@@ -1863,9 +1863,9 @@ namespace TypeSystemExplorer.Views
 			CreateReceptorConnections();
 
 			// Check queued receptors in all membranes.
-			membraneLocation.Keys.ForEach(m => m.ProcessQueuedCarriers());
+			membraneLocation.Keys.ForEach(m => m.ProcessQueuedCarriers(true));
 			// The skin, not part of this collection, needs its queued carriers checked as well.
-			Program.Skin.ProcessQueuedCarriers();
+			Program.Skin.ProcessQueuedCarriers(true);
 
 			Invalidate(true);
 		}
@@ -1948,28 +1948,49 @@ namespace TypeSystemExplorer.Views
 					Membrane m2 = GetReceptorMembrane(kvp2.Key);
 
 					// Receptors must be in the same membrane.
+					// When we traverse into membranes or out of membranes, m1 is spoofed to be the inner or other membrane, respectively.
 					if (m1 == m2)
 					{
 						// If any match the receive protocols of kvp2...
 						if (kvp2.Key.Instance.GetEnabledReceiveProtocols().Select(rp => rp.Protocol).Contains(prot1))
+						// var intersection = kvp2.Key.Instance.GetEnabledReceiveProtocols().Select(rp => rp.Protocol).Intersect(r.Instance.GetEnabledEmittedProtocols().Select(ep => ep.Protocol));
+						//foreach(var intersect in intersection)
 						{
 							// Then these two receptors are connected.
 							// P1 is always the emitter, P2 is always the receiver.
 							Line l = new Line() { P1 = rPoint, P2 = kvp2.Value };
 							Connection conn = new Connection() { Protocol = prot1, Line = l, R1 = r, R2 = kvp2.Key };
-							receptorConnections.Add(conn);
 
-							// Add this to the master connection list.
-							// TODO: THIS SHOULD NOT BE COMPUTED IN THE VISUALIZER!!!!
-							if (!Program.MasterReceptorConnectionList.ContainsKey(r))
+							// Horrid check for duplicates.  We get duplicates because we scan each receptor (regardless of membrane) and try to find matches.
+							// This leads to duplication between connected receptors (in and out) when they cross membranes.
+							bool found = false;
+							
+							foreach (Connection connCheck in receptorConnections)
 							{
-								Program.MasterReceptorConnectionList[r] = new List<IReceptorConnection>();
+								// TODO: We don't need to check R2==R1 and R1==R2, do we?
+								if ((connCheck.Protocol == conn.Protocol) && (connCheck.R1 == conn.R1) && (connCheck.R2 == conn.R2))
+								{
+									found = true;
+									break;
+								}
 							}
 
-							// TODO: Yuck - there must be a better way of dealing with duplicates.
-							// if (!Program.MasterReceptorConnectionList[r].Contains(kvp2.Key))
+							if (!found)
 							{
-								Program.MasterReceptorConnectionList[r].Add(new ReceptorConnection(kvp2.Key, rootOnly));
+								receptorConnections.Add(conn);
+
+								// Add this to the master connection list.
+								// TODO: THIS SHOULD NOT BE COMPUTED IN THE VISUALIZER!!!!
+								if (!Program.MasterReceptorConnectionList.ContainsKey(r))
+								{
+									Program.MasterReceptorConnectionList[r] = new List<IReceptorConnection>();
+								}
+
+								// TODO: Yuck - there must be a better way of dealing with duplicates.
+								// if (!Program.MasterReceptorConnectionList[r].Contains(kvp2.Key))
+								{
+									Program.MasterReceptorConnectionList[r].Add(new ReceptorConnection(kvp2.Key, rootOnly));
+								}
 							}
 						}
 					}
@@ -1991,7 +2012,14 @@ namespace TypeSystemExplorer.Views
 				{
 					// Check outer mebranes, passing ourselves as the "inner source" (m1)
 					// The "root only" flag, once set, applies to all membranes as we move out.
-					FindConnectionsWith(r, m1.ParentMembrane, prot1, rPoint, m1, rootOnly || pconfig2.RootOnly);
+
+					// Get the emitted protocols of this receptor and check them all with receive protocols in the outer membrane.
+					r.Instance.GetEnabledEmittedProtocols().ForEach(prot1A =>
+					{
+						FindConnectionsWith(r, m1.ParentMembrane, prot1A.Protocol, rPoint, m1, rootOnly || pconfig2.RootOnly);
+					});
+
+					// FindConnectionsWith(r, m1.ParentMembrane, prot1, rPoint, m1, rootOnly || pconfig2.RootOnly);
 				}
 			}
 
@@ -2010,7 +2038,13 @@ namespace TypeSystemExplorer.Views
 						{
 							// Check the inner membrane.
 							// The "root only" flag, once set, applies to all membranes as we move in.
-							FindConnectionsWith(r, m, prot1, rPoint, m1, rootOnly || pconfig2.RootOnly);
+							// Get the emitted protocols of this receptor and check them all with receive protocols in the outer membrane.
+							r.Instance.GetEnabledEmittedProtocols().ForEach(prot1A =>
+							{
+								FindConnectionsWith(r, m, prot1A.Protocol, rPoint, m1, rootOnly || pconfig2.RootOnly);
+							});
+							
+							// FindConnectionsWith(r, m, prot1, rPoint, m1, rootOnly || pconfig2.RootOnly);
 						}
 					}
 				});

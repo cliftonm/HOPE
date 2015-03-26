@@ -290,9 +290,9 @@ namespace Clifton.Receptor
 			return ret.Distinct().ToList();
 		}
 
-		public void ProcessQueuedCarriers()
+		public void ProcessQueuedCarriers(bool isRoot)
 		{
-			receptorSystem.ProcessQueuedCarriers();
+			receptorSystem.ProcessQueuedCarriers(isRoot);
 		}
 
 		/// <summary>

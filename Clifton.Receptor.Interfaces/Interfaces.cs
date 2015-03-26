@@ -208,7 +208,7 @@ namespace Clifton.Receptor.Interfaces
 		IReceptor RegisterReceptor(string fn);
 		void RegisterReceptor(string name, IReceptorInstance instance);
 		void LoadReceptors(Action<IReceptor> afterRegister = null);
-		void ProcessQueuedCarriers();
+		void ProcessQueuedCarriers(bool isRoot);
 		void UpdatePermeability();
 
 		IMembrane ParentMembrane { get; set;  }
