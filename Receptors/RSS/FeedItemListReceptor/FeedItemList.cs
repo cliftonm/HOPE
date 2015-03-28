@@ -123,10 +123,13 @@ namespace FeedItemListReceptor
 			dgvSignals.CellFormatting += OnCellFormatting;
 			dgvSignals.RowEnter += OnRowEnter;
 
-			// Pub date column
-			dgvSignals.Columns[pubDateColumnName].SortMode = DataGridViewColumnSortMode.Programmatic;
-			dgvSignals.Columns[pubDateColumnName].HeaderCell.SortGlyphDirection = SortOrder.Descending;
-			dgvSignals.Sort(dgvSignals.Columns[pubDateColumnName], System.ComponentModel.ListSortDirection.Descending);
+			if (!String.IsNullOrEmpty(ProtocolName))
+			{
+				// Pub date column
+				dgvSignals.Columns[pubDateColumnName].SortMode = DataGridViewColumnSortMode.Programmatic;
+				dgvSignals.Columns[pubDateColumnName].HeaderCell.SortGlyphDirection = SortOrder.Descending;
+				dgvSignals.Sort(dgvSignals.Columns[pubDateColumnName], System.ComponentModel.ListSortDirection.Descending);
+			}
 		}
 
 		protected void OnRowEnter(object sender, DataGridViewCellEventArgs e)
