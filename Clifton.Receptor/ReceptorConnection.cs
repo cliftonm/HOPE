@@ -31,16 +31,18 @@ namespace Clifton.Receptor
 	{
 		public IReceptor Receptor { get; set; }
 		public bool RootOnly { get; set; }
+		public string PermeabilityProtocol { get; set; }
 
 		public ReceptorConnection(IReceptor receptor)
 		{
 			Receptor = receptor;
 		}
 
-		public ReceptorConnection(IReceptor receptor, bool rootOnly)
+		public ReceptorConnection(IReceptor receptor, bool rootOnly, string permeabilityProtocol)
 		{
 			Receptor = receptor;
 			RootOnly = rootOnly;
+			PermeabilityProtocol = permeabilityProtocol;
 		}
 	}
 }

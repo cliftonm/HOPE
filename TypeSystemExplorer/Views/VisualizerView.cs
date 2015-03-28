@@ -1830,6 +1830,7 @@ namespace TypeSystemExplorer.Views
 
 				// Setup the data source.
 				DataView dv = new DataView(dt);
+				dv.Sort = "Direction,Protocol";
 				// TODO: Ugh.  Hardcoded index array.  Replace with the MycroParser object collection.
 				((DataGridView)form.Controls[0]).DataSource = dv;
 				form.FormClosing += OnPermeabilityFormClosing;
@@ -1905,11 +1906,14 @@ namespace TypeSystemExplorer.Views
 			}
 		}
 
+		public StringBuilder trace = new StringBuilder();
+
 		/// <summary>
 		/// Create the connections between receptors.
 		/// </summary>
 		protected void CreateReceptorConnections()
 		{
+			trace = new StringBuilder();
 			receptorConnections = new List<Connection>();
 			Program.MasterReceptorConnectionList.Clear();
 
@@ -1921,7 +1925,7 @@ namespace TypeSystemExplorer.Views
 					// Get the emitted protocols of this receptor.
 					kvp1.Key.Instance.GetEnabledEmittedProtocols().ForEach(prot1 =>
 						{
-							FindConnectionsWith(kvp1.Key, m1, prot1.Protocol, kvp1.Value);
+							FindConnectionsWith(kvp1.Key, m1, prot1.Protocol, prot1.Protocol, kvp1.Value);
 						});
 				});
 
@@ -1937,7 +1941,7 @@ namespace TypeSystemExplorer.Views
 		/// <summary>
 		/// Recursive scanning of receptors, into inner membranes and out to outer membranes to determine protocol connectivity.
 		/// </summary>
-		protected void FindConnectionsWith(IReceptor r, IMembrane m1, string prot1, Point rPoint, IMembrane source = null, bool rootOnly = false)
+		protected void FindConnectionsWith(IReceptor r, IMembrane m1, string prot1, string permeableProtocol, Point rPoint, IMembrane source = null, bool rootOnly = false)
 		{
 			// Iterate through receptors with a second search.
 			receptorLocation.ForEach(kvp2 =>
@@ -1956,10 +1960,21 @@ namespace TypeSystemExplorer.Views
 						// var intersection = kvp2.Key.Instance.GetEnabledReceiveProtocols().Select(rp => rp.Protocol).Intersect(r.Instance.GetEnabledEmittedProtocols().Select(ep => ep.Protocol));
 						//foreach(var intersect in intersection)
 						{
+							// trace.AppendLine("PermeableProtocol is: " + permeableProtocol);
+
+							if (rootOnly)
+							{
+								trace.AppendLine("Connecting receiver '" + kvp2.Key.Instance.Name + "' with transmitter '" + r.Instance.Name + "' on root only protocol " + prot1 + " permeable via " + permeableProtocol);
+							}
+							else
+							{
+								trace.AppendLine("Connecting receiver '" + kvp2.Key.Instance.Name + "' with transmitter '" + r.Instance.Name + "' on protocol " + prot1 + " permeable via " + permeableProtocol);
+							}
+
 							// Then these two receptors are connected.
 							// P1 is always the emitter, P2 is always the receiver.
 							Line l = new Line() { P1 = rPoint, P2 = kvp2.Value };
-							Connection conn = new Connection() { Protocol = prot1, Line = l, R1 = r, R2 = kvp2.Key };
+							Connection conn = new Connection() { Protocol = permeableProtocol, Line = l, R1 = r, R2 = kvp2.Key };
 
 							// Horrid check for duplicates.  We get duplicates because we scan each receptor (regardless of membrane) and try to find matches.
 							// This leads to duplication between connected receptors (in and out) when they cross membranes.
@@ -1989,7 +2004,7 @@ namespace TypeSystemExplorer.Views
 								// TODO: Yuck - there must be a better way of dealing with duplicates.
 								// if (!Program.MasterReceptorConnectionList[r].Contains(kvp2.Key))
 								{
-									Program.MasterReceptorConnectionList[r].Add(new ReceptorConnection(kvp2.Key, rootOnly));
+									Program.MasterReceptorConnectionList[r].Add(new ReceptorConnection(kvp2.Key, rootOnly, permeableProtocol));
 								}
 							}
 						}
@@ -2010,13 +2025,15 @@ namespace TypeSystemExplorer.Views
 
 				if (pconfig2.Permeable)
 				{
+					trace.AppendLine("Membrane is outbound permeable to " + prot1);
 					// Check outer mebranes, passing ourselves as the "inner source" (m1)
 					// The "root only" flag, once set, applies to all membranes as we move out.
 
 					// Get the emitted protocols of this receptor and check them all with receive protocols in the outer membrane.
 					r.Instance.GetEnabledEmittedProtocols().ForEach(prot1A =>
 					{
-						FindConnectionsWith(r, m1.ParentMembrane, prot1A.Protocol, rPoint, m1, rootOnly || pconfig2.RootOnly);
+						trace.AppendLine("Testing receptor '" + r.Instance.Name + "' emit protocol " + prot1A.Protocol);
+						FindConnectionsWith(r, m1.ParentMembrane, prot1A.Protocol, prot1, rPoint, m1, rootOnly || pconfig2.RootOnly);
 					});
 
 					// FindConnectionsWith(r, m1.ParentMembrane, prot1, rPoint, m1, rootOnly || pconfig2.RootOnly);
@@ -2033,17 +2050,19 @@ namespace TypeSystemExplorer.Views
 					if (m.ProtocolPermeability.TryGetValue(pk2, out pconfig2))
 					{
 						// Yes it does, check this membrane's receptors 
-						// It must be an OUT direction, and it must be enabled.
+						// It must be an IN direction, and it must be enabled.
 						if (pconfig2.Permeable)
 						{
+							trace.AppendLine("Membrane is inbound permeable to " + prot1);
 							// Check the inner membrane.
 							// The "root only" flag, once set, applies to all membranes as we move in.
-							// Get the emitted protocols of this receptor and check them all with receive protocols in the outer membrane.
+							// Get the emitted protocols of this receptor and check them all with receive protocols of receptors in the inner membrane.
 							r.Instance.GetEnabledEmittedProtocols().ForEach(prot1A =>
 							{
-								FindConnectionsWith(r, m, prot1A.Protocol, rPoint, m1, rootOnly || pconfig2.RootOnly);
+								trace.AppendLine("Testing receptor '" + r.Instance.Name + "' emit protocol " + prot1A.Protocol);
+								FindConnectionsWith(r, m, prot1A.Protocol, prot1, rPoint, m1, rootOnly || pconfig2.RootOnly);
 							});
-							
+
 							// FindConnectionsWith(r, m, prot1, rPoint, m1, rootOnly || pconfig2.RootOnly);
 						}
 					}

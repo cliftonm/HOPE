@@ -58,7 +58,7 @@ namespace APODScraperReceptor
 
 		public override void EndSystemInit()
 		{
-			GetImageForDate(DateTime.Now);
+			// GetImageForDate(DateTime.Now);
 		}
 
 		protected void GetImageForDate(DateTime date)

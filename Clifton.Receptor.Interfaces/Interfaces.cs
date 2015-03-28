@@ -154,6 +154,7 @@ namespace Clifton.Receptor.Interfaces
 	{
 		IReceptor Receptor { get; set; }
 		bool RootOnly { get; set; }
+		string PermeabilityProtocol { get; set; }
 	}
 
 	/// <summary>

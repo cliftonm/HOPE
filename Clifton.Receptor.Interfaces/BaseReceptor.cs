@@ -203,17 +203,56 @@ namespace Clifton.Receptor.Interfaces
 		/// <param name="carrier"></param>
 		public virtual void ProcessCarrier(ICarrier carrier)
 		{
-			currentProtocol = carrier.Protocol.DeclTypeName;		// Used in exception processing.
-			ReceiveQualifier rq = receiveProtocols.Find(rp => rp.Protocol == carrier.Protocol.DeclTypeName && rp.Qualifier(carrier.Signal));
+			ProcessSignal(carrier.Protocol, carrier.Signal);
+		}
 
-			try
+		protected bool ProcessSignal(ISemanticTypeStruct protocol, dynamic signal)
+		{
+			bool ret = false;
+			currentProtocol = protocol.DeclTypeName;		// Used in exception processing.
+			// TODO: See ref 03282015 in Receptors.cs -- We probably don't need to run the Qualifier check here.
+			ReceiveQualifier rq = receiveProtocols.Find(rp => rp.Protocol == protocol.DeclTypeName && rp.Qualifier(signal));
+
+			if (rq == null)
 			{
-				rq.Action(carrier.Signal);
+				ret = CheckSubTypes(protocol, signal);
 			}
-			catch (Exception ex)
+			else
 			{
-				EmitException(ex);
+				try
+				{
+					ret = true;
+					rq.Action(signal);
+				}
+				catch (Exception ex)
+				{
+					EmitException(ex);
+				}
 			}
+
+			return ret;
+		}
+
+		protected bool CheckSubTypes(ISemanticTypeStruct protocol, dynamic signal)
+		{
+			bool ret = false;
+
+			foreach(ISemanticElement se in protocol.SemanticElements)
+			{
+				dynamic subsignal = rsys.SemanticTypeSystem.Clone(signal, se); // Clone the contents of the signal's semantic element into the subsignal.
+
+				if (subsignal != null)
+				{
+					ret = ProcessSignal(se.Element.Struct, subsignal);
+
+					if (ret)
+					{
+						break;
+					}
+				}
+			};
+
+			return ret;
 		}
 
 		/// <summary>

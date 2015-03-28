@@ -65,6 +65,7 @@ namespace WebBrowserReceptor
 		{
 			Cef.Initialize();
 			AddReceiveProtocol("Url", (Action<dynamic>)(signal => ShowPage(signal.Value)));
+			AddReceiveProtocol("Text", (Action<dynamic>)(signal => EmbedSearchString(signal.Value)));
 		}
 
 		public override bool UserConfigurationUpdated()
@@ -94,6 +95,15 @@ namespace WebBrowserReceptor
 			internalUrl = url;
 			form.IfNull(() => ReinitializeUI()).Else(() => browser.Load(url));
 			Subname = WindowName;
+		}
+
+		/// <summary>
+		/// Embed the search string into the user URL to implement a paramaterized search capability
+		/// </summary>
+		protected void EmbedSearchString(string search)
+		{
+			string navTo = UserUrl.Replace("[search]", search);
+			ShowPage(navTo);
 		}
 
 		protected override void InitializeUI()

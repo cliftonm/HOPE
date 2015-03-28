@@ -538,8 +538,9 @@ namespace Clifton.Receptor
 					// We're only interested in enabled receptors, and we ignore ourselves.
 					ret = targets.Any(r => r.Receptor != from && 
 						r.Receptor.Instance.Enabled && 
-						(!r.RootOnly || isRoot) &&			// root protocol or we don't care if it's not the root.
-						r.Receptor.Instance.GetEnabledReceiveProtocols().Select(rp => rp.Protocol).Contains(protocol.DeclTypeName));
+						r.PermeabilityProtocol == protocol.DeclTypeName &&
+						(!r.RootOnly || isRoot)); // &&			// root protocol or we don't care if it's not the root.
+						// r.Receptor.Instance.GetEnabledReceiveProtocols().Select(rp => rp.Protocol).Contains(protocol.DeclTypeName));
 				}
 
 				if (!ret)
@@ -547,6 +548,7 @@ namespace Clifton.Receptor
 					// check protocol map for receivers that are not the issuing receptor, ignoring ourselves.
 					ret = protocolReceptorMap.Any(kvp => (kvp.Key == protocol.DeclTypeName) && 
 						kvp.Value.Any(r => (r.Receptor != from) &&
+							r.PermeabilityProtocol == protocol.DeclTypeName &&
 							(!r.RootOnly || isRoot) &&			// root protocol or we don't care if it's not the root.
 							(r.Receptor.Instance.Enabled))); // .ContainsKey(protocol.DeclTypeName);
 				}
@@ -584,7 +586,12 @@ namespace Clifton.Receptor
 				targets = targets.Distinct().ToList();
 
 				// Only enabled receptors and receptors that are not the source of the carrier and our not ourselves.
-				List<IReceptorConnection> filteredTargets = targets.Where(r => (!r.RootOnly || isRoot) && r.Receptor != from && r.Receptor.Instance.Enabled && r.Receptor.Instance.GetEnabledReceiveProtocols().Select(rq => rq.Protocol).Contains(protocol.DeclTypeName)).ToList();
+				List<IReceptorConnection> filteredTargets = targets.Where(r => 
+					(!r.RootOnly || isRoot) && 
+					r.Receptor != from && 
+					r.Receptor.Instance.Enabled && 
+					r.PermeabilityProtocol == protocol.DeclTypeName).ToList(); // &&
+					// r.Receptor.Instance.GetEnabledReceiveProtocols().Select(rq => rq.Protocol).Contains(protocol.DeclTypeName)).ToList();
 
 				// Will have a count of 0 if the receptor is the system receptor, ie, carrier animations or other protocols.
 				// TODO: This seems kludgy, is there a better way of working with this?
@@ -604,15 +611,23 @@ namespace Clifton.Receptor
 
 				filteredTargets.Where(r => r.Receptor != from && r.Receptor.Instance.Enabled).ForEach(t =>
 					{
-						// Get the list of receive actions and filters for the specific protocol.
-						var receiveList = t.Receptor.Instance.GetEnabledReceiveProtocols().Where(rp => rp.Protocol == protocol.DeclTypeName);
-						receiveList.ForEach(r =>
+						// The PermeableProtocol may be a higher level protocol than the receiver receives, so we need to find the receivers that have sub-protocols of the current protocol enabled.
+						List<ISemanticTypeStruct> protocols = protocol.FlattenedSemanticTypes();
+						protocols.ForEach(se =>
 							{
-								// If qualified, add to the final target list.
-								if (r.Qualifier(carrier.Signal))
-								{
-									newTargets.Add(t);
-								}
+								string prot = se.DeclTypeName;
+								// Get the list of receive actions and filters for the specific protocol.
+								var receiveList = t.Receptor.Instance.GetEnabledReceiveProtocols().Where(rp => rp.Protocol == prot);
+								receiveList.ForEach(r =>
+									{
+										// If qualified, add to the final target list.
+										// REF: 03282015
+										// TODO: It looks like we're already doing a qualifier check in BaseReceptor.  Probably we can remove THAT check!
+										if (r.Qualifier(carrier.Signal))
+										{
+											newTargets.Add(t);
+										}
+									});
 							});
 					});
 

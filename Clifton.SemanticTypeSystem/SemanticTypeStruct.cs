@@ -108,5 +108,33 @@ namespace Clifton.SemanticTypeSystem
 			return sts;
 		}
 
+		/// <summary>
+		/// Flatten the hierarchy of semantic elements.
+		/// </summary>
+		public List<ISemanticTypeStruct> FlattenedSemanticTypes()
+		{
+			List<ISemanticTypeStruct> ret = new List<ISemanticTypeStruct>();
+			ret.Add(this);
+
+			foreach (ISemanticElement se in SemanticElements)
+			{
+				FlattenedSemanticTypes(ret, se);
+			}
+
+			return ret;
+		}
+
+		/// <summary>
+		/// Internal recursion to flatten the hierarcy of semantic elements.
+		/// </summary>
+		protected void FlattenedSemanticTypes(List<ISemanticTypeStruct> ret, ISemanticElement se)
+		{
+			ret.Add(se.Element.Struct);
+
+			foreach (ISemanticElement s in se.Element.Struct.SemanticElements)
+			{
+				FlattenedSemanticTypes(ret, se);
+			}
+		}
 	}
 }

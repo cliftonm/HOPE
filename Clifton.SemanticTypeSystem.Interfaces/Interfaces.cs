@@ -80,6 +80,11 @@ namespace Clifton.SemanticTypeSystem.Interfaces
 		List<ISemanticElement> SemanticElements { get; }
 
 		/// <summary>
+		/// Flattens the hierarchy of semantic elements.
+		/// </summary>
+		List<ISemanticTypeStruct> FlattenedSemanticTypes();
+
+		/// <summary>
 		/// Return all types with the interface IGetSetSemanticType so we can get/set values of those types.
 		/// </summary>
 		List<IGetSetSemanticType> AllTypes { get; }

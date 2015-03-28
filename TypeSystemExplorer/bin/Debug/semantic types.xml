@@ -509,5 +509,16 @@
         </SemanticType>
       </SemanticTypes>
     </SemanticTypesContainer>
+    <SemanticTypesContainer Name="Tests">
+      <SemanticTypes>
+        <SemanticType Name="Descr_Title" UniqueField="false">
+          <NativeTypes />
+          <SubTypes>
+            <SubType Name="Description" UniqueField="false" Ordinality="0" />
+            <SubType Name="Title" UniqueField="false" Ordinality="0" />
+          </SubTypes>
+        </SemanticType>
+      </SemanticTypes>
+    </SemanticTypesContainer>
   </SemanticTypesContainer>
 </Schema>
