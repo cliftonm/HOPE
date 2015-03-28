@@ -77,6 +77,24 @@ namespace TextDisplayReceptor
 						tb.AppendText("\r\n");
 					}
 				}));
+
+			AddReceiveProtocol("Html", (Action<dynamic>)(signal =>
+			{
+				form.IfNull(() =>
+				{
+					InitializeUI();
+					UpdateFormLocationAndSize();
+				});
+
+				string text = signal.Value;
+
+				if (!String.IsNullOrEmpty(text))
+				{
+					tb.AppendText(text);
+					tb.AppendText("\r\n");
+				}
+			}));
+
 		}
 
 		public override void PrepopulateConfig(MycroParser mp)
