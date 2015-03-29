@@ -53,6 +53,8 @@ namespace ImageViewerReceptor
 					pb.Image = img;
 				}));
 */
+			AddEmitProtocol("Url");
+
 			AddReceiveProtocol("Image", (Action<dynamic>)(signal =>
 				{
 					form.IfNull(() =>
@@ -78,12 +80,13 @@ namespace ImageViewerReceptor
 		{
 			base.ProcessCarrier(carrier);
 
-			if (carrier.ParentCarrier != null)
+			//if (carrier.ParentCarrier != null)
 			{
 				// Additional behavior if this is a web image
-				if (carrier.ParentCarrier.Protocol.DeclTypeName == "WebImage")
+				// if (carrier.ParentCarrier.Protocol.DeclTypeName == "WebImage")
+				if (carrier.ProtocolPath == "WebImage")
 				{
-					url = carrier.ParentCarrier.Signal.Url.Value;
+					url = carrier.Signal.Url.Value;
 
 					if (!String.IsNullOrEmpty(url))
 					{

@@ -1907,6 +1907,7 @@ namespace TypeSystemExplorer.Views
 		}
 
 		public StringBuilder trace = new StringBuilder();
+		public int level = 0;
 
 		/// <summary>
 		/// Create the connections between receptors.
@@ -1914,6 +1915,7 @@ namespace TypeSystemExplorer.Views
 		protected void CreateReceptorConnections()
 		{
 			trace = new StringBuilder();
+			level = 0;
 			receptorConnections = new List<Connection>();
 			Program.MasterReceptorConnectionList.Clear();
 
@@ -1943,6 +1945,7 @@ namespace TypeSystemExplorer.Views
 		/// </summary>
 		protected void FindConnectionsWith(IReceptor r, IMembrane m1, string prot1, string permeableProtocol, Point rPoint, IMembrane source = null, bool rootOnly = false)
 		{
+			++level;
 			// Iterate through receptors with a second search.
 			receptorLocation.ForEach(kvp2 =>
 			{
@@ -2025,16 +2028,32 @@ namespace TypeSystemExplorer.Views
 
 				if (pconfig2.Permeable)
 				{
-					trace.AppendLine("Membrane is outbound permeable to " + prot1);
-					// Check outer mebranes, passing ourselves as the "inner source" (m1)
-					// The "root only" flag, once set, applies to all membranes as we move out.
+					trace.AppendLine("Parent permeable protocol is " + permeableProtocol);
+					trace.AppendLine(level.ToString() + ": Membrane is outbound permeable to " + prot1 + ((rootOnly || pconfig2.RootOnly) ? " root only " : ""));
 
-					// Get the emitted protocols of this receptor and check them all with receive protocols in the outer membrane.
-					r.Instance.GetEnabledEmittedProtocols().ForEach(prot1A =>
+					if ((rootOnly || pconfig2.RootOnly) && (permeableProtocol != prot1))
 					{
-						trace.AppendLine("Testing receptor '" + r.Instance.Name + "' emit protocol " + prot1A.Protocol);
-						FindConnectionsWith(r, m1.ParentMembrane, prot1A.Protocol, prot1, rPoint, m1, rootOnly || pconfig2.RootOnly);
-					});
+						trace.AppendLine("Protocol does not match root and cannot permeate membrane.");
+					}
+					else
+					{
+						// Check outer mebranes, passing ourselves as the "inner source" (m1)
+						// The "root only" flag, once set, applies to all membranes as we move out.
+
+						// Get the emitted protocols of this receptor and check them all with receive protocols in the outer membrane.
+						r.Instance.GetEnabledEmittedProtocols().ForEach(prot1A =>
+						{
+							// if (((rootOnly || pconfig2.RootOnly) && prot1A.Protocol == prot1) || (!(rootOnly || pconfig2.RootOnly)))
+							{
+								trace.AppendLine("Testing receptor '" + r.Instance.Name + "' emit protocol " + prot1A.Protocol); // + ", Root only = " + (rootOnly || pconfig2.RootOnly).ToString());
+								FindConnectionsWith(r, m1.ParentMembrane, prot1A.Protocol, prot1, rPoint, m1, rootOnly || pconfig2.RootOnly);
+							}
+							//else
+							//{
+							//	trace.AppendLine("Receptor '" + r.Instance.Name + "' protocol " + prot1A.Protocol + " must be a root protocol.");
+							//}
+						});
+					}
 
 					// FindConnectionsWith(r, m1.ParentMembrane, prot1, rPoint, m1, rootOnly || pconfig2.RootOnly);
 				}
@@ -2053,21 +2072,36 @@ namespace TypeSystemExplorer.Views
 						// It must be an IN direction, and it must be enabled.
 						if (pconfig2.Permeable)
 						{
-							trace.AppendLine("Membrane is inbound permeable to " + prot1);
-							// Check the inner membrane.
-							// The "root only" flag, once set, applies to all membranes as we move in.
-							// Get the emitted protocols of this receptor and check them all with receive protocols of receptors in the inner membrane.
-							r.Instance.GetEnabledEmittedProtocols().ForEach(prot1A =>
+							trace.AppendLine("Parent permeable protocol is " + permeableProtocol);
+							trace.AppendLine(level.ToString() + ": Membrane is inbound permeable to " + prot1 + ((rootOnly || pconfig2.RootOnly) ? " root only " : ""));
+							if ((rootOnly || pconfig2.RootOnly) && (permeableProtocol != prot1))
 							{
-								trace.AppendLine("Testing receptor '" + r.Instance.Name + "' emit protocol " + prot1A.Protocol);
-								FindConnectionsWith(r, m, prot1A.Protocol, prot1, rPoint, m1, rootOnly || pconfig2.RootOnly);
-							});
-
+								trace.AppendLine("Protocol does not match root and cannot permeate membrane.");
+							}
+							else
+							{
+								// Check the inner membrane.
+								// The "root only" flag, once set, applies to all membranes as we move in.
+								// Get the emitted protocols of this receptor and check them all with receive protocols of receptors in the inner membrane.
+								r.Instance.GetEnabledEmittedProtocols().ForEach(prot1A =>
+								{
+									//								if (((rootOnly || pconfig2.RootOnly) && prot1A.Protocol == prot1) || (!(rootOnly || pconfig2.RootOnly)))
+									{
+										trace.AppendLine("Testing receptor '" + r.Instance.Name + "' emit protocol " + prot1A.Protocol);// + ", Root only = " + (rootOnly || pconfig2.RootOnly).ToString());
+										FindConnectionsWith(r, m, prot1A.Protocol, prot1, rPoint, m1, rootOnly || pconfig2.RootOnly);
+									}
+									//else
+									//{
+									//	trace.AppendLine("Receptor '" + r.Instance.Name + "' protocol " + prot1A.Protocol + " must be a root protocol.");
+									//}
+								});
+							}
 							// FindConnectionsWith(r, m, prot1, rPoint, m1, rootOnly || pconfig2.RootOnly);
 						}
 					}
 				});
 
+			--level;
 		}
 
 		/// <summary>

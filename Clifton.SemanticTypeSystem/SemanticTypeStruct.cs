@@ -133,7 +133,7 @@ namespace Clifton.SemanticTypeSystem
 
 			foreach (ISemanticElement s in se.Element.Struct.SemanticElements)
 			{
-				FlattenedSemanticTypes(ret, se);
+				FlattenedSemanticTypes(ret, s);
 			}
 		}
 	}
